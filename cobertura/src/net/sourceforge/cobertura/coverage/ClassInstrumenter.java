@@ -1,6 +1,9 @@
 
 package net.sourceforge.cobertura.coverage;
 
+import java.util.Iterator;
+
+import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -8,6 +11,8 @@ import org.objectweb.asm.Opcodes;
 
 class ClassInstrumenter extends ClassAdapter implements Opcodes
 {
+
+	private static final Logger logger = Logger.getLogger(Main.class);
 
 	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coverage/HasBeenInstrumented";
 	private CoverageData coverageData;
@@ -93,9 +98,8 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 	{
 		if (!doNotInstrument
 				&& coverageData.getValidLineNumbers().size() == 0)
-			System.out
-					.println("Warning: No line number information found for class "
-							+ this.myName
-							+ ".  Perhaps you need to compile with debug=true?");
+			logger.warn("No line number information found for class "
+					+ this.myName
+					+ ".  Perhaps you need to compile with debug=true?");
 	}
 }

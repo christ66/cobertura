@@ -37,14 +37,16 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 		// that the variable is null before attempting to set it.
 		// This IFNONNULL check would confuse people if it showed
 		// up in the reports.
-		if ((opcode != GOTO) && (!this.myName.equals("<clinit>")))
+		if ((opcode != GOTO) && (currentLine != 0)
+				&& (!this.myName.equals("<clinit>")))
 			coverageData.markLineAsConditional(currentLine);
 	}
 
 	public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels)
 	{
 		super.visitLookupSwitchInsn(dflt, keys, labels);
-		coverageData.markLineAsConditional(currentLine);
+		if (currentLine != 0)
+			coverageData.markLineAsConditional(currentLine);
 	}
 
 	public void visitLineNumber(int line, Label start)
