@@ -10,7 +10,7 @@ a:hover {
 blockquote {
 	background-color: #f0f0f0;
 	border: 1px dashed #bbbbbb;
-	font-family: arial, helvetica;
+	font-family: arial, helvetica, sans-serif;
 	font-size: 85%;
 	margin: 1em;
 	margin-left: 3em;
@@ -26,7 +26,7 @@ body {
 div.codeblock {
 	background-color: #f0f0f0;
 	border: 1px dashed #bbbbbb;
-	font-family: arial, helvetica;
+	font-family: arial, helvetica, sans-serif;
 	font-size: 85%;
 	margin: 1em;
 	margin-left: 3em;
@@ -70,7 +70,7 @@ div#navigation {
 	border: 1px solid #888888;
 	float: left;
 	font-weight: bold;
-	font-family: arial, helvetica;
+	font-family: arial, helvetica, sans-serif;
 	margin: 1px;
 	margin-top: 0px;
 	padding: 0.5em;
@@ -81,7 +81,7 @@ div#navigation {
 div.newsitem {
 	background-color: #f0f0f0;
 	border: 1px dashed #bbbbbb;
-	font-family: arial, helvetica;
+	font-family: arial, helvetica, sans-serif;
 	margin: 1em;
 	padding: 2px;
 	padding-left: 4px;
@@ -100,4 +100,8 @@ div.newsitem span {
 hr {
 	background-color: #aa0000;
 	width: 70%;
+}
+
+p.centered {
+	text-align: center;
 }
