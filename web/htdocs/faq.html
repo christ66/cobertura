@@ -34,6 +34,29 @@ Where does the name "Cobertura" come from?
 <div class="faq">
 <div class="question">
 <p>
+Who runs this project?
+</p>
+</div>
+
+<div class="answer">
+<p>
+Cobertura was started by Mark Doliner, an employee of
+<a href="http://www.sas.com/">SAS</a>.  SAS sponsored
+the initial creation of the project, and continues allowing Mark to
+maintain the project.  Jeremy Thomerson is also a developer.
+</p>
+</div>
+</div>
+
+
+
+<br/>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
 Who should I contact with questions?
 </p>
 </div>
@@ -43,9 +66,7 @@ Who should I contact with questions?
 Please use the
 <a href="http://lists.sourceforge.net/lists/listinfo/cobertura-devel">cobertura-devel</a>
 mailing list for all questions.  This way the entire community can
-benefit from the answers.  If you need to, you can also contact
-me directly at
-<a href="mailto:thekingant@users.sourceforge.net">thekingant@users.sourceforge.net</a>.
+benefit from the answers.
 </p>
 </div>
 </div>
@@ -89,11 +110,11 @@ What do I need to use Cobertura?
 
 <div class="answer">
 <p>
-A computer with Java.  I personally run Cobertura from Windows 2000
-using a 1.4 JDK, however, it should work on any platform.  I'm not
-sure what version of the JDK you'll need, but you should be ok with
-anything newer than 1.4.  The Cobertura download packages include
-all the dependencies you'll need.
+A computer with Java 1.4 or newer.  We have run Cobertura on
+Windows 2000 and Linux (Fedora Core 3) using the 1.4.2 JDK,
+however, it should work on any platform.  The Cobertura
+download packages include all the dependencies you'll need
+(ASM, java-getopt, log4j, etc.)
 </p>
 </div>
 </div>
@@ -113,7 +134,7 @@ Why did you feel a need to fork jcoverage?
 
 <div class="answer">
 <p>
-I felt it would be beneficial for the Java community if there were a
+We felt it would be beneficial for the Java community if there were a
 Java coverage tool with a more open development process than jcoverage
 and Clover.
 </p>
@@ -148,7 +169,7 @@ What about <a href="http://emma.sourceforge.net/">Emma</a>?
 <div class="answer">
 <p>
 I've never actually used it, but it looks like it does a pretty good
-job.  Judging from the sample on the Emma web page, I think
+job.  Judging from the sample on the Emma web page, we think
 the Cobertura HTML reports are a bit easier to digest.  It looks like
 Emma has some nice usability features, such as the ability to
 instrument all classes in a jar file with one command.  A little
@@ -227,7 +248,7 @@ property when instrumenting, running, and generating reports.
 </ol>
 
 <p>
-In the future I'd like to change Cobertura to either throw an
+In the future we'd like to change Cobertura to either throw an
 exception and stop or at least print a warning message if it
 does not find an already existing cobertura.ser file.
 </p>

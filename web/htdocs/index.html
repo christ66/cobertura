@@ -48,18 +48,35 @@ decending order.
 </li>
 </ul>
 
-<h1>Who are you?</h1>
+<h1>News</h1>
 
+<div class="newsitem">
+<span class="date">16 March 2005</span>
+<div class="text">
 <p>
-My name is Mark Doliner.  I'm an employee of
-<a href="http://www.sas.com/">SAS</a>
-working in Cary, NC.  SAS has graciously allowed me to
-spend part of my time working on Cobertura.  And because we use
-the product internally, any improvements from the open source
-community also benefit us.
+We decided to release Cobertura 1.2 because of a bug in the XML
+reports in 1.1.  If you use the XML reports you'll definitely
+want to upgrade, otherwise you're safe with 1.1.  Also, Cobertura
+1.2 (and 1.1, and maybe 1.0) requires a 1.4 or newer JVM.  Is this
+a problem for anyone?  If so, please send an email to our mailing list
+(<a href="mailto:cobertura-devel@lists.sourceforge.net">cobertura-devel@lists.sourceforge.net</a>)
+and let us know what version of the JVM you would like to use.
 </p>
 
-<h1>News</h1>
+<p>
+Here are the changes in 1.2:
+</p>
+
+<ul>
+<li>
+Fix a bug that caused the XML reports to be invalid XML
+(they were missing the &lt;/package&gt; tag).</li>
+<li>
+Use Java 1.4 pattern matching and remove Jakarta ORO.
+</li>
+</ul>
+</div>
+</div>
 
 <div class="newsitem">
 <span class="date">8 March 2005</span>
