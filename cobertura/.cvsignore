@@ -1,5 +1,10 @@
 build
-cobertura-cvs-bin.zip
-cobertura-cvs-eclipse-plugin.zip
-cobertura-cvs-src.zip
+cobertura.jar
 cobertura.ser
+cobertura-cvs-bin.tar.bz2
+cobertura-cvs-src.tar.bz2
+cobertura-cvs-bin.tar.gz
+cobertura-cvs-src.tar.gz
+cobertura-cvs-bin.zip
+cobertura-cvs-src.zip
+cobertura-cvs-eclipse-plugin.zip
