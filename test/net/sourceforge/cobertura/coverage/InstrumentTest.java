@@ -33,9 +33,9 @@ public class InstrumentTest extends TestCase implements HasBeenInstrumented
 	private final static String pathToTestInputClass = "build/test/classes/"
 			+ className + ".class";
 	private final static String pathToTestOutput = "build/test/InstrumentTest";
-	private final static int[] validLines = { 37, 38, 39, 41, 45, 47, 49, 50,
-			51, 55, 57, 60, 63, 66, 68, 72, 73, 74 };
-	private final static int[] validBranches = { 38, 43, 47, 55, 60, 62, 64 };
+	private final static int[] validLines = { 39, 40, 41, 43, 47, 49, 51, 52,
+			53, 57, 59, 62, 65, 68, 70, 74, 75, 76 };
+	private final static int[] validBranches = { 40, 57, 62 };
 	private File tmpDir;
 
 	public void setUp()
@@ -55,6 +55,8 @@ public class InstrumentTest extends TestCase implements HasBeenInstrumented
 
 	public void testInstrument()
 	{
+		// We use a different directory so we don't inadvertently
+		// pick up information from old test runs?
 		System.setProperty("net.sourceforge.cobertura.rawcoverage.dir",
 				pathToTestOutput);
 		String[] args = new String[] { "-d", pathToTestOutput,
@@ -73,9 +75,12 @@ public class InstrumentTest extends TestCase implements HasBeenInstrumented
 					+ " should be considered valid!", coverageData
 					.isValidSourceLineNumber(validLines[i]));
 
-		//assertEquals(validBranches.length, coverageData.getNumberOfValidBranches());
-		//for (int i = 0; i < validBranches.length; i++)
-		//	assertTrue("Line " + validBranches[i] + " should be considered valid!", coverageData.isValidSourceLineNumber(validBranches[i]));
+		assertEquals(validBranches.length, coverageData
+				.getNumberOfValidBranches());
+		for (int i = 0; i < validBranches.length; i++)
+			assertTrue("Line " + validBranches[i]
+					+ " should be considered valid!", coverageData
+					.isValidSourceLineNumber(validBranches[i]));
 	}
 
 }

@@ -59,17 +59,16 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 
 	public void addLine(int line, String methodName)
 	{
-		LineInformation lineInformation = new LineInformation(line,
-				methodName);
-		this.lines.put(new Integer(line), lineInformation);
+		LineInformation lineInformation = getLineInformation(line);
+		lineInformation.setMethodName(methodName);
 	}
 
 	public void markLineAsConditional(int line)
 	{
-		// TODO: Remove this println
-		System.out.println("QQQ got conditional on line " + line);
+		Integer lineObject = new Integer(line);
 		LineInformation lineInformation = getLineInformation(line);
-		this.conditionals.put(new Integer(line), lineInformation);
+		if (!this.conditionals.containsKey(lineObject))
+			this.conditionals.put(lineObject, lineInformation);
 	}
 
 	/**
@@ -172,7 +171,6 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		if (lineInformation == null)
 		{
 			lineInformation = new LineInformation(lineNumber);
-			System.out.println("QQQ adding line " + lineNumber);
 			lines.put(new Integer(lineNumber), lineInformation);
 		}
 		return lineInformation;
