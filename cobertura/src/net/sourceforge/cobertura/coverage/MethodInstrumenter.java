@@ -31,7 +31,13 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 	public void visitJumpInsn(int opcode, Label label)
 	{
 		super.visitJumpInsn(opcode, label);
-		if (opcode != GOTO)
+
+		// Ignore any jump instructions in the "class init" method.
+		// When initializing static variables, the JVM first checks
+		// that the variable is null before attempting to set it.
+		// This IFNONNULL check would confuse people if it showed
+		// up in the reports.
+		if ((opcode != GOTO) && (!this.myName.equals("<clinit>")))
 			coverageData.markLineAsConditional(currentLine);
 	}
 

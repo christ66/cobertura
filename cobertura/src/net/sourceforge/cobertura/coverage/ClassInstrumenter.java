@@ -86,7 +86,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 
 		// TODO: Signature is always null... why?
 		return mv == null ? null : new MethodInstrumenter(mv, coverageData,
-				this.myName, name + "(" + signature + ")");
+				this.myName, name);
 	}
 
 	public void visitEnd()
