@@ -24,6 +24,14 @@ package net.sourceforge.cobertura.coverage;
 
 import java.io.Serializable;
 
+/**
+ * <p>
+ * This class implements HasBeenInstrumented so that when cobertura
+ * instruments itself, it will omit this class.  It does this to
+ * avoid an infinite recursion problem because instrumented classes
+ * make use of this class.
+ * </p>
+ */
 public class LineInformation implements HasBeenInstrumented, Serializable
 {
 	private static final long serialVersionUID = 1;
