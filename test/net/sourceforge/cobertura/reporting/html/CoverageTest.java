@@ -79,7 +79,7 @@ public class CoverageTest extends TestCase
 
 		assertEquals(0, coverage.getNumberOfBranches());
 		assertEquals(0, coverage.getNumberOfLines());
-		assertEquals(1, coverage.getBranchCoverageRate(), 0.00001);
+		assertEquals(0, coverage.getBranchCoverageRate(), 0.00001);
 		assertEquals(1, coverage.getLineCoverageRate(), 0.00001);
 		assertNotNull(coverage.getPackages());
 		assertEquals(0, coverage.getPackages().size());

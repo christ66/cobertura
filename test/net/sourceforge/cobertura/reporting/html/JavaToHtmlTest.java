@@ -55,8 +55,10 @@ public class JavaToHtmlTest extends TestCase
 		assertEquals(
 				"System.out.println(<span class=\"string\">'Q'</span>);",
 				javaToHtml.process("System.out.println('Q');"));
-		assertEquals(".charAt(currentIndex - 1) == <span class=\"string\">'\\\\'</span>)));", javaToHtml
-				.process(".charAt(currentIndex - 1) == '\\\\')));"));
-		assertEquals("<span class=\"string\">'\\n'</span>", javaToHtml.process("'\\n'"));
+		assertEquals(
+				".charAt(currentIndex - 1) == <span class=\"string\">'\\\\'</span>)));",
+				javaToHtml.process(".charAt(currentIndex - 1) == '\\\\')));"));
+		assertEquals("<span class=\"string\">'\\n'</span>", javaToHtml
+				.process("'\\n'"));
 	}
 }

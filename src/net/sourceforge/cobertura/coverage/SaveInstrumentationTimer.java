@@ -22,13 +22,41 @@
 
 package net.sourceforge.cobertura.coverage;
 
-import org.apache.bcel.generic.LineNumberGen;
+import java.util.TimerTask;
 
-abstract class ConditionalFactory
+import org.apache.log4j.Logger;
+
+/**
+ * Timer task to save the instrumentation to disk.
+ */
+class SaveInstrumentationTimer extends TimerTask
+		implements HasBeenInstrumented
 {
 
-	static Conditional newConditional(LineNumberGen lng, int targetLineNumber)
+	private static final Logger logger = Logger
+			.getLogger(SaveInstrumentationTimer.class);
+
+	final InstrumentationPersistence instrumentationPersistence;
+
+	SaveInstrumentationTimer(
+			InstrumentationPersistence instrumentationPersistence)
 	{
-		return new ConditionalImpl(lng.getSourceLine(), targetLineNumber);
+		this.instrumentationPersistence = instrumentationPersistence;
+	}
+
+	public void run()
+	{
+		if (logger.isDebugEnabled())
+		{
+			logger.debug("save instrumentation task has started");
+		}
+
+		instrumentationPersistence.saveInstrumentation();
+
+		if (logger.isInfoEnabled())
+		{
+			logger.info("saved: "
+					+ instrumentationPersistence.keySet().size() + " items.");
+		}
 	}
 }

@@ -23,6 +23,11 @@
 package net.sourceforge.cobertura.coverage;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,75 +35,211 @@ import java.util.Set;
  * instance of this class records coverage information for a single
  * class that has been instrumented.
  */
-public interface CoverageData extends Serializable
+public class CoverageData implements HasBeenInstrumented, Serializable
 {
 
+	private static final long serialVersionUID = 2;
+
 	/**
-	 * Default file name used to write instrumentation information.
+	 * Each key is a line number in this class, stored as an Integer object.
+	 * Each value is information about the line, stored as a LineInformation object.
 	 */
-	String FILE_NAME = "cobertura.ser";
+	private Map lines = new HashMap();
+
+	/**
+	 * Each key is a line number in this class, stored as an Integer object.
+	 * Each value is information about the line, stored as a LineInformation object.
+	 */
+	private Map conditionals = new HashMap();
+
+	private Set methodNamesAndSignatures = new HashSet();
+
+	private String sourceFileName;
+
+	public void addLine(int line, String methodName, boolean isConditional)
+	{
+		System.out.println(methodName + " " + line + " " + isConditional);
+		LineInformation lineInformation = new LineInformation(line,
+				methodName, isConditional);
+		this.lines.put(new Integer(line), lineInformation);
+		this.conditionals.put(new Integer(line), lineInformation);
+	}
 
 	/**
 	 * @return The branch coverage rate for the class.
 	 */
-	double getBranchCoverageRate();
+	public double getBranchCoverageRate()
+	{
+		if (conditionals.size() == 0)
+		{
+			// no conditional branches, therefore 100% branch coverage.
+			return 1d;
+		}
+		return (double)getNumberOfCoveredBranches() / conditionals.size();
+	}
 
 	/**
 	 * @return The branch coverage rate for a particular method.
 	 */
-	double getBranchCoverageRate(String methodNameAndSignature);
+	public double getBranchCoverageRate(String methodNameAndSignature)
+	{
+		int total = 0;
+		int hits = 0;
+
+		Iterator iter = conditionals.values().iterator();
+		while (iter.hasNext())
+		{
+			LineInformation next = (LineInformation)iter.next();
+			if (next.getMethodName().equals(methodNameAndSignature))
+			{
+				total++;
+				if (next.getHits() > 0)
+				{
+					hits++;
+				}
+			}
+		}
+		return (double)hits / total;
+	}
+
+	public Set getConditionals()
+	{
+		return Collections.unmodifiableSet(conditionals.keySet());
+	}
+
+	public long getHitCount(int lineNumber)
+	{
+		return getHitCount(new Integer(lineNumber));
+	}
 
 	/**
 	 * @param lineNumber The source code line number.
 	 * @return The number of hits a particular line of code has.
 	 */
-	long getHitCount(int lineNumber);
+	private long getHitCount(Integer lineNumber)
+	{
+		if (!lines.containsKey(lineNumber))
+		{
+			return 0;
+		}
+
+		return ((LineInformation)lines.get(lineNumber)).getHits();
+	}
 
 	/**
 	 * @return The line coverage rate for the class
 	 */
-	double getLineCoverageRate();
+	public double getLineCoverageRate()
+	{
+		if (lines.size() == 0)
+		{
+			return 1d;
+		}
+		int hits = 0;
+		Iterator iter = lines.values().iterator();
+		while (iter.hasNext())
+		{
+			if (((LineInformation)iter.next()).getHits() > 0)
+				hits++;
+		}
+		return (double)hits / lines.size();
+	}
 
 	/**
 	 * @return The line coverage rate for particular method
 	 */
-	double getLineCoverageRate(String methodNameAndSignature);
+	public double getLineCoverageRate(String methodNameAndSignature)
+	{
+		int total = 0;
+		int hits = 0;
+
+		Iterator iter = lines.values().iterator();
+		while (iter.hasNext())
+		{
+			LineInformation next = (LineInformation)iter.next();
+			if (next.getMethodName().equals(methodNameAndSignature))
+			{
+				total++;
+				if (next.getHits() > 0)
+				{
+					hits++;
+				}
+			}
+		}
+		return (double)hits / total;
+	}
 
 	/**
 	 * @return The method name and signature of each method found in the
 	 * class represented by this instrumentation.
 	 */
-	Set getMethodNamesAndSignatures();
+	public Set getMethodNamesAndSignatures()
+	{
+		return methodNamesAndSignatures;
+	}
 
 	/**
 	 * @return The number of branches in this class.
 	 */
-	int getNumberOfBranches();
+	public int getNumberOfBranches()
+	{
+		return conditionals.size();
+	}
 
 	/**
 	 * @return The number of branches in this class covered by testing.
 	 */
-	int getNumberOfCoveredBranches();
+	public int getNumberOfCoveredBranches()
+	{
+		int hits = 0;
+
+		Iterator iter = conditionals.values().iterator();
+		while (iter.hasNext())
+		{
+			if (((LineInformation)iter.next()).getHits() > 0)
+				hits++;
+		}
+
+		return hits;
+	}
 
 	/**
 	 * @return The number of lines in this class covered by testing.
 	 */
-	int getNumberOfCoveredLines();
+	public int getNumberOfCoveredLines()
+	{
+		int hits = 0;
+
+		Iterator iter = lines.values().iterator();
+		while (iter.hasNext())
+		{
+			if (((LineInformation)iter.next()).getHits() > 0)
+				hits++;
+		}
+
+		return hits;
+	}
 
 	/**
 	 * @return The number of lines in this class.
 	 */
-	int getNumberOfLines();
+	public int getNumberOfLines()
+	{
+		return lines.size();
+	}
 
-	/**
-	 * @return The source file name.
-	 */
-	String getSourceFileName();
+	public String getSourceFileName()
+	{
+		return sourceFileName;
+	}
 
 	/**
 	 * @return The set of valid source line numbers
 	 */
-	Set getSourceLineNumbers();
+	public Set getSourceLineNumbers()
+	{
+		return Collections.unmodifiableSet(lines.keySet());
+	}
 
 	/**
 	 * Determine if a given line number is a valid line of code.
@@ -106,19 +247,49 @@ public interface CoverageData extends Serializable
 	 * @return True if the line contains executable code.  False
 	 *         if the line is empty, or a comment, etc.
 	 */
-	boolean isValidSourceLineNumber(int lineNumber);
+	public boolean isValidSourceLineNumber(int lineNumber)
+	{
+		return lines.containsKey(new Integer(lineNumber));
+	}
 
 	/**
 	 * Merge some existing instrumentation with this instrumentation.
 	 *
 	 * @param coverageData Some existing coverage data.
 	 */
-	void merge(CoverageData coverageData);
+	public void merge(CoverageData coverageData)
+	{
+		lines.putAll(coverageData.lines);
+		conditionals.putAll(coverageData.conditionals);
+		methodNamesAndSignatures.addAll(coverageData
+				.getMethodNamesAndSignatures());
+	}
+
+	public void setSourceFileName(String sourceFileName)
+	{
+		this.sourceFileName = sourceFileName;
+	}
+
+	private LineInformation getLineInformation(int lineNumber)
+	{
+		LineInformation lineInformation = (LineInformation)lines
+				.get(new Integer(lineNumber));
+		if (lineInformation == null)
+		{
+			lineInformation = new LineInformation(lineNumber);
+			lines.put(new Integer(lineNumber), lineInformation);
+		}
+		return lineInformation;
+
+	}
 
 	/**
 	 * Increment the number of hits for a particular line of code.
 	 *
 	 * @param lineNumber the line of code to increment the number of hits.
 	 */
-	void touch(int lineNumber);
+	public void touch(int lineNumber)
+	{
+		getLineInformation(lineNumber).touch();
+	}
 }
