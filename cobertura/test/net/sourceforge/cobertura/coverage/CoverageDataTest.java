@@ -27,9 +27,9 @@ import junit.framework.TestCase;
 public class CoverageDataTest extends TestCase
 {
 
-	final CoverageData a = new CoverageData();
-	final CoverageData b = new CoverageData();
-	final CoverageData c = new CoverageData();
+	private final CoverageData a = new CoverageData();
+	private final CoverageData b = new CoverageData();
+	private final CoverageData c = new CoverageData();
 
 	public void setUp()
 	{

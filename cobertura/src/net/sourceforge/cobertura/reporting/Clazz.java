@@ -21,25 +21,22 @@
 
 package net.sourceforge.cobertura.reporting;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import net.sourceforge.cobertura.coverage.CoverageData;
 import net.sourceforge.cobertura.util.ClassHelper;
 
-public class Clazz implements Comparable
+public final class Clazz implements Comparable
 {
 
 	private Map lines;
 	private String packageName;
 	private String name;
-	private int numberOfBranches;
-	private int numberOfCoveredBranches;
-	private int numberOfCoveredLines;
-	private int numberOfLines;
 	private CoverageData rawCoverageData;
 
-	public Clazz(String longName)
+	private Clazz(String longName)
 	{
 		if (longName == null)
 		{
@@ -48,10 +45,20 @@ public class Clazz implements Comparable
 		lines = new TreeMap();
 		packageName = ClassHelper.getPackageName(longName);
 		name = ClassHelper.getBaseName(longName);
-		numberOfBranches = 0;
-		numberOfCoveredBranches = 0;
-		numberOfCoveredLines = 0;
-		numberOfLines = 0;
+	}
+	
+	public Clazz(String longName, CoverageData data) {
+	    this(longName);
+
+		setRawCoverageData(data);
+
+		Iterator iter = data.getValidLineNumbers().iterator();
+		while (iter.hasNext())
+		{
+			int lineNumber = ((Integer)iter.next()).intValue();
+			long numberOfHits = data.getHitCount(lineNumber);
+			addLine(lineNumber, numberOfHits);
+		}
 	}
 
 	public void addLine(int lineNumber, long numberOfHits)
@@ -71,24 +78,24 @@ public class Clazz implements Comparable
 
 	public double getBranchCoverageRate()
 	{
-		if (numberOfBranches == 0)
+		if (getNumberOfBranches() == 0)
 		{
-			if (numberOfCoveredLines == 0)
+			if (getNumberOfCoveredLines() == 0)
 			{
 				return 0;
 			}
 			return 1;
 		}
-		return (double)numberOfCoveredBranches / (double)numberOfBranches;
+		return (double)getNumberOfCoveredBranches() / (double)getNumberOfBranches();
 	}
 
 	public double getLineCoverageRate()
 	{
-		if (numberOfLines == 0)
+		if (getNumberOfLines() == 0)
 		{
 			return 1;
 		}
-		return (double)numberOfCoveredLines / (double)numberOfLines;
+		return (double)getNumberOfCoveredLines() / (double)getNumberOfLines();
 	}
 
 	public String getLongFileName()
@@ -116,17 +123,17 @@ public class Clazz implements Comparable
 
 	public int getNumberOfBranches()
 	{
-		return numberOfBranches;
+		return getRawCoverageData().getNumberOfValidBranches();
 	}
 
 	public int getNumberOfCoveredBranches()
 	{
-		return numberOfCoveredBranches;
+		return getRawCoverageData().getNumberOfCoveredBranches();
 	}
 
 	public int getNumberOfCoveredLines()
 	{
-		return numberOfCoveredLines;
+		return getRawCoverageData().getNumberOfCoveredLines();
 	}
 
 	public long getNumberOfHits(int lineNumber)
@@ -137,7 +144,7 @@ public class Clazz implements Comparable
 
 	public int getNumberOfLines()
 	{
-		return numberOfLines;
+		return getRawCoverageData().getNumberOfValidLines();
 	}
 
 	public String getPackageName()
@@ -155,27 +162,7 @@ public class Clazz implements Comparable
 		return lines.containsKey(new Integer(lineNumber));
 	}
 
-	public void setNumberOfBranches(int numberOfBranches)
-	{
-		this.numberOfBranches = numberOfBranches;
-	}
-
-	public void setNumberOfCoveredBranches(int numberOfCoveredBranches)
-	{
-		this.numberOfCoveredBranches = numberOfCoveredBranches;
-	}
-
-	public void setNumberOfCoveredLines(int numberOfCoveredLines)
-	{
-		this.numberOfCoveredLines = numberOfCoveredLines;
-	}
-
-	public void setNumberOfLines(int numberOfLines)
-	{
-		this.numberOfLines = numberOfLines;
-	}
-
-	public final void setRawCoverageData(CoverageData rawCoverageData)
+	private final void setRawCoverageData(CoverageData rawCoverageData)
 	{
 		this.rawCoverageData = rawCoverageData;
 	}

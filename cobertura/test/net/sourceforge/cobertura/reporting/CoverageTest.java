@@ -22,9 +22,11 @@
 
 package net.sourceforge.cobertura.reporting;
 
+import java.util.Collections;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import net.sourceforge.cobertura.coverage.CoverageData;
 
 public class CoverageTest extends TestCase
 {
@@ -33,37 +35,30 @@ public class CoverageTest extends TestCase
 	private Clazz clazz2;
 	private Clazz clazz3;
 
+	private CoverageData getTestDataInstance(int numberOfLines, int linesTouched, int[] conditionalLines) {
+	    CoverageData data = new CoverageData();
+	    for (int i = 1; i <= numberOfLines; i++) {
+	        data.addLine(i, "testMethod", "(I)B");
+	    }
+	    
+	    for (int i = 0; i < conditionalLines.length; i++) {
+	        data.markLineAsConditional(conditionalLines[i]);
+	    }
+	    
+	    for (int i = 1; i <= linesTouched; i++) {
+	        data.touch(i);
+	    }
+	    return data;
+	}
+	
 	public void setUp()
 	{
-		clazz1 = new Clazz("HelloWorld");
-		clazz1.setNumberOfBranches(4);
-		clazz1.setNumberOfCoveredBranches(2);
-		clazz1.setNumberOfCoveredLines(20);
-		clazz1.setNumberOfLines(40);
-		for (int i = 0; i < clazz1.getNumberOfLines(); i++)
-		{
-			clazz1.addLine(i + 1, 5 * (i + 1));
-		}
-
-		clazz2 = new Clazz("com.example.HelloWorld");
-		clazz2.setNumberOfBranches(6);
-		clazz2.setNumberOfCoveredBranches(3);
-		clazz2.setNumberOfCoveredLines(10);
-		clazz2.setNumberOfLines(20);
-		for (int i = 0; i < clazz2.getNumberOfLines(); i++)
-		{
-			clazz1.addLine(i + 1, 4 * (i + 1));
-		}
-
-		clazz3 = new Clazz("com.example.GoodbyeWorld");
-		clazz3.setNumberOfBranches(8);
-		clazz3.setNumberOfCoveredBranches(4);
-		clazz3.setNumberOfCoveredLines(5);
-		clazz3.setNumberOfLines(10);
-		for (int i = 0; i < clazz3.getNumberOfLines(); i++)
-		{
-			clazz1.addLine(i + 1, 9 * (i + 1));
-		}
+	    // clazz1 expects 50% line coverage && 100% branch coverage 
+	    clazz1 = new Clazz("HelloWorld", getTestDataInstance(40, 20, new int[] { 5, 10, 15, 18 }));
+	    // clazz2 expects 50% line coverage && 66% branch coverage
+	    clazz2 = new Clazz("com.example.HelloWorld", getTestDataInstance(20, 10, new int[] { 4, 7, 15 }));
+	    // clazz3 expects 40% line coverage && 33% branch coverage
+	    clazz3 = new Clazz("com.example.GoodbyeWorld", getTestDataInstance(10, 4, new int[] { 3, 7, 9 }));
 	}
 
 	public void tearDown()
@@ -75,7 +70,7 @@ public class CoverageTest extends TestCase
 
 	public void testCoverage()
 	{
-		Coverage coverage = new Coverage();
+		CoverageReport coverage = new CoverageReport(Collections.EMPTY_MAP);
 
 		assertEquals(0, coverage.getNumberOfBranches());
 		assertEquals(0, coverage.getNumberOfLines());
@@ -88,13 +83,10 @@ public class CoverageTest extends TestCase
 
 		coverage.addClass(clazz1);
 
-		assertEquals(clazz1.getNumberOfBranches(), coverage
-				.getNumberOfBranches());
+		assertEquals(clazz1.getNumberOfBranches(), coverage.getNumberOfBranches());
 		assertEquals(clazz1.getNumberOfLines(), coverage.getNumberOfLines());
-		assertEquals(clazz1.getBranchCoverageRate(), coverage
-				.getBranchCoverageRate(), 0.00001);
-		assertEquals(clazz1.getLineCoverageRate(), coverage
-				.getLineCoverageRate(), 0.00001);
+		assertEquals(clazz1.getBranchCoverageRate(), coverage.getBranchCoverageRate(), 0.00001);
+		assertEquals(clazz1.getLineCoverageRate(), coverage.getLineCoverageRate(), 0.00001);
 		assertNotNull(coverage.getPackages());
 		assertEquals(1, coverage.getPackages().size());
 		assertNotNull(coverage.getClasses());
@@ -102,12 +94,9 @@ public class CoverageTest extends TestCase
 
 		coverage.addClass(clazz2);
 
-		assertEquals(clazz1.getNumberOfBranches()
-				+ clazz2.getNumberOfBranches(), coverage
-				.getNumberOfBranches());
-		assertEquals(clazz1.getNumberOfLines() + clazz2.getNumberOfLines(),
-				coverage.getNumberOfLines());
-		assertEquals(0.5, coverage.getBranchCoverageRate(), 0.00001);
+		assertEquals(clazz1.getNumberOfBranches() + clazz2.getNumberOfBranches(), coverage.getNumberOfBranches());
+		assertEquals(clazz1.getNumberOfLines() + clazz2.getNumberOfLines(), coverage.getNumberOfLines());
+		assertEquals(0.85, coverage.getBranchCoverageRate(), 0.008);
 		assertEquals(0.5, coverage.getLineCoverageRate(), 0.00001);
 		assertNotNull(coverage.getPackages());
 		assertEquals(2, coverage.getPackages().size());
@@ -117,13 +106,17 @@ public class CoverageTest extends TestCase
 		coverage.addClass(clazz3);
 
 		assertEquals(
-				clazz1.getNumberOfBranches() + clazz2.getNumberOfBranches()
-						+ clazz3.getNumberOfBranches(), coverage
-						.getNumberOfBranches());
-		assertEquals(clazz1.getNumberOfLines() + clazz2.getNumberOfLines()
-				+ clazz3.getNumberOfLines(), coverage.getNumberOfLines());
-		assertEquals(0.5, coverage.getBranchCoverageRate(), 0.00001);
-		assertEquals(0.5, coverage.getLineCoverageRate(), 0.00001);
+				clazz1.getNumberOfBranches() + clazz2.getNumberOfBranches() + clazz3.getNumberOfBranches(), 
+				coverage.getNumberOfBranches()
+				);
+
+		assertEquals(
+		        clazz1.getNumberOfLines() + clazz2.getNumberOfLines() + clazz3.getNumberOfLines(), 
+		        coverage.getNumberOfLines()
+		        );
+		
+		assertEquals(0.7, coverage.getBranchCoverageRate(), 0.00001);
+		assertEquals(0.4857, coverage.getLineCoverageRate(), 0.001);
 		assertNotNull(coverage.getPackages());
 		assertEquals(2, coverage.getPackages().size());
 		assertNotNull(coverage.getClasses());
@@ -149,12 +142,10 @@ public class CoverageTest extends TestCase
 
 		coverage.removeClass(clazz3);
 
-		assertEquals(clazz1.getNumberOfBranches()
-				+ clazz2.getNumberOfBranches(), coverage
-				.getNumberOfBranches());
-		assertEquals(clazz1.getNumberOfLines() + clazz2.getNumberOfLines(),
-				coverage.getNumberOfLines());
-		assertEquals(0.5, coverage.getBranchCoverageRate(), 0.00001);
+
+		assertEquals(clazz1.getNumberOfBranches() + clazz2.getNumberOfBranches(), coverage.getNumberOfBranches());
+		assertEquals(clazz1.getNumberOfLines() + clazz2.getNumberOfLines(), coverage.getNumberOfLines());
+		assertEquals(0.85, coverage.getBranchCoverageRate(), 0.008);
 		assertEquals(0.5, coverage.getLineCoverageRate(), 0.00001);
 		assertNotNull(coverage.getPackages());
 		assertEquals(2, coverage.getPackages().size());

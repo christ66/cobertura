@@ -31,7 +31,7 @@ import java.util.Iterator;
 
 import net.sourceforge.cobertura.coverage.CoverageData;
 import net.sourceforge.cobertura.reporting.Clazz;
-import net.sourceforge.cobertura.reporting.Coverage;
+import net.sourceforge.cobertura.reporting.CoverageReport;
 import net.sourceforge.cobertura.reporting.Package;
 
 import org.apache.log4j.Logger;
@@ -46,7 +46,7 @@ public class XMLReport
 
 	private int indent = 0;
 
-	public XMLReport(Coverage coverage, File outputDir, File sourceDirectory)
+	public XMLReport(CoverageReport coverage, File outputDir, File sourceDirectory)
 			throws IOException
 	{
 		pw = new PrintWriter(new FileWriter(new File(outputDir,
@@ -98,7 +98,7 @@ public class XMLReport
 		pw.println(ln);
 	}
 
-	private void dumpPackages(Coverage coverage)
+	private void dumpPackages(CoverageReport coverage)
 	{
 		Iterator it = coverage.getPackages().iterator();
 		while (it.hasNext())
@@ -113,8 +113,9 @@ public class XMLReport
 				+ pack.getLineCoverageRate() + "\"" + " branch-rate=\""
 				+ pack.getBranchCoverageRate() + "\"" + ">");
 		increaseIndentation();
-		dumpClasses((Clazz[])pack.getClasses().toArray(
-				new Clazz[pack.getClasses().size()]));
+		dumpClasses((Clazz[])pack.getClasses().toArray(new Clazz[pack.getClasses().size()]));
+		decreaseIndentation();
+		println("</package>");
 	}
 
 	private void dumpClasses(Clazz[] clazzes)

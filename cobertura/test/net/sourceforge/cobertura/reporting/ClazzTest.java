@@ -23,6 +23,7 @@
 package net.sourceforge.cobertura.reporting;
 
 import junit.framework.TestCase;
+import net.sourceforge.cobertura.coverage.CoverageData;
 
 public class ClazzTest extends TestCase
 {
@@ -31,7 +32,7 @@ public class ClazzTest extends TestCase
 	{
 		Clazz clazz;
 
-		clazz = new Clazz("HelloWorld");
+		clazz = new Clazz("HelloWorld", new CoverageData());
 		assertEquals("HelloWorld", clazz.getName());
 		assertEquals("", clazz.getPackageName());
 		assertEquals("HelloWorld.java", clazz.getLongFileName());
@@ -40,7 +41,7 @@ public class ClazzTest extends TestCase
 		assertEquals(1.0, clazz.getLineCoverageRate(), 0);
 		assertFalse(clazz.isValidSourceLine(19));
 
-		clazz = new Clazz("com.example.HelloWorld");
+		clazz = new Clazz("com.example.HelloWorld", new CoverageData());
 		assertEquals("HelloWorld", clazz.getName());
 		assertEquals("com.example", clazz.getPackageName());
 		assertEquals("com/example/HelloWorld.java", clazz.getLongFileName());
@@ -48,7 +49,7 @@ public class ClazzTest extends TestCase
 
 		try
 		{
-			new Clazz(null);
+			new Clazz(null, new CoverageData());
 			fail("Expected an IllegalArgumentException but did not receive one!");
 		}
 		catch (IllegalArgumentException e)

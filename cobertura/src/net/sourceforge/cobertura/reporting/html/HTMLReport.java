@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import net.sourceforge.cobertura.reporting.Clazz;
-import net.sourceforge.cobertura.reporting.Coverage;
+import net.sourceforge.cobertura.reporting.CoverageReport;
 import net.sourceforge.cobertura.reporting.Package;
 import net.sourceforge.cobertura.reporting.Util;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
@@ -46,12 +46,12 @@ public class HTMLReport
 
 	private File sourceDir;
 
-	private Coverage coverage;
+	private CoverageReport coverage;
 
 	/**
 	 * Create a coverage report
 	 */
-	public HTMLReport(Coverage coverage, File outputDir, File sourceDir)
+	public HTMLReport(CoverageReport coverage, File outputDir, File sourceDir)
 			throws Exception
 	{
 		this.outputDir = outputDir;
