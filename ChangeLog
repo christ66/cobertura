@@ -1,3 +1,8 @@
+version 1.2
+	* Fix a bug that caused the XML reports to be invalid XML
+	  (they were missing the </package> tag).
+	* Use Java 1.4 pattern matching and remove Jakarta ORO.
+
 version 1.1
 	* Fix a bug in the syntax highlighting code of the HTML report
 	  generation.  Previously, the highlighting for single quotes
