@@ -223,6 +223,7 @@
 				<include name="COPYRIGHT" />
 				<include name="README" />
 				<include name="lib/**" />
+				<exclude name="lib/xerces/**" />
 				<include name="cobertura.jar" />
 
 				<include name="examples/basic/README" />
