@@ -1,4 +1,4 @@
-/**
+/*
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
@@ -95,7 +95,8 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		while (iter.hasNext())
 		{
 			LineInformation next = (LineInformation)iter.next();
-			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor()))
+			if (methodNameAndDescriptor.equals(next.getMethodName()
+					+ next.getMethodDescriptor()))
 			{
 				total++;
 				if (next.getHits() > 0)
@@ -151,7 +152,8 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		while (iter.hasNext())
 		{
 			LineInformation next = (LineInformation)iter.next();
-			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor()))
+			if (methodNameAndDescriptor.equals(next.getMethodName()
+					+ next.getMethodDescriptor()))
 			{
 				total++;
 				if (next.getHits() > 0)

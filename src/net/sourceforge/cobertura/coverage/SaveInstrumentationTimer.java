@@ -1,4 +1,4 @@
-/**
+/*
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
@@ -30,7 +30,6 @@ import org.apache.log4j.Logger;
  * Timer task to save the instrumentation to disk.
  */
 class SaveInstrumentationTimer extends TimerTask
-		implements HasBeenInstrumented
 {
 
 	private static final Logger logger = Logger

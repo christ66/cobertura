@@ -1,4 +1,4 @@
-/**
+/*
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>

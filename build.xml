@@ -57,6 +57,8 @@
 	</target>
 
 	<target name="instrument" depends="compile">
+		<delete file="${basedir}/cobertura.ser" />
+		<delete file="${build.test.dir}/cobertura.ser" />
 		<java fork="true" classname="net.sourceforge.cobertura.coverage.Main">
 			<sysproperty key="net.sourceforge.cobertura.rawcoverage.dir" file="${build.test.dir}" />
 			<classpath location="${build.classes.dir}" />

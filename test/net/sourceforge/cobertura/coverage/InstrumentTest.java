@@ -1,4 +1,4 @@
-/**
+/*
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
@@ -25,7 +25,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-public class InstrumentTest extends TestCase implements HasBeenInstrumented
+public class InstrumentTest extends TestCase
 {
 
 	private final static String className = "HelloWorld";
@@ -58,10 +58,6 @@ public class InstrumentTest extends TestCase implements HasBeenInstrumented
 
 	public void testInstrument()
 	{
-		// We use a different directory so we don't inadvertently
-		// pick up information from old test runs?
-		System.setProperty("net.sourceforge.cobertura.rawcoverage.dir",
-				pathToTestOutput);
 		String[] args = new String[] { "-d", pathToTestOutput,
 				pathToTestInputClass };
 		Main.main(args);

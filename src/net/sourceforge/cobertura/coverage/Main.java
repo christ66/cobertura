@@ -1,4 +1,4 @@
-/**
+/*
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
@@ -86,7 +86,6 @@ public class Main
 		return file.getName().endsWith(".class");
 	}
 
-	// TODO: Use ignoreRegex.
 	// TODO: Don't attempt to instrument a file if the outputFile already
 	//       exists and is newer than the input file.
 	private void addInstrumentation(File file)
@@ -183,7 +182,6 @@ public class Main
 				baseDir = new File(args[++i]);
 			else if (args[i].equals("-ignore"))
 			{
-				// TODO: Use java.util.regex.Pattern instead of this.
 				String regex = args[++i];
 				this.ignoreRegexp = Pattern.compile(regex);
 			}
