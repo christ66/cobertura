@@ -6,6 +6,10 @@ import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+/*
+ * TODO: If class is abstract then do not count the "public abstract class bleh" line as a SLOC.
+ * TODO: For branches, only count the branch as covered if both paths are accessed?
+ */
 public class MethodInstrumenter extends MethodAdapter implements Opcodes
 {
 
@@ -31,37 +35,17 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 			coverageData.markLineAsConditional(currentLine);
 	}
 
-	public void visitLabel(Label label)
-	{
-		super.visitLabel(label);
-	}
-
 	public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels)
 	{
 		super.visitLookupSwitchInsn(dflt, keys, labels);
 		coverageData.markLineAsConditional(currentLine);
 	}
 
-	public void visitTableSwitchInsn(int min, int max, Label dflt,
-			Label[] labels)
-	{
-		super.visitTableSwitchInsn(min, max, dflt, labels);
-		//coverageData.markLineAsConditional(currentLine);
-	}
-
-	public void visitTryCatchBlock(Label start, Label end, Label handler,
-			String type)
-	{
-		super.visitTryCatchBlock(start, end, handler, type);
-		//coverageData.markLineAsConditional(currentLine);
-	}
-
 	public void visitLineNumber(int line, Label start)
 	{
 		// Record initial information about this line of code
 		currentLine = line;
-		if (currentLine > 0)
-			coverageData.addLine(currentLine, myName);
+		coverageData.addLine(currentLine, myName);
 
 		// Get an instance of CoverageDataFactory
 		mv.visitMethodInsn(INVOKESTATIC,

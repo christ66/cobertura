@@ -1,7 +1,6 @@
 /**
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
  *
  * Cobertura is free software; you can redistribute it and/or modify
@@ -24,6 +23,9 @@
  * This class is used by the JUnit test for instrumenting
  * a class.  This is just a basic class where we can check
  * that the number of lines and branches is correct.
+ *
+ * If you change this file you'll need to update the line
+ * numbers referenced in net.sourceforge.cobertura.coverage.InstrumentTest
  */
 public class HelloWorld
 {
