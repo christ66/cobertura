@@ -147,5 +147,7 @@ public class InstrumentTask extends CommonMatchingTask
 		}
 
 		coverage((String[])filenames.toArray(new String[filenames.size()]));
+
+		unInitArgs();
 	}
 }
