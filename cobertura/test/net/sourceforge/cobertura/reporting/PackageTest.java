@@ -20,36 +20,31 @@
  * USA
  */
 
-package net.sourceforge.cobertura.reporting.html;
+package net.sourceforge.cobertura.reporting;
+
+import java.util.Set;
 
 import junit.framework.TestCase;
 
-public class ClazzTest extends TestCase
+public class PackageTest extends TestCase
 {
 
-	public static void testClazz()
+	public void testPackage()
 	{
-		Clazz clazz;
+		final String packageName = "com.example.helloworld";
+		Package pkg;
 
-		clazz = new Clazz("HelloWorld");
-		assertEquals("HelloWorld", clazz.getName());
-		assertEquals("", clazz.getPackageName());
-		assertEquals("HelloWorld.java", clazz.getLongFileName());
-		assertEquals("HelloWorld", clazz.getLongName());
-		assertEquals(0, clazz.getBranchCoverageRate(), 0);
-		assertEquals(1.0, clazz.getLineCoverageRate(), 0);
-		assertFalse(clazz.isValidSourceLine(19));
+		pkg = new Package(packageName);
+		assertEquals(packageName, pkg.getName());
 
-		clazz = new Clazz("com.example.HelloWorld");
-		assertEquals("HelloWorld", clazz.getName());
-		assertEquals("com.example", clazz.getPackageName());
-		assertEquals("com/example/HelloWorld.java", clazz.getLongFileName());
-		assertEquals("com.example.HelloWorld", clazz.getLongName());
+		Set classes = pkg.getClasses();
+		assertNotNull(classes);
+		assertEquals(0, classes.size());
 
 		try
 		{
-			new Clazz(null);
-			fail("Expected an IllegalArgumentException but did not receive one!");
+			new Package(null);
+			fail("Expected an IllegalArgumentException but none was thrown!");
 		}
 		catch (IllegalArgumentException e)
 		{

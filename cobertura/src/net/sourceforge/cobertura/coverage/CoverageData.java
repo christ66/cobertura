@@ -95,7 +95,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		while (iter.hasNext())
 		{
 			LineInformation next = (LineInformation)iter.next();
-			if (next.getMethodName().equals(methodNameAndDescriptor))
+			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor()))
 			{
 				total++;
 				if (next.getHits() > 0)
@@ -151,7 +151,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		while (iter.hasNext())
 		{
 			LineInformation next = (LineInformation)iter.next();
-			if (next.getMethodName().equals(methodNameAndDescriptor))
+			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor()))
 			{
 				total++;
 				if (next.getHits() > 0)

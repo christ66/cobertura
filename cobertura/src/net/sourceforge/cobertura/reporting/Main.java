@@ -138,14 +138,15 @@ public class Main
 			is = new FileInputStream(serializationFile);
 			objects = new ObjectInputStream(is);
 			Map coverageData = (Map)objects.readObject();
+			Coverage coverage = CoverageUnmarshaller.parse(coverageData);
 
 			if (format.equalsIgnoreCase("xml"))
 			{
-				new XMLReport(coverageData, outputDir, sourceDir);
+				new XMLReport(coverage, outputDir, sourceDir);
 			}
 			else if (format.equalsIgnoreCase("html"))
 			{
-				new HTMLReport(coverageData, outputDir, sourceDir);
+				new HTMLReport(coverage, outputDir, sourceDir);
 			}
 		}
 		finally
