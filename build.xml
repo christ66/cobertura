@@ -103,7 +103,6 @@
 	<target name="coverage-report">
 		<delete dir="${build.test.reports.dir}/coverage-html" />
 		<mkdir dir="${build.test.reports.dir}/coverage-html" />
-
 		<java fork="true" classname="net.sourceforge.cobertura.reporting.Main">
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${etc.dir}" />
@@ -114,6 +113,22 @@
 			<arg file="${build.test.dir}/cobertura.ser" />
 			<arg value="--output" />
 			<arg file="${build.test.reports.dir}/coverage-html" />
+			<arg value="--source" />
+			<arg file="${src.dir}" />
+		</java>
+
+		<delete dir="${build.test.reports.dir}/coverage-xml" />
+		<mkdir dir="${build.test.reports.dir}/coverage-xml" />
+		<java fork="true" classname="net.sourceforge.cobertura.reporting.Main">
+			<classpath location="${build.classes.dir}" />
+			<classpath location="${etc.dir}" />
+			<classpath refid="base.path" />
+			<arg value="--format" />
+			<arg value="xml" />
+			<arg value="--instrumentation" />
+			<arg file="${build.test.dir}/cobertura.ser" />
+			<arg value="--output" />
+			<arg file="${build.test.reports.dir}/coverage-xml" />
 			<arg value="--source" />
 			<arg file="${src.dir}" />
 		</java>
