@@ -1,6 +1,6 @@
 version 1.0
 	* Forked jcoverage 1.0.5 (although the version in the source says 1.0.4).
-	  All original code is copyright 2004 jcoverage ltd.  Kurt Guenther
+	  All original code is copyright 2003 jcoverage ltd.  Kurt Guenther
 	  highlighted a bug in the branch coverage, was was fixed.
 	* Applied a patch from Joakim Erdfelt to fix a bug where jcoverage
 	  would fail to instrument classes if you attempted to instrument a

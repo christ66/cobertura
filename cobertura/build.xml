@@ -192,7 +192,7 @@
 		-->
 		<copy todir="${build.dist.dir}/package-bin/cobertura-${version}">
 			<fileset dir="${basedir}">
-				<include name="CHANGELOG" />
+				<include name="ChangeLog" />
 				<include name="COPYING" />
 				<include name="COPYRIGHT" />
 				<include name="README" />
@@ -212,7 +212,7 @@
 		-->
 		<copy todir="${build.dist.dir}/package-src/cobertura-${version}">
 			<fileset dir="${basedir}">
-				<include name="CHANGELOG" />
+				<include name="ChangeLog" />
 				<include name="COPYING" />
 				<include name="COPYRIGHT" />
 				<include name="README" />
@@ -246,7 +246,7 @@
 		<!-- Make an Eclipse plugin zip -->
 		<zip destfile="${ant.project.name}-${version}-eclipse-plugin.zip" encoding="UTF-8">
 			<zipfileset prefix="com.${ant.project.name}_${version}" dir="${basedir}">
-				<include name="CHANGELOG" />
+				<include name="ChangeLog" />
 				<include name="COPYING" />
 				<include name="COPYRIGHT" />
 				<include name="README" />
