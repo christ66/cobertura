@@ -293,8 +293,9 @@ public class JavaToHtml
 				{
 					ret.append(escapeEntity(line.charAt(currentIndex++)));
 				} while ((currentIndex != line.length())
-						&& (!(line.charAt(currentIndex) == '"') || (line
-								.charAt(currentIndex - 1) == '\\')));
+						&& (!(line.charAt(currentIndex) == '"') || ((line
+								.charAt(currentIndex - 1) == '\\') && (line
+								.charAt(currentIndex - 2) != '\\'))));
 				if (currentIndex == line.length())
 				{
 					ret.append("</span>");
@@ -316,15 +317,16 @@ public class JavaToHtml
 				{
 					ret.append(escapeEntity(line.charAt(currentIndex++)));
 				} while ((currentIndex != line.length())
-						&& (!(line.charAt(currentIndex) == '\'') || (line
-								.charAt(currentIndex - 1) == '\\')));
+						&& (!(line.charAt(currentIndex) == '\'') || ((line
+								.charAt(currentIndex - 1) == '\\') && (line
+								.charAt(currentIndex - 2) != '\\'))));
 				if (currentIndex == line.length())
 				{
 					ret.append("</span>");
 				}
 				else
 				{
-					ret.append("\"</span>");
+					ret.append("\'</span>");
 					state = State.DEFAULT;
 					currentIndex++;
 				}
