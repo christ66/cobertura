@@ -35,6 +35,34 @@ decending order.
 <h1>News</h1>
 
 <div class="newsitem">
+<span class="date">12 Februrary 2005</span>
+<div class="text">
+<p>
+Alright, everything is in CVS now and I've released 1.0.  Please
+try it out and file bug reports for anything that doesn't work for
+you.  I should point out that the original jcoverage has an
+Eclipse plugin.  I don't use the plugin, and haven't tested it
+in Cobertura, so I'm not shipping it.  However, I left the build
+steps for the Eclipse plugin in place, so if you want to use it
+you should be able to use download a source distributable and
+compile yourself.  The major changes between Cobertura 1.0 and
+jcoverage 1.0.5 are below.
+</p>
+
+<ul>
+<li>
+Applied a patch from Joakim Erdfelt to fix a bug where jcoverage
+would fail to instrument classes if you attempted to instrument a
+very large number of classes (in the hundreds).
+</li>
+<li>
+Rewrote the HTML reporting and included code complexity in the output.
+</li>
+</ul>
+</div>
+</div>
+
+<div class="newsitem">
 <span class="date">11 Februrary 2005</span>
 <div class="text">
 <p>
