@@ -1,8 +1,6 @@
 
 package net.sourceforge.cobertura.coverage;
 
-import java.util.Iterator;
-
 import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
