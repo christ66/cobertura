@@ -1,4 +1,9 @@
 version 1.1
+	* Fix a bug in the syntax highlighting code of the HTML report
+	  generation.  Previously, the highlighting for single quotes
+	  containing "\\" would not end correctly.
+	* Check the third party jars into CVS using the correct CVS
+	  substition flag (binary, not ASCII).
 	* Temporary files created by the instrument ant task and merge
 	  ant task are now deleted after the ant task finishes.
 	* Switch the instrumentation classes to use ASM instead of
