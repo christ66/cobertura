@@ -4,8 +4,8 @@
  * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
  * reserved.
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- * Copyright (C) 2005 Joakim Erdfelt <joakim@erdfelt.net>
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Joakim Erdfelt
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -62,7 +62,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import net.sourceforge.cobertura.util.Copyright;
+import net.sourceforge.cobertura.util.Header;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -100,7 +100,7 @@ public class InstrumentTask extends CommonMatchingTask
 
 		saveArgs();
 
-		Copyright.print(System.out);
+		Header.print(System.out);
 		System.out.println("instrumenting " + filenames.length + " "
 				+ (filenames.length == 1 ? "class" : "classes")
 				+ (toDir != null ? " to " + toDir : ""));

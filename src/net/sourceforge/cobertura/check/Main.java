@@ -2,7 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coverage.CoverageData;
 import net.sourceforge.cobertura.coverage.InstrumentationPersistence;
-import net.sourceforge.cobertura.util.Copyright;
+import net.sourceforge.cobertura.util.Header;
 
 import org.apache.log4j.Logger;
 
@@ -101,7 +101,7 @@ public class Main extends InstrumentationPersistence
 
 	public Main(String[] args) throws IOException
 	{
-		Copyright.print(System.out);
+		Header.print(System.out);
 		System.out.println("Cobertura coverage check");
 
 		LongOpt[] longOpts = new LongOpt[4];

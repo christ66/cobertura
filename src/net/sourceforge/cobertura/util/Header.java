@@ -2,7 +2,8 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Erik Dick
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -24,25 +25,19 @@ package net.sourceforge.cobertura.util;
 
 import java.io.PrintStream;
 
-public abstract class Copyright
+public abstract class Header
 {
-	public static final int NAME = 0;
-	public static final int YEARS = 1;
-
-	public static final String[][] COPYRIGHT = new String[][] {
-			{ "jcoverage ltd.", "2003" },
-			{ "Mark Doliner <thekingant@users.sourceforge.net>", "2005" } };
 
 	public static void print(PrintStream out)
 	{
-		out.println("Cobertura " + Version.VERSION_STRING);
-		for (int i = 0; i < COPYRIGHT.length; i++)
-		{
-			out.println("Copyright (C) " + COPYRIGHT[i][YEARS] + " "
-					+ COPYRIGHT[i][NAME]);
-		}
-		out
-				.println("Cobertura is licensed under the GNU General Public License");
+		Package thisPackage = Header.class.getPackage();
+		String version = (thisPackage != null ? thisPackage
+				.getImplementationVersion() : "cvs");
+
+		out.println("Cobertura " + version);
+		out.println("The copyright for this program is retained by its contributors");
+		out.println("See the included COPYRIGHT file for a complete list of contributors");
+		out.println("Cobertura is licensed under the GNU General Public License");
 		out.println("Cobertura comes with ABSOLUTELY NO WARRANTY");
 	}
 }

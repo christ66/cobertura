@@ -4,7 +4,7 @@
  * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
  * reserved.
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -60,7 +60,7 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import net.sourceforge.cobertura.util.Copyright;
+import net.sourceforge.cobertura.util.Header;
 
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
@@ -118,7 +118,7 @@ public class CoverageReportTask extends MatchingTask
 
 	public void execute() throws BuildException
 	{
-		Copyright.print(System.out);
+		Header.print(System.out);
 
 		getJava().createArg().setValue("-i");
 		getJava().createArg().setValue(coverageDataFileName);
