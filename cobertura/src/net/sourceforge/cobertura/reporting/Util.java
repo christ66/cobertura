@@ -1,8 +1,9 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- * Copyright (C) 2005 Jeremy Thomerson <jthomerson@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Jeremy Thomerson
+ * Copyright (C) 2005 Grzegorz Lukasik
  * 
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -31,8 +32,12 @@ import java.util.Vector;
 import javancss.Javancss;
 import javancss.JavancssConstants;
 
+import org.apache.log4j.Logger;
+
 public abstract class Util
 {
+
+	private static final Logger logger = Logger.getLogger(Util.class);
 
 	/**
 	 * Calculates the code complexity number for a given class.
@@ -58,6 +63,12 @@ public abstract class Util
 		int ccnAccumulator = 0;
 
 		Vector files = getListOfFiles(file, recursive);
+		if (files.isEmpty())
+		{
+			logger.warn("Cannot find files to compute CCN, file="
+					+ file.getAbsolutePath() + ", recursive=" + recursive);
+			return 0;
+		}
 		Javancss javancss = new Javancss(files);
 
 		List functionMetrics = javancss.getFunctionMetrics();
@@ -98,12 +109,15 @@ public abstract class Util
 		}
 		else if (file.isDirectory())
 		{
-		    File[] files = file.listFiles(new FileFilter() {
-                public boolean accept(File pathname) {
-                    return pathname.getAbsolutePath().endsWith(".java");
-                }
+			File[] files = file.listFiles(new FileFilter()
+			{
+				public boolean accept(File pathname)
+				{
+					return pathname.isDirectory()
+							|| pathname.getAbsolutePath().endsWith(".java");
+				}
 			});
-		    
+
 			for (int i = 0; i < files.length; i++)
 			{
 				if (recursive)
