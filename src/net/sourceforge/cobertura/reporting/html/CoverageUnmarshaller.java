@@ -50,14 +50,14 @@ public abstract class CoverageUnmarshaller
 	{
 		Clazz clazz = new Clazz(classname);
 
-		clazz.setNumberOfBranches(instrumentation.getNumberOfBranches());
+		clazz.setNumberOfBranches(instrumentation.getNumberOfValidBranches());
 		clazz.setNumberOfCoveredLines(instrumentation
 				.getNumberOfCoveredLines());
 		clazz.setNumberOfCoveredBranches(instrumentation
 				.getNumberOfCoveredBranches());
-		clazz.setNumberOfLines(instrumentation.getNumberOfLines());
+		clazz.setNumberOfLines(instrumentation.getNumberOfValidLines());
 
-		Iterator iter = instrumentation.getSourceLineNumbers().iterator();
+		Iterator iter = instrumentation.getValidLineNumbers().iterator();
 		while (iter.hasNext())
 		{
 			int lineNumber = ((Integer)iter.next()).intValue();

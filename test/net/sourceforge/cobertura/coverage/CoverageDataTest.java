@@ -24,7 +24,7 @@ package net.sourceforge.cobertura.coverage;
 
 import junit.framework.TestCase;
 
-public class CoverageDataTest extends TestCase implements HasBeenInstrumented
+public class CoverageDataTest extends TestCase
 {
 
 	final CoverageData a = new CoverageData();
@@ -34,9 +34,9 @@ public class CoverageDataTest extends TestCase implements HasBeenInstrumented
 	public void setUp()
 	{
 		for (int i = 1; i < 5; i++)
-			b.addLine(i, "test", false);
+			b.addLine(i, "test");
 		for (int i = 1; i < 5; i++)
-			c.addLine(i, "test", false);
+			c.addLine(i, "test");
 
 		b.touch(1);
 		b.touch(2);

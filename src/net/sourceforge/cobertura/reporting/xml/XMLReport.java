@@ -135,7 +135,7 @@ public class XMLReport
 		println("</methods>");
 
 		StringBuffer sb = new StringBuffer();
-		Iterator iter = instrumentation.getSourceLineNumbers().iterator();
+		Iterator iter = instrumentation.getValidLineNumbers().iterator();
 		while (iter.hasNext())
 		{
 			sb.append(iter.next());
@@ -146,7 +146,7 @@ public class XMLReport
 		}
 		println("<valid lines=\"" + sb.toString() + "\"/>");
 
-		iter = instrumentation.getSourceLineNumbers().iterator();
+		iter = instrumentation.getValidLineNumbers().iterator();
 		while (iter.hasNext())
 		{
 			int lineNumber = ((Integer)iter.next()).intValue();

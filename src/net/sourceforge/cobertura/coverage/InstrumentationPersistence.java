@@ -57,8 +57,7 @@ public class InstrumentationPersistence implements HasBeenInstrumented
 
 		if (logger.isInfoEnabled())
 		{
-			logger.info("loading: " + directory + '/'
-					+ FILE_NAME);
+			logger.info("loading: " + directory + '/' + FILE_NAME);
 		}
 
 		try
@@ -165,9 +164,7 @@ public class InstrumentationPersistence implements HasBeenInstrumented
 
 		if (logger.isInfoEnabled())
 		{
-			logger
-					.info("saving: " + directory + '/'
-							+ FILE_NAME);
+			logger.info("saving: " + directory + '/' + FILE_NAME);
 		}
 
 		saveInstrumentation(directory);
@@ -180,8 +177,7 @@ public class InstrumentationPersistence implements HasBeenInstrumented
 
 		try
 		{
-			os = new FileOutputStream(new File(destDir,
-					FILE_NAME));
+			os = new FileOutputStream(new File(destDir, FILE_NAME));
 			objects = new ObjectOutputStream(os);
 			objects.writeObject(instrumentation);
 			if (logger.isInfoEnabled())

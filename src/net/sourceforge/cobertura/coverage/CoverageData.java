@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * CoverageData information is typically serialized to a file. An
@@ -44,24 +45,30 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	 * Each key is a line number in this class, stored as an Integer object.
 	 * Each value is information about the line, stored as a LineInformation object.
 	 */
-	private Map lines = new HashMap();
+	private Map conditionals = new HashMap();
 
 	/**
 	 * Each key is a line number in this class, stored as an Integer object.
 	 * Each value is information about the line, stored as a LineInformation object.
 	 */
-	private Map conditionals = new HashMap();
+	private Map lines = new TreeMap();
 
 	private Set methodNamesAndSignatures = new HashSet();
 
 	private String sourceFileName;
 
-	public void addLine(int line, String methodName, boolean isConditional)
+	public void addLine(int line, String methodName)
 	{
-		System.out.println(methodName + " " + line + " " + isConditional);
 		LineInformation lineInformation = new LineInformation(line,
-				methodName, isConditional);
+				methodName);
 		this.lines.put(new Integer(line), lineInformation);
+	}
+
+	public void markLineAsConditional(int line)
+	{
+		// TODO: Remove this println
+		System.out.println("QQQ got conditional on line " + line);
+		LineInformation lineInformation = getLineInformation(line);
 		this.conditionals.put(new Integer(line), lineInformation);
 	}
 
@@ -107,23 +114,19 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		return Collections.unmodifiableSet(conditionals.keySet());
 	}
 
-	public long getHitCount(int lineNumber)
-	{
-		return getHitCount(new Integer(lineNumber));
-	}
-
 	/**
 	 * @param lineNumber The source code line number.
 	 * @return The number of hits a particular line of code has.
 	 */
-	private long getHitCount(Integer lineNumber)
+	public long getHitCount(int lineNumber)
 	{
-		if (!lines.containsKey(lineNumber))
+		Integer lineNum = new Integer(lineNumber);
+		if (!lines.containsKey(lineNum))
 		{
 			return 0;
 		}
 
-		return ((LineInformation)lines.get(lineNumber)).getHits();
+		return ((LineInformation)lines.get(lineNum)).getHits();
 	}
 
 	/**
@@ -135,14 +138,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		{
 			return 1d;
 		}
-		int hits = 0;
-		Iterator iter = lines.values().iterator();
-		while (iter.hasNext())
-		{
-			if (((LineInformation)iter.next()).getHits() > 0)
-				hits++;
-		}
-		return (double)hits / lines.size();
+		return (double)getNumberOfCoveredLines() / lines.size();
 	}
 
 	/**
@@ -169,6 +165,20 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		return (double)hits / total;
 	}
 
+	private LineInformation getLineInformation(int lineNumber)
+	{
+		LineInformation lineInformation = (LineInformation)lines
+				.get(new Integer(lineNumber));
+		if (lineInformation == null)
+		{
+			lineInformation = new LineInformation(lineNumber);
+			System.out.println("QQQ adding line " + lineNumber);
+			lines.put(new Integer(lineNumber), lineInformation);
+		}
+		return lineInformation;
+
+	}
+
 	/**
 	 * @return The method name and signature of each method found in the
 	 * class represented by this instrumentation.
@@ -179,28 +189,20 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	}
 
 	/**
-	 * @return The number of branches in this class.
-	 */
-	public int getNumberOfBranches()
-	{
-		return conditionals.size();
-	}
-
-	/**
 	 * @return The number of branches in this class covered by testing.
 	 */
 	public int getNumberOfCoveredBranches()
 	{
-		int hits = 0;
+		int num = 0;
 
 		Iterator iter = conditionals.values().iterator();
 		while (iter.hasNext())
 		{
 			if (((LineInformation)iter.next()).getHits() > 0)
-				hits++;
+				num++;
 		}
 
-		return hits;
+		return num;
 	}
 
 	/**
@@ -208,22 +210,30 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	 */
 	public int getNumberOfCoveredLines()
 	{
-		int hits = 0;
+		int num = 0;
 
 		Iterator iter = lines.values().iterator();
 		while (iter.hasNext())
 		{
 			if (((LineInformation)iter.next()).getHits() > 0)
-				hits++;
+				num++;
 		}
 
-		return hits;
+		return num;
+	}
+
+	/**
+	 * @return The number of branches in this class.
+	 */
+	public int getNumberOfValidBranches()
+	{
+		return conditionals.size();
 	}
 
 	/**
 	 * @return The number of lines in this class.
 	 */
-	public int getNumberOfLines()
+	public int getNumberOfValidLines()
 	{
 		return lines.size();
 	}
@@ -236,7 +246,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	/**
 	 * @return The set of valid source line numbers
 	 */
-	public Set getSourceLineNumbers()
+	public Set getValidLineNumbers()
 	{
 		return Collections.unmodifiableSet(lines.keySet());
 	}
@@ -268,19 +278,6 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	public void setSourceFileName(String sourceFileName)
 	{
 		this.sourceFileName = sourceFileName;
-	}
-
-	private LineInformation getLineInformation(int lineNumber)
-	{
-		LineInformation lineInformation = (LineInformation)lines
-				.get(new Integer(lineNumber));
-		if (lineInformation == null)
-		{
-			lineInformation = new LineInformation(lineNumber);
-			lines.put(new Integer(lineNumber), lineInformation);
-		}
-		return lineInformation;
-
 	}
 
 	/**
