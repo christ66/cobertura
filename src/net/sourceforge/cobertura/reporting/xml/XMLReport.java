@@ -158,7 +158,7 @@ public class XMLReport
 
 	private void dumpMethods(CoverageData instrumentation)
 	{
-		Iterator iter = instrumentation.getMethodNamesAndSignatures()
+		Iterator iter = instrumentation.getMethodNamesAndDescriptors()
 				.iterator();
 		while (iter.hasNext())
 		{

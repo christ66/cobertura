@@ -15,17 +15,19 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 
 	private final String ownerClass;
 	private String myName;
+	private String myDescriptor;
 	private CoverageData coverageData;
 
 	private int currentLine = 0;
 
 	public MethodInstrumenter(final MethodVisitor mv,
-			CoverageData coverageData, final String owner, final String myName)
+			CoverageData coverageData, final String owner, final String myName, final String myDescriptor)
 	{
 		super(mv);
 		this.coverageData = coverageData;
 		this.ownerClass = owner;
 		this.myName = myName;
+		this.myDescriptor = myDescriptor;
 	}
 
 	public void visitJumpInsn(int opcode, Label label)
@@ -53,7 +55,7 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 	{
 		// Record initial information about this line of code
 		currentLine = line;
-		coverageData.addLine(currentLine, myName);
+		coverageData.addLine(currentLine, myName, myDescriptor);
 
 		// Get an instance of CoverageDataFactory
 		mv.visitMethodInsn(INVOKESTATIC,

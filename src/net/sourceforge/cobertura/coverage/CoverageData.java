@@ -53,14 +53,15 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	 */
 	private Map lines = new TreeMap();
 
-	private Set methodNamesAndSignatures = new HashSet();
+	private Set methodNamesAndDescriptors = new HashSet();
 
 	private String sourceFileName;
 
-	public void addLine(int line, String methodName)
+	public void addLine(int line, String methodName, String methodDescriptor)
 	{
 		LineInformation lineInformation = getLineInformation(line);
-		lineInformation.setMethodName(methodName);
+		lineInformation.setMethodNameAndDescriptor(methodName, methodDescriptor);
+		methodNamesAndDescriptors.add(methodName + methodDescriptor);
 	}
 
 	public void markLineAsConditional(int line)
@@ -87,7 +88,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	/**
 	 * @return The branch coverage rate for a particular method.
 	 */
-	public double getBranchCoverageRate(String methodNameAndSignature)
+	public double getBranchCoverageRate(String methodNameAndDescriptor)
 	{
 		int total = 0;
 		int hits = 0;
@@ -96,7 +97,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		while (iter.hasNext())
 		{
 			LineInformation next = (LineInformation)iter.next();
-			if (next.getMethodName().equals(methodNameAndSignature))
+			if (next.getMethodName().equals(methodNameAndDescriptor))
 			{
 				total++;
 				if (next.getHits() > 0)
@@ -143,7 +144,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	/**
 	 * @return The line coverage rate for particular method
 	 */
-	public double getLineCoverageRate(String methodNameAndSignature)
+	public double getLineCoverageRate(String methodNameAndDescriptor)
 	{
 		int total = 0;
 		int hits = 0;
@@ -152,7 +153,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		while (iter.hasNext())
 		{
 			LineInformation next = (LineInformation)iter.next();
-			if (next.getMethodName().equals(methodNameAndSignature))
+			if (next.getMethodName().equals(methodNameAndDescriptor))
 			{
 				total++;
 				if (next.getHits() > 0)
@@ -178,12 +179,12 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	}
 
 	/**
-	 * @return The method name and signature of each method found in the
+	 * @return The method name and descriptor of each method found in the
 	 * class represented by this instrumentation.
 	 */
-	public Set getMethodNamesAndSignatures()
+	public Set getMethodNamesAndDescriptors()
 	{
-		return methodNamesAndSignatures;
+		return methodNamesAndDescriptors;
 	}
 
 	/**
@@ -269,8 +270,8 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	{
 		lines.putAll(coverageData.lines);
 		conditionals.putAll(coverageData.conditionals);
-		methodNamesAndSignatures.addAll(coverageData
-				.getMethodNamesAndSignatures());
+		methodNamesAndDescriptors.addAll(coverageData
+				.getMethodNamesAndDescriptors());
 	}
 
 	public void setSourceFileName(String sourceFileName)

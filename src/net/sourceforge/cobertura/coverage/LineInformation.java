@@ -32,18 +32,20 @@ public class LineInformation implements Serializable, HasBeenInstrumented
 	private boolean isConditional;
 	private final int lineNumber;
 	private String methodName;
+	private String methodDescriptor;
 
 	LineInformation(int lineNumber)
 	{
-		this(lineNumber, null);
+		this(lineNumber, null, null);
 	}
 
-	LineInformation(int lineNumber, String methodName)
+	LineInformation(int lineNumber, String methodName, String methodDescriptor)
 	{
 		this.hits = 0;
 		this.isConditional = false;
 		this.lineNumber = lineNumber;
 		this.methodName = methodName;
+		this.methodDescriptor = methodDescriptor;
 	}
 
 	long getHits()
@@ -61,6 +63,11 @@ public class LineInformation implements Serializable, HasBeenInstrumented
 		return methodName;
 	}
 
+	String getMethodDescriptor()
+	{
+		return methodDescriptor;
+	}
+
 	boolean isConditional()
 	{
 		return isConditional;
@@ -71,9 +78,10 @@ public class LineInformation implements Serializable, HasBeenInstrumented
 		this.isConditional = isConditional;
 	}
 
-	public void setMethodName(String methodName)
+	public void setMethodNameAndDescriptor(String name, String descriptor)
 	{
-		this.methodName = methodName;
+		this.methodName = name;
+		this.methodDescriptor = descriptor;
 	}
 
 	void touch()

@@ -34,9 +34,9 @@ public class CoverageDataTest extends TestCase
 	public void setUp()
 	{
 		for (int i = 1; i < 5; i++)
-			b.addLine(i, "test");
+			b.addLine(i, "test", "(I)B");
 		for (int i = 1; i < 5; i++)
-			c.addLine(i, "test");
+			c.addLine(i, "test", "(I)B");
 
 		b.touch(1);
 		b.touch(2);
