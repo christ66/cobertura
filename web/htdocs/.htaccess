@@ -1,1 +1,2 @@
 AddHandler application/x-httpd-php .html
+php_value include_path "/home/groups/c/co/cobertura/htdocs-inc:."
