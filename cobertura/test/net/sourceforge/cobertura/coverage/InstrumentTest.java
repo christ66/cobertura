@@ -30,9 +30,13 @@ public class InstrumentTest extends TestCase implements HasBeenInstrumented
 {
 
 	private final static String className = "HelloWorld";
-	private final static String pathToTestInputClass = "build/test/classes/"
-			+ className + ".class";
-	private final static String pathToTestOutput = "build/test/InstrumentTest";
+	private final static String basedir = (System.getProperty("basedir") != null)
+			? System.getProperty("basedir")
+			: ".";
+	private final static String pathToTestInputClass = basedir
+			+ "/build/test/classes/" + className + ".class";
+	private final static String pathToTestOutput = basedir
+			+ "/build/test/InstrumentTest";
 	private final static int[] validLines = { 39, 40, 41, 43, 47, 49, 51, 52,
 			53, 57, 59, 62, 65, 68, 70, 74, 75, 76 };
 	private final static int[] validBranches = { 40, 57, 62 };
