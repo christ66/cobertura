@@ -41,6 +41,8 @@ public class XMLReportTest extends TestCase
 			+ "/build/test/cobertura.ser";
 	private final static String pathToTestOutput = basedir
 			+ "/build/test/XMLReportTest";
+	private final static String pathToXMLReport = pathToTestOutput
+			+ "/coverage.xml";
 	private final static String pathToSourceCode = basedir + "/src";
 	private File tmpDir;
 
@@ -50,7 +52,7 @@ public class XMLReportTest extends TestCase
 		tmpDir.mkdirs();
 	}
 
-	public void TODOtearDown()
+	public void tearDown()
 	{
 		tmpDir = new File(pathToTestOutput);
 		File files[] = tmpDir.listFiles();
@@ -73,17 +75,19 @@ public class XMLReportTest extends TestCase
 				pathToTestOutput, "-s", pathToSourceCode };
 		net.sourceforge.cobertura.reporting.Main.main(args);
 
-		// Now that that's out of the way, we can validate the XML report
+		// Create a validating XML document parser
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		//factory.setValidating(true);
+		factory.setValidating(true);
 		DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+		documentBuilder.setEntityResolver(new JUnitXMLParserEntityResolver(
+				basedir));
 		documentBuilder.setErrorHandler(new JUnitXMLParserErrorHandler());
 
+		// Parse the XML report
 		InputStream inputStream = null;
 		try
 		{
-			inputStream = new FileInputStream(pathToTestOutput
-					+ "/coverage.xml");
+			inputStream = new FileInputStream(pathToXMLReport);
 			documentBuilder.parse(inputStream);
 		}
 		finally

@@ -252,6 +252,14 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	}
 
 	/**
+	 * @return True if the line contains a branch statement.
+	 */
+	public boolean isBranch(int lineNumber)
+	{
+		return conditionals.containsKey(new Integer(lineNumber));
+	}
+
+	/**
 	 * Determine if a given line number is a valid line of code.
 	 *
 	 * @return True if the line contains executable code.  False
