@@ -102,6 +102,10 @@ hr {
 	width: 70%;
 }
 
+img {
+	border-style: none;
+}
+
 p.centered {
 	text-align: center;
 }
