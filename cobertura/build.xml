@@ -3,11 +3,11 @@
 
 	<description>
     Cobertura - http://cobertura.sourceforge.net/
-    Copyright (C) 2003 jcoverage ltd.
-    Copyright (C) 2005 Mark Doliner &lt;thekingant@users.sourceforge.net&gt;
+    The copyright for this program is retained by its contributors
+    See the included COPYRIGHT file for a complete list of contributors
     Cobertura is licensed under the GNU General Public License
     Cobertura comes with ABSOLUTELY NO WARRANTY
-    </description>
+	</description>
 
 	<property file="build.properties" />
 
@@ -18,9 +18,8 @@
 	</path>
 
 	<target name="init">
-		<!-- Insert our version number in a few places. -->
+		<!-- Insert our version number in a file. -->
 		<filter token="version" value="${version}" />
-		<copy file="${src.dir}/net/sourceforge/cobertura/util/Version.j" tofile="${src.dir}/net/sourceforge/cobertura/util/Version.java" filtering="true" overwrite="true" />
 		<copy file="${etc.dir}/plugin.xml" todir="${build.dir}" filtering="true" overwrite="true" />
 	</target>
 
@@ -160,10 +159,16 @@
 			<fileset dir="${src.dir}">
 				<exclude name="**/*.java" />
 				<exclude name="**/package.html" />
-				<exclude name="net/sourceforge/cobertura/util/Version.j" />
 			</fileset>
 			<manifest>
 				<attribute name="Class-Path" value="lib/asm/${asm.version}/asm-${asm.version}.jar lib/gnu/getopt/${getopt.version}/java-getopt-${getopt.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar lib/ncss/${ncss.version}/javancss.jar lib/ncss/${ncss.version}/ccl.jar" />
+				<attribute name="Specification-Title" value="${description}"/>
+				<attribute name="Specification-Vendor" value="Cobertura"/>
+				<attribute name="Specification-Version" value="${version}"/>
+				<attribute name="Implementation-Title" value="${description}"/>
+				<attribute name="Implementation-Vendor" value="Cobertura"/>
+				<attribute name="Implementation-Vendor-Id" value="net.sourceforge.cobertura"/>
+				<attribute name="Implementation-Version" value="${version}"/>
 			</manifest>
 		</jar>
 
@@ -182,6 +187,13 @@
 			</fileset>
 			<manifest>
 				<attribute name="Class-Path" value="${ant.project.name}-main.jar" />
+				<attribute name="Specification-Title" value="${description}"/>
+				<attribute name="Specification-Vendor" value="Cobertura"/>
+				<attribute name="Specification-Version" value="${version}"/>
+				<attribute name="Implementation-Title" value="${description}"/>
+				<attribute name="Implementation-Vendor" value="Cobertura"/>
+				<attribute name="Implementation-Vendor-Id" value="net.sourceforge.cobertura"/>
+				<attribute name="Implementation-Version" value="${version}"/>
 			</manifest>
 		</jar>
 		<jar jarfile="${build.dist.eclipse.dir}/${ant.project.name}-main.jar">
@@ -194,6 +206,13 @@
 			</fileset>
 			<manifest>
 				<attribute name="Class-Path" value="lib/asm/${asm.version}/asm-${asm.version}.jar lib/gnu/getopt/${getopt.version}/java-getopt-${getopt.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar lib/ncss/${ncss.version}/javancss.jar lib/ncss/${ncss.version}/ccl.jar" />
+				<attribute name="Specification-Title" value="${description}"/>
+				<attribute name="Specification-Vendor" value="Cobertura"/>
+				<attribute name="Specification-Version" value="${version}"/>
+				<attribute name="Implementation-Title" value="${description}"/>
+				<attribute name="Implementation-Vendor" value="Cobertura"/>
+				<attribute name="Implementation-Vendor-Id" value="net.sourceforge.cobertura"/>
+				<attribute name="Implementation-Version" value="${version}"/>
 			</manifest>
 		</jar>
 	</target>
@@ -250,7 +269,6 @@
 				<include name="lib/**" />
 				<include name="resources/**" />
 				<include name="src/**" />
-				<exclude name="src/net/sourceforge/cobertura/util/Version.java" />
 				<include name="test/**" />
 
 				<include name="examples/basic/README" />
@@ -309,7 +327,6 @@
 
 	<target name="clean" description="Remove all files created by the build process.">
 		<delete dir="${build.dir}" />
-		<delete file="${src.dir}/net/sourceforge/cobertura/util/Version.java" />
 		<delete>
 			<fileset dir="${basedir}">
 				<include name="cobertura.jar" />

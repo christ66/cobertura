@@ -1,9 +1,9 @@
-/**
+/*
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- * Copyright (C) 2005 Joakim Erdfelt <joakim@erdfelt.net>
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Joakim Erdfelt
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.cobertura.coverage.InstrumentationPersistence;
-import net.sourceforge.cobertura.util.Copyright;
+import net.sourceforge.cobertura.util.Header;
 
 import org.apache.log4j.Logger;
 
@@ -64,22 +64,22 @@ public class Main extends InstrumentationPersistence
 			{
 				case 'i':
 					System.out.println("cobertura loading: " + g.getOptarg());
-					try
-					{
+			try
+			{
 						merge(loadInstrumentation(new FileInputStream(g
 								.getOptarg())));
-					}
-					catch (FileNotFoundException ex)
-					{
-						logger.warn(ex);
-					}
+			}
+			catch (FileNotFoundException ex)
+			{
+				logger.warn(ex);
+			}
 					break;
 
 				case 'o':
 					destDir = new File(g.getOptarg());
 					destDir.mkdirs();
 					break;
-			}
+		}
 		}
 
 		saveInstrumentation(destDir);
@@ -87,7 +87,7 @@ public class Main extends InstrumentationPersistence
 
 	public static void main(String[] args)
 	{
-		Copyright.print(System.out);
+		Header.print(System.out);
 		System.out.println("Cobertura instrumentation merge tool");
 
 		boolean hasCommandsFile = false;
