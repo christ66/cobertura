@@ -26,4 +26,4 @@
 # or
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
 
-DEFAULT /cvsroot/sitedocs/CVSROOT/cvstools/syncmail %{sVv} cobertura-commits@lists.sourceforge.net
+DEFAULT /cvsroot/sitedocs/CVSROOT/cvstools/syncmail -u %{sVv} cobertura-commits@lists.sourceforge.net
