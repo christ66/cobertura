@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Jeremy Thomerson
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -156,6 +157,13 @@ public class XMLReport
 		}
 	}
 
+	private String xmlEscape(String str)
+	{
+		str = str.replaceAll("<", "&lt;");
+		str = str.replaceAll(">", "&gt;");
+		return str;
+	}
+
 	private void dumpMethods(CoverageData instrumentation)
 	{
 		Iterator iter = instrumentation.getMethodNamesAndDescriptors()
@@ -165,8 +173,8 @@ public class XMLReport
 
 			String methodNameAndSignature = (String)iter.next();
 
-			println("<method nameAndSignature=\"" + methodNameAndSignature
-					+ "\">");
+			println("<method nameAndSignature=\""
+					+ xmlEscape(methodNameAndSignature)	+ "\">");
 			increaseIndentation();
 
 			try
