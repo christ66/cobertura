@@ -23,6 +23,10 @@ body {
 	font-size: 105%;
 }
 
+div.bigger {
+	font-size: 115%;
+}
+
 div.codeblock {
 	background-color: #f0f0f0;
 	border: 1px dashed #bbbbbb;
@@ -108,4 +112,8 @@ img {
 
 p.centered {
 	text-align: center;
+}
+
+p.right {
+	text-align: right;
 }
