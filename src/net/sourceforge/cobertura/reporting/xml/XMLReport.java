@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.sourceforge.cobertura.coverage.CoverageData;
+import net.sourceforge.cobertura.util.ClassHelper;
 
 import org.apache.log4j.Logger;
 
@@ -115,9 +116,7 @@ public class XMLReport
 
 	private String getFileName(String className, CoverageData instrumentation)
 	{
-		// TODO: Find a better way to get this
-		return "TODO";
-		//return ClassHelper.getPackageName(className).replace('.', '/') + '/' + instrumentation.getSourceFileName();
+		return ClassHelper.getPackageName(className).replace('.', '/') + '/' + instrumentation.getSourceFileName();
 	}
 
 	private void dump(String className, CoverageData instrumentation)
