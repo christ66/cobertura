@@ -49,7 +49,7 @@
 	</target>
 
 	<target name="instrument" depends="compile">
-		<java fork="true" classname="net.sourceforge.cobertura.coverage.Instrument">
+		<java fork="true" classname="net.sourceforge.cobertura.coverage.Main">
 			<sysproperty key="net.sourceforge.cobertura.rawcoverage.dir" file="${build.test.dir}" />
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${etc.dir}" />
@@ -198,10 +198,16 @@
 				<include name="README" />
 				<include name="lib/**" />
 				<include name="cobertura.jar" />
-				<include name="example/README" />
-				<include name="example/build.properties" />
-				<include name="example/build.xml" />
-				<include name="example/src/**" />
+
+				<include name="examples/basic/README" />
+				<include name="examples/basic/build.properties" />
+				<include name="examples/basic/build.xml" />
+				<include name="examples/basic/src/**" />
+
+				<include name="examples/merge/build.properties"/>
+				<include name="examples/merge/build.xml"/>
+				<include name="examples/merge/cobertura1.ser"/>
+				<include name="examples/merge/cobertura2.ser"/>
 			</fileset>
 		</copy>
 
@@ -224,10 +230,16 @@
 				<include name="src/**" />
 				<exclude name="src/net/sourceforge/cobertura/util/Version.java" />
 				<include name="test/**" />
-				<include name="example/README" />
-				<include name="example/build.properties" />
-				<include name="example/build.xml" />
-				<include name="example/src/**" />
+
+				<include name="example/basic/README" />
+				<include name="example/basic/build.properties" />
+				<include name="example/basic/build.xml" />
+				<include name="example/basic/src/**" />
+
+				<include name="examples/merge/build.properties"/>
+				<include name="examples/merge/build.xml"/>
+				<include name="examples/merge/cobertura1.ser"/>
+				<include name="examples/merge/cobertura2.ser"/>
 			</fileset>
 		</copy>
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="cobertura.examples" default="coverage" basedir=".">
+<project name="cobertura.examples.basic" default="coverage" basedir=".">
 
 	<description>
     Cobertura - http://cobertura.sourceforge.net/
