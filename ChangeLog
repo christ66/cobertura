@@ -9,6 +9,10 @@ version 1.1
 	     is compatable with the GPL, which allows us to remove
 	     the questionable exception for BCEL.
 	  3. Instrumentation is about 5 times faster with ASM than BCEL.
+	* Modify the HTML reports so that classes without line number
+	  information will appear as "Not Applicable."  This includes
+	  skeleton classes, stub classes, interfaces, or anything not
+	  compiled with debug=true.
 
 version 1.0
 	* Forked jcoverage 1.0.5 (although the version in the source says 1.0.4).
