@@ -48,7 +48,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class JUnitXMLParserEntityResolver extends DefaultHandler
 {
-	private final static String coverageDTD = "http://cobertura.sourceforge.net/xml/coverage.dtd";
+	private final static String coverageDTD = "coverage.dtd";
 
 	private final File localDTD;
 
@@ -64,7 +64,7 @@ public class JUnitXMLParserEntityResolver extends DefaultHandler
 		// version instead of the remote version
 		try
 		{
-			if (systemId.equals(coverageDTD))
+			if (systemId.endsWith(coverageDTD))
 				return new InputSource(new FileInputStream(localDTD));
 		}
 		catch (FileNotFoundException e)
