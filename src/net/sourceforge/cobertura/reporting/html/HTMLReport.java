@@ -34,6 +34,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.sourceforge.cobertura.reporting.Clazz;
+import net.sourceforge.cobertura.reporting.Coverage;
+import net.sourceforge.cobertura.reporting.CoverageUnmarshaller;
+import net.sourceforge.cobertura.reporting.Package;
 import net.sourceforge.cobertura.reporting.Util;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
 
@@ -49,12 +53,12 @@ public class HTMLReport
 	/**
 	 * Create a coverage report
 	 */
-	public HTMLReport(Map coverageData, File outputDir, File sourceDir)
+	public HTMLReport(Coverage coverage, File outputDir, File sourceDir)
 			throws Exception
 	{
 		this.outputDir = outputDir;
 		this.sourceDir = sourceDir;
-		this.coverage = CoverageUnmarshaller.parse(coverageData);
+		this.coverage = coverage;
 
 		removeNonexistantClasses();
 		CopyFiles.copy(outputDir);

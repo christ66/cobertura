@@ -19,11 +19,12 @@
  * USA
  */
 
-package net.sourceforge.cobertura.reporting.html;
+package net.sourceforge.cobertura.reporting;
 
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.sourceforge.cobertura.coverage.CoverageData;
 import net.sourceforge.cobertura.util.ClassHelper;
 
 public class Clazz implements Comparable
@@ -36,6 +37,7 @@ public class Clazz implements Comparable
 	private int numberOfCoveredBranches;
 	private int numberOfCoveredLines;
 	private int numberOfLines;
+	private CoverageData rawCoverageData;
 
 	public Clazz(String longName)
 	{
@@ -143,6 +145,11 @@ public class Clazz implements Comparable
 		return packageName;
 	}
 
+	public final CoverageData getRawCoverageData()
+	{
+		return rawCoverageData;
+	}
+
 	public boolean isValidSourceLine(int lineNumber)
 	{
 		return lines.containsKey(new Integer(lineNumber));
@@ -166,6 +173,11 @@ public class Clazz implements Comparable
 	public void setNumberOfLines(int numberOfLines)
 	{
 		this.numberOfLines = numberOfLines;
+	}
+
+	public final void setRawCoverageData(CoverageData rawCoverageData)
+	{
+		this.rawCoverageData = rawCoverageData;
 	}
 
 }

@@ -20,7 +20,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.reporting.html;
+package net.sourceforge.cobertura.reporting;
 
 import java.util.Set;
 

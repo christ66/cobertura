@@ -19,7 +19,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.reporting.html;
+package net.sourceforge.cobertura.reporting;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -56,6 +56,7 @@ public abstract class CoverageUnmarshaller
 		clazz.setNumberOfCoveredBranches(instrumentation
 				.getNumberOfCoveredBranches());
 		clazz.setNumberOfLines(instrumentation.getNumberOfValidLines());
+		clazz.setRawCoverageData(instrumentation);
 
 		Iterator iter = instrumentation.getValidLineNumbers().iterator();
 		while (iter.hasNext())

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- * Copyright (C) 2005 Jeremy Thomerson
+ * Copyright (C) 2005 Jeremy Thomerson <jthomerson@users.sourceforge.net>
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -31,6 +31,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.sourceforge.cobertura.coverage.CoverageData;
+import net.sourceforge.cobertura.reporting.Clazz;
+import net.sourceforge.cobertura.reporting.Coverage;
+import net.sourceforge.cobertura.reporting.Package;
 import net.sourceforge.cobertura.util.ClassHelper;
 
 import org.apache.log4j.Logger;
@@ -45,7 +48,7 @@ public class XMLReport
 
 	private int indent = 0;
 
-	public XMLReport(Map coverageData, File outputDir, File sourceDirectory)
+	public XMLReport(Coverage coverage, File outputDir, File sourceDirectory)
 			throws IOException
 	{
 		pw = new PrintWriter(new FileWriter(new File(outputDir,
@@ -63,7 +66,7 @@ public class XMLReport
 				println("<coverage src=\"" + sourceDirectory + "\">");
 			}
 			increaseIndentation();
-			dump(coverageData.entrySet().iterator());
+			dumpPackages(coverage);
 			decreaseIndentation();
 			println("</coverage>");
 		}
@@ -97,19 +100,38 @@ public class XMLReport
 		pw.println(ln);
 	}
 
-	void dump(Iterator entySetIterator)
+	private void dumpPackages(Coverage coverage)
 	{
-		while (entySetIterator.hasNext())
+		Iterator it = coverage.getPackages().iterator();
+		while (it.hasNext())
 		{
-			dump((Map.Entry)entySetIterator.next());
+			dumpPackage((Package)it.next());
 		}
 	}
 
-	void dump(Map.Entry entry)
+	private void dumpPackage(Package pack)
 	{
-		println("<class name=\"" + entry.getKey() + "\">");
+		println("<package name=\"" + pack.getName() + "\"" +
+				" line-rate=\"" + pack.getLineCoverageRate() + "\"" +
+				" branch-rate=\"" + pack.getBranchCoverageRate() + "\"" +
+				">");
 		increaseIndentation();
-		dump((String)entry.getKey(), (CoverageData)entry.getValue());
+		dumpClasses((Clazz[])pack.getClasses().toArray(new Clazz[pack.getClasses().size()]));
+	}
+
+	private void dumpClasses(Clazz[] clazzes)
+	{
+		for (int i = 0; i < clazzes.length; i++)
+		{
+			dumpClass(clazzes[i]);
+		}
+	}
+
+	void dumpClass(Clazz clazz)
+	{
+		println("<class name=\"" + clazz.getLongName() + "\">");
+		increaseIndentation();
+		dumpClassDetails(clazz);
 		decreaseIndentation();
 		println("</class>");
 	}
@@ -119,22 +141,20 @@ public class XMLReport
 		return ClassHelper.getPackageName(className).replace('.', '/') + '/' + instrumentation.getSourceFileName();
 	}
 
-	private void dump(String className, CoverageData instrumentation)
+	private void dumpClassDetails(Clazz clazz)
 	{
-		println("<file name=\"" + getFileName(className, instrumentation)
-				+ "\"/>");
-		println("<line rate=\"" + instrumentation.getLineCoverageRate()
-				+ "\"/>");
-		println("<branch rate=\"" + instrumentation.getBranchCoverageRate()
-				+ "\"/>");
+		println("<file name=\"" + clazz.getLongFileName() + "\"/>");
+		println("<line rate=\"" + clazz.getLineCoverageRate() + "\"/>");
+		println("<branch rate=\"" + clazz.getBranchCoverageRate() + "\"/>");
 
 		println("<methods>");
 		increaseIndentation();
-		dumpMethods(instrumentation);
+		dumpMethods(clazz.getRawCoverageData());
 		decreaseIndentation();
 		println("</methods>");
 
 		StringBuffer sb = new StringBuffer();
+		CoverageData instrumentation = clazz.getRawCoverageData();
 		Iterator iter = instrumentation.getValidLineNumbers().iterator();
 		while (iter.hasNext())
 		{
