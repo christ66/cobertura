@@ -1,8 +1,11 @@
 /*
  * The Apache Software License, Version 1.1
  *
- * Copyright (c) 2000-2002 The Apache Software Foundation.  All rights
+ * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
  * reserved.
+ * Copyright (C) 2003 jcoverage ltd.
+ * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Joakim Erdfelt <joakim@erdfelt.net>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
