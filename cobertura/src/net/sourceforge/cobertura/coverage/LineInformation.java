@@ -31,8 +31,8 @@ public class LineInformation implements Serializable, HasBeenInstrumented
 	private long hits;
 	private boolean isConditional;
 	private final int lineNumber;
-	private String methodName;
 	private String methodDescriptor;
+	private String methodName;
 
 	LineInformation(int lineNumber)
 	{
@@ -58,14 +58,14 @@ public class LineInformation implements Serializable, HasBeenInstrumented
 		return lineNumber;
 	}
 
-	String getMethodName()
-	{
-		return methodName;
-	}
-
 	String getMethodDescriptor()
 	{
 		return methodDescriptor;
+	}
+
+	String getMethodName()
+	{
+		return methodName;
 	}
 
 	boolean isConditional()

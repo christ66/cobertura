@@ -1,6 +1,8 @@
 
 package net.sourceforge.cobertura.coverage;
 
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.Perl5Matcher;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
@@ -12,22 +14,26 @@ import org.objectweb.asm.Opcodes;
  */
 public class MethodInstrumenter extends MethodAdapter implements Opcodes
 {
-
+	private final static Perl5Matcher pm = new Perl5Matcher();
 	private final String ownerClass;
 	private String myName;
 	private String myDescriptor;
+	private Pattern ignoreRegexp;
 	private CoverageData coverageData;
 
 	private int currentLine = 0;
 
 	public MethodInstrumenter(final MethodVisitor mv,
-			CoverageData coverageData, final String owner, final String myName, final String myDescriptor)
+			CoverageData coverageData, final String owner,
+			final String myName, final String myDescriptor,
+			final Pattern ignoreRegexp)
 	{
 		super(mv);
 		this.coverageData = coverageData;
 		this.ownerClass = owner;
 		this.myName = myName;
 		this.myDescriptor = myDescriptor;
+		this.ignoreRegexp = ignoreRegexp;
 	}
 
 	public void visitJumpInsn(int opcode, Label label)
@@ -37,8 +43,8 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 		// Ignore any jump instructions in the "class init" method.
 		// When initializing static variables, the JVM first checks
 		// that the variable is null before attempting to set it.
-		// This IFNONNULL check would confuse people if it showed
-		// up in the reports.
+		// This check contains an IFNONNULL jump instruction which
+		// would confuse people if it showed up in the reports.
 		if ((opcode != GOTO) && (currentLine != 0)
 				&& (!this.myName.equals("<clinit>")))
 			coverageData.markLineAsConditional(currentLine);
@@ -79,6 +85,15 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 				"(I)V");
 
 		super.visitLineNumber(line, start);
+	}
+
+	public void visitMethodInsn(int opcode, String owner, String name,
+			String desc)
+	{
+		super.visitMethodInsn(opcode, owner, name, desc);
+
+		if ((ignoreRegexp != null) && (pm.matches(owner, ignoreRegexp)))
+			coverageData.removeLine(currentLine);
 	}
 
 }
