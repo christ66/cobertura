@@ -1,0 +1,7 @@
+Copyright (C) 2003 jcoverage ltd
+
+Kurt.Guenther@Serent.com highlighted a bug in
+the branch coverage, which was fixed in cset:
+pmorgan@sport.sunninghill.org|ChangeSet|20030528183432|31372
+
+Copyright (C) 2005 Mark Doliner
