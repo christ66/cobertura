@@ -28,6 +28,7 @@
 		<mkdir dir="${build.classes.dir}" />
 
 		<javac fork="true" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true">
+			<!-- <compilerarg value="-Xlint:unchecked"/> -->
 			<classpath location="${build.classes.dir}" />
 			<classpath refid="base.path" />
 		</javac>
@@ -35,6 +36,7 @@
 		<mkdir dir="${build.test.classes.dir}" />
 
 		<javac fork="true" srcdir="${test.src.dir}" destdir="${build.test.classes.dir}" debug="true">
+			<!-- <compilerarg value="-Xlint:unchecked"/> -->
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${build.test.classes.dir}" />
 			<classpath refid="base.path" />
@@ -80,6 +82,7 @@
 
 		<junit fork="true" failureProperty="test.failed" printsummary="true">
 			<sysproperty key="net.sourceforge.cobertura.rawcoverage.dir" file="${build.test.dir}" />
+			<sysproperty key="basedir" value="${basedir}"/>
 			<classpath location="${build.test.classes.dir}" />
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${etc.dir}" />
