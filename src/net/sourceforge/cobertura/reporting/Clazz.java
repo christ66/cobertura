@@ -46,7 +46,7 @@ public final class Clazz implements Comparable
 		packageName = ClassHelper.getPackageName(longName);
 		name = ClassHelper.getBaseName(longName);
 	}
-	
+
 	public Clazz(String longName, CoverageData data) {
 	    this(longName);
 
