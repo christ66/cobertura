@@ -27,32 +27,23 @@ import java.io.Serializable;
 public class LineInformation implements Serializable, HasBeenInstrumented
 {
 	private static final long serialVersionUID = 1;
+
 	private long hits;
 	private boolean isConditional;
 	private final int lineNumber;
 	private String methodName;
 
-	private boolean missingConditional;
-	private boolean missingName;
-
 	LineInformation(int lineNumber)
 	{
-		this.isConditional = false;
-		this.missingConditional = true;
-		this.lineNumber = lineNumber;
-		this.methodName = null;
-		this.missingName = true;
-		this.hits = 0;
+		this(lineNumber, null);
 	}
 
-	LineInformation(int lineNumber, String methodName, boolean isConditional)
+	LineInformation(int lineNumber, String methodName)
 	{
-		this.isConditional = isConditional;
-		this.missingConditional = false;
+		this.hits = 0;
+		this.isConditional = false;
 		this.lineNumber = lineNumber;
 		this.methodName = methodName;
-		this.missingName = false;
-		this.hits = 0;
 	}
 
 	long getHits()
@@ -77,18 +68,12 @@ public class LineInformation implements Serializable, HasBeenInstrumented
 
 	public void setConditional(boolean isConditional)
 	{
-		if (!missingConditional)
-			return;
 		this.isConditional = isConditional;
-		this.missingConditional = false;
 	}
 
 	public void setMethodName(String methodName)
 	{
-		if (!missingName)
-			return;
 		this.methodName = methodName;
-		this.missingName = false;
 	}
 
 	void touch()

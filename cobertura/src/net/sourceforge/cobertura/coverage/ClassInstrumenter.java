@@ -92,7 +92,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 	public void visitEnd()
 	{
 		if (!doNotInstrument
-				&& coverageData.getSourceLineNumbers().size() == 0)
+				&& coverageData.getValidLineNumbers().size() == 0)
 			System.out
 					.println("Warning: No line number information found for class "
 							+ this.myName
