@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import net.sourceforge.cobertura.coverage.CoverageData;
-import net.sourceforge.cobertura.reporting.Util;
 
 public abstract class CoverageUnmarshaller
 {
