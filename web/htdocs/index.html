@@ -60,6 +60,77 @@ community also benefit us.
 <h1>News</h1>
 
 <div class="newsitem">
+<span class="date">8 March 2005</span>
+<div class="text">
+<p>
+Just released 1.1!  It contains a few bug fixes, some feature
+improvements, and performance enhancements.  Here's the list of
+changes:
+</p>
+
+<ul>
+<li>
+Fix a bug in the syntax highlighting code of the HTML report
+generation.  Previously, the highlighting for single quotes
+containing "\\" would not end correctly.
+</li>
+
+<li>
+Check the third party jars into CVS using the correct CVS
+substition flag (binary, not ASCII).
+</li>
+
+<li>
+Temporary files created by the instrument ant task and merge
+ant task are now deleted after the ant task finishes.
+</li>
+
+<li>
+Switch the instrumentation classes to use ASM instead of
+Apache BCEL.  There are three benefits to this:
+<ol>
+  <li>
+  BCEL was throwing exceptions with some source code compiled
+  with JDK 1.5--ASM works fine.
+  </li>
+  <li>
+  ASM is licensed under the revised BSD license, which
+  is compatable with the GPL, which allows us to remove
+  the questionable exception for BCEL from the license.
+  </li>
+  <li>
+  Instrumentation is about 5 times faster with ASM than BCEL.
+  </li>
+</ol>
+</li>
+
+<li>
+Modify the HTML reports so that classes without line number
+information will appear as "Not Applicable."  This includes
+skeleton classes, stub classes, interfaces, or anything not
+compiled with debug=true.
+</li>
+
+<li>
+Fix bug #1151777 with a patch from Jeremy Thomerson.
+Previously we were not escaping some characters correctly in the
+generated XML coverage report (specificially < and >).
+</li>
+
+<li>
+Set the class-path in the cobertura.jar manifest file correctly.
+</li>
+
+<li>
+Fill feature request #1151779 with a patch from Jeremy Thomerson.
+This changes the structure of the XML report so that <classes> are
+enclosed inside <packages>.
+</li>
+</ul>
+</div>
+</div>
+
+<div class="newsitem">
 <span class="date">12 Februrary 2005</span>
 <div class="text">
 <p>

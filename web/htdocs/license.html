@@ -10,10 +10,8 @@
 <p>
 The Cobertura ant tasks are licensed under the Apache Software
 License, Version 1.1.  The rest of Cobertura is licensed under the
-GNU General Public License, Version 2.0, with one exception.  The
-exception is that we are allowed to link to the Apache BCEL library
-(any classes underneath the package org.apache.bcel).  See below
-for detailed explanations.
+GNU General Public License, Version 2.0.  See below for detailed
+explanations.
 </p>
 
 
@@ -79,14 +77,6 @@ tasks invoke Cobertura they must do so by exec'ing a new JVM.
 The rest of Cobertura is licensed under the GPL.
 </p>
 
-<p>
-One interesting point is that jcoverage uses classes from the Apache
-Byte Code Engineering Library (BCEL).  BCEL is licensed under the
-Apache Source License 1.1, which is not GPL compatable.  I have
-assumed that jcoverage ltd. has implicitly added an exception to the
-version of the GPL they use.
-</p>
-
 
 
 <h2>Instrumented Java Bytecode</h2>
@@ -125,11 +115,11 @@ it internally without ever releasing it outside the organization.
 
 <p>
 For each line of your source code, Cobertura inserts three statements
-into the bytecode of your program.  It does this using Apache's
-Byte Code Engineering Library (BCEL).  This is called
+into the bytecode of your program.  It does this using a library
+called ASM.  This is called
 "instrumentation," and is done in the method
-emitGetInstrumentationAndTouchLine() in the class
-net.sourceforge.cobertura.coverage.InstrumentMethodGen.
+visitLineNumber() in the class
+net.sourceforge.cobertura.coverage.MethodInstrumenter.
 It inserts Java bytecode that does the following:
 </p>
 
@@ -218,7 +208,7 @@ license of your program.
 <li><a href="http://www.apache.org/licenses/LICENSE-2.0">The Apache Software License, Version 2.0</a></li>
 <li><a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a></li>
 <li><a href="http://www.gnu.org/licenses/gpl-faq.html">Frequently Asked Questions about the GNU GPL</a></li>
-<li><a href="http://jakarta.apache.org/bcel/">The Apache Byte Code Engineering Library</a></li>
+<li><a href="http://asm.objectweb.org/">ASM</a></li>
 </ul>
 
 
