@@ -1,4 +1,4 @@
-/**
+/*
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
@@ -24,7 +24,7 @@ package net.sourceforge.cobertura.coverage;
 
 import java.io.Serializable;
 
-public class LineInformation implements Serializable, HasBeenInstrumented
+public class LineInformation implements HasBeenInstrumented, Serializable
 {
 	private static final long serialVersionUID = 1;
 
