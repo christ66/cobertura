@@ -15,11 +15,16 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coverage/HasBeenInstrumented";
 	private CoverageData coverageData;
 	private String myName;
-	private boolean doNotInstrument = false;
+	private boolean instrument = false;
 
 	public String getClassName()
 	{
 		return this.myName;
+	}
+
+	public boolean isInstrumented()
+	{
+		return instrument;
 	}
 
 	public ClassInstrumenter(final ClassVisitor cv)
@@ -54,12 +59,13 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 		if (((access & ACC_INTERFACE) != 0)
 				|| arrayContains(interfaces, hasBeenInstrumented))
 		{
-			doNotInstrument = true;
 			super.visit(version, access, name, signature, superName,
 					interfaces);
 		}
 		else
 		{
+			instrument = true;
+
 			// Flag this class as having been instrumented
 			String[] newInterfaces = new String[interfaces.length + 1];
 			System.arraycopy(interfaces, 0, newInterfaces, 0,
@@ -84,7 +90,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 		MethodVisitor mv = cv.visitMethod(access, name, desc, signature,
 				exceptions);
 
-		if (doNotInstrument)
+		if (!instrument)
 			return mv;
 
 		return mv == null ? null : new MethodInstrumenter(mv, coverageData,
@@ -93,7 +99,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 
 	public void visitEnd()
 	{
-		if (!doNotInstrument
+		if (instrument
 				&& coverageData.getValidLineNumbers().size() == 0)
 			logger.warn("No line number information found for class "
 					+ this.myName

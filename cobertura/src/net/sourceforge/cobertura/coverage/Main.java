@@ -120,12 +120,15 @@ public class Main
 			cr.accept(cv, false);
 			byte[] instrumentedClass = cw.toByteArray();
 
-			File outputFile = new File(destinationDirectory, cv
-					.getClassName().replace('.', File.separatorChar)
-					+ ".class");
-			outputFile.getParentFile().mkdirs();
-			outputStream = new FileOutputStream(outputFile);
-			outputStream.write(instrumentedClass);
+			if (cv.isInstrumented())
+			{
+				File outputFile = new File(destinationDirectory, cv
+						.getClassName().replace('.', File.separatorChar)
+						+ ".class");
+				outputFile.getParentFile().mkdirs();
+				outputStream = new FileOutputStream(outputFile);
+				outputStream.write(instrumentedClass);
+			}
 		}
 		catch (IOException e)
 		{
