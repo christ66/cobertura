@@ -2,6 +2,7 @@
 package net.sourceforge.cobertura.coverage;
 
 import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.Pattern;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -13,6 +14,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 	private static final Logger logger = Logger.getLogger(Main.class);
 
 	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coverage/HasBeenInstrumented";
+	private Pattern ignoreRegexp;
 	private CoverageData coverageData;
 	private String myName;
 	private boolean instrument = false;
@@ -27,9 +29,10 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 		return instrument;
 	}
 
-	public ClassInstrumenter(final ClassVisitor cv)
+	public ClassInstrumenter(final ClassVisitor cv, Pattern ignoreRegexp)
 	{
 		super(cv);
+		this.ignoreRegexp = ignoreRegexp;
 	}
 
 	private boolean arrayContains(Object[] array, Object key)
@@ -94,7 +97,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 			return mv;
 
 		return mv == null ? null : new MethodInstrumenter(mv, coverageData,
-				this.myName, name, desc);
+				this.myName, name, desc, ignoreRegexp);
 	}
 
 	public void visitEnd()

@@ -35,6 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.Perl5Compiler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
@@ -72,8 +75,8 @@ public class Main
 	private static final Logger logger = Logger.getLogger(Main.class);
 
 	private File destinationDirectory = null;
-	private String ignoreRegex = null;
 	private File baseDir = null;
+	private Pattern ignoreRegexp = null;
 
 	/**
 	 * @param file A file.
@@ -85,7 +88,6 @@ public class Main
 		return file.getName().endsWith(".class");
 	}
 
-	// TODO: Print a warning if class files have no line numbers.
 	// TODO: Use ignoreRegex.
 	// TODO: Don't attempt to instrument a file if the outputFile already
 	//       exists and is newer than the input file.
@@ -116,7 +118,7 @@ public class Main
 			inputStream = new FileInputStream(file);
 			ClassReader cr = new ClassReader(inputStream);
 			ClassWriter cw = new ClassWriter(true);
-			ClassInstrumenter cv = new ClassInstrumenter(cw);
+			ClassInstrumenter cv = new ClassInstrumenter(cw, ignoreRegexp); /* pass in regexp */
 			cr.accept(cv, false);
 			byte[] instrumentedClass = cw.toByteArray();
 
@@ -182,7 +184,20 @@ public class Main
 			else if (args[i].equals("-basedir"))
 				baseDir = new File(args[++i]);
 			else if (args[i].equals("-ignore"))
-				ignoreRegex = args[++i];
+			{
+				// TODO: Use java.util.regex.Pattern instead of this.
+				String regex = args[++i];
+				try
+				{
+					Perl5Compiler pc = new Perl5Compiler();
+					this.ignoreRegexp = pc.compile(regex);
+				}
+				catch (MalformedPatternException e)
+				{
+					logger.warn("The regular expression " + regex
+							+ " is invalid: " + e.getLocalizedMessage());
+				}
+			}
 			else
 				addInstrumentation(args[i]);
 		}

@@ -44,16 +44,20 @@ public class CoverageDataTest extends TestCase
 
 	public void testTouch()
 	{
-		int line = 5;
+		int line = 3;
 
 		assertFalse(a.isValidSourceLineNumber(line));
-		assertEquals(0, a.getHitCount(line));
 		a.touch(line);
-		assertTrue(a.isValidSourceLineNumber(line));
-		assertEquals(1, a.getHitCount(line));
-		a.touch(line);
-		assertEquals(2, a.getHitCount(line));
-		assertTrue(a.isValidSourceLineNumber(line));
+		assertFalse(a.isValidSourceLineNumber(line));
+
+		assertTrue(b.isValidSourceLineNumber(line));
+		assertEquals(0, b.getHitCount(line));
+		b.touch(line);
+		assertTrue(b.isValidSourceLineNumber(line));
+		assertEquals(1, b.getHitCount(line));
+		b.touch(line);
+		assertEquals(2, b.getHitCount(line));
+		assertTrue(b.isValidSourceLineNumber(line));
 	}
 
 	public void testGetLineCoverageRate()

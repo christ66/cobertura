@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * CoverageData information is typically serialized to a file. An
@@ -51,25 +50,24 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	 * Each key is a line number in this class, stored as an Integer object.
 	 * Each value is information about the line, stored as a LineInformation object.
 	 */
-	private Map lines = new TreeMap();
+	private Map lines = new HashMap();
 
 	private Set methodNamesAndDescriptors = new HashSet();
 
-	private String sourceFileName;
+	private String sourceFileName = null;
 
-	public void addLine(int line, String methodName, String methodDescriptor)
+	public void addLine(int lineNumber, String methodName,
+			String methodDescriptor)
 	{
-		LineInformation lineInformation = getLineInformation(line);
-		lineInformation.setMethodNameAndDescriptor(methodName, methodDescriptor);
+		LineInformation lineInformation = getLineInformation(lineNumber);
+		if (lineInformation == null)
+		{
+			lineInformation = new LineInformation(lineNumber);
+			lines.put(new Integer(lineNumber), lineInformation);
+		}
+		lineInformation.setMethodNameAndDescriptor(methodName,
+				methodDescriptor);
 		methodNamesAndDescriptors.add(methodName + methodDescriptor);
-	}
-
-	public void markLineAsConditional(int line)
-	{
-		Integer lineObject = new Integer(line);
-		LineInformation lineInformation = getLineInformation(line);
-		if (!this.conditionals.containsKey(lineObject))
-			this.conditionals.put(lineObject, lineInformation);
 	}
 
 	/**
@@ -167,20 +165,12 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 
 	private LineInformation getLineInformation(int lineNumber)
 	{
-		LineInformation lineInformation = (LineInformation)lines
-				.get(new Integer(lineNumber));
-		if (lineInformation == null)
-		{
-			lineInformation = new LineInformation(lineNumber);
-			lines.put(new Integer(lineNumber), lineInformation);
-		}
-		return lineInformation;
-
+		return (LineInformation)lines.get(new Integer(lineNumber));
 	}
 
 	/**
 	 * @return The method name and descriptor of each method found in the
-	 * class represented by this instrumentation.
+	 *         class represented by this instrumentation.
 	 */
 	public Set getMethodNamesAndDescriptors()
 	{
@@ -261,6 +251,16 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		return lines.containsKey(new Integer(lineNumber));
 	}
 
+	public void markLineAsConditional(int lineNumber)
+	{
+		LineInformation lineInformation = getLineInformation(lineNumber);
+		if (lineInformation != null)
+		{
+			lineInformation.setConditional(true);
+			this.conditionals.put(new Integer(lineNumber), lineInformation);
+		}
+	}
+
 	/**
 	 * Merge some existing instrumentation with this instrumentation.
 	 *
@@ -272,6 +272,11 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 		conditionals.putAll(coverageData.conditionals);
 		methodNamesAndDescriptors.addAll(coverageData
 				.getMethodNamesAndDescriptors());
+	}
+
+	public void removeLine(int lineNumber)
+	{
+		lines.remove(new Integer(lineNumber));
 	}
 
 	public void setSourceFileName(String sourceFileName)
@@ -286,6 +291,9 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	 */
 	public void touch(int lineNumber)
 	{
-		getLineInformation(lineNumber).touch();
+		LineInformation lineInformation = getLineInformation(lineNumber);
+		if (lineInformation != null)
+			lineInformation.touch();
 	}
+
 }
