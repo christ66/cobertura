@@ -99,23 +99,8 @@ public class CoverageDataFactory extends InstrumentationPersistence
 		return instrumentationFactory;
 	}
 
-	public CoverageData newInstrumentation(Class cl)
-	{
-		if (logger.isDebugEnabled())
-		{
-			logger.debug("cl: " + cl.getName());
-		}
-
-		return newInstrumentation(cl.getName());
-	}
-
 	public CoverageData newInstrumentation(String className)
 	{
-		if (logger.isDebugEnabled())
-		{
-			logger.debug("className: " + className);
-		}
-
 		if (!instrumentation.containsKey(className))
 		{
 			instrumentation.put(className, new CoverageData());
