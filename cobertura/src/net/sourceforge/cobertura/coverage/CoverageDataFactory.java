@@ -26,6 +26,14 @@ import java.util.Timer;
 
 import org.apache.log4j.Logger;
 
+/**
+ * <p>
+ * This class implements HasBeenInstrumented so that when cobertura
+ * instruments itself, it will omit this class.  It does this to
+ * avoid an infinite recursion problem because instrumented classes
+ * make use of this class.
+ * </p>
+ */
 public class CoverageDataFactory extends InstrumentationPersistence
 		implements Runnable, HasBeenInstrumented
 {

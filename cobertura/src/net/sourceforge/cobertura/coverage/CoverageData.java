@@ -31,9 +31,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * <p>
  * CoverageData information is typically serialized to a file. An
  * instance of this class records coverage information for a single
  * class that has been instrumented.
+ * </p>
+ *
+ * <p>
+ * This class implements HasBeenInstrumented so that when cobertura
+ * instruments itself, it will omit this class.  It does this to
+ * avoid an infinite recursion problem because instrumented classes
+ * make use of this class.
+ * </p>
  */
 public class CoverageData implements HasBeenInstrumented, Serializable
 {

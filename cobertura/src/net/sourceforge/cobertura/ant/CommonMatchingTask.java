@@ -172,6 +172,13 @@ public abstract class CommonMatchingTask extends MatchingTask
 			java.setFork(true);
 			java.setDir(getProject().getBaseDir());
 
+			/**
+			 * We replace %20 with a space character because, for some
+			 * reason, when we call Cobertura from within CruiseControl,
+			 * the classpath here contains %20's instead of spaces.  I
+			 * don't know if this is our problem, or CruiseControl, or
+			 * ant, but this seems to fix it.  --Mark
+			 */
 			if (getClass().getClassLoader() instanceof AntClassLoader)
 			{
 				String classpath = ((AntClassLoader)getClass()
