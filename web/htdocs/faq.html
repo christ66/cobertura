@@ -7,6 +7,9 @@
 
 
 
+<h2>General</h2>
+
+
 <div class="faq">
 <div class="question">
 <p>
@@ -21,6 +24,22 @@ We think Cobertura produces the prettiest output.  Pretty output means
 it's easy to read.  Easy to read means you waste less time figuring
 out where to add test coverage.  We also think Cobertura is easy to
 get running.
+</p>
+</div>
+</div>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+Where does the name "Cobertura" come from?
+</p>
+</div>
+
+<div class="answer">
+<p>
+"Cobertura" is the Spanish and Portuguese word for "coverage."
 </p>
 </div>
 </div>
@@ -129,6 +148,60 @@ Cobertura.  Patches can be submitted to our
 <a href="https://sourceforge.net/tracker/?group_id=130558&atid=720017">patch 
 tracker</a>.
 </p>
+</div>
+</div>
+
+
+
+<h2>Usage</h2>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+When I generate coverage reports, why do they always show
+100% coverage everwhere?
+</p>
+<p>
+When I generate coverage reports, why do they always show
+0% coverage everwhere?
+</p>
+</div>
+
+<div class="answer">
+<p>
+Cobertura is probably using
+the wrong .ser file when generating the reports.  When you instrument
+your classes, Cobertura generates a .ser file containing basic
+information about each class.  It puts this file in the current
+working directory.  When you run your tests, Cobertura adds additional
+information to this same .ser file.  If it can not find the file
+cobertura.ser in the current working directory then it will create
+a new one.  It is important that you use the same cobertura.ser file
+when instrumenting, running, and generating reports.  There are two
+ways to do this.
+</p>
+
+<ol>
+<li>
+Make sure you start in the same working directory when instrumenting,
+running your tests, and generating reports.
+</li>
+
+<li>
+Pass the
+<code>-Dnet.sourceforge.cobertura.rawcoverage.dir=C:\some\directory</code>
+property when instrumenting, running, and generating reports.
+</li>
+</ol>
+
+<p>
+In the future I'd like to change Cobertura to either throw and
+exception and stop or at least print a warning message if it
+does not find an already existing cobertura.ser file.
+</p>
+
 </div>
 </div>
 
