@@ -76,12 +76,17 @@ import org.apache.tools.ant.types.Reference;
 public class CoverageReportTask extends MatchingTask
 {
 
+	private String coverageDataFileName = "cobertura.ser";
 	private String format = "html";
 	private Path src;
 	private File destDir;
 
 	private Java java = null;
-	private Instrumentation serializedInstrumentation = new Instrumentation();
+
+	public void setCoverageDataFileName(String coverageDataFileName)
+	{
+		this.coverageDataFileName = coverageDataFileName;
+	}
 
 	public void setFormat(String format)
 	{
@@ -116,7 +121,7 @@ public class CoverageReportTask extends MatchingTask
 		Copyright.print(System.out);
 
 		getJava().createArg().setValue("-i");
-		getJava().createArg().setValue(serializedInstrumentation.getFile());
+		getJava().createArg().setValue(coverageDataFileName);
 
 		getJava().createArg().setValue("-s");
 		getJava().createArg().setValue(src.toString());
@@ -131,11 +136,6 @@ public class CoverageReportTask extends MatchingTask
 		{
 			throw new BuildException();
 		}
-	}
-
-	public Instrumentation createInstrumentation()
-	{
-		return serializedInstrumentation;
 	}
 
 	protected Java getJava()
