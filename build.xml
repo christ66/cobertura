@@ -229,11 +229,6 @@
 				<include name="examples/basic/build.properties" />
 				<include name="examples/basic/build.xml" />
 				<include name="examples/basic/src/**" />
-
-				<include name="examples/merge/build.properties"/>
-				<include name="examples/merge/build.xml"/>
-				<include name="examples/merge/cobertura1.ser"/>
-				<include name="examples/merge/cobertura2.ser"/>
 			</fileset>
 		</copy>
 
@@ -257,15 +252,10 @@
 				<exclude name="src/net/sourceforge/cobertura/util/Version.java" />
 				<include name="test/**" />
 
-				<include name="example/basic/README" />
-				<include name="example/basic/build.properties" />
-				<include name="example/basic/build.xml" />
-				<include name="example/basic/src/**" />
-
-				<include name="examples/merge/build.properties"/>
-				<include name="examples/merge/build.xml"/>
-				<include name="examples/merge/cobertura1.ser"/>
-				<include name="examples/merge/cobertura2.ser"/>
+				<include name="examples/basic/README" />
+				<include name="examples/basic/build.properties" />
+				<include name="examples/basic/build.xml" />
+				<include name="examples/basic/src/**" />
 			</fileset>
 		</copy>
 
