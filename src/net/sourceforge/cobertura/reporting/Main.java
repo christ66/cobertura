@@ -138,7 +138,7 @@ public class Main
 			is = new FileInputStream(serializationFile);
 			objects = new ObjectInputStream(is);
 			Map coverageData = (Map)objects.readObject();
-			Coverage coverage = CoverageUnmarshaller.parse(coverageData);
+			CoverageReport coverage = new CoverageReport(coverageData);
 
 			if (format.equalsIgnoreCase("xml"))
 			{

@@ -27,14 +27,24 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-public class Coverage
+import net.sourceforge.cobertura.coverage.CoverageData;
+
+public class CoverageReport
 {
 
 	private Map packages;
 
-	public Coverage()
-	{
+	public CoverageReport(Map coverageData) {
 		packages = new TreeMap();
+
+		Iterator iter = coverageData.entrySet().iterator();
+		while (iter.hasNext())
+		{
+			Map.Entry entry = (Map.Entry)iter.next();
+			String classname = (String)entry.getKey();
+			CoverageData instrumentation = (CoverageData)entry.getValue();
+			addClass(new Clazz(classname, instrumentation));
+		}
 	}
 
 	public void addClass(Clazz clazz)
