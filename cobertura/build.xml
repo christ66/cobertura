@@ -120,9 +120,10 @@
 	</target>
 
 	<target name="jar" depends="init,compile">
-		<!-- the standard jar for Cobertura -->
 		<mkdir dir="${build.dist.dir}" />
-		<jar jarfile="${build.dist.dir}/${ant.project.name}.jar" compress="true">
+
+		<!-- the standard jar for Cobertura -->
+		<jar jarfile="${basedir}/${ant.project.name}.jar" compress="true">
 			<fileset dir="${build.classes.dir}">
 				<include name="**/*.class" />
 			</fileset>
@@ -195,7 +196,7 @@
 				<include name="lib/**" />
 			</zipfileset>
 
-			<zipfileset prefix="${ant.project.name}-${product.version}" dir="${build.dist.dir}">
+			<zipfileset prefix="${ant.project.name}-${product.version}" dir="${basedir}">
 				<include name="cobertura.jar" />
 			</zipfileset>
 
@@ -271,9 +272,15 @@
 	<target name="clean" description="Remove all files created by the build process.">
 		<delete dir="${build.dir}" />
 		<delete file="${src.dir}/net/sourceforge/cobertura/util/Version.java" />
-		<delete file="${basedir}/cobertura-1.0-bin.zip" />
-		<delete file="${basedir}/cobertura-1.0-src.zip" />
-		<delete file="${basedir}/cobertura-1.0-eclipse-plugin.zip" />
+		<delete>
+			<fileset dir="${basedir}">
+				<include name="cobertura.jar" />
+				<include name="cobertura.ser" />
+				<include name="cobertura-*-bin.zip" />
+				<include name="cobertura-*-src.zip" />
+				<include name="cobertura-*-eclipse-plugin.zip" />
+			</fileset>
+		</delete>
 	</target>
 
 	<target name="coverage" depends="compile,instrument,test,coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
