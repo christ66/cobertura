@@ -79,8 +79,8 @@ insert instrumentation into the source code, those that add
 instrumentation to the Java byte-code, and those that run the
 code in a modified JVM. Cobertura adds instrumentation
 directly to the bytecode. We feel this is the best approach,
-since does not require a modified VM, but still retains a big
-speed advantage over having to recompile all your source code
+since it does not require a modified VM, but still retains a big
+speed advantage over having to compile all your source code
 twice.
 </p>
 
@@ -99,7 +99,7 @@ believe Cobertura is so easy to use, you'll be up and running
 in no time. So why not spend the next 15 minutes getting up
 and running with Cobertura. In that time, you'll certainly
 find out which parts of your code are completely tested, and
-where your code could do with a bit more testing...
+where your code could do with a bit more testing.
 </p>
 
 
@@ -110,7 +110,7 @@ where your code could do with a bit more testing...
 This chapter assumes you are already familiar with the Ant build
 tool from Apache.  If you're unfamiliar with Ant, you can find
 out about it at
-<a href="http://ant.apache.org">http://ant.apache.org</a>.
+<a href="http://ant.apache.org/">http://ant.apache.org/</a>.
 </p>
 
 
@@ -148,15 +148,15 @@ encountered and which have not.
 <p>
 You instruct Ant to create instrumented versions of your
 classes using the instrument task. The
-example below assumes the classes belong in a directory called
+example below assumes your classes are in the directory
 <code>build/classes</code>.
 </p>
 
-<pre><code>&lt;instrument todir="build/instrumented-classes"&gt;
+<pre><code>&lt;cobertura-instrument todir="build/instrumented-classes"&gt;
     &lt;fileset dir="build/classes"&gt;
         &lt;include name="**/*.class"/&gt;
     &lt;/fileset&gt;
-&lt;/instrument&gt;
+&lt;/cobertura-instrument&gt;
 </code></pre>
 
 
@@ -166,7 +166,7 @@ example below assumes the classes belong in a directory called
 <p>
 Once your classes have been instrumented by Cobertura, you can
 continue testing your application as you would normally via
-the junit task.
+the JUnit task.
 </p>
 
 <p>
@@ -189,11 +189,11 @@ The instrumented classes found in
 <code>${build.instrumented.dir}</code> will be loaded
 before those found in
 <code>${build.classes.dir}</code> ensuring that the
-instrumented classes are used by junit.
+instrumented classes are used by JUnit.
 </p>
 
 <p>
-An instrumented class serializes information into the file,
+An instrumented class serializes information into the file
 <code>cobertura.ser</code>. Any existing
 information found in this file will be merged with the current
 information. In this way the instrumentation for several
@@ -221,7 +221,7 @@ report is <acronym>HTML</acronym>.
 </p>
 
 <pre><code>&lt;target name="coverage"&gt;
-    &lt;report srcdir="${src.dir}" destdir="${build.coverage.dir}"/&gt;
+    &lt;cobertura-report srcdir="${src.dir}" destdir="${build.coverage.dir}"/&gt;
 &lt;/target&gt;
 </code></pre>
 
@@ -234,7 +234,7 @@ is not supplied then it defaults to <em>html</em>.
 </p>
 
 <pre><code>&lt;target name="coverage"&gt;
-    &lt;report format="xml" srcdir="${src.dir}" destdir="${build.coverage.dir}"/&gt;
+    &lt;cobertura-report format="xml" srcdir="${src.dir}" destdir="${build.coverage.dir}"/&gt;
 &lt;/target&gt;
 </code></pre>
 
@@ -251,11 +251,11 @@ application.
 
 <h3>Session merging with the merge tag</h3>
 
-<pre><code>&lt;merge&gt;
+<pre><code>&lt;cobertura-merge&gt;
     &lt;fileset dir="${basedir}"&gt;
         &lt;include name="**/cobertura.ser"/&gt;
     &lt;/fileset&gt;
-&lt;/merge&gt;
+&lt;/cobertura-merge&gt;
 </code></pre>
         
 <p>
@@ -278,10 +278,10 @@ quality.
 </p>
 
 <p>
-With Cobertura development teams can
+With Cobertura, development teams can
 choose to enforce <em>test driven development</em>
-on their codebase, by using the check tag in their ANT build
-scripts.
+on their codebase, by using the cobertura-check tag in their
+ANT build scripts.
 </p>
 
 <p>
@@ -289,11 +289,11 @@ After each <em>instrumented</em> unit test
 sequence, Cobertura can do a <em>health check</em> to
 ensure that the codebase is being tested to the standard that
 has been demanded by the team. If coverage standards fall
-below the critea set by the team, check will fail the build.
+below the criterea set by the team, cobertura-check will fail the build.
 </p>
 
 <p>
-Our intention with check
+Our intention with cobertura-check
 is to ensure that test driven development practices are being
 followed by the entire development team. Inadequate testing
 will result in an immediate <em>automated</em>
@@ -302,9 +302,9 @@ report.
 </p>
 
 <pre><code>&lt;check branch="80" line="80"&gt;
-    &lt;regex pattern="com.cobertura.util.*" branch="85" line="95"/&gt;
-    &lt;regex pattern="com.cobertura.tool.*" branch="55" line="80"/&gt;
-    &lt;regex pattern="com.cobertura.coverage.*" branch="85" line="90"/&gt;
+    &lt;regex pattern="com.example.gui.*" branch="85" line="90"/&gt;
+    &lt;regex pattern="com.example.tool.*" branch="55" line="80"/&gt;
+    &lt;regex pattern="com.example.util.*" branch="85" line="95"/&gt;
 &lt;/check&gt;
 </code></pre>
 
