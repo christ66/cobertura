@@ -28,13 +28,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Iterator;
-import java.util.Map;
 
 import net.sourceforge.cobertura.coverage.CoverageData;
 import net.sourceforge.cobertura.reporting.Clazz;
 import net.sourceforge.cobertura.reporting.Coverage;
 import net.sourceforge.cobertura.reporting.Package;
-import net.sourceforge.cobertura.util.ClassHelper;
 
 import org.apache.log4j.Logger;
 
@@ -111,12 +109,12 @@ public class XMLReport
 
 	private void dumpPackage(Package pack)
 	{
-		println("<package name=\"" + pack.getName() + "\"" +
-				" line-rate=\"" + pack.getLineCoverageRate() + "\"" +
-				" branch-rate=\"" + pack.getBranchCoverageRate() + "\"" +
-				">");
+		println("<package name=\"" + pack.getName() + "\"" + " line-rate=\""
+				+ pack.getLineCoverageRate() + "\"" + " branch-rate=\""
+				+ pack.getBranchCoverageRate() + "\"" + ">");
 		increaseIndentation();
-		dumpClasses((Clazz[])pack.getClasses().toArray(new Clazz[pack.getClasses().size()]));
+		dumpClasses((Clazz[])pack.getClasses().toArray(
+				new Clazz[pack.getClasses().size()]));
 	}
 
 	private void dumpClasses(Clazz[] clazzes)
@@ -134,11 +132,6 @@ public class XMLReport
 		dumpClassDetails(clazz);
 		decreaseIndentation();
 		println("</class>");
-	}
-
-	private String getFileName(String className, CoverageData instrumentation)
-	{
-		return ClassHelper.getPackageName(className).replace('.', '/') + '/' + instrumentation.getSourceFileName();
 	}
 
 	private void dumpClassDetails(Clazz clazz)
@@ -193,7 +186,7 @@ public class XMLReport
 			String methodNameAndSignature = (String)iter.next();
 
 			println("<method nameAndSignature=\""
-					+ xmlEscape(methodNameAndSignature)	+ "\">");
+					+ xmlEscape(methodNameAndSignature) + "\">");
 			increaseIndentation();
 
 			try

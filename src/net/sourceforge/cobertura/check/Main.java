@@ -33,24 +33,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coverage.CoverageData;
 import net.sourceforge.cobertura.coverage.InstrumentationPersistence;
 import net.sourceforge.cobertura.util.Copyright;
 
 import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
 
 public class Main extends InstrumentationPersistence
 {
 
 	private static final Logger logger = Logger.getLogger(Main.class);
-
-	final Perl5Matcher pm = new Perl5Matcher();
-	final Perl5Compiler pc = new Perl5Compiler();
 
 	Map minimumCoverageRates = new HashMap();
 	CoverageRate minimumCoverageRate;
@@ -80,11 +74,10 @@ public class Main extends InstrumentationPersistence
 	}
 
 	void setMinimumCoverageRate(String minimumCoverageRate)
-			throws MalformedPatternException
 	{
 		StringTokenizer tokenizer = new StringTokenizer(minimumCoverageRate,
 				":");
-		minimumCoverageRates.put(pc.compile(tokenizer.nextToken()),
+		minimumCoverageRates.put(Pattern.compile(tokenizer.nextToken()),
 				new CoverageRate(inRangeAndDivideByOneHundred(tokenizer
 						.nextToken()), inRangeAndDivideByOneHundred(tokenizer
 						.nextToken())));
@@ -97,7 +90,8 @@ public class Main extends InstrumentationPersistence
 		{
 			Map.Entry entry = (Map.Entry)i.next();
 
-			if (pm.matches(classname, (Pattern)entry.getKey()))
+			Pattern pattern = (Pattern)entry.getKey();
+			if (pattern.matcher(classname).matches())
 			{
 				return (CoverageRate)entry.getValue();
 			}
@@ -105,7 +99,7 @@ public class Main extends InstrumentationPersistence
 		return minimumCoverageRate;
 	}
 
-	public Main(String[] args) throws IOException, MalformedPatternException
+	public Main(String[] args) throws IOException
 	{
 		Copyright.print(System.out);
 		System.out.println("Cobertura coverage check");
@@ -233,9 +227,9 @@ public class Main extends InstrumentationPersistence
 		return decimal.setScale(1, BigDecimal.ROUND_DOWN).toString();
 	}
 
-	public static void main(String[] args) throws IOException,
-			MalformedPatternException
+	public static void main(String[] args) throws IOException
 	{
 		new Main(args);
 	}
+
 }

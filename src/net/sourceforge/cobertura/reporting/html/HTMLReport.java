@@ -30,13 +30,11 @@ import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import net.sourceforge.cobertura.reporting.Clazz;
 import net.sourceforge.cobertura.reporting.Coverage;
-import net.sourceforge.cobertura.reporting.CoverageUnmarshaller;
 import net.sourceforge.cobertura.reporting.Package;
 import net.sourceforge.cobertura.reporting.Util;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
@@ -186,7 +184,8 @@ public class HTMLReport
 				out.println("<tr>");
 				String percentCovered;
 				if (clazz.getNumberOfLines() > 0)
-					percentCovered = getPercentValue(clazz.getLineCoverageRate());
+					percentCovered = getPercentValue(clazz
+							.getLineCoverageRate());
 				else
 					percentCovered = "N/A";
 				out
@@ -195,8 +194,7 @@ public class HTMLReport
 								+ ".html\">"
 								+ clazz.getName()
 								+ "</a> <i>("
-								+ percentCovered
-								+ ")</i></td>");
+								+ percentCovered + ")</i></td>");
 				out.println("</tr>");
 			}
 

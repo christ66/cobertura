@@ -161,7 +161,7 @@
 				<exclude name="net/sourceforge/cobertura/util/Version.j" />
 			</fileset>
 			<manifest>
-				<attribute name="Class-Path" value="lib/asm/${asm.version}/asm-${asm.version}.jar lib/gnu/getopt/${getopt.version}/java-getopt-${getopt.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar lib/ncss/${ncss.version}/javancss.jar lib/ncss/${ncss.version}/ccl.jar lib/oro/${oro.version}/jakarta-oro-${oro.version}.jar" />
+				<attribute name="Class-Path" value="lib/asm/${asm.version}/asm-${asm.version}.jar lib/gnu/getopt/${getopt.version}/java-getopt-${getopt.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar lib/ncss/${ncss.version}/javancss.jar lib/ncss/${ncss.version}/ccl.jar" />
 			</manifest>
 		</jar>
 
@@ -191,7 +191,7 @@
 				<include name="tasks.properties" />
 			</fileset>
 			<manifest>
-				<attribute name="Class-Path" value="lib/asm/${asm.version}/asm-${asm.version}.jar lib/gnu/getopt/${getopt.version}/java-getopt-${getopt.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar lib/ncss/${ncss.version}/javancss.jar lib/ncss/${ncss.version}/ccl.jar lib/oro/${oro.version}/jakarta-oro-${oro.version}.jar" />
+				<attribute name="Class-Path" value="lib/asm/${asm.version}/asm-${asm.version}.jar lib/gnu/getopt/${getopt.version}/java-getopt-${getopt.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar lib/ncss/${ncss.version}/javancss.jar lib/ncss/${ncss.version}/ccl.jar" />
 			</manifest>
 		</jar>
 	</target>
