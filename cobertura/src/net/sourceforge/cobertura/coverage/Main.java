@@ -33,11 +33,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.Perl5Compiler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
@@ -187,16 +185,7 @@ public class Main
 			{
 				// TODO: Use java.util.regex.Pattern instead of this.
 				String regex = args[++i];
-				try
-				{
-					Perl5Compiler pc = new Perl5Compiler();
-					this.ignoreRegexp = pc.compile(regex);
-				}
-				catch (MalformedPatternException e)
-				{
-					logger.warn("The regular expression " + regex
-							+ " is invalid: " + e.getLocalizedMessage());
-				}
+				this.ignoreRegexp = Pattern.compile(regex);
 			}
 			else
 				addInstrumentation(args[i]);

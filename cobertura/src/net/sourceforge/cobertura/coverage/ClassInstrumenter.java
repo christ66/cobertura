@@ -1,8 +1,9 @@
 
 package net.sourceforge.cobertura.coverage;
 
+import java.util.regex.Pattern;
+
 import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.Pattern;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
