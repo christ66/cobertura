@@ -43,7 +43,7 @@
 			Instrument the application classes, writing the
 			instrumented classes into ${build.instrumented.dir}.
 		-->
-		<instrument todir="${instrumented.dir}">
+		<cobertura-instrument todir="${instrumented.dir}">
 			<!--
 				The following line causes instrument to ignore any
 				source line containing a reference to log4j, for the
@@ -59,7 +59,7 @@
 				<include name="**/*.class" />
 				<exclude name="**/*Test.class" />
 			</fileset>
-		</instrument>
+		</cobertura-instrument>
 	</target>
 
 	<target name="test" depends="init,compile">
@@ -96,8 +96,8 @@
 	</target>
 
 	<target name="coverage-report">
-		<report srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
-		<report srcdir="${src.dir}" destdir="${coverage.html.dir}" />
+		<cobertura-report srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
+		<cobertura-report srcdir="${src.dir}" destdir="${coverage.html.dir}" />
 	</target>
 
 	<target name="clean" description="Remove all files created by the build/test process.">
