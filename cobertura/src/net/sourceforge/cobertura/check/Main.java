@@ -161,7 +161,7 @@ public class Main extends InstrumentationPersistence
 		}
 
 		merge(loadInstrumentation(new FileInputStream(new File(
-				instrumentationDirectory, CoverageData.FILE_NAME))));
+				instrumentationDirectory, InstrumentationPersistence.FILE_NAME))));
 
 		if (logger.isInfoEnabled())
 		{

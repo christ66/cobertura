@@ -26,17 +26,17 @@ import java.util.Timer;
 
 import org.apache.log4j.Logger;
 
-public class CoverageDataInternalFactory extends InstrumentationPersistence
+public class CoverageDataFactory extends InstrumentationPersistence
 		implements Runnable, HasBeenInstrumented
 {
 
 	private static final Logger logger = Logger
-			.getLogger(CoverageDataInternalFactory.class);
-	static final CoverageDataInternalFactory instrumentationFactory = new CoverageDataInternalFactory();
+			.getLogger(CoverageDataFactory.class);
+	static final CoverageDataFactory instrumentationFactory = new CoverageDataFactory();
 
 	Timer timer = new Timer(true);
 
-	private CoverageDataInternalFactory()
+	private CoverageDataFactory()
 	{
 		merge(loadInstrumentation());
 
@@ -59,7 +59,7 @@ public class CoverageDataInternalFactory extends InstrumentationPersistence
 		 */
 		if (getInstrumentationInterval() > 0)
 		{
-			timer.schedule(new SaveInstrumentationTask(this),
+			timer.schedule(new SaveInstrumentationTimer(this),
 					getInstrumentationInterval(),
 					getInstrumentationInterval());
 		}
@@ -69,8 +69,8 @@ public class CoverageDataInternalFactory extends InstrumentationPersistence
 
 	int getInstrumentationInterval()
 	{
-		return Integer
-				.getInteger("net.sourceforge.cobertura.instrumentation.interval", 0)
+		return Integer.getInteger(
+				"net.sourceforge.cobertura.instrumentation.interval", 0)
 				.intValue() * 1000;
 	}
 
@@ -94,12 +94,12 @@ public class CoverageDataInternalFactory extends InstrumentationPersistence
 		}
 	}
 
-	public static CoverageDataInternalFactory getInstance()
+	public static CoverageDataFactory getInstance()
 	{
 		return instrumentationFactory;
 	}
 
-	public CoverageDataInternal newInstrumentation(Class cl)
+	public CoverageData newInstrumentation(Class cl)
 	{
 		if (logger.isDebugEnabled())
 		{
@@ -109,7 +109,7 @@ public class CoverageDataInternalFactory extends InstrumentationPersistence
 		return newInstrumentation(cl.getName());
 	}
 
-	public CoverageDataInternal newInstrumentation(String className)
+	public CoverageData newInstrumentation(String className)
 	{
 		if (logger.isDebugEnabled())
 		{
@@ -118,8 +118,8 @@ public class CoverageDataInternalFactory extends InstrumentationPersistence
 
 		if (!instrumentation.containsKey(className))
 		{
-			instrumentation.put(className, new CoverageDataInternalImpl());
+			instrumentation.put(className, new CoverageData());
 		}
-		return (CoverageDataInternal)instrumentation.get(className);
+		return (CoverageData)instrumentation.get(className);
 	}
 }

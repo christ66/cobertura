@@ -24,15 +24,42 @@ package net.sourceforge.cobertura.coverage;
 
 import junit.framework.TestCase;
 
-import org.apache.bcel.generic.LineNumberGen;
-
-public class ConditionalFactoryTest extends TestCase
+public class CoverageDataTest extends TestCase implements HasBeenInstrumented
 {
 
-	public void testNewConditional()
+	final CoverageData a = new CoverageData();
+	final CoverageData b = new CoverageData();
+	final CoverageData c = new CoverageData();
+
+	public void setUp()
 	{
-		int targetLineNumber = 12345;
-		LineNumberGen lng = new LineNumberGen(null, targetLineNumber - 5);
-		ConditionalFactory.newConditional(lng, targetLineNumber);
+		for (int i = 1; i < 5; i++)
+			b.addLine(i, "test", false);
+		for (int i = 1; i < 5; i++)
+			c.addLine(i, "test", false);
+
+		b.touch(1);
+		b.touch(2);
+	}
+
+	public void testTouch()
+	{
+		int line = 5;
+
+		assertFalse(a.isValidSourceLineNumber(line));
+		assertEquals(0, a.getHitCount(line));
+		a.touch(line);
+		assertTrue(a.isValidSourceLineNumber(line));
+		assertEquals(1, a.getHitCount(line));
+		a.touch(line);
+		assertEquals(2, a.getHitCount(line));
+		assertTrue(a.isValidSourceLineNumber(line));
+	}
+
+	public void testGetLineCoverageRate()
+	{
+		assertEquals(1d, a.getLineCoverageRate(), 0d);
+		assertEquals(0.5d, b.getLineCoverageRate(), 0d);
+		assertEquals(0d, c.getLineCoverageRate(), 0d);
 	}
 }

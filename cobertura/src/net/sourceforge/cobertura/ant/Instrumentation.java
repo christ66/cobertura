@@ -59,7 +59,7 @@ package net.sourceforge.cobertura.ant;
 public class Instrumentation
 {
 
-	String serializedInstrumentation = net.sourceforge.cobertura.coverage.CoverageData.FILE_NAME;
+	String serializedInstrumentation = net.sourceforge.cobertura.coverage.InstrumentationPersistence.FILE_NAME;
 
 	public void setFile(String serializedInstrumentation)
 	{

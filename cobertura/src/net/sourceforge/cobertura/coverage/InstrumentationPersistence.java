@@ -41,6 +41,11 @@ import org.apache.log4j.Logger;
 public class InstrumentationPersistence implements HasBeenInstrumented
 {
 
+	/**
+	 * Default file name used to write instrumentation information.
+	 */
+	public static final String FILE_NAME = "cobertura.ser";
+
 	private static final Logger logger = Logger
 			.getLogger(InstrumentationPersistence.class);
 
@@ -53,13 +58,13 @@ public class InstrumentationPersistence implements HasBeenInstrumented
 		if (logger.isInfoEnabled())
 		{
 			logger.info("loading: " + directory + '/'
-					+ CoverageData.FILE_NAME);
+					+ FILE_NAME);
 		}
 
 		try
 		{
 			return loadInstrumentation(new FileInputStream(new File(
-					directory, CoverageData.FILE_NAME)));
+					directory, FILE_NAME)));
 		}
 		catch (FileNotFoundException ex)
 		{
@@ -162,7 +167,7 @@ public class InstrumentationPersistence implements HasBeenInstrumented
 		{
 			logger
 					.info("saving: " + directory + '/'
-							+ CoverageData.FILE_NAME);
+							+ FILE_NAME);
 		}
 
 		saveInstrumentation(directory);
@@ -176,7 +181,7 @@ public class InstrumentationPersistence implements HasBeenInstrumented
 		try
 		{
 			os = new FileOutputStream(new File(destDir,
-					CoverageData.FILE_NAME));
+					FILE_NAME));
 			objects = new ObjectOutputStream(os);
 			objects.writeObject(instrumentation);
 			if (logger.isInfoEnabled())

@@ -57,7 +57,7 @@
 			<arg value="-ignore" />
 			<arg value="org.apache.log4j.*" />
 			<arg value="-d" />
-			<arg file="${build.classes.dir}" />
+			<arg file="${build.test.classes.dir}" />
 			<arg file="${build.classes.dir}" />
 		</java>
 	</target>
@@ -74,8 +74,8 @@
 
 		<junit fork="true" failureProperty="test.failed" printsummary="true">
 			<sysproperty key="net.sourceforge.cobertura.rawcoverage.dir" file="${build.test.dir}" />
-			<classpath location="${build.classes.dir}" />
 			<classpath location="${build.test.classes.dir}" />
+			<classpath location="${build.classes.dir}" />
 			<classpath location="${etc.dir}" />
 			<classpath refid="base.path" />
 			<formatter type="xml" />
