@@ -8,7 +8,7 @@ version 1.1
 	  2. ASM is licensed under the revised BSD license, which
 	     is compatable with the GPL, which allows us to remove
 	     the questionable exception for BCEL.
-	  3. ASM is faster than BCEL, for our needs.
+	  3. Instrumentation is about 5 times faster with ASM than BCEL.
 
 version 1.0
 	* Forked jcoverage 1.0.5 (although the version in the source says 1.0.4).
