@@ -108,7 +108,6 @@ public class MergeTask extends CommonMatchingTask
 
 		Set filenames = new HashSet();
 		Iterator i = fileSets.iterator();
-
 		while (i.hasNext())
 		{
 			FileSet fileSet = (FileSet)i.next();
@@ -116,5 +115,7 @@ public class MergeTask extends CommonMatchingTask
 		}
 
 		merge((String[])filenames.toArray(new String[filenames.size()]));
+
+		unInitArgs();
 	}
 }

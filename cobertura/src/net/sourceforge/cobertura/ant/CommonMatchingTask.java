@@ -107,6 +107,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 		try
 		{
 			commandLineFile = File.createTempFile("cobertura.", ".cmdline");
+			commandLineFile.deleteOnExit();
 			commandLineWriter = new FileWriter(commandLineFile);
 		}
 		catch (IOException ioe)
@@ -150,9 +151,15 @@ public abstract class CommonMatchingTask extends MatchingTask
 					Project.MSG_ERR);
 			throw new BuildException("Unable to save the commands file.");
 		}
+
 		/* point to commands file */
 		getJava().createArg().setValue("-commandsfile");
 		getJava().createArg().setValue(commandLineFile.getAbsolutePath());
+	}
+
+	protected void unInitArgs()
+	{
+		commandLineFile.delete();
 	}
 
 	protected Java getJava()
