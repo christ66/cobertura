@@ -2,7 +2,8 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- *
+ * Copyright (C) 2005 Jeremy Thomerson <jthomerson@users.sourceforge.net>
+ * 
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License,
@@ -22,6 +23,7 @@
 package net.sourceforge.cobertura.reporting;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -96,7 +98,12 @@ public abstract class Util
 		}
 		else if (file.isDirectory())
 		{
-			File[] files = file.listFiles();
+		    File[] files = file.listFiles(new FileFilter() {
+                public boolean accept(File pathname) {
+                    return pathname.getAbsolutePath().endsWith(".java");
+                }
+			});
+		    
 			for (int i = 0; i < files.length; i++)
 			{
 				if (recursive)
