@@ -75,7 +75,7 @@ public class InstrumentTask extends CommonMatchingTask
 
 	public InstrumentTask()
 	{
-		super("net.sourceforge.cobertura.coverage.Instrument");
+		super("net.sourceforge.cobertura.coverage.Main");
 	}
 
 	public Ignore createIgnore()

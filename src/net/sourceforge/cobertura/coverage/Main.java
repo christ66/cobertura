@@ -63,10 +63,10 @@ import org.apache.log4j.Logger;
  * determine whether a class has been instrumented or not.
  * </p>
  */
-public class Instrument
+public class Main
 {
 
-	private static final Logger logger = Logger.getLogger(Instrument.class);
+	private static final Logger logger = Logger.getLogger(Main.class);
 
 	private File destinationDirectory = null;
 	private String ignoreRegex = null;
@@ -327,7 +327,7 @@ public class Instrument
 	{
 		long startTime = System.currentTimeMillis();
 
-		Instrument instrument = new Instrument();
+		Main instrument = new Main();
 
 		boolean hasCommandsFile = false;
 		String commandsFileName = null;

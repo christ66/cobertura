@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Add coverage instrumentation to an existing class. Instances of
- * this class are normally created by @see Instrument, as part of the
+ * this class are normally created by @see Main, as part of the
  * instrumentation process.
  */
 class InstrumentClassGen extends ClassGen
