@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -147,11 +148,11 @@ public class HTMLReport
 	private void generateClassList(Package pkg) throws IOException
 	{
 		String filename;
-		Set classes;
+		Collection classes;
 		if (pkg == null)
 		{
 			filename = "frame-classes.html";
-			classes = coverage.getClasses();
+			classes = coverage.getClassesSortedByBasename().values();
 		}
 		else
 		{
@@ -318,7 +319,7 @@ public class HTMLReport
 			if (pkg == null)
 			{
 				classes = new TreeSet();
-				if (coverage.getClasses().size() > 0)
+				if (coverage.getNumberOfClasses() > 0)
 				{
 					Iterator iter = coverage.getClasses().iterator();
 					while (iter.hasNext())

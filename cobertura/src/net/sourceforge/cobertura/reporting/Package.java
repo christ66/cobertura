@@ -83,6 +83,20 @@ public class Package implements Comparable
 		return new TreeSet(classes.values());
 	}
 
+	public Map getClassesSortedByBasename()
+	{
+		TreeMap ret = new TreeMap();
+
+		Iterator iter = classes.values().iterator();
+		while (iter.hasNext())
+		{
+			Clazz clazz = (Clazz)iter.next();
+			ret.put(clazz.getName(), clazz);
+		}
+
+		return ret;
+	}
+
 	public String getFileName()
 	{
 		return name.replace('.', '/');

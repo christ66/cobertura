@@ -86,6 +86,20 @@ public class CoverageReport
 		return ret;
 	}
 
+	public Map getClassesSortedByBasename()
+	{
+		TreeMap ret = new TreeMap();
+
+		Iterator iter = packages.values().iterator();
+		while (iter.hasNext())
+		{
+			Package pkg = (Package)iter.next();
+			ret.putAll(pkg.getClassesSortedByBasename());
+		}
+
+		return ret;
+	}
+
 	public double getLineCoverageRate()
 	{
 		long numberOfLines = getNumberOfLines();
