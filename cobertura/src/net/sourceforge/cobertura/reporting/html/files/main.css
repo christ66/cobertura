@@ -21,6 +21,10 @@ body {
 	font-family: verdana, arial, helvetica;
 }
 
+div.footer {
+	font-size: 68%;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	margin-bottom: 0.5em;
 }
@@ -67,5 +71,10 @@ table.percentGraph td.covered {
 
 table.percentGraph td.uncovered {
     background: #e00000;
+	empty-cells: show;
+}
+
+table.percentGraph td.NA {
+    background: #eaeaea;
 	empty-cells: show;
 }

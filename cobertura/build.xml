@@ -54,7 +54,7 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-</target>
+	</target>
 
 	<target name="instrument" depends="compile">
 		<java fork="true" classname="net.sourceforge.cobertura.coverage.Main">
