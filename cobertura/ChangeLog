@@ -21,6 +21,7 @@ version 1.1
 	* Fix bug #1151777 with a patch from Jeremy Thomerson.
 	  Previously we were not escaping some characters correctly in the
 	  generated XML coverage report (specificially < and >).
+	* Set the class-path in the cobertura.jar manifest file correctly.
 
 version 1.0
 	* Forked jcoverage 1.0.5 (although the version in the source says 1.0.4).
