@@ -1,0 +1,282 @@
+
+<project name="cobertura" default="coverage" basedir=".">
+
+	<description>
+    Cobertura - http://cobertura.sourceforge.net/
+    Copyright (C) 2003 jcoverage ltd.
+    Copyright (C) 2005 Mark Doliner &lt;thekingant@users.sourceforge.net&gt;
+    Cobertura is licensed under the GNU General Public License
+    Cobertura comes with ABSOLUTELY NO WARRANTY
+    </description>
+
+	<property file="build.properties" />
+
+	<path id="base.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init">
+		<!-- Insert our version number in a few places. -->
+		<filter token="product.version" value="${product.version}" />
+		<copy file="${src.dir}/net/sourceforge/cobertura/util/Version.j" tofile="${src.dir}/net/sourceforge/cobertura/util/Version.java" filtering="true" overwrite="true" />
+		<copy file="${etc.dir}/plugin.xml" todir="${build.dir}" filtering="true" overwrite="true" />
+	</target>
+
+	<target name="compile" depends="init">
+		<mkdir dir="${build.classes.dir}" />
+
+		<javac fork="true" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true">
+			<classpath location="${build.classes.dir}" />
+			<classpath refid="base.path" />
+		</javac>
+
+		<mkdir dir="${build.test.classes.dir}" />
+
+		<javac fork="true" srcdir="${test.src.dir}" destdir="${build.test.classes.dir}" debug="true">
+			<classpath location="${build.classes.dir}" />
+			<classpath location="${build.test.classes.dir}" />
+			<classpath refid="base.path" />
+		</javac>
+
+		<!-- Copy jar resources (css, images, etc.) -->
+		<copy todir="${build.classes.dir}">
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="instrument" depends="compile">
+		<java fork="true" classname="net.sourceforge.cobertura.coverage.Instrument">
+			<sysproperty key="net.sourceforge.cobertura.rawcoverage.dir" file="${build.test.dir}" />
+			<classpath location="${build.classes.dir}" />
+			<classpath location="${etc.dir}" />
+			<classpath refid="base.path" />
+			<arg value="-ignore" />
+			<arg value="org.apache.log4j.*" />
+			<arg value="-d" />
+			<arg file="${build.classes.dir}" />
+			<arg file="${build.classes.dir}" />
+		</java>
+	</target>
+
+	<!--
+		This target is used when testing both instrumented and
+		non-instrumented code.  The net.sourceforge.cobertura.rawcoverage.dir
+		sysproperty is ignored if we're testing non-instrumented
+		code.
+	-->
+	<target name="test" depends="compile">
+		<delete dir="${build.test.reports.dir}/junit-xml" />
+		<mkdir dir="${build.test.reports.dir}/junit-xml" />
+
+		<junit fork="true" failureProperty="test.failed" printsummary="true">
+			<sysproperty key="net.sourceforge.cobertura.rawcoverage.dir" file="${build.test.dir}" />
+			<classpath location="${build.classes.dir}" />
+			<classpath location="${build.test.classes.dir}" />
+			<classpath location="${etc.dir}" />
+			<classpath refid="base.path" />
+			<formatter type="xml" />
+			<test name="${testcase}" todir="${build.test.reports.dir}/junit-xml" if="testcase" />
+			<batchtest todir="${build.test.reports.dir}/junit-xml" unless="testcase">
+				<fileset dir="${build.test.classes.dir}">
+					<include name="**/*Test.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<delete dir="${build.test.reports.dir}/junit-html" />
+		<mkdir dir="${build.test.reports.dir}/junit-html" />
+
+		<junitreport todir="${build.test.reports.dir}/junit-xml">
+			<fileset dir="${build.test.reports.dir}/junit-xml">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${build.test.reports.dir}/junit-html" />
+		</junitreport>
+
+		<fail message="Tests failed." if="test.failed" />
+	</target>
+
+	<target name="coverage-report">
+		<delete dir="${build.test.reports.dir}/coverage-html" />
+		<mkdir dir="${build.test.reports.dir}/coverage-html" />
+
+		<java fork="true" classname="net.sourceforge.cobertura.reporting.Main">
+			<classpath location="${build.classes.dir}" />
+			<classpath location="${etc.dir}" />
+			<classpath refid="base.path" />
+			<arg value="--format" />
+			<arg value="html" />
+			<arg value="--instrumentation" />
+			<arg file="${build.test.dir}/cobertura.ser" />
+			<arg value="--output" />
+			<arg file="${build.test.reports.dir}/coverage-html" />
+			<arg value="--source" />
+			<arg file="${src.dir}" />
+		</java>
+	</target>
+
+	<target name="jar" depends="init,compile">
+		<!-- the standard jar for Cobertura -->
+		<mkdir dir="${build.dist.dir}" />
+		<jar jarfile="${build.dist.dir}/${ant.project.name}.jar" compress="true">
+			<fileset dir="${build.classes.dir}">
+				<include name="**/*.class" />
+			</fileset>
+			<fileset dir="${etc.dir}">
+				<include name="log4j.properties" />
+				<include name="tasks.properties" />
+			</fileset>
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.java" />
+				<exclude name="**/package.html" />
+				<exclude name="net/sourceforge/cobertura/util/Version.j" />
+			</fileset>
+			<manifest>
+				<attribute name="Class-Path" value="lib/bcel/${bcel.version}/bcel.jar lib/gnu/getopt/${getopt.version}/java-getopt-${getopt.version}.jar lib/oro/${oro.version}/jakarta-oro-${oro.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar" />
+			</manifest>
+		</jar>
+
+		<!--
+			Eclipse needs the ANT tasks and the runtime of Cobertura to be split into
+			separate jars, otherwise lots of bad things happen in eclipse to do with
+			class loading.
+		-->
+		<mkdir dir="${build.dist.eclipse.dir}" />
+		<jar jarfile="${build.dist.eclipse.dir}/${ant.project.name}.jar">
+			<fileset dir="${build.classes.dir}">
+				<include name="net/sourceforge/cobertura/ant/**/*.class" />
+			</fileset>
+			<fileset dir="${etc.dir}">
+				<include name="tasks.properties" />
+			</fileset>
+			<manifest>
+				<attribute name="Class-Path" value="${ant.project.name}-main.jar" />
+			</manifest>
+		</jar>
+		<jar jarfile="${build.dist.eclipse.dir}/${ant.project.name}-main.jar">
+			<fileset dir="${build.classes.dir}">
+				<exclude name="net/sourceforge/cobertura/ant/**/*.class" />
+			</fileset>
+			<fileset dir="${etc.dir}">
+				<include name="log4j.properties" />
+				<include name="tasks.properties" />
+			</fileset>
+			<manifest>
+				<attribute name="Class-Path" value="lib/bcel/${bcel.version}/bcel.jar lib/gnu/getopt/${getopt.version}/java-getopt-${getopt.version}.jar lib/oro/${oro.version}/jakarta-oro-${oro.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="javadoc">
+		<delete dir="${build.api.dir}" />
+		<mkdir dir="${build.api.dir}" />
+
+		<javadoc access="private" author="true" breakiterator="true" destdir="${build.api.dir}" failonerror="true" linksource="true" serialwarn="false" source="1.4" version="true" windowtitle="Cobertura api">
+			<fileset dir="${src.dir}" />
+			<classpath location="${ant.home}/lib/ant.jar" />
+			<classpath location="${test.classes.dir}" />
+			<classpath refid="base.path" />
+		</javadoc>
+	</target>
+
+	<target name="dist" depends="jar,javadoc">
+		<!-- Make a zip contain the minimum files needed to use Cobertura -->
+		<zip destfile="${ant.project.name}-${product.version}-bin.zip" encoding="UTF-8">
+			<zipfileset prefix="${ant.project.name}-${product.version}" dir="${basedir}">
+				<include name="CHANGELOG" />
+				<include name="CONTRIBUTORS" />
+				<include name="COPYING" />
+				<include name="COPYRIGHT" />
+				<include name="README" />
+				<include name="lib/**" />
+			</zipfileset>
+
+			<zipfileset prefix="${ant.project.name}-${product.version}" dir="${build.dist.dir}">
+				<include name="cobertura.jar" />
+			</zipfileset>
+
+			<zipfileset prefix="${ant.project.name}-${product.version}/example" dir="${example.dir}">
+				<include name="README" />
+				<include name="build.properties" />
+				<include name="build.xml" />
+				<include name="src/**" />
+			</zipfileset>
+		</zip>
+
+		<!-- Make an Eclipse plugin zip -->
+		<zip destfile="${ant.project.name}-${product.version}-eclipse-plugin.zip" encoding="UTF-8">
+			<zipfileset prefix="com.${ant.project.name}_${product.version}" dir="${basedir}">
+				<include name="CHANGELOG" />
+				<include name="CONTRIBUTORS" />
+				<include name="COPYING" />
+				<include name="COPYRIGHT" />
+				<include name="README" />
+				<include name="lib/**" />
+			</zipfileset>
+
+			<zipfileset prefix="com.${ant.project.name}_${product.version}" dir="${build.dist.eclipse.dir}">
+				<include name="${ant.project.name}.jar" />
+				<include name="${ant.project.name}-main.jar" />
+			</zipfileset>
+
+			<zipfileset prefix="com.${ant.project.name}_${product.version}" dir="${etc.dir}">
+				<include name="plugin.properties" />
+			</zipfileset>
+
+			<zipfileset prefix="com.${ant.project.name}_${product.version}" dir="${build.dir}">
+				<include name="plugin.xml" />
+			</zipfileset>
+		</zip>
+
+		<!-- Make a zip containing the source files (everything needed to build the above zips) -->
+		<zip destfile="${ant.project.name}-${product.version}-src.zip" encoding="UTF-8">
+			<zipfileset prefix="${ant.project.name}-${product.version}" dir="${basedir}">
+				<include name="CHANGELOG" />
+				<include name="CONTRIBUTORS" />
+				<include name="COPYING" />
+				<include name="COPYRIGHT" />
+				<include name="README" />
+				<include name="build.properties" />
+				<include name="build.xml" />
+				<include name="etc/**" />
+				<include name="lib/**" />
+				<include name="resources/**" />
+				<include name="src/**" />
+				<include name="test/**" />
+			</zipfileset>
+
+			<zipfileset prefix="${ant.project.name}-${product.version}/example" dir="${example.dir}">
+				<include name="README" />
+				<include name="build.properties" />
+				<include name="build.xml" />
+				<include name="src/**" />
+			</zipfileset>
+		</zip>
+
+	</target>
+
+	<target name="install-eclipse-plugin">
+		<apply dir="${eclipse.dir}/plugins" executable="unzip">
+			<arg value="-o" />
+			<fileset dir="dist">
+				<include name="${ant.project.name}-${product.version}-eclipse-plugin.zip" />
+			</fileset>
+		</apply>
+	</target>
+
+	<target name="clean" description="Remove all files created by the build process.">
+		<delete dir="${build.dir}" />
+		<delete file="${src.dir}/net/sourceforge/cobertura/util/Version.java" />
+		<delete file="${basedir}/cobertura-1.0-bin.zip" />
+		<delete file="${basedir}/cobertura-1.0-src.zip" />
+		<delete file="${basedir}/cobertura-1.0-eclipse-plugin.zip" />
+	</target>
+
+	<target name="coverage" depends="compile,instrument,test,coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
+	<target name="release" depends="clean,compile,test,jar,javadoc,dist" description="Full build cycle, producing a distribution." />
+
+</project>
