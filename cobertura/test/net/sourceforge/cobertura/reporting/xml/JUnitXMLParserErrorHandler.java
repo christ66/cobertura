@@ -39,19 +39,16 @@ public class JUnitXMLParserErrorHandler implements ErrorHandler
 
 	public void error(SAXParseException exception)
 	{
-		exception.printStackTrace();
 		Assert.fail(exception.toString());
 	}
 
 	public void fatalError(SAXParseException exception)
 	{
-		exception.printStackTrace();
 		Assert.fail(exception.toString());
 	}
 
 	public void warning(SAXParseException exception)
 	{
-		exception.printStackTrace();
 		Assert.fail(exception.toString());
 	}
 

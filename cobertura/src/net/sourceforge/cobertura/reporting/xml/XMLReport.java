@@ -46,8 +46,8 @@ public class XMLReport
 
 	private int indent = 0;
 
-	public XMLReport(CoverageReport coverage, File outputDir, File sourceDirectory)
-			throws IOException
+	public XMLReport(CoverageReport coverage, File outputDir,
+			File sourceDirectory) throws IOException
 	{
 		pw = new PrintWriter(new FileWriter(new File(outputDir,
 				"coverage.xml")));
@@ -55,12 +55,19 @@ public class XMLReport
 		try
 		{
 			println("<?xml version=\"1.0\"?>");
+			println("<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage.dtd\">");
+			println("");
+
 			if (sourceDirectory == null)
 			{
+				// TODO: Set a schema?
+				//println("<coverage xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
 				println("<coverage>");
 			}
 			else
 			{
+				// TODO: Set a schema?
+				//println("<coverage src=\"" + sourceDirectory + "\" xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
 				println("<coverage src=\"" + sourceDirectory + "\">");
 			}
 			increaseIndentation();
@@ -88,7 +95,7 @@ public class XMLReport
 	{
 		for (int i = 0; i < indent; i++)
 		{
-			pw.print(' ');
+			pw.print("  ");
 		}
 	}
 
@@ -100,115 +107,125 @@ public class XMLReport
 
 	private void dumpPackages(CoverageReport coverage)
 	{
+		println("<packages>");
+		increaseIndentation();
+
 		Iterator it = coverage.getPackages().iterator();
 		while (it.hasNext())
 		{
 			dumpPackage((Package)it.next());
 		}
+
+		decreaseIndentation();
+		println("</packages>");
 	}
 
 	private void dumpPackage(Package pack)
 	{
-		println("<package name=\"" + pack.getName() + "\"" + " line-rate=\""
-				+ pack.getLineCoverageRate() + "\"" + " branch-rate=\""
+		logger.debug("Dumping package " + pack.getName());
+
+		println("<package name=\"" + pack.getName() + "\" line-rate=\""
+				+ pack.getLineCoverageRate() + "\" branch-rate=\""
 				+ pack.getBranchCoverageRate() + "\"" + ">");
 		increaseIndentation();
-		dumpClasses((Clazz[])pack.getClasses().toArray(new Clazz[pack.getClasses().size()]));
+		dumpClasses((Clazz[])pack.getClasses().toArray(
+				new Clazz[pack.getClasses().size()]));
 		decreaseIndentation();
 		println("</package>");
 	}
 
 	private void dumpClasses(Clazz[] clazzes)
 	{
+		println("<classes>");
+		increaseIndentation();
+
 		for (int i = 0; i < clazzes.length; i++)
 		{
 			dumpClass(clazzes[i]);
 		}
+
+		decreaseIndentation();
+		println("</classes>");
 	}
 
-	void dumpClass(Clazz clazz)
+	private void dumpClass(Clazz clazz)
 	{
-		println("<class name=\"" + clazz.getLongName() + "\">");
+		logger.debug("Dumping class " + clazz.getLongName());
+
+		println("<class name=\"" + clazz.getLongName() + "\" filename=\""
+				+ clazz.getLongFileName() + "\" line-rate=\""
+				+ clazz.getLineCoverageRate() + "\" branch-rate=\""
+				+ clazz.getBranchCoverageRate() + "\"" + ">");
 		increaseIndentation();
-		dumpClassDetails(clazz);
+
+		dumpMethods(clazz);
+		dumpLines(clazz);
+
 		decreaseIndentation();
 		println("</class>");
 	}
 
-	private void dumpClassDetails(Clazz clazz)
+	private void dumpMethods(Clazz clazz)
 	{
-		println("<file name=\"" + clazz.getLongFileName() + "\"/>");
-		println("<line rate=\"" + clazz.getLineCoverageRate() + "\"/>");
-		println("<branch rate=\"" + clazz.getBranchCoverageRate() + "\"/>");
-
 		println("<methods>");
 		increaseIndentation();
-		dumpMethods(clazz.getRawCoverageData());
+
+		CoverageData coverageData = clazz.getRawCoverageData();
+		Iterator iter = coverageData.getMethodNamesAndDescriptors()
+				.iterator();
+		while (iter.hasNext())
+		{
+			dumpMethod(coverageData, (String)iter.next());
+		}
+
 		decreaseIndentation();
 		println("</methods>");
-
-		StringBuffer sb = new StringBuffer();
-		CoverageData instrumentation = clazz.getRawCoverageData();
-		Iterator iter = instrumentation.getValidLineNumbers().iterator();
-		while (iter.hasNext())
-		{
-			sb.append(iter.next());
-			if (iter.hasNext())
-			{
-				sb.append(", ");
-			}
-		}
-		println("<valid lines=\"" + sb.toString() + "\"/>");
-
-		iter = instrumentation.getValidLineNumbers().iterator();
-		while (iter.hasNext())
-		{
-			int lineNumber = ((Integer)iter.next()).intValue();
-			long hitCount = instrumentation.getHitCount(lineNumber);
-			println("<line number=\"" + lineNumber + "\" hits=\"" + hitCount
-					+ "\"/>");
-		}
 	}
 
-	private String xmlEscape(String str)
+	private void dumpMethod(CoverageData coverageData, String nameAndSig)
+	{
+		String name = nameAndSig.substring(0, nameAndSig.indexOf('('));
+		String signature = nameAndSig.substring(nameAndSig.indexOf('('));
+		double lineRate = coverageData.getLineCoverageRate(nameAndSig);
+		double branchRate = coverageData.getBranchCoverageRate(nameAndSig);
+
+		println("<method name=\"" + xmlEscape(name) + "\" signature=\""
+				+ xmlEscape(signature) + "\" line-rate=\"" + lineRate
+				+ "\" branch-rate=\"" + branchRate + "\"/>");
+	}
+
+	private static String xmlEscape(String str)
 	{
 		str = str.replaceAll("<", "&lt;");
 		str = str.replaceAll(">", "&gt;");
 		return str;
 	}
 
-	private void dumpMethods(CoverageData instrumentation)
+	private void dumpLines(Clazz clazz)
 	{
-		Iterator iter = instrumentation.getMethodNamesAndDescriptors()
-				.iterator();
+		println("<lines>");
+		increaseIndentation();
+
+		CoverageData coverageData = clazz.getRawCoverageData();
+		Iterator iter = coverageData.getValidLineNumbers().iterator();
+		iter = coverageData.getValidLineNumbers().iterator();
 		while (iter.hasNext())
 		{
-
-			String methodNameAndSignature = (String)iter.next();
-
-			println("<method nameAndSignature=\""
-					+ xmlEscape(methodNameAndSignature) + "\">");
-			increaseIndentation();
-
-			try
-			{
-				println("<line rate=\""
-						+ instrumentation
-								.getLineCoverageRate(methodNameAndSignature)
-						+ "\"/>");
-				println("<branch rate=\""
-						+ instrumentation
-								.getBranchCoverageRate(methodNameAndSignature)
-						+ "\"/>");
-			}
-			catch (IllegalArgumentException ex)
-			{
-				logger.warn(ex);
-			}
-
-			decreaseIndentation();
-			println("</method>");
+			dumpLine(coverageData, (Integer)iter.next());
 		}
+
+		decreaseIndentation();
+		println("</lines>");
+	}
+
+	private void dumpLine(CoverageData coverageData, Integer lineNumberObject)
+	{
+		int lineNumber = lineNumberObject.intValue();
+		long hitCount = coverageData.getHitCount(lineNumber);
+		boolean isBranch = coverageData.isBranch(lineNumber);
+
+		println("<line number=\"" + lineNumber + "\" hits=\"" + hitCount
+				+ "\" branch=\"" + isBranch + "\"/>");
 	}
 
 }
