@@ -40,13 +40,19 @@
 			<classpath refid="base.path" />
 		</javac>
 
-		<!-- Copy jar resources (css, images, etc.) -->
+		<!-- Copy jar resources (css, images, log4j property file, etc.) -->
 		<copy todir="${build.classes.dir}">
 			<fileset dir="${src.dir}">
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-	</target>
+
+		<copy todir="${build.test.classes.dir}">
+			<fileset dir="${test.src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+</target>
 
 	<target name="instrument" depends="compile">
 		<java fork="true" classname="net.sourceforge.cobertura.coverage.Main">
