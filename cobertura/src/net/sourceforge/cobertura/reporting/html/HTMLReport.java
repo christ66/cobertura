@@ -180,13 +180,18 @@ public class HTMLReport
 			{
 				Clazz clazz = (Clazz)iter.next();
 				out.println("<tr>");
+				String percentCovered;
+				if (clazz.getNumberOfLines() > 0)
+					percentCovered = getPercentValue(clazz.getLineCoverageRate());
+				else
+					percentCovered = "N/A";
 				out
 						.println("<td nowrap=\"nowrap\"><a target=\"summary\" href=\""
 								+ clazz.getLongName()
 								+ ".html\">"
 								+ clazz.getName()
 								+ "</a> <i>("
-								+ getPercentValue(clazz.getLineCoverageRate())
+								+ percentCovered
 								+ ")</i></td>");
 				out.println("</tr>");
 			}
