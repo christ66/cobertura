@@ -35,7 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * you are parsing an XML document using a DocumentBuilder,
  * and you set the DocumentBuilder's EntityResolver to an
  * instance of this class, and the XML document sets its
- * DOCTYPE to http://cobertura.sourceforge.net/xml/coverage.dtd, 
+ * DOCTYPE to http://cobertura.sourceforge.net/xml/coverage.dtd,
  * then instead of using the given URL, this class will
  * resolve the entity to the local version of the same file.
  * </p>
@@ -74,7 +74,18 @@ public class JUnitXMLParserEntityResolver extends DefaultHandler
 					+ " instead.");
 		}
 
-		return super.resolveEntity(publicId, systemId);
+		InputSource source = null;
+
+		try {
+			super.resolveEntity(publicId, systemId);
+		} catch (Exception exception) {
+		    // apparently 1.5 throws an IOException here, but we can't catch it specifically if
+		    //	we're not on 1.5 (docs on both kind of say that they throw it)
+		    //	actual code on 1.4.2 has it remmed out so that it only throws SAXException  
+			throw new SAXException(exception);
+		}
+
+		return source;
 	}
 
 }
