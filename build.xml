@@ -19,7 +19,7 @@
 
 	<target name="init">
 		<!-- Insert our version number in a few places. -->
-		<filter token="product.version" value="${product.version}" />
+		<filter token="version" value="${version}" />
 		<copy file="${src.dir}/net/sourceforge/cobertura/util/Version.j" tofile="${src.dir}/net/sourceforge/cobertura/util/Version.java" filtering="true" overwrite="true" />
 		<copy file="${etc.dir}/plugin.xml" todir="${build.dir}" filtering="true" overwrite="true" />
 	</target>
@@ -185,57 +185,34 @@
 	</target>
 
 	<target name="dist" depends="jar,javadoc">
-		<!-- Make a zip contain the minimum files needed to use Cobertura -->
-		<zip destfile="${ant.project.name}-${product.version}-bin.zip" encoding="UTF-8">
-			<zipfileset prefix="${ant.project.name}-${product.version}" dir="${basedir}">
+		<!--
+			Copy the files needed for the binary jar to a clean directory
+			tree.  The "binary" jar contains the minimum files needed to
+			use Cobertura.
+		-->
+		<copy todir="${build.dist.dir}/package-bin/cobertura-${version}">
+			<fileset dir="${basedir}">
 				<include name="CHANGELOG" />
 				<include name="CONTRIBUTORS" />
 				<include name="COPYING" />
 				<include name="COPYRIGHT" />
 				<include name="README" />
 				<include name="lib/**" />
-			</zipfileset>
-
-			<zipfileset prefix="${ant.project.name}-${product.version}" dir="${basedir}">
 				<include name="cobertura.jar" />
-			</zipfileset>
+				<include name="example/README" />
+				<include name="example/build.properties" />
+				<include name="example/build.xml" />
+				<include name="example/src/**" />
+			</fileset>
+		</copy>
 
-			<zipfileset prefix="${ant.project.name}-${product.version}/example" dir="${example.dir}">
-				<include name="README" />
-				<include name="build.properties" />
-				<include name="build.xml" />
-				<include name="src/**" />
-			</zipfileset>
-		</zip>
-
-		<!-- Make an Eclipse plugin zip -->
-		<zip destfile="${ant.project.name}-${product.version}-eclipse-plugin.zip" encoding="UTF-8">
-			<zipfileset prefix="com.${ant.project.name}_${product.version}" dir="${basedir}">
-				<include name="CHANGELOG" />
-				<include name="CONTRIBUTORS" />
-				<include name="COPYING" />
-				<include name="COPYRIGHT" />
-				<include name="README" />
-				<include name="lib/**" />
-			</zipfileset>
-
-			<zipfileset prefix="com.${ant.project.name}_${product.version}" dir="${build.dist.eclipse.dir}">
-				<include name="${ant.project.name}.jar" />
-				<include name="${ant.project.name}-main.jar" />
-			</zipfileset>
-
-			<zipfileset prefix="com.${ant.project.name}_${product.version}" dir="${etc.dir}">
-				<include name="plugin.properties" />
-			</zipfileset>
-
-			<zipfileset prefix="com.${ant.project.name}_${product.version}" dir="${build.dir}">
-				<include name="plugin.xml" />
-			</zipfileset>
-		</zip>
-
-		<!-- Make a zip containing the source files (everything needed to build the above zips) -->
-		<zip destfile="${ant.project.name}-${product.version}-src.zip" encoding="UTF-8">
-			<zipfileset prefix="${ant.project.name}-${product.version}" dir="${basedir}">
+		<!--
+			Copy the files needed for the source jar to a clean directory
+			tree.  The "source" jar contains everything needed to build
+			Cobertura.
+		-->
+		<copy todir="${build.dist.dir}/package-src/cobertura-${version}">
+			<fileset dir="${basedir}">
 				<include name="CHANGELOG" />
 				<include name="CONTRIBUTORS" />
 				<include name="COPYING" />
@@ -247,14 +224,49 @@
 				<include name="lib/**" />
 				<include name="resources/**" />
 				<include name="src/**" />
+				<exclude name="src/net/sourceforge/cobertura/util/Version.java" />
 				<include name="test/**" />
+				<include name="example/README" />
+				<include name="example/build.properties" />
+				<include name="example/build.xml" />
+				<include name="example/src/**" />
+			</fileset>
+		</copy>
+
+		<!-- Create bz2 files -->
+		<tar basedir="${build.dist.dir}/package-bin" destfile="${ant.project.name}-${version}-bin.tar.bz2" compression="bzip2"/>
+		<tar basedir="${build.dist.dir}/package-src" destfile="${ant.project.name}-${version}-src.tar.bz2" compression="bzip2"/>
+
+		<!-- Create gz files -->
+		<tar basedir="${build.dist.dir}/package-bin" destfile="${ant.project.name}-${version}-bin.tar.gz" compression="gzip"/>
+		<tar basedir="${build.dist.dir}/package-src" destfile="${ant.project.name}-${version}-src.tar.gz" compression="gzip"/>
+
+		<!-- Create zip files -->
+		<zip basedir="${build.dist.dir}/package-bin" destfile="${ant.project.name}-${version}-bin.zip" encoding="UTF-8"/>
+		<zip basedir="${build.dist.dir}/package-src" destfile="${ant.project.name}-${version}-src.zip" encoding="UTF-8"/>
+
+		<!-- Make an Eclipse plugin zip -->
+		<zip destfile="${ant.project.name}-${version}-eclipse-plugin.zip" encoding="UTF-8">
+			<zipfileset prefix="com.${ant.project.name}_${version}" dir="${basedir}">
+				<include name="CHANGELOG" />
+				<include name="CONTRIBUTORS" />
+				<include name="COPYING" />
+				<include name="COPYRIGHT" />
+				<include name="README" />
+				<include name="lib/**" />
 			</zipfileset>
 
-			<zipfileset prefix="${ant.project.name}-${product.version}/example" dir="${example.dir}">
-				<include name="README" />
-				<include name="build.properties" />
-				<include name="build.xml" />
-				<include name="src/**" />
+			<zipfileset prefix="com.${ant.project.name}_${version}" dir="${build.dist.eclipse.dir}">
+				<include name="${ant.project.name}.jar" />
+				<include name="${ant.project.name}-main.jar" />
+			</zipfileset>
+
+			<zipfileset prefix="com.${ant.project.name}_${version}" dir="${etc.dir}">
+				<include name="plugin.properties" />
+			</zipfileset>
+
+			<zipfileset prefix="com.${ant.project.name}_${version}" dir="${build.dir}">
+				<include name="plugin.xml" />
 			</zipfileset>
 		</zip>
 
@@ -264,7 +276,7 @@
 		<apply dir="${eclipse.dir}/plugins" executable="unzip">
 			<arg value="-o" />
 			<fileset dir="dist">
-				<include name="${ant.project.name}-${product.version}-eclipse-plugin.zip" />
+				<include name="${ant.project.name}-${version}-eclipse-plugin.zip" />
 			</fileset>
 		</apply>
 	</target>
@@ -276,8 +288,8 @@
 			<fileset dir="${basedir}">
 				<include name="cobertura.jar" />
 				<include name="cobertura.ser" />
-				<include name="cobertura-*-bin.zip" />
-				<include name="cobertura-*-src.zip" />
+				<include name="cobertura-*-bin.*" />
+				<include name="cobertura-*-src.*" />
 				<include name="cobertura-*-eclipse-plugin.zip" />
 			</fileset>
 		</delete>

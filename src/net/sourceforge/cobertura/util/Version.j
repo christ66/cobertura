@@ -24,7 +24,7 @@ package net.sourceforge.cobertura.util;
 
 public interface Version {
 
-	String VERSION_STRING = "@product.version@";
+	String VERSION_STRING = "@version@";
 
 }
 
