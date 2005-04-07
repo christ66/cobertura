@@ -2,6 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Grzegorz Lukasik <hauserx@users.sourceforge.net>
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -86,6 +87,14 @@ public class HTMLReport
 		}
 	}
 
+	private String generatePackageName(Package pkg) 
+	{
+		if (pkg.getName().equals(""))
+			return "(default)";
+		else
+			return pkg.getName();
+	}
+
 	private void generatePackageList() throws IOException
 	{
 		File file = new File(outputDir, "frame-packages.html");
@@ -117,7 +126,7 @@ public class HTMLReport
 				out.println("<tr>");
 				out.println("<td nowrap=\"nowrap\"><a href=\"" + url1
 						+ "\" onClick='parent.classList.location.href=\""
-						+ url2 + "\"' target=\"summary\">" + pkg.getName()
+						+ url2 + "\"' target=\"summary\">" + generatePackageName(pkg)
 						+ "</a></td>");
 				out.println("</tr>");
 			}
@@ -174,7 +183,7 @@ public class HTMLReport
 			out.println("</head>");
 			out.println("<body>");
 			out.println("<h5>");
-			out.println(pkg == null ? "All Packages" : pkg.getName());
+			out.println(pkg == null ? "All Packages" : generatePackageName(pkg));
 			out.println("</h5>");
 			out.println("<h5>Classes</h5>");
 			out.println("<table width=\"100%\">");
@@ -260,7 +269,7 @@ public class HTMLReport
 			out.println("<body>");
 
 			out.print("<h5>Coverage Report - ");
-			out.print(pkg == null ? "All Packages" : pkg.getName());
+			out.print(pkg == null ? "All Packages" : generatePackageName(pkg));
 			out.println("</h5>");
 			out.println("<p>");
 			out.println("<table class=\"report\" id=\"packageResults\">");
@@ -281,7 +290,6 @@ public class HTMLReport
 
 				// Get packages
 				packages = coverage.getPackages();
-
 			}
 			else
 			{
@@ -411,7 +419,8 @@ public class HTMLReport
 			out.println("</head>");
 			out.println("<body>");
 			out.print("<h5>Coverage Report - ");
-			if (clazz.getPackageName() != null)
+			String classPackageName = clazz.getPackageName();
+			if ((classPackageName != null) && classPackageName.length() > 0)
 			{
 				out.print(clazz.getPackageName() + ".");
 			}
@@ -631,7 +640,7 @@ public class HTMLReport
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><a href=\"" + url1
 				+ "\" onClick='parent.classList.location.href=\"" + url2
-				+ "\"'>" + pkg.getName() + "</a></td>");
+				+ "\"'>" + generatePackageName(pkg) + "</a></td>");
 		ret
 				.append("<td class=\"value\">" + pkg.getClasses().size()
 						+ "</td>");
