@@ -95,7 +95,7 @@ public class XMLReport
 	{
 		for (int i = 0; i < indent; i++)
 		{
-			pw.print("  ");
+			pw.print("\t");
 		}
 	}
 
