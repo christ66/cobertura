@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * <p>
@@ -59,7 +61,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	 * Each key is a line number in this class, stored as an Integer object.
 	 * Each value is information about the line, stored as a LineInformation object.
 	 */
-	private Map lines = new HashMap();
+	private SortedMap lines = new TreeMap();
 
 	private Set methodNamesAndDescriptors = new HashSet();
 
@@ -244,7 +246,7 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	}
 
 	/**
-	 * @return The set of valid source line numbers
+	 * @return The set of valid source line numbers.
 	 */
 	public Set getValidLineNumbers()
 	{
