@@ -25,7 +25,11 @@ package net.sourceforge.cobertura.coveragedata;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+
+import net.sourceforge.cobertura.util.ClassHelper;
 
 /**
  * <p>
@@ -45,10 +49,10 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 	private static final long serialVersionUID = 3;
 
 	/**
-	 * Each key is a line number in this class, stored as an Integer object.
-	 * Each value is information about the class, stored as a ClassData object.
+	 * Each key is a package name, stored as an String object.
+	 * Each value is information about the package, stored as a PackageData object.
 	 */
-	private Map classes = new HashMap();
+	private Map packages = new HashMap();
 
 	public CoverageData()
 	{
@@ -56,11 +60,14 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 
 	public void addClassData(ClassData classData)
 	{
-		if (classes.containsKey(classData.getSourceFileName()))
-			throw new IllegalArgumentException(
-					"Coverage data already contains a class with the source file name "
-							+ classData.getSourceFileName());
-		classes.put(classData.getSourceFileName(), classData);
+		String packageName = ClassHelper.getPackageName(classData.getName());
+		PackageData packageData = (PackageData)packages.get(packageName);
+		if (packageData == null)
+		{
+			packageData = new PackageData(packageName);
+			packages.put(packageName, packageData);
+		}
+		packageData.addClassData(classData);
 	}
 
 	/**
@@ -77,16 +84,51 @@ public class CoverageData implements HasBeenInstrumented, Serializable
 			return false;
 
 		CoverageData coverageData = (CoverageData)obj;
-		return classes.equals(coverageData.classes);
+		return this.packages.equals(coverageData.packages);
+	}
+
+	public ClassData getClassData(String name)
+	{
+		String packageName = ClassHelper.getPackageName(name);
+		String baseName = ClassHelper.getBaseName(name);
+		PackageData packageData = (PackageData)packages.get(packageName);
+		if (packageData == null)
+			return null;
+		return packageData.getClassData(baseName);
 	}
 
 	public Collection getClasses()
 	{
-		return classes.values();
+		HashSet classes = new HashSet();
+		Iterator iter = packages.values().iterator();
+		while (iter.hasNext())
+		{
+			PackageData packageData = (PackageData)iter.next();
+			classes.addAll(packageData.getClasses());
+		}
+		return classes;
 	}
 
 	public int getNumberOfClasses()
 	{
-		return classes.size();
+		int numberOfClasses = 0;
+		Iterator iter = packages.values().iterator();
+		while (iter.hasNext())
+		{
+			PackageData packageData = (PackageData)iter.next();
+			numberOfClasses += packageData.getNumberOfClasses();
+		}
+		return numberOfClasses;
 	}
+
+	public int getNumberOfPackages()
+	{
+		return packages.size();
+	}
+
+	public Collection getPackages()
+	{
+		return packages.values();
+	}
+
 }

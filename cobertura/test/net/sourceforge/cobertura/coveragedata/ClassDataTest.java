@@ -27,9 +27,9 @@ import junit.framework.TestCase;
 public class ClassDataTest extends TestCase
 {
 
-	private final ClassData a = new ClassData();
-	private final ClassData b = new ClassData();
-	private final ClassData c = new ClassData();
+	private final ClassData a = new ClassData("HelloWorld");
+	private final ClassData b = new ClassData("HelloWorld");
+	private final ClassData c = new ClassData("HelloWorld");
 
 	public void setUp()
 	{
