@@ -23,38 +23,44 @@ package net.sourceforge.cobertura.coveragedata;
 
 import junit.framework.TestCase;
 
-public class CoverageDataTest extends TestCase
+public class ProjectDataTest extends TestCase
 {
 
-	private CoverageData coverageData;
+	private ProjectData coverageData;
 
 	public void setUp()
 	{
-		coverageData = new CoverageData();
+		coverageData = new ProjectData();
 	}
 
 	public void testAddClass()
 	{
 		ClassData classData;
 
-		assertEquals(0, coverageData.getNumberOfPackages());
+		assertEquals(0, coverageData.getNumberOfChildren());
+		assertEquals(0, coverageData.getClasses().size());
+		assertEquals(null, coverageData.getClassData("gobbleDeeGoop"));
 
-		classData = new ClassData("HelloWorld");
+		classData = new ClassData("com.example.HelloWorld");
 		classData.setSourceFileName("com/example/HelloWorld.java");
 		for (int i = 0; i < 10; i++)
 			classData.addLine(i, "test", "(I)B");
 		coverageData.addClassData(classData);
-		assertEquals(1, coverageData.getNumberOfPackages());
+		assertEquals(1, coverageData.getNumberOfChildren());
+		assertEquals(1, coverageData.getClasses().size());
+		assertEquals(classData, coverageData.getClassData(classData.getName()));
 
-		classData = new ClassData("HelloWorldHelper");
+		classData = new ClassData("com.example.HelloWorldHelper");
 		classData.setSourceFileName("com/example/HelloWorldHelper.java");
 		for (int i = 0; i < 14; i++)
 			classData.addLine(i, "test", "(I)B");
 		coverageData.addClassData(classData);
-		assertEquals(1, coverageData.getNumberOfPackages());
+		assertEquals(1, coverageData.getNumberOfChildren());
+		assertEquals(2, coverageData.getClasses().size());
+		assertEquals(classData, coverageData.getClassData(classData.getName()));
 
 		// See what happens when we try to add the same class twice
-		classData = new ClassData("HelloWorld");
+		classData = new ClassData("com.example.HelloWorld");
 		classData.setSourceFileName("com/example/HelloWorld.java");
 		for (int i = 0; i < 19; i++)
 			classData.addLine(i, "test", "(I)B");
@@ -67,19 +73,19 @@ public class CoverageDataTest extends TestCase
 		{
 			// Good!
 		}
-
-		assertEquals(1, coverageData.getNumberOfPackages());
+		assertEquals(1, coverageData.getNumberOfChildren());
+		assertEquals(2, coverageData.getClasses().size());
 	}
 
 	public void testEquals()
 	{
-		CoverageData a = new CoverageData();
-		CoverageData b = new CoverageData();
-		CoverageData c = new CoverageData();
-		ClassData classData1 = new ClassData("HelloWorld1");
-		ClassData classData2 = new ClassData("HelloWorld2");
-		ClassData classData3 = new ClassData("HelloWorld3");
-		ClassData classData4 = new ClassData("HelloWorld4");
+		ProjectData a = new ProjectData();
+		ProjectData b = new ProjectData();
+		ProjectData c = new ProjectData();
+		ClassData classData1 = new ClassData("com.example.HelloWorld1");
+		ClassData classData2 = new ClassData("com.example.HelloWorld2");
+		ClassData classData3 = new ClassData("com.example.HelloWorld3");
+		ClassData classData4 = new ClassData("com.example.HelloWorld4");
 
 		classData1.setSourceFileName("com/example/HelloWorld1.java");
 		classData2.setSourceFileName("com/example/HelloWorld2.java");
@@ -115,4 +121,30 @@ public class CoverageDataTest extends TestCase
 		assertFalse(a.equals(c));
 		assertFalse(c.equals(a));
 	}
+	
+	public void testHashCode()
+	{
+		ProjectData a = new ProjectData();
+		ProjectData b = new ProjectData();
+		ClassData classData1 = new ClassData("com.example.HelloWorld1");
+		ClassData classData2 = new ClassData("com.example.HelloWorld2");
+		ClassData classData3 = new ClassData("com.example.HelloWorld3");
+
+		classData1.setSourceFileName("com/example/HelloWorld1.java");
+		classData2.setSourceFileName("com/example/HelloWorld2.java");
+		classData3.setSourceFileName("com/example/HelloWorld3.java");
+
+		a.addClassData(classData1);
+		a.addClassData(classData2);
+		a.addClassData(classData3);
+		b.addClassData(classData1);
+		b.addClassData(classData2);
+
+		assertEquals(a.hashCode(), a.hashCode());
+		assertEquals(b.hashCode(), b.hashCode());
+
+		b.addClassData(classData3);
+		assertEquals(a.hashCode(), b.hashCode());
+	}
+
 }

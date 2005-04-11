@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
  * This contains methods used for reading and writing the
  * "coverage.ser" file.
  */
-public class CoverageDataFileHandler
+public abstract class CoverageDataFileHandler
 {
 
 	/**
@@ -48,7 +48,7 @@ public class CoverageDataFileHandler
 	private static final Logger logger = Logger
 			.getLogger(CoverageDataFileHandler.class);
 
-	public static CoverageData LoadCoverageData(File dataFile)
+	public static ProjectData LoadCoverageData(File dataFile)
 	{
 		InputStream is = null;
 		try
@@ -77,13 +77,13 @@ public class CoverageDataFileHandler
 		}
 	}
 
-	private static CoverageData LoadCoverageData(InputStream dataFile)
+	private static ProjectData LoadCoverageData(InputStream dataFile)
 	{
 		ObjectInputStream objects = null;
 		try
 		{
 			objects = new ObjectInputStream(dataFile);
-			return (CoverageData)objects.readObject();
+			return (ProjectData)objects.readObject();
 		}
 		catch (ClassNotFoundException e)
 		{
@@ -111,7 +111,7 @@ public class CoverageDataFileHandler
 		}
 	}
 
-	public static void SaveCoverageData(CoverageData coverageData,
+	public static void SaveCoverageData(ProjectData coverageData,
 			File dataFile)
 	{
 		FileOutputStream os = null;
@@ -141,7 +141,7 @@ public class CoverageDataFileHandler
 		}
 	}
 
-	private static void SaveCoverageData(CoverageData coverageData,
+	private static void SaveCoverageData(ProjectData coverageData,
 			OutputStream dataFile)
 	{
 		ObjectOutputStream objects = null;

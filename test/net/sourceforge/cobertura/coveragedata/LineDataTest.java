@@ -35,6 +35,9 @@ public class LineDataTest extends TestCase
 
 	public void testEquals()
 	{
+		assertFalse(a.equals(null));
+		assertFalse(a.equals(new Integer(4)));
+
 		assertTrue(a.equals(a));
 		assertFalse(a.equals(b));
 		assertFalse(a.equals(c));
@@ -46,6 +49,14 @@ public class LineDataTest extends TestCase
 		assertTrue(a.equals(aPrime));
 	}
 
+	public void testHashCode()
+	{
+		assertEquals(a.hashCode(), a.hashCode());
+
+		LineData aPrime = new LineData(10, "test1", "(I)B");
+		assertEquals(a.hashCode(), aPrime.hashCode());
+	}
+
 	public void testGetLineNumber()
 	{
 		assertEquals(10, a.getLineNumber());
@@ -54,6 +65,43 @@ public class LineDataTest extends TestCase
 		assertEquals(13, d.getLineNumber());
 		assertEquals(14, e.getLineNumber());
 		assertEquals(15, f.getLineNumber());
+	}
+
+	public void testGetNumbers()
+	{
+		assertEquals(1, a.getBranchCoverageRate(), 0);
+		assertEquals(0, a.getLineCoverageRate(), 0);
+		assertEquals(0, a.getNumberOfCoveredBranches());
+		assertEquals(0, a.getNumberOfCoveredLines());
+		assertEquals(0, a.getNumberOfValidBranches());
+		assertEquals(1, a.getNumberOfValidLines());
+
+		a.setBranch(true);
+		assertEquals(0, a.getBranchCoverageRate(), 0);
+		assertEquals(0, a.getLineCoverageRate(), 0);
+		assertEquals(0, a.getNumberOfCoveredBranches());
+		assertEquals(0, a.getNumberOfCoveredLines());
+		assertEquals(1, a.getNumberOfValidBranches());
+		assertEquals(1, a.getNumberOfValidLines());
+
+		for (int i = 0; i < 5; i++)
+		{
+			a.touch();
+			assertEquals(1, a.getBranchCoverageRate(), 0);
+			assertEquals(1, a.getLineCoverageRate(), 0);
+			assertEquals(1, a.getNumberOfCoveredBranches());
+			assertEquals(1, a.getNumberOfCoveredLines());
+			assertEquals(1, a.getNumberOfValidBranches());
+			assertEquals(1, a.getNumberOfValidLines());
+		}
+
+		a.setBranch(false);
+		assertEquals(1, a.getBranchCoverageRate(), 0);
+		assertEquals(1, a.getLineCoverageRate(), 0);
+		assertEquals(0, a.getNumberOfCoveredBranches());
+		assertEquals(1, a.getNumberOfCoveredLines());
+		assertEquals(0, a.getNumberOfValidBranches());
+		assertEquals(1, a.getNumberOfValidLines());
 	}
 
 	public void testSetConditional()
