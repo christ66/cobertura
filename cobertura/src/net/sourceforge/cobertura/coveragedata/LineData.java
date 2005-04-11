@@ -77,7 +77,7 @@ public class LineData
 		return (!isBranch || (getHits() > 0)) ? 1 : 0;
 	}
 
-	long getHits()
+	public long getHits()
 	{
 		return hits;
 	}
@@ -87,17 +87,17 @@ public class LineData
 		return (getHits() > 0) ? 1 : 0;
 	}
 
-	int getLineNumber()
+	public int getLineNumber()
 	{
 		return lineNumber;
 	}
 
-	String getMethodDescriptor()
+	public String getMethodDescriptor()
 	{
 		return methodDescriptor;
 	}
 
-	String getMethodName()
+	public String getMethodName()
 	{
 		return methodName;
 	}
@@ -127,7 +127,7 @@ public class LineData
 		return this.lineNumber;
 	}
 
-	boolean isBranch()
+	public boolean isBranch()
 	{
 		return isBranch;
 	}
