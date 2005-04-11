@@ -91,8 +91,7 @@ public class HTMLReport
 	{
 		if (pkg.getName().equals(""))
 			return "(default)";
-		else
-			return pkg.getName();
+		return pkg.getName();
 	}
 
 	private void generatePackageList() throws IOException
