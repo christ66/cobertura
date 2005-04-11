@@ -23,19 +23,10 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-public class PackageData implements HasBeenInstrumented, Serializable
+public class PackageData extends CoverageDataContainer
 {
 
-	/**
-	 * Each key is a class basename, stored as an String object.
-	 * Each value is information about the class, stored as a ClassData object.
-	 */
-	private Map classes = new HashMap();
+	private static final long serialVersionUID = 3;
 
 	private String name;
 
@@ -49,16 +40,19 @@ public class PackageData implements HasBeenInstrumented, Serializable
 
 	public void addClassData(ClassData classData)
 	{
-		if (classes.containsKey(classData.getBaseName()))
+		if (children.containsKey(classData.getBaseName()))
 			throw new IllegalArgumentException("Package " + this.name
 					+ " already contains a class with the name "
 					+ classData.getBaseName());
-		classes.put(classData.getBaseName(), classData);
+
+		// Each key is a class basename, stored as an String object.
+		// Each value is information about the class, stored as a ClassData object.
+		children.put(classData.getBaseName(), classData);
 	}
 
 	public boolean contains(String name)
 	{
-		return this.classes.containsKey(name);
+		return this.children.containsKey(name);
 	}
 
 	/**
@@ -70,22 +64,11 @@ public class PackageData implements HasBeenInstrumented, Serializable
 	{
 		if (this == obj)
 			return true;
-		if ((obj == null) || !(obj instanceof PackageData))
+		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
 			return false;
 
 		PackageData packageData = (PackageData)obj;
-		return this.name.equals(packageData.name)
-				&& this.classes.equals(packageData.classes);
-	}
-
-	public ClassData getClassData(String name)
-	{
-		return (ClassData)this.classes.get(name);
-	}
-
-	public Collection getClasses()
-	{
-		return this.classes.values();
+		return super.equals(obj) && this.name.equals(packageData.name);
 	}
 
 	public String getName()
@@ -93,8 +76,9 @@ public class PackageData implements HasBeenInstrumented, Serializable
 		return this.name;
 	}
 
-	public int getNumberOfClasses()
+	public int hashCode()
 	{
-		return this.classes.size();
+		return this.name.hashCode();
 	}
+
 }

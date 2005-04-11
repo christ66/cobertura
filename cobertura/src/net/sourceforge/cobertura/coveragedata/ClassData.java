@@ -22,21 +22,19 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import net.sourceforge.cobertura.util.ClassHelper;
 
 /**
  * <p>
- * CoverageData information is typically serialized to a file. An
+ * ProjectData information is typically serialized to a file. An
  * instance of this class records coverage information for a single
  * class that has been instrumented.
  * </p>
@@ -48,22 +46,16 @@ import net.sourceforge.cobertura.util.ClassHelper;
  * make use of this class.
  * </p>
  */
-public class ClassData implements HasBeenInstrumented, Serializable
+public class ClassData extends CoverageDataContainer
 {
 
-	private static final long serialVersionUID = 2;
+	private static final long serialVersionUID = 3;
 
 	/**
 	 * Each key is a line number in this class, stored as an Integer object.
 	 * Each value is information about the line, stored as a LineData object.
 	 */
 	private Map branches = new HashMap();
-
-	/**
-	 * Each key is a line number in this class, stored as an Integer object.
-	 * Each value is information about the line, stored as a LineData object.
-	 */
-	private SortedMap lines = new TreeMap();
 
 	private Set methodNamesAndDescriptors = new HashSet();
 
@@ -74,7 +66,7 @@ public class ClassData implements HasBeenInstrumented, Serializable
 	{
 		if (name == null)
 			throw new IllegalArgumentException(
-					"Package name must be specified.");
+					"Class name must be specified.");
 		this.name = name;
 	}
 
@@ -85,7 +77,9 @@ public class ClassData implements HasBeenInstrumented, Serializable
 		if (lineData == null)
 		{
 			lineData = new LineData(lineNumber);
-			lines.put(new Integer(lineNumber), lineData);
+			// Each key is a line number in this class, stored as an Integer object.
+			// Each value is information about the line, stored as a LineData object.
+			children.put(new Integer(lineNumber), lineData);
 		}
 		lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
 		methodNamesAndDescriptors.add(methodName + methodDescriptor);
@@ -100,38 +94,21 @@ public class ClassData implements HasBeenInstrumented, Serializable
 	{
 		if (this == obj)
 			return true;
-		if ((obj == null) || !(obj instanceof ClassData))
+		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
 			return false;
 
 		ClassData classData = (ClassData)obj;
-		boolean areFileNamesEqual = (this.sourceFileName == classData.sourceFileName)
-				|| ((this.sourceFileName != null)
-						&& (classData.sourceFileName != null) && (this.sourceFileName
-						.equals(classData.sourceFileName)));
-
-		return areFileNamesEqual
+		return super.equals(obj)
 				&& this.branches.equals(classData.branches)
-				&& this.lines.equals(classData.lines)
 				&& this.methodNamesAndDescriptors
-						.equals(classData.methodNamesAndDescriptors);
+						.equals(classData.methodNamesAndDescriptors)
+				&& this.name.equals(classData.name)
+				&& this.sourceFileName.equals(classData.sourceFileName);
 	}
 
 	public String getBaseName()
 	{
 		return ClassHelper.getBaseName(this.name);
-	}
-
-	/**
-	 * @return The branch coverage rate for the class.
-	 */
-	public double getBranchCoverageRate()
-	{
-		if (branches.size() == 0)
-		{
-			// no conditional branches, therefore 100% branch coverage.
-			return 1d;
-		}
-		return (double)getNumberOfCoveredBranches() / branches.size();
 	}
 
 	/**
@@ -161,9 +138,9 @@ public class ClassData implements HasBeenInstrumented, Serializable
 		return (double)hits / total;
 	}
 
-	public Set getBranches()
+	public Collection getBranches()
 	{
-		return Collections.unmodifiableSet(branches.keySet());
+		return Collections.unmodifiableCollection(branches.keySet());
 	}
 
 	/**
@@ -172,25 +149,13 @@ public class ClassData implements HasBeenInstrumented, Serializable
 	 */
 	public long getHitCount(int lineNumber)
 	{
-		Integer lineNum = new Integer(lineNumber);
-		if (!lines.containsKey(lineNum))
+		Integer lineObject = new Integer(lineNumber);
+		if (!children.containsKey(lineObject))
 		{
 			return 0;
 		}
 
-		return ((LineData)lines.get(lineNum)).getHits();
-	}
-
-	/**
-	 * @return The line coverage rate for the class
-	 */
-	public double getLineCoverageRate()
-	{
-		if (lines.size() == 0)
-		{
-			return 1d;
-		}
-		return (double)getNumberOfCoveredLines() / lines.size();
+		return ((LineData)children.get(lineObject)).getHits();
 	}
 
 	/**
@@ -201,7 +166,7 @@ public class ClassData implements HasBeenInstrumented, Serializable
 		int total = 0;
 		int hits = 0;
 
-		Iterator iter = lines.values().iterator();
+		Iterator iter = children.values().iterator();
 		while (iter.hasNext())
 		{
 			LineData next = (LineData)iter.next();
@@ -222,7 +187,7 @@ public class ClassData implements HasBeenInstrumented, Serializable
 
 	private LineData getLineData(int lineNumber)
 	{
-		return (LineData)lines.get(new Integer(lineNumber));
+		return (LineData)children.get(new Integer(lineNumber));
 	}
 
 	/**
@@ -241,53 +206,11 @@ public class ClassData implements HasBeenInstrumented, Serializable
 	}
 
 	/**
-	 * @return The number of branches in this class covered by testing.
-	 */
-	public int getNumberOfCoveredBranches()
-	{
-		int num = 0;
-
-		Iterator iter = branches.values().iterator();
-		while (iter.hasNext())
-		{
-			if (((LineData)iter.next()).getHits() > 0)
-				num++;
-		}
-
-		return num;
-	}
-
-	/**
-	 * @return The number of lines in this class covered by testing.
-	 */
-	public int getNumberOfCoveredLines()
-	{
-		int num = 0;
-
-		Iterator iter = lines.values().iterator();
-		while (iter.hasNext())
-		{
-			if (((LineData)iter.next()).getHits() > 0)
-				num++;
-		}
-
-		return num;
-	}
-
-	/**
 	 * @return The number of branches in this class.
 	 */
 	public int getNumberOfValidBranches()
 	{
 		return branches.size();
-	}
-
-	/**
-	 * @return The number of lines in this class.
-	 */
-	public int getNumberOfValidLines()
-	{
-		return lines.size();
 	}
 
 	public String getPackageName()
@@ -300,12 +223,9 @@ public class ClassData implements HasBeenInstrumented, Serializable
 		return sourceFileName;
 	}
 
-	/**
-	 * @return The set of valid source line numbers.
-	 */
-	public Set getValidLineNumbers()
+	public int hashCode()
 	{
-		return Collections.unmodifiableSet(lines.keySet());
+		return this.name.hashCode();
 	}
 
 	/**
@@ -324,7 +244,7 @@ public class ClassData implements HasBeenInstrumented, Serializable
 	 */
 	public boolean isValidSourceLineNumber(int lineNumber)
 	{
-		return lines.containsKey(new Integer(lineNumber));
+		return children.containsKey(new Integer(lineNumber));
 	}
 
 	public void markLineAsBranch(int lineNumber)
@@ -344,7 +264,7 @@ public class ClassData implements HasBeenInstrumented, Serializable
 	 */
 	public void merge(ClassData coverageData)
 	{
-		lines.putAll(coverageData.lines);
+		children.putAll(coverageData.children);
 		branches.putAll(coverageData.branches);
 		methodNamesAndDescriptors.addAll(coverageData
 				.getMethodNamesAndDescriptors());
@@ -352,12 +272,9 @@ public class ClassData implements HasBeenInstrumented, Serializable
 
 	public void removeLine(int lineNumber)
 	{
-		lines.remove(new Integer(lineNumber));
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
+		Integer lineObject = new Integer(lineNumber);
+		children.remove(lineObject);
+		branches.remove(lineObject);
 	}
 
 	public void setSourceFileName(String sourceFileName)
@@ -376,4 +293,5 @@ public class ClassData implements HasBeenInstrumented, Serializable
 		if (lineData != null)
 			lineData.touch();
 	}
+
 }

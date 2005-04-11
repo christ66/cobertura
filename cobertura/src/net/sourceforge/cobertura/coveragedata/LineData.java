@@ -32,7 +32,8 @@ import java.io.Serializable;
  * make use of this class.
  * </p>
  */
-public class LineData implements HasBeenInstrumented, Serializable
+public class LineData
+		implements CoverageData, HasBeenInstrumented, Serializable
 {
 	private static final long serialVersionUID = 3;
 
@@ -60,7 +61,7 @@ public class LineData implements HasBeenInstrumented, Serializable
 	{
 		if (this == obj)
 			return true;
-		if ((obj == null) || !(obj instanceof LineData))
+		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
 			return false;
 
 		LineData lineData = (LineData)obj;
@@ -71,9 +72,19 @@ public class LineData implements HasBeenInstrumented, Serializable
 				&& (this.methodName.equals(lineData.methodName));
 	}
 
+	public double getBranchCoverageRate()
+	{
+		return (!isBranch || (getHits() > 0)) ? 1 : 0;
+	}
+
 	long getHits()
 	{
 		return hits;
+	}
+
+	public double getLineCoverageRate()
+	{
+		return (getHits() > 0) ? 1 : 0;
 	}
 
 	int getLineNumber()
@@ -89,6 +100,31 @@ public class LineData implements HasBeenInstrumented, Serializable
 	String getMethodName()
 	{
 		return methodName;
+	}
+
+	public int getNumberOfCoveredBranches()
+	{
+		return (isBranch() && (getHits() > 0)) ? 1 : 0;
+	}
+
+	public int getNumberOfCoveredLines()
+	{
+		return (getHits() > 0) ? 1 : 0;
+	}
+
+	public int getNumberOfValidBranches()
+	{
+		return (isBranch()) ? 1 : 0;
+	}
+
+	public int getNumberOfValidLines()
+	{
+		return 1;
+	}
+
+	public int hashCode()
+	{
+		return this.lineNumber;
 	}
 
 	boolean isBranch()

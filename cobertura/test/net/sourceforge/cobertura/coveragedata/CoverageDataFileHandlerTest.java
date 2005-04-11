@@ -34,7 +34,7 @@ public class CoverageDataFileHandlerTest extends TestCase
 	private final static String pathToTestOutput = basedir
 			+ "/build/test/CoverageDataFileHandlerTest";
 
-	private final CoverageData a = new CoverageData();
+	private final ProjectData a = new ProjectData();
 	private File tmpDir = new File(pathToTestOutput);
 
 	public void setUp()
@@ -42,7 +42,7 @@ public class CoverageDataFileHandlerTest extends TestCase
 		// Create some coverage data
 		ClassData classData;
 		assertEquals(0, a.getNumberOfClasses());
-		assertEquals(0, a.getNumberOfPackages());
+		assertEquals(0, a.getNumberOfChildren());
 
 		classData = new ClassData("HelloWorld");
 		classData.setSourceFileName("com/example/HelloWorld.java");
@@ -50,7 +50,7 @@ public class CoverageDataFileHandlerTest extends TestCase
 			classData.addLine(i, "test", "(I)B");
 		a.addClassData(classData);
 		assertEquals(1, a.getNumberOfClasses());
-		assertEquals(1, a.getNumberOfPackages());
+		assertEquals(1, a.getNumberOfChildren());
 
 		classData = new ClassData("HelloWorldHelper");
 		classData.setSourceFileName("com/example/HelloWorldHelper.java");
@@ -58,7 +58,7 @@ public class CoverageDataFileHandlerTest extends TestCase
 			classData.addLine(i, "test", "(I)B");
 		a.addClassData(classData);
 		assertEquals(2, a.getNumberOfClasses());
-		assertEquals(1, a.getNumberOfPackages());
+		assertEquals(1, a.getNumberOfChildren());
 
 		// Create the directory for our serialized coverage data
 		tmpDir.mkdirs();
@@ -78,7 +78,7 @@ public class CoverageDataFileHandlerTest extends TestCase
 		File dataFile = new File(tmpDir, CoverageDataFileHandler.FILE_NAME);
 		CoverageDataFileHandler.SaveCoverageData(a, dataFile);
 
-		CoverageData b;
+		ProjectData b;
 		b = CoverageDataFileHandler.LoadCoverageData(dataFile);
 		assertEquals(a, b);
 	}
