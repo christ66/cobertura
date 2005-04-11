@@ -64,10 +64,11 @@ public class LineData implements HasBeenInstrumented, Serializable
 			return false;
 
 		LineData lineData = (LineData)obj;
-		return (hits == lineData.hits) && (isBranch == lineData.isBranch)
-				&& (lineNumber == lineData.lineNumber)
-				&& (methodDescriptor.equals(lineData.methodDescriptor))
-				&& (methodName.equals(lineData.methodName));
+		return (this.hits == lineData.hits)
+				&& (this.isBranch == lineData.isBranch)
+				&& (this.lineNumber == lineData.lineNumber)
+				&& (this.methodDescriptor.equals(lineData.methodDescriptor))
+				&& (this.methodName.equals(lineData.methodName));
 	}
 
 	long getHits()

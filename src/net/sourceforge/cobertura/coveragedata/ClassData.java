@@ -32,6 +32,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import net.sourceforge.cobertura.util.ClassHelper;
+
 /**
  * <p>
  * CoverageData information is typically serialized to a file. An
@@ -65,7 +67,16 @@ public class ClassData implements HasBeenInstrumented, Serializable
 
 	private Set methodNamesAndDescriptors = new HashSet();
 
+	private String name = null;
 	private String sourceFileName = null;
+
+	public ClassData(String name)
+	{
+		if (name == null)
+			throw new IllegalArgumentException(
+					"Package name must be specified.");
+		this.name = name;
+	}
 
 	public void addLine(int lineNumber, String methodName,
 			String methodDescriptor)
@@ -93,16 +104,21 @@ public class ClassData implements HasBeenInstrumented, Serializable
 			return false;
 
 		ClassData classData = (ClassData)obj;
-		boolean areFileNamesEqual = (sourceFileName == classData.sourceFileName)
-				|| ((sourceFileName != null)
-						&& (classData.sourceFileName != null) && (sourceFileName
+		boolean areFileNamesEqual = (this.sourceFileName == classData.sourceFileName)
+				|| ((this.sourceFileName != null)
+						&& (classData.sourceFileName != null) && (this.sourceFileName
 						.equals(classData.sourceFileName)));
 
 		return areFileNamesEqual
-				&& branches.equals(classData.branches)
-				&& lines.equals(classData.lines)
-				&& methodNamesAndDescriptors
+				&& this.branches.equals(classData.branches)
+				&& this.lines.equals(classData.lines)
+				&& this.methodNamesAndDescriptors
 						.equals(classData.methodNamesAndDescriptors);
+	}
+
+	public String getBaseName()
+	{
+		return ClassHelper.getBaseName(this.name);
 	}
 
 	/**
@@ -218,6 +234,12 @@ public class ClassData implements HasBeenInstrumented, Serializable
 		return methodNamesAndDescriptors;
 	}
 
+	// TODO: Get rid of this and use getPackageName() or getBaseName()?
+	public String getName()
+	{
+		return name;
+	}
+
 	/**
 	 * @return The number of branches in this class covered by testing.
 	 */
@@ -266,6 +288,11 @@ public class ClassData implements HasBeenInstrumented, Serializable
 	public int getNumberOfValidLines()
 	{
 		return lines.size();
+	}
+
+	public String getPackageName()
+	{
+		return ClassHelper.getPackageName(this.name);
 	}
 
 	public String getSourceFileName()
@@ -326,6 +353,11 @@ public class ClassData implements HasBeenInstrumented, Serializable
 	public void removeLine(int lineNumber)
 	{
 		lines.remove(new Integer(lineNumber));
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
 	}
 
 	public void setSourceFileName(String sourceFileName)

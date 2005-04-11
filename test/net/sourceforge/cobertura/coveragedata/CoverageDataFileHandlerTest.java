@@ -22,7 +22,6 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import java.io.File;
-import java.util.Iterator;
 
 import junit.framework.TestCase;
 
@@ -43,19 +42,23 @@ public class CoverageDataFileHandlerTest extends TestCase
 		// Create some coverage data
 		ClassData classData;
 		assertEquals(0, a.getNumberOfClasses());
+		assertEquals(0, a.getNumberOfPackages());
 
-		classData = new ClassData();
+		classData = new ClassData("HelloWorld");
 		classData.setSourceFileName("com/example/HelloWorld.java");
 		for (int i = 0; i < 10; i++)
 			classData.addLine(i, "test", "(I)B");
 		a.addClassData(classData);
 		assertEquals(1, a.getNumberOfClasses());
-		classData = new ClassData();
+		assertEquals(1, a.getNumberOfPackages());
+
+		classData = new ClassData("HelloWorldHelper");
 		classData.setSourceFileName("com/example/HelloWorldHelper.java");
 		for (int i = 0; i < 14; i++)
 			classData.addLine(i, "test", "(I)B");
 		a.addClassData(classData);
 		assertEquals(2, a.getNumberOfClasses());
+		assertEquals(1, a.getNumberOfPackages());
 
 		// Create the directory for our serialized coverage data
 		tmpDir.mkdirs();

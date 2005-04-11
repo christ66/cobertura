@@ -23,35 +23,35 @@ package net.sourceforge.cobertura.coveragedata;
 
 import junit.framework.TestCase;
 
-public class CoverageDataTest extends TestCase
+public class PackageDataTest extends TestCase
 {
 
-	private CoverageData coverageData;
+	private PackageData packageData;
 
 	public void setUp()
 	{
-		coverageData = new CoverageData();
+		packageData = new PackageData("com.example.HelloWorld");
 	}
 
 	public void testAddClass()
 	{
 		ClassData classData;
 
-		assertEquals(0, coverageData.getNumberOfPackages());
+		assertEquals(0, packageData.getNumberOfClasses());
 
 		classData = new ClassData("HelloWorld");
 		classData.setSourceFileName("com/example/HelloWorld.java");
 		for (int i = 0; i < 10; i++)
 			classData.addLine(i, "test", "(I)B");
-		coverageData.addClassData(classData);
-		assertEquals(1, coverageData.getNumberOfPackages());
+		packageData.addClassData(classData);
+		assertEquals(1, packageData.getNumberOfClasses());
 
 		classData = new ClassData("HelloWorldHelper");
 		classData.setSourceFileName("com/example/HelloWorldHelper.java");
 		for (int i = 0; i < 14; i++)
 			classData.addLine(i, "test", "(I)B");
-		coverageData.addClassData(classData);
-		assertEquals(1, coverageData.getNumberOfPackages());
+		packageData.addClassData(classData);
+		assertEquals(2, packageData.getNumberOfClasses());
 
 		// See what happens when we try to add the same class twice
 		classData = new ClassData("HelloWorld");
@@ -60,7 +60,7 @@ public class CoverageDataTest extends TestCase
 			classData.addLine(i, "test", "(I)B");
 		try
 		{
-			coverageData.addClassData(classData);
+			packageData.addClassData(classData);
 			fail("Expected an IllegalArgumentException but did not receive one!");
 		}
 		catch (IllegalArgumentException e)
@@ -68,14 +68,14 @@ public class CoverageDataTest extends TestCase
 			// Good!
 		}
 
-		assertEquals(1, coverageData.getNumberOfPackages());
+		assertEquals(2, packageData.getNumberOfClasses());
 	}
 
 	public void testEquals()
 	{
-		CoverageData a = new CoverageData();
-		CoverageData b = new CoverageData();
-		CoverageData c = new CoverageData();
+		PackageData a = new PackageData("com.example.HelloWorld");
+		PackageData b = new PackageData("com.example.HelloWorld");
+		PackageData c = new PackageData("com.example.HelloWorld");
 		ClassData classData1 = new ClassData("HelloWorld1");
 		ClassData classData2 = new ClassData("HelloWorld2");
 		ClassData classData3 = new ClassData("HelloWorld3");
