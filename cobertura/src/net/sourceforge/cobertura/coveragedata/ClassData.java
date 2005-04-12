@@ -194,6 +194,22 @@ public class ClassData extends CoverageDataContainer
 		return (LineData)children.get(new Integer(lineNumber));
 	}
 
+	public Collection getLines(String methodNameAndDescriptor)
+	{
+		Collection lines = new HashSet();
+		Iterator iter = children.values().iterator();
+		while (iter.hasNext())
+		{
+			LineData next = (LineData)iter.next();
+			if (methodNameAndDescriptor.equals(next.getMethodName()
+					+ next.getMethodDescriptor()))
+			{
+				lines.add(next);
+			}
+		}
+		return lines;
+	}
+
 	/**
 	 * @return The method name and descriptor of each method found in the
 	 *         class represented by this instrumentation.

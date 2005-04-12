@@ -27,7 +27,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.LineData;
@@ -171,7 +174,9 @@ public class XMLReport
 		println("<methods>");
 		increaseIndentation();
 
-		Iterator iter = classData.getMethodNamesAndDescriptors().iterator();
+		SortedSet sortedMethods = new TreeSet();
+		sortedMethods.addAll(classData.getMethodNamesAndDescriptors());
+		Iterator iter = sortedMethods.iterator();
 		while (iter.hasNext())
 		{
 			dumpMethod(classData, (String)iter.next());
@@ -190,7 +195,11 @@ public class XMLReport
 
 		println("<method name=\"" + xmlEscape(name) + "\" signature=\""
 				+ xmlEscape(signature) + "\" line-rate=\"" + lineRate
-				+ "\" branch-rate=\"" + branchRate + "\"/>");
+				+ "\" branch-rate=\"" + branchRate + "\">");
+		increaseIndentation();
+		dumpLines(classData, nameAndSig);
+		decreaseIndentation();
+		println("</method>");
 	}
 
 	private static String xmlEscape(String str)
@@ -202,10 +211,22 @@ public class XMLReport
 
 	private void dumpLines(ClassData classData)
 	{
+		dumpLines(classData.getChildren());
+	}
+
+	private void dumpLines(ClassData classData, String methodNameAndSig)
+	{
+		dumpLines(classData.getLines(methodNameAndSig));
+	}
+
+	private void dumpLines(Collection lines)
+	{
 		println("<lines>");
 		increaseIndentation();
 
-		Iterator iter = classData.getChildren().iterator();
+		SortedSet sortedLines = new TreeSet();
+		sortedLines.addAll(lines);
+		Iterator iter = sortedLines.iterator();
 		while (iter.hasNext())
 		{
 			dumpLine((LineData)iter.next());

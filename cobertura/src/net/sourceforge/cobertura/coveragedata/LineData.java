@@ -33,7 +33,7 @@ import java.io.Serializable;
  * </p>
  */
 public class LineData
-		implements CoverageData, HasBeenInstrumented, Serializable
+		implements Comparable, CoverageData, HasBeenInstrumented, Serializable
 {
 	private static final long serialVersionUID = 3;
 
@@ -55,6 +55,16 @@ public class LineData
 		this.lineNumber = lineNumber;
 		this.methodName = methodName;
 		this.methodDescriptor = methodDescriptor;
+	}
+
+	/**
+	 * This is required because we implement Comparable.
+	 */
+	public int compareTo(Object o)
+	{
+		if (!o.getClass().equals(LineData.class))
+			return Integer.MAX_VALUE;
+		return this.lineNumber - ((LineData)o).lineNumber;
 	}
 
 	public boolean equals(Object obj)
