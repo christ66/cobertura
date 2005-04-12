@@ -56,7 +56,7 @@ public class PackageData extends CoverageDataContainer implements Comparable, Ha
 	public int compareTo(Object o)
 	{
 		if (!o.getClass().equals(PackageData.class))
-			return 1;
+			return Integer.MAX_VALUE;
 		return this.name.compareTo(((PackageData)o).name);
 	}
 

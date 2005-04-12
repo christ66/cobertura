@@ -18,7 +18,7 @@
 
 <!ELEMENT methods (method*)>
 
-<!ELEMENT method EMPTY>
+<!ELEMENT method (lines)>
 <!ATTLIST method name        CDATA #REQUIRED>
 <!ATTLIST method signature   CDATA #REQUIRED>
 <!ATTLIST method line-rate   CDATA #REQUIRED>
