@@ -120,16 +120,16 @@ public class CoverageReportTask extends MatchingTask
 	{
 		Header.print(System.out);
 
-		getJava().createArg().setValue("-i");
+		getJava().createArg().setValue("--datafile");
 		getJava().createArg().setValue(coverageDataFileName);
 
-		getJava().createArg().setValue("-s");
+		getJava().createArg().setValue("--source");
 		getJava().createArg().setValue(src.toString());
 
-		getJava().createArg().setValue("-o");
+		getJava().createArg().setValue("--output");
 		getJava().createArg().setValue(destDir.toString());
 
-		getJava().createArg().setValue("-f");
+		getJava().createArg().setValue("--format");
 		getJava().createArg().setValue(format);
 
 		if (getJava().executeJava() != 0)
