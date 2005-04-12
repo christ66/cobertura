@@ -122,14 +122,14 @@ public class InstrumentTask extends CommonMatchingTask
 		initArgs();
 		if (toDir != null)
 		{
-			addArg("-d");
+			addArg("--destination");
 			addArg(toDir.toString());
 		}
 
 		// TODO: ignoreRegex.setRegex() is never called
 		if (ignoreRegex != null)
 		{
-			addArg("-ignore");
+			addArg("--ignore");
 			addArg(ignoreRegex.getRegex());
 		}
 
@@ -140,7 +140,7 @@ public class InstrumentTask extends CommonMatchingTask
 		{
 			FileSet fileSet = (FileSet)i.next();
 
-			addArg("-basedir");
+			addArg("--basedir");
 			addArg(baseDir(fileSet));
 
 			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
