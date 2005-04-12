@@ -76,10 +76,10 @@ public class CoverageDataFileHandlerTest extends TestCase
 	public void testSaveAndRestore()
 	{
 		File dataFile = new File(tmpDir, CoverageDataFileHandler.FILE_NAME);
-		CoverageDataFileHandler.SaveCoverageData(a, dataFile);
+		CoverageDataFileHandler.saveCoverageData(a, dataFile);
 
 		ProjectData b;
-		b = CoverageDataFileHandler.LoadCoverageData(dataFile);
+		b = CoverageDataFileHandler.loadCoverageData(dataFile);
 		assertEquals(a, b);
 	}
 

@@ -30,8 +30,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import net.sourceforge.cobertura.util.ClassHelper;
-
 /**
  * <p>
  * ProjectData information is typically serialized to a file. An
@@ -47,6 +45,7 @@ import net.sourceforge.cobertura.util.ClassHelper;
  * </p>
  */
 public class ClassData extends CoverageDataContainer
+		implements HasBeenInstrumented
 {
 
 	private static final long serialVersionUID = 3;
@@ -108,7 +107,12 @@ public class ClassData extends CoverageDataContainer
 
 	public String getBaseName()
 	{
-		return ClassHelper.getBaseName(this.name);
+		int lastDot = this.name.lastIndexOf('.');
+		if (lastDot == -1)
+		{
+			return this.name;
+		}
+		return this.name.substring(lastDot + 1);
 	}
 
 	/**
@@ -199,7 +203,6 @@ public class ClassData extends CoverageDataContainer
 		return methodNamesAndDescriptors;
 	}
 
-	// TODO: Get rid of this and use getPackageName() or getBaseName()?
 	public String getName()
 	{
 		return name;
@@ -215,12 +218,22 @@ public class ClassData extends CoverageDataContainer
 
 	public String getPackageName()
 	{
-		return ClassHelper.getPackageName(this.name);
+		int lastDot = this.name.lastIndexOf('.');
+		if (lastDot == -1)
+		{
+			return "";
+		}
+		return this.name.substring(0, lastDot);
 	}
 
 	public String getSourceFileName()
 	{
-		return sourceFileName;
+		if (sourceFileName == null)
+			return null;
+		String packageName = getPackageName();
+		if (packageName == null)
+			return sourceFileName;
+		return getPackageName().replace('.', '/') + "/" + sourceFileName;
 	}
 
 	public int hashCode()

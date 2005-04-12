@@ -26,11 +26,9 @@ import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.util.Map;
 
+import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.html.HTMLReport;
 import net.sourceforge.cobertura.reporting.xml.XMLReport;
 
@@ -43,7 +41,7 @@ public class Main
 
 	// TODO: make these not static?
 	static String format;
-	static File serializationFile;
+	static File dataFile;
 	static File sourceDir;
 	static File outputDir;
 
@@ -54,14 +52,14 @@ public class Main
 		LongOpt[] longOpts = new LongOpt[4];
 		longOpts[0] = new LongOpt("format", LongOpt.REQUIRED_ARGUMENT, null,
 				'f');
-		longOpts[1] = new LongOpt("instrumentation",
-				LongOpt.REQUIRED_ARGUMENT, null, 'i');
+		longOpts[1] = new LongOpt("datafile",
+				LongOpt.REQUIRED_ARGUMENT, null, 'd');
 		longOpts[2] = new LongOpt("output", LongOpt.REQUIRED_ARGUMENT, null,
 				'o');
 		longOpts[3] = new LongOpt("source", LongOpt.REQUIRED_ARGUMENT, null,
 				's');
 
-		Getopt g = new Getopt(Main.class.getName(), args, ":f:i:o:s:",
+		Getopt g = new Getopt(Main.class.getName(), args, ":f:d:o:s:",
 				longOpts);
 
 		int c;
@@ -80,17 +78,18 @@ public class Main
 					}
 					break;
 
-				case 'i':
-					serializationFile = new File(g.getOptarg());
-					if (!serializationFile.exists())
+				case 'd':
+					dataFile = new File(g.getOptarg());
+					if (!dataFile.exists())
 					{
-						throw new Exception("Error: serialization file "
-								+ serializationFile + " does not exist");
+						throw new Exception("Error: data file "
+								+ dataFile.getAbsolutePath()
+								+ " does not exist");
 					}
-					if (serializationFile.isDirectory())
+					if (dataFile.isDirectory())
 					{
-						throw new Exception("Error: serialization file "
-								+ serializationFile
+						throw new Exception("Error: data file "
+								+ dataFile.getAbsolutePath()
 								+ " cannot be a directory");
 					}
 					break;
@@ -125,36 +124,24 @@ public class Main
 		if (logger.isDebugEnabled())
 		{
 			logger.debug("format is " + format);
-			logger.debug("serializationFile is "
-					+ serializationFile.getAbsolutePath());
+			logger.debug("dataFile is "
+					+ dataFile.getAbsolutePath());
 			logger.debug("outputDir is " + outputDir.getAbsolutePath());
 			logger.debug("sourceDir is " + sourceDir.getAbsolutePath());
 		}
 
-		InputStream is = null;
-		ObjectInputStream objects = null;
-		try
-		{
-			is = new FileInputStream(serializationFile);
-			objects = new ObjectInputStream(is);
-			Map coverageData = (Map)objects.readObject();
-			CoverageReport coverage = new CoverageReport(coverageData);
+		if (dataFile == null)
+			dataFile = new File(CoverageDataFileHandler.FILE_NAME);
+		ProjectData projectData = CoverageDataFileHandler
+				.loadCoverageData(dataFile);
 
-			if (format.equalsIgnoreCase("xml"))
-			{
-				new XMLReport(coverage, outputDir, sourceDir);
-			}
-			else if (format.equalsIgnoreCase("html"))
-			{
-				new HTMLReport(coverage, outputDir, sourceDir);
-			}
-		}
-		finally
+		if (format.equalsIgnoreCase("html"))
 		{
-			if (is != null)
-				is.close();
-			if (objects != null)
-				objects.close();
+			new HTMLReport(projectData, outputDir, sourceDir);
+		}
+		else if (format.equalsIgnoreCase("xml"))
+		{
+			new XMLReport(projectData, outputDir, sourceDir);
 		}
 
 		long stopTime = System.currentTimeMillis();

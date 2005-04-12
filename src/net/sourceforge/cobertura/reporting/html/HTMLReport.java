@@ -32,35 +32,40 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
-import net.sourceforge.cobertura.reporting.Clazz;
-import net.sourceforge.cobertura.reporting.CoverageReport;
-import net.sourceforge.cobertura.reporting.Package;
+import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.coveragedata.PackageData;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.Util;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
 
+import org.apache.log4j.Logger;
+
 public class HTMLReport
 {
+
+	private static final Logger logger = Logger.getLogger(HTMLReport.class);
 
 	private File outputDir;
 
 	private File sourceDir;
 
-	private CoverageReport coverage;
+	private ProjectData projectData;
 
 	/**
 	 * Create a coverage report
 	 */
-	public HTMLReport(CoverageReport coverage, File outputDir, File sourceDir)
+	public HTMLReport(ProjectData projectData, File outputDir, File sourceDir)
 			throws Exception
 	{
 		this.outputDir = outputDir;
 		this.sourceDir = sourceDir;
-		this.coverage = coverage;
+		this.projectData = projectData;
 
-		removeNonexistantClasses();
 		CopyFiles.copy(outputDir);
 		generatePackageList();
 		generateClassLists();
@@ -68,30 +73,11 @@ public class HTMLReport
 		generateSourceFiles();
 	}
 
-	/**
-	 * Go through the classes in our coverage data and remove any class
-	 * for which we don't have source code.  These classes are usually
-	 * RMI stubs or inner classes.
-	 */
-	private void removeNonexistantClasses()
+	private String generatePackageName(PackageData packageData)
 	{
-		Iterator iter = coverage.getClasses().iterator();
-		while (iter.hasNext())
-		{
-			Clazz clazz = (Clazz)iter.next();
-			File file = new File(sourceDir, clazz.getLongFileName());
-			if (!file.isFile())
-			{
-				coverage.removeClass(clazz);
-			}
-		}
-	}
-
-	private String generatePackageName(Package pkg) 
-	{
-		if (pkg.getName().equals(""))
+		if (packageData.getName().equals(""))
 			return "(default)";
-		return pkg.getName();
+		return packageData.getName();
 	}
 
 	private void generatePackageList() throws IOException
@@ -116,17 +102,22 @@ public class HTMLReport
 			out
 					.println("<td nowrap=\"nowrap\"><a href=\"frame-summary.html\" onClick='parent.classList.location.href=\"frame-classes.html\"' target=\"summary\">All</a></td>");
 			out.println("</tr>");
-			Iterator iter = coverage.getPackages().iterator();
+
+			SortedSet sortedPackages = new TreeSet();
+			sortedPackages.addAll(projectData.getChildren());
+			Iterator iter = sortedPackages.iterator();
 			while (iter.hasNext())
 			{
-				Package pkg = (Package)iter.next();
-				String url1 = "frame-summary-" + pkg.getName() + ".html";
-				String url2 = "frame-classes-" + pkg.getName() + ".html";
+				PackageData packageData = (PackageData)iter.next();
+				String url1 = "frame-summary-" + packageData.getName()
+						+ ".html";
+				String url2 = "frame-classes-" + packageData.getName()
+						+ ".html";
 				out.println("<tr>");
 				out.println("<td nowrap=\"nowrap\"><a href=\"" + url1
 						+ "\" onClick='parent.classList.location.href=\""
-						+ url2 + "\"' target=\"summary\">" + generatePackageName(pkg)
-						+ "</a></td>");
+						+ url2 + "\"' target=\"summary\">"
+						+ generatePackageName(packageData) + "</a></td>");
 				out.println("</tr>");
 			}
 			out.println("</table>");
@@ -145,27 +136,29 @@ public class HTMLReport
 	private void generateClassLists() throws IOException
 	{
 		generateClassList(null);
-		Iterator iter = coverage.getPackages().iterator();
+		Iterator iter = projectData.getChildren().iterator();
 		while (iter.hasNext())
 		{
-			Package pkg = (Package)iter.next();
-			generateClassList(pkg);
+			PackageData packageData = (PackageData)iter.next();
+			generateClassList(packageData);
 		}
 	}
 
-	private void generateClassList(Package pkg) throws IOException
+	private void generateClassList(PackageData packageData)
+			throws IOException
 	{
 		String filename;
 		Collection classes;
-		if (pkg == null)
+		if (packageData == null)
 		{
 			filename = "frame-classes.html";
-			classes = coverage.getClassesSortedByBasename().values();
+			//TODO: Need to sort classes
+			classes = projectData.getClasses();
 		}
 		else
 		{
-			filename = "frame-classes-" + pkg.getName() + ".html";
-			classes = pkg.getClasses();
+			filename = "frame-classes-" + packageData.getName() + ".html";
+			classes = packageData.getChildren();
 		}
 		File file = new File(outputDir, filename);
 		PrintStream out = null;
@@ -182,26 +175,37 @@ public class HTMLReport
 			out.println("</head>");
 			out.println("<body>");
 			out.println("<h5>");
-			out.println(pkg == null ? "All Packages" : generatePackageName(pkg));
+			out.println(packageData == null
+					? "All Packages"
+					: generatePackageName(packageData));
 			out.println("</h5>");
 			out.println("<h5>Classes</h5>");
 			out.println("<table width=\"100%\">");
 
-			for (Iterator iter = classes.iterator(); iter.hasNext();)
+			Iterator iter;
+			Map sortedClassList = new TreeMap();
+			iter = classes.iterator();
+			while (iter.hasNext())
 			{
-				Clazz clazz = (Clazz)iter.next();
+				ClassData classData = (ClassData)iter.next();
+				sortedClassList.put(classData.getBaseName(), classData);
+			}
+			iter = sortedClassList.values().iterator();
+			while (iter.hasNext())
+			{
+				ClassData classData = (ClassData)iter.next();
 				out.println("<tr>");
 				String percentCovered;
-				if (clazz.getNumberOfLines() > 0)
-					percentCovered = getPercentValue(clazz
+				if (classData.getNumberOfValidLines() > 0)
+					percentCovered = getPercentValue(classData
 							.getLineCoverageRate());
 				else
 					percentCovered = "N/A";
 				out
 						.println("<td nowrap=\"nowrap\"><a target=\"summary\" href=\""
-								+ clazz.getLongName()
+								+ classData.getName()
 								+ ".html\">"
-								+ clazz.getName()
+								+ classData.getBaseName()
 								+ "</a> <i>("
 								+ percentCovered + ")</i></td>");
 				out.println("</tr>");
@@ -225,24 +229,24 @@ public class HTMLReport
 	private void generateOverviews() throws IOException
 	{
 		generateOverview(null);
-		Iterator iter = coverage.getPackages().iterator();
+		Iterator iter = projectData.getChildren().iterator();
 		while (iter.hasNext())
 		{
-			Package pkg = (Package)iter.next();
-			generateOverview(pkg);
+			PackageData packageData = (PackageData)iter.next();
+			generateOverview(packageData);
 		}
 	}
 
-	private void generateOverview(Package pkg) throws IOException
+	private void generateOverview(PackageData packageData) throws IOException
 	{
 		String filename;
-		if (pkg == null)
+		if (packageData == null)
 		{
 			filename = "frame-summary.html";
 		}
 		else
 		{
-			filename = "frame-summary-" + pkg.getName() + ".html";
+			filename = "frame-summary-" + packageData.getName() + ".html";
 		}
 		File file = new File(outputDir, filename);
 		PrintStream out = null;
@@ -268,7 +272,9 @@ public class HTMLReport
 			out.println("<body>");
 
 			out.print("<h5>Coverage Report - ");
-			out.print(pkg == null ? "All Packages" : generatePackageName(pkg));
+			out.print(packageData == null
+					? "All Packages"
+					: generatePackageName(packageData));
 			out.println("</h5>");
 			out.println("<p>");
 			out.println("<table class=\"report\" id=\"packageResults\">");
@@ -281,32 +287,30 @@ public class HTMLReport
 			out.println("</thead>");
 			out.println("<tbody>");
 
-			Set packages;
-			if (pkg == null)
+			Collection packages;
+			if (packageData == null)
 			{
 				// Output a summary line for all packages
 				out.println(generateTableRowForTotal());
 
 				// Get packages
-				packages = coverage.getPackages();
+				packages = projectData.getChildren();
 			}
 			else
 			{
-				// Output a line for the current package
-				out.println(generateTableRowForPackage(pkg));
-
 				// Get subpackages
-				packages = coverage.getSubPackages(pkg);
+				packages = projectData.getSubPackages(packageData.getName());
 			}
 
 			// Output a line for each package or subpackage
+			// TODO: Do we need this extra "package.size() > 0" check?
 			if (packages.size() > 0)
 			{
 				Iterator iter = packages.iterator();
 				while (iter.hasNext())
 				{
-					Package subpkg = (Package)iter.next();
-					out.println(generateTableRowForPackage(subpkg));
+					PackageData subPackageData = (PackageData)iter.next();
+					out.println(generateTableRowForPackage(subPackageData));
 				}
 			}
 
@@ -322,26 +326,26 @@ public class HTMLReport
 			out.println("</p>");
 
 			// Get the list of classes in this package
-			Set classes;
-			if (pkg == null)
+			Collection classes;
+			if (packageData == null)
 			{
 				classes = new TreeSet();
-				if (coverage.getNumberOfClasses() > 0)
+				if (projectData.getNumberOfClasses() > 0)
 				{
-					Iterator iter = coverage.getClasses().iterator();
+					Iterator iter = projectData.getClasses().iterator();
 					while (iter.hasNext())
 					{
-						Clazz clazz = (Clazz)iter.next();
-						if (clazz.getPackageName() == null)
+						ClassData classData = (ClassData)iter.next();
+						if (classData.getPackageName() == null)
 						{
-							classes.add(clazz);
+							classes.add(classData);
 						}
 					}
 				}
 			}
 			else
 			{
-				classes = pkg.getClasses();
+				classes = packageData.getChildren();
 			}
 
 			// Output a line for each class
@@ -355,8 +359,8 @@ public class HTMLReport
 				Iterator iter = classes.iterator();
 				while (iter.hasNext())
 				{
-					Clazz clazz = (Clazz)iter.next();
-					out.println(generateTableRowForClass(clazz));
+					ClassData classData = (ClassData)iter.next();
+					out.println(generateTableRowForClass(classData));
 				}
 
 				out.println("</tbody>");
@@ -373,7 +377,7 @@ public class HTMLReport
 
 			out.println("<div class=\"footer\">");
 			out
-					.println("Reports generated by <a href=\"http://cobertura.sourceforge.net/\" target=\"_top\">Cobertura</a>.");
+					.println("Report generated by <a href=\"http://cobertura.sourceforge.net/\" target=\"_top\">Cobertura</a>.");
 			out.println("</div>");
 
 			out.println("</body>");
@@ -388,19 +392,27 @@ public class HTMLReport
 		}
 	}
 
-	private void generateSourceFiles() throws IOException
+	private void generateSourceFiles()
 	{
-		Iterator iter = coverage.getClasses().iterator();
+		Iterator iter = projectData.getClasses().iterator();
 		while (iter.hasNext())
 		{
-			Clazz clazz = (Clazz)iter.next();
-			generateSourceFile(clazz);
+			ClassData classData = (ClassData)iter.next();
+			try
+			{
+				generateSourceFile(classData);
+			}
+			catch (Exception e)
+			{
+				logger.info("Could not generate HTML file for class "
+						+ classData.getName());
+			}
 		}
 	}
 
-	private void generateSourceFile(Clazz clazz) throws IOException
+	private void generateSourceFile(ClassData classData) throws IOException
 	{
-		String filename = clazz.getLongName() + ".html";
+		String filename = classData.getName() + ".html";
 		File file = new File(outputDir, filename);
 		PrintStream out = null;
 
@@ -418,19 +430,19 @@ public class HTMLReport
 			out.println("</head>");
 			out.println("<body>");
 			out.print("<h5>Coverage Report - ");
-			String classPackageName = clazz.getPackageName();
+			String classPackageName = classData.getPackageName();
 			if ((classPackageName != null) && classPackageName.length() > 0)
 			{
-				out.print(clazz.getPackageName() + ".");
+				out.print(classData.getPackageName() + ".");
 			}
-			out.print(clazz.getName());
+			out.print(classData.getName());
 			out.println("</h5>");
 
 			// Output the coverage summary for this class
 			out.println("<p>");
 			out.println("<table class=\"report\">");
 			out.println(generateTableHeaderForClasses());
-			out.println(generateTableRowForClass(clazz));
+			out.println(generateTableRowForClass(classData));
 			out.println("</table>");
 			out.println("</p>");
 
@@ -441,17 +453,18 @@ public class HTMLReport
 			BufferedReader br = null;
 			try
 			{
-				br = new BufferedReader(new FileReader(new File(sourceDir,
-						clazz.getLongFileName())));
+				File sourceFile = new File(sourceDir, classData
+						.getSourceFileName());
+				br = new BufferedReader(new FileReader(sourceFile));
 				String lineStr;
 				JavaToHtml javaToHtml = new JavaToHtml();
 				int lineNumber = 1;
 				while ((lineStr = br.readLine()) != null)
 				{
 					out.println("<tr>");
-					if (clazz.isValidSourceLine(lineNumber))
+					if (classData.isValidSourceLineNumber(lineNumber))
 					{
-						long numberOfHits = clazz.getNumberOfHits(lineNumber);
+						long numberOfHits = classData.getHitCount(lineNumber);
 						out.println("  <td class=\"numLineCover\">&nbsp;"
 								+ lineNumber + "</td>");
 						if (numberOfHits > 0)
@@ -614,12 +627,12 @@ public class HTMLReport
 	private String generateTableRowForTotal()
 	{
 		StringBuffer ret = new StringBuffer();
-		double lineCoverage = coverage.getLineCoverageRate();
-		double branchCoverage = coverage.getBranchCoverageRate();
+		double lineCoverage = projectData.getLineCoverageRate();
+		double branchCoverage = projectData.getBranchCoverageRate();
 		double ccn = Util.getCCN(sourceDir, true);
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><b>All Packages</b></td>");
-		ret.append("<td class=\"value\">" + coverage.getNumberOfClasses()
+		ret.append("<td class=\"value\">" + projectData.getNumberOfClasses()
 				+ "</td>");
 		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
 				ccn));
@@ -627,39 +640,37 @@ public class HTMLReport
 		return ret.toString();
 	}
 
-	private String generateTableRowForPackage(Package pkg)
+	private String generateTableRowForPackage(PackageData packageData)
 	{
 		StringBuffer ret = new StringBuffer();
-		String url1 = "frame-summary-" + pkg.getName() + ".html";
-		String url2 = "frame-classes-" + pkg.getName() + ".html";
-		double lineCoverage = pkg.getLineCoverageRate();
-		double branchCoverage = pkg.getBranchCoverageRate();
-		double ccn = Util.getCCN(new File(sourceDir, pkg.getFileName()),
-				false);
+		String url1 = "frame-summary-" + packageData.getName() + ".html";
+		String url2 = "frame-classes-" + packageData.getName() + ".html";
+		double lineCoverage = packageData.getLineCoverageRate();
+		double branchCoverage = packageData.getBranchCoverageRate();
+		double ccn = Util.getCCN(new File(sourceDir, packageData.getSourceFileName()), false);
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><a href=\"" + url1
 				+ "\" onClick='parent.classList.location.href=\"" + url2
-				+ "\"'>" + generatePackageName(pkg) + "</a></td>");
-		ret
-				.append("<td class=\"value\">" + pkg.getClasses().size()
-						+ "</td>");
+				+ "\"'>" + generatePackageName(packageData) + "</a></td>");
+		ret.append("<td class=\"value\">" + packageData.getChildren().size()
+				+ "</td>");
 		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
 				ccn));
 		ret.append("</tr>");
 		return ret.toString();
 	}
 
-	private String generateTableRowForClass(Clazz clazz)
+	private String generateTableRowForClass(ClassData classData)
 	{
 		StringBuffer ret = new StringBuffer();
-		double lineCoverage = clazz.getLineCoverageRate();
-		double branchCoverage = clazz.getBranchCoverageRate();
-		double ccn = Util.getCCN(
-				new File(sourceDir, clazz.getLongFileName()), false);
+		double lineCoverage = classData.getLineCoverageRate();
+		double branchCoverage = classData.getBranchCoverageRate();
+		double ccn = Util.getCCN(new File(sourceDir, classData
+				.getSourceFileName()), false);
 		ret.append("  <tr>");
-		ret.append("<td class=\"text\"><a href=\"" + clazz.getLongName()
-				+ ".html\">" + clazz.getName() + "</a></td>");
-		if (clazz.getNumberOfLines() == 0)
+		ret.append("<td class=\"text\"><a href=\"" + classData.getName()
+				+ ".html\">" + classData.getName() + "</a></td>");
+		if (classData.getNumberOfValidLines() == 0)
 		{
 			ret.append(generateTableColumnsForNA(ccn));
 		}

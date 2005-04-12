@@ -19,9 +19,11 @@
  * USA
  */
 
-package net.sourceforge.cobertura.coverage;
+package net.sourceforge.cobertura.instrument;
 
 import java.util.regex.Pattern;
+
+import net.sourceforge.cobertura.coveragedata.ClassData;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;
@@ -38,17 +40,16 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 	private String myName;
 	private String myDescriptor;
 	private Pattern ignoreRegexp;
-	private CoverageData coverageData;
+	private ClassData classData;
 
 	private int currentLine = 0;
 
-	public MethodInstrumenter(final MethodVisitor mv,
-			CoverageData coverageData, final String owner,
-			final String myName, final String myDescriptor,
-			final Pattern ignoreRegexp)
+	public MethodInstrumenter(ClassData classData, final MethodVisitor mv,
+			final String owner, final String myName,
+			final String myDescriptor, final Pattern ignoreRegexp)
 	{
 		super(mv);
-		this.coverageData = coverageData;
+		this.classData = classData;
 		this.ownerClass = owner;
 		this.myName = myName;
 		this.myDescriptor = myDescriptor;
@@ -66,41 +67,43 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 		// would confuse people if it showed up in the reports.
 		if ((opcode != GOTO) && (currentLine != 0)
 				&& (!this.myName.equals("<clinit>")))
-			coverageData.markLineAsConditional(currentLine);
+			classData.markLineAsBranch(currentLine);
 	}
 
 	public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels)
 	{
 		super.visitLookupSwitchInsn(dflt, keys, labels);
 		if (currentLine != 0)
-			coverageData.markLineAsConditional(currentLine);
+			classData.markLineAsBranch(currentLine);
 	}
 
 	public void visitLineNumber(int line, Label start)
 	{
 		// Record initial information about this line of code
 		currentLine = line;
-		coverageData.addLine(currentLine, myName, myDescriptor);
+		classData.addLine(currentLine, myName, myDescriptor);
 
-		// Get an instance of CoverageDataFactory
+		// Get an instance of ProjectData:
+		// ProjectData.getGlobalProjectData()
 		mv.visitMethodInsn(INVOKESTATIC,
-				"net/sourceforge/cobertura/coverage/CoverageDataFactory",
-				"getInstance",
-				"()Lnet/sourceforge/cobertura/coverage/CoverageDataFactory;");
+				"net/sourceforge/cobertura/coveragedata/ProjectData",
+				"getGlobalProjectData",
+				"()Lnet/sourceforge/cobertura/coveragedata/ProjectData;");
 
-		// Get the CoverageData object for this class
+		// Get the ClassData object for this class:
+		// projectData.getClassData("name.of.this.class")
 		mv.visitLdcInsn(ownerClass);
 		mv
-				.visitMethodInsn(
-						INVOKEVIRTUAL,
-						"net/sourceforge/cobertura/coverage/CoverageDataFactory",
-						"newInstrumentation",
-						"(Ljava/lang/String;)Lnet/sourceforge/cobertura/coverage/CoverageData;");
+				.visitMethodInsn(INVOKEVIRTUAL,
+						"net/sourceforge/cobertura/coveragedata/ProjectData",
+						"getOrCreateClassData",
+						"(Ljava/lang/String;)Lnet/sourceforge/cobertura/coveragedata/ClassData;");
 
-		// Call "coverageData.touch(line);"
+		// Mark the current line number as covered:
+		// classData.touch(line)
 		mv.visitIntInsn(SIPUSH, line);
 		mv.visitMethodInsn(INVOKEVIRTUAL,
-				"net/sourceforge/cobertura/coverage/CoverageData", "touch",
+				"net/sourceforge/cobertura/coveragedata/ClassData", "touch",
 				"(I)V");
 
 		super.visitLineNumber(line, start);
@@ -112,7 +115,7 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 		super.visitMethodInsn(opcode, owner, name, desc);
 
 		if ((ignoreRegexp != null) && (ignoreRegexp.matcher(owner).matches()))
-			coverageData.removeLine(currentLine);
+			classData.removeLine(currentLine);
 	}
 
 }

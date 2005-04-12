@@ -209,7 +209,7 @@ public class ClassDataTest extends TestCase
 	{
 		a.setSourceFileName(null);
 		assertEquals(null, a.getSourceFileName());
-		a.setSourceFileName("com/example/HelloWorld.java");
+		a.setSourceFileName("HelloWorld.java");
 		assertEquals("com/example/HelloWorld.java", a.getSourceFileName());
 	}
 

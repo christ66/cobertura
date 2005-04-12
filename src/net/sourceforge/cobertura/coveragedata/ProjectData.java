@@ -22,16 +22,28 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 
-import net.sourceforge.cobertura.util.ClassHelper;
+import org.apache.log4j.Logger;
 
 public class ProjectData extends CoverageDataContainer
+		implements HasBeenInstrumented
 {
 
 	private static final long serialVersionUID = 3;
+
+	private static final Logger logger = Logger.getLogger(ProjectData.class);
+
+	private static ProjectData globalProjectData = null;
+
+	private static SaveTimer saveTimer = null;
+
+	private Map classes = new HashMap();
 
 	public ProjectData()
 	{
@@ -39,16 +51,17 @@ public class ProjectData extends CoverageDataContainer
 
 	public void addClassData(ClassData classData)
 	{
-		String packageName = ClassHelper.getPackageName(classData.getName());
+		String packageName = classData.getPackageName();
 		PackageData packageData = (PackageData)children.get(packageName);
 		if (packageData == null)
 		{
 			packageData = new PackageData(packageName);
 			// Each key is a package name, stored as an String object.
 			// Each value is information about the package, stored as a PackageData object.
-			children.put(packageName, packageData);
+			this.children.put(packageName, packageData);
 		}
 		packageData.addClassData(classData);
+		this.classes.put(classData.getName(), classData);
 	}
 
 	/**
@@ -70,36 +83,96 @@ public class ProjectData extends CoverageDataContainer
 
 	public ClassData getClassData(String name)
 	{
-		String packageName = ClassHelper.getPackageName(name);
-		String baseName = ClassHelper.getBaseName(name);
-		PackageData packageData = (PackageData)children.get(packageName);
-		if (packageData == null)
-			return null;
-		return (ClassData)packageData.getChild(baseName);
+		return (ClassData)this.classes.get(name);
+	}
+
+	public ClassData getOrCreateClassData(String name)
+	{
+		ClassData classData = (ClassData)this.classes.get(name);
+		if (classData == null)
+		{
+			classData = new ClassData(name);
+			addClassData(classData);
+		}
+		return classData;
 	}
 
 	public Collection getClasses()
 	{
-		HashSet classes = new HashSet();
-		Iterator iter = children.values().iterator();
-		while (iter.hasNext())
-		{
-			PackageData packageData = (PackageData)iter.next();
-			classes.addAll(packageData.getChildren());
-		}
-		return classes;
+		return this.classes.values();
 	}
 
 	public int getNumberOfClasses()
 	{
-		int numberOfClasses = 0;
-		Iterator iter = children.values().iterator();
+		return this.classes.size();
+	}
+
+	/**
+	 * Get all subpackages of the given package.
+	 *
+	 * @param packageName The package name to find subpackages for.
+	 *        For example, "com.example"
+	 * @return A collection containing PackageData objects.  Each one
+	 *         has a name beginning with the given packageName.  For
+	 *         example, "com.example.io"
+	 */
+	public Collection getSubPackages(String packageName)
+	{
+		Collection subPackages = new HashSet();
+		Iterator iter = this.children.values().iterator();
 		while (iter.hasNext())
 		{
 			PackageData packageData = (PackageData)iter.next();
-			numberOfClasses += packageData.getNumberOfChildren();
+			if (packageData.getName().equals(packageName))
+				subPackages.add(packageData);
 		}
-		return numberOfClasses;
+		return subPackages;
+	}
+
+	public static ProjectData getGlobalProjectData()
+	{
+		if (saveTimer == null)
+		{
+			saveTimer = new SaveTimer();
+			Runtime.getRuntime().addShutdownHook(new Thread(saveTimer));
+			//Timer timer = new Timer(true);
+			//timer.schedule(saveTimer, 100);
+		}
+
+		if (globalProjectData != null)
+			return globalProjectData;
+
+		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
+
+		// Read projectData from the serialized file.
+		if (dataFile.isFile())
+		{
+			logger.debug("Loading global project data from "
+					+ dataFile.getAbsolutePath());
+			globalProjectData = CoverageDataFileHandler
+					.loadCoverageData(dataFile);
+		}
+		if (globalProjectData != null)
+			return globalProjectData;
+
+		// We could not read from the serialized file, so create a new object.
+		logger
+				.info("Coverage data file "
+						+ dataFile.getAbsolutePath()
+						+ " either does not exist or is not readable.  Creating a new data file.");
+		globalProjectData = new ProjectData();
+
+		return globalProjectData;
+	}
+
+	public static void saveGlobalProjectData()
+	{
+		ProjectData projectData = getGlobalProjectData();
+		synchronized (projectData)
+		{
+			CoverageDataFileHandler.saveCoverageData(projectData,
+					CoverageDataFileHandler.getDefaultDataFile());
+		}
 	}
 
 }
