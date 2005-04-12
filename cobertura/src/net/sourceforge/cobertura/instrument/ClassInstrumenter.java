@@ -19,9 +19,12 @@
  * USA
  */
 
-package net.sourceforge.cobertura.coverage;
+package net.sourceforge.cobertura.instrument;
 
 import java.util.regex.Pattern;
+
+import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 
 import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassAdapter;
@@ -32,11 +35,12 @@ import org.objectweb.asm.Opcodes;
 class ClassInstrumenter extends ClassAdapter implements Opcodes
 {
 
-	private static final Logger logger = Logger.getLogger(Main.class);
+	private static final Logger logger = Logger.getLogger(ClassInstrumenter.class);
 
-	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coverage/HasBeenInstrumented";
+	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coveragedata/HasBeenInstrumented";
 	private Pattern ignoreRegexp;
-	private CoverageData coverageData;
+	private ProjectData projectData;
+	private ClassData classData;
 	private String myName;
 	private boolean instrument = false;
 
@@ -50,9 +54,11 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 		return instrument;
 	}
 
-	public ClassInstrumenter(final ClassVisitor cv, Pattern ignoreRegexp)
+	public ClassInstrumenter(ProjectData projectData, final ClassVisitor cv,
+			Pattern ignoreRegexp)
 	{
 		super(cv);
+		this.projectData = projectData;
 		this.ignoreRegexp = ignoreRegexp;
 	}
 
@@ -75,14 +81,15 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 			String superName, String[] interfaces)
 	{
 		this.myName = name.replace('/', '.');
-		coverageData = CoverageDataFactory.getInstance().newInstrumentation(
-				this.myName);
+		classData = projectData.getOrCreateClassData(this.myName);
 
 		// Do not attempt to instrument interfaces or classes that
 		// have already been instrumented
 		if (((access & ACC_INTERFACE) != 0)
 				|| arrayContains(interfaces, hasBeenInstrumented))
 		{
+			// TODO: Need to also skip classes whose parents implement hasBeenInstrumented
+			//System.err.println("skipping class " + name);
 			super.visit(version, access, name, signature, superName,
 					interfaces);
 		}
@@ -104,7 +111,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 	public void visitSource(String source, String debug)
 	{
 		super.visitSource(source, debug);
-		coverageData.setSourceFileName(source);
+		classData.setSourceFileName(source);
 	}
 
 	public MethodVisitor visitMethod(final int access, final String name,
@@ -117,13 +124,13 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 		if (!instrument)
 			return mv;
 
-		return mv == null ? null : new MethodInstrumenter(mv, coverageData,
+		return mv == null ? null : new MethodInstrumenter(classData, mv,
 				this.myName, name, desc, ignoreRegexp);
 	}
 
 	public void visitEnd()
 	{
-		if (instrument && coverageData.getValidLineNumbers().size() == 0)
+		if (instrument && classData.getNumberOfValidLines() == 0)
 			logger.warn("No line number information found for class "
 					+ this.myName
 					+ ".  Perhaps you need to compile with debug=true?");

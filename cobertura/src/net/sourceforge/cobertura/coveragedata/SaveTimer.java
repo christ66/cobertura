@@ -1,7 +1,6 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
  *
  * Cobertura is free software; you can redistribute it and/or modify
@@ -20,36 +19,16 @@
  * USA
  */
 
-package net.sourceforge.cobertura.reporting;
+package net.sourceforge.cobertura.coveragedata;
 
-import java.util.Set;
+import java.util.TimerTask;
 
-import junit.framework.TestCase;
-
-public class PackageTest extends TestCase
+public class SaveTimer extends TimerTask implements HasBeenInstrumented
 {
 
-	public void testPackage()
+	public void run()
 	{
-		final String packageName = "com.example.helloworld";
-		Package pkg;
-
-		pkg = new Package(packageName);
-		assertEquals(packageName, pkg.getName());
-
-		Set classes = pkg.getClasses();
-		assertNotNull(classes);
-		assertEquals(0, classes.size());
-
-		try
-		{
-			new Package(null);
-			fail("Expected an IllegalArgumentException but none was thrown!");
-		}
-		catch (IllegalArgumentException e)
-		{
-			//Good
-		}
+		ProjectData.saveGlobalProjectData();
 	}
 
 }

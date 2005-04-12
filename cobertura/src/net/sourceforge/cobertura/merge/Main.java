@@ -28,19 +28,18 @@ import gnu.getopt.LongOpt;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sourceforge.cobertura.coverage.InstrumentationPersistence;
+import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.Header;
 
 import org.apache.log4j.Logger;
 
-public class Main extends InstrumentationPersistence
+public class Main
 {
 
 	private static final Logger logger = Logger.getLogger(Main.class);
@@ -56,7 +55,9 @@ public class Main extends InstrumentationPersistence
 		Getopt g = new Getopt(getClass().getName(), args, ":i:o:", longOpts);
 		int c;
 
-		File destDir = new File(System.getProperty("user.dir"));
+		File destFile = new File(System.getProperty("user.dir"),
+				CoverageDataFileHandler.FILE_NAME);
+		ProjectData projectData = null;
 
 		while ((c = g.getopt()) != -1)
 		{
@@ -64,25 +65,20 @@ public class Main extends InstrumentationPersistence
 			{
 				case 'i':
 					System.out.println("cobertura loading: " + g.getOptarg());
-			try
-			{
-						merge(loadInstrumentation(new FileInputStream(g
-								.getOptarg())));
-			}
-			catch (FileNotFoundException ex)
-			{
-				logger.warn(ex);
-			}
+					File dataFile = new File(g.getOptarg());
+					projectData = CoverageDataFileHandler
+							.loadCoverageData(dataFile);
 					break;
 
 				case 'o':
-					destDir = new File(g.getOptarg());
-					destDir.mkdirs();
+					destFile = new File(g.getOptarg());
+					destFile.getParentFile().mkdirs();
 					break;
-		}
+			}
 		}
 
-		saveInstrumentation(destDir);
+		if (projectData != null)
+			CoverageDataFileHandler.saveCoverageData(projectData, destFile);
 	}
 
 	public static void main(String[] args)

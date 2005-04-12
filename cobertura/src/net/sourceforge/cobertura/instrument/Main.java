@@ -21,7 +21,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.coverage;
+package net.sourceforge.cobertura.instrument;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,8 +32,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 import java.util.regex.Pattern;
+
+import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 
 import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassReader;
@@ -53,16 +59,16 @@ import org.objectweb.asm.ClassWriter;
  * </p>
  * 
  * <ol>
- * <li>Get an instance of the CoverageData class.</li>
- * <li>Call a method in this CoverageData class that increments
+ * <li>Get an instance of the ProjectData class.</li>
+ * <li>Call a method in this ProjectData class that increments
  * a counter for this line of code.
  * </ol>
  *
  * <p>
  * After every line in a class has been "instrumented," Cobertura
- * edits the bytecode for the class one more time and adds an 
- * "implements net.sourceforge.cobertura.coverage.HasBeenInstrumented"  This 
- * is basically just a flag used internally by Cobertura to 
+ * edits the bytecode for the class one more time and adds
+ * "implements net.sourceforge.cobertura.coveragedata.HasBeenInstrumented" 
+ * This is basically just a flag used internally by Cobertura to
  * determine whether a class has been instrumented or not, so
  * as not to instrument the same class twice.
  * </p>
@@ -75,6 +81,7 @@ public class Main
 	private File destinationDirectory = null;
 	private File baseDir = null;
 	private Pattern ignoreRegexp = null;
+	private ProjectData projectData = null;
 
 	/**
 	 * @param file A file.
@@ -115,7 +122,8 @@ public class Main
 			inputStream = new FileInputStream(file);
 			ClassReader cr = new ClassReader(inputStream);
 			ClassWriter cw = new ClassWriter(true);
-			ClassInstrumenter cv = new ClassInstrumenter(cw, ignoreRegexp); /* pass in regexp */
+			ClassInstrumenter cv = new ClassInstrumenter(projectData, cw,
+					ignoreRegexp);
 			cr.accept(cv, false);
 			byte[] instrumentedClass = cw.toByteArray();
 
@@ -133,8 +141,7 @@ public class Main
 		{
 			logger
 					.warn("Unable to instrument file "
-							+ file.getAbsolutePath());
-			logger.info(e);
+							+ file.getAbsolutePath(), e);
 		}
 		finally
 		{
@@ -174,20 +181,31 @@ public class Main
 
 	private void parseArguments(String[] args)
 	{
+		// Parse our parameters
+		Collection classes = new Vector();
 		for (int i = 0; i < args.length; i++)
 		{
-			if (args[i].equals("-d"))
-				destinationDirectory = new File(args[++i]);
-			else if (args[i].equals("-basedir"))
+			if (args[i].equals("--basedir"))
 				baseDir = new File(args[++i]);
-			else if (args[i].equals("-ignore"))
+			else if (args[i].equals("--datafile"))
+				CoverageDataFileHandler.setDefaultDataFile(args[++i]);
+			else if (args[i].equals("--destination"))
+				destinationDirectory = new File(args[++i]);
+			else if (args[i].equals("--ignore"))
 			{
 				String regex = args[++i];
 				this.ignoreRegexp = Pattern.compile(regex);
 			}
 			else
-				addInstrumentation(args[i]);
+				classes.add(args[i]);
 		}
+
+		// Load coverage data, instrument classes, save coverage data
+		projectData = ProjectData.getGlobalProjectData();
+		Iterator iter = classes.iterator();
+		while (iter.hasNext())
+			addInstrumentation((String)iter.next());
+		ProjectData.saveGlobalProjectData();
 	}
 
 	public static void main(String[] args)
@@ -251,4 +269,5 @@ public class Main
 		System.out.println("Instrument time: " + (stopTime - startTime)
 				+ "ms");
 	}
+	
 }

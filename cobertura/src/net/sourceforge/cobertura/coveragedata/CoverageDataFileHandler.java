@@ -35,9 +35,9 @@ import org.apache.log4j.Logger;
 
 /**
  * This contains methods used for reading and writing the
- * "coverage.ser" file.
+ * "cobertura.ser" file.
  */
-public abstract class CoverageDataFileHandler
+public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 {
 
 	/**
@@ -48,13 +48,31 @@ public abstract class CoverageDataFileHandler
 	private static final Logger logger = Logger
 			.getLogger(CoverageDataFileHandler.class);
 
-	public static ProjectData LoadCoverageData(File dataFile)
+	private static File defaultDataFile = null;
+
+	public static File getDefaultDataFile()
+	{
+		if (defaultDataFile != null)
+			return defaultDataFile;
+		if (System.getProperty("net.sourceforge.cobertura.datafile") != null)
+			return new File(System.getProperty("net.sourceforge.cobertura.datafile"));
+		return new File(FILE_NAME);
+	}
+
+	public static void setDefaultDataFile(String fileName)
+	{
+		defaultDataFile = new File(fileName);
+	}
+
+	public static ProjectData loadCoverageData(File dataFile)
 	{
 		InputStream is = null;
+
+		logger.info("Loading coverage data from " + dataFile.getAbsolutePath());
 		try
 		{
 			is = new FileInputStream(dataFile);
-			return LoadCoverageData(is);
+			return loadCoverageData(is);
 		}
 		catch (IOException e)
 		{
@@ -77,9 +95,10 @@ public abstract class CoverageDataFileHandler
 		}
 	}
 
-	private static ProjectData LoadCoverageData(InputStream dataFile)
+	private static ProjectData loadCoverageData(InputStream dataFile)
 	{
 		ObjectInputStream objects = null;
+
 		try
 		{
 			objects = new ObjectInputStream(dataFile);
@@ -111,15 +130,16 @@ public abstract class CoverageDataFileHandler
 		}
 	}
 
-	public static void SaveCoverageData(ProjectData coverageData,
+	public static void saveCoverageData(ProjectData projectData,
 			File dataFile)
 	{
 		FileOutputStream os = null;
 
+		logger.info("Saving coverage data to " + dataFile.getAbsolutePath());
 		try
 		{
 			os = new FileOutputStream(dataFile);
-			SaveCoverageData(coverageData, os);
+			saveCoverageData(projectData, os);
 		}
 		catch (IOException e)
 		{
@@ -141,7 +161,7 @@ public abstract class CoverageDataFileHandler
 		}
 	}
 
-	private static void SaveCoverageData(ProjectData coverageData,
+	private static void saveCoverageData(ProjectData projectData,
 			OutputStream dataFile)
 	{
 		ObjectOutputStream objects = null;
@@ -149,11 +169,11 @@ public abstract class CoverageDataFileHandler
 		try
 		{
 			objects = new ObjectOutputStream(dataFile);
-			objects.writeObject(coverageData);
+			objects.writeObject(projectData);
 			if (logger.isInfoEnabled())
 			{
 				logger.info("Saved information on "
-						+ coverageData.getNumberOfClasses() + " classes.");
+						+ projectData.getNumberOfClasses() + " classes.");
 			}
 		}
 		catch (IOException e)

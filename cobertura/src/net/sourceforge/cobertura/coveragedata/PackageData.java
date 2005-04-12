@@ -23,7 +23,7 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-public class PackageData extends CoverageDataContainer
+public class PackageData extends CoverageDataContainer implements Comparable, HasBeenInstrumented
 {
 
 	private static final long serialVersionUID = 3;
@@ -50,6 +50,16 @@ public class PackageData extends CoverageDataContainer
 		children.put(classData.getBaseName(), classData);
 	}
 
+	/**
+	 * This is required because we implement Comparable.
+	 */
+	public int compareTo(Object o)
+	{
+		if (!o.getClass().equals(PackageData.class))
+			return 1;
+		return this.name.compareTo(((PackageData)o).name);
+	}
+
 	public boolean contains(String name)
 	{
 		return this.children.containsKey(name);
@@ -74,6 +84,11 @@ public class PackageData extends CoverageDataContainer
 	public String getName()
 	{
 		return this.name;
+	}
+
+	public String getSourceFileName()
+	{
+		return this.name.replace('.', '/');
 	}
 
 	public int hashCode()

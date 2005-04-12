@@ -26,8 +26,6 @@ import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,13 +33,14 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import net.sourceforge.cobertura.coverage.CoverageData;
-import net.sourceforge.cobertura.coverage.InstrumentationPersistence;
+import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.Header;
 
 import org.apache.log4j.Logger;
 
-public class Main extends InstrumentationPersistence
+public class Main
 {
 
 	private static final Logger logger = Logger.getLogger(Main.class);
@@ -99,7 +98,7 @@ public class Main extends InstrumentationPersistence
 		return minimumCoverageRate;
 	}
 
-	public Main(String[] args) throws IOException
+	public Main(String[] args)
 	{
 		Header.print(System.out);
 		System.out.println("Cobertura coverage check");
@@ -154,65 +153,60 @@ public class Main extends InstrumentationPersistence
 					+ instrumentationDirectory);
 		}
 
-		merge(loadInstrumentation(new FileInputStream(new File(
-				instrumentationDirectory,
-				InstrumentationPersistence.FILE_NAME))));
+		File dataFile = new File(instrumentationDirectory,
+				CoverageDataFileHandler.FILE_NAME);
+		ProjectData projectData = CoverageDataFileHandler
+				.loadCoverageData(dataFile);
 
 		if (logger.isInfoEnabled())
 		{
-			logger
-					.info("instrumentation has " + keySet().size()
-							+ " entries");
+			logger.info("instrumentation has "
+					+ projectData.getNumberOfClasses() + " classes");
 		}
 
-		Iterator i = keySet().iterator();
-		while (i.hasNext())
+		Iterator iter = projectData.getClasses().iterator();
+		while (iter.hasNext())
 		{
-			String key = (String)i.next();
-
-			CoverageRate coverageRate = findMinimumCoverageRate(key);
-			CoverageData instrumentation = getInstrumentation(key);
+			ClassData classData = (ClassData)iter.next();
+			CoverageRate coverageRate = findMinimumCoverageRate(classData
+					.getName());
 
 			if (logger.isInfoEnabled())
 			{
 				StringBuffer sb = new StringBuffer();
-				sb.append(key);
+				sb.append(classData.getName());
 				sb.append(", line: ");
-				sb.append(percentage(instrumentation.getLineCoverageRate()));
+				sb.append(percentage(classData.getLineCoverageRate()));
 				sb.append("% (");
-				sb.append(percentage(coverageRate.getLineCoverageRate()));
+				sb.append(percentage(classData.getLineCoverageRate()));
 				sb.append("%), branch: ");
-				sb
-						.append(percentage(instrumentation
-								.getBranchCoverageRate()));
+				sb.append(percentage(classData.getBranchCoverageRate()));
 				sb.append("% (");
-				sb.append(percentage(coverageRate.getBranchCoverageRate()));
+				sb.append(percentage(classData.getBranchCoverageRate()));
 				sb.append("%)");
 				logger.info(sb.toString());
 			}
 
-			if (instrumentation.getLineCoverageRate() < coverageRate
+			if (classData.getLineCoverageRate() < coverageRate
 					.getLineCoverageRate())
 			{
 				StringBuffer sb = new StringBuffer();
-				sb.append(key);
+				sb.append(classData.getName());
 				sb.append(" line coverage rate of: ");
-				sb.append(percentage(instrumentation.getLineCoverageRate()));
+				sb.append(percentage(classData.getLineCoverageRate()));
 				sb.append("% (required: ");
 				sb.append(percentage(coverageRate.getLineCoverageRate()));
 				sb.append("%)");
 				System.out.println(sb.toString());
 			}
 
-			if (instrumentation.getBranchCoverageRate() < coverageRate
+			if (classData.getBranchCoverageRate() < coverageRate
 					.getBranchCoverageRate())
 			{
 				StringBuffer sb = new StringBuffer();
-				sb.append(key);
+				sb.append(classData.getName());
 				sb.append(" branch coverage rate of: ");
-				sb
-						.append(percentage(instrumentation
-								.getBranchCoverageRate()));
+				sb.append(percentage(classData.getBranchCoverageRate()));
 				sb.append("% (required: ");
 				sb.append(percentage(coverageRate.getBranchCoverageRate()));
 				sb.append("%)");
@@ -227,7 +221,7 @@ public class Main extends InstrumentationPersistence
 		return decimal.setScale(1, BigDecimal.ROUND_DOWN).toString();
 	}
 
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args)
 	{
 		new Main(args);
 	}

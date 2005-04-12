@@ -58,31 +58,31 @@
 	<target name="instrument" depends="compile">
 		<delete file="${basedir}/cobertura.ser" />
 		<delete file="${build.test.dir}/cobertura.ser" />
-		<java fork="true" classname="net.sourceforge.cobertura.coverage.Main">
-			<sysproperty key="net.sourceforge.cobertura.rawcoverage.dir" file="${build.test.dir}" />
+		<java fork="true" classname="net.sourceforge.cobertura.instrument.Main">
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${etc.dir}" />
 			<classpath refid="base.path" />
-			<arg value="-ignore" />
-			<arg value="org.apache.log4j.*" />
-			<arg value="-d" />
+			<arg value="--datafile" />
+			<arg file="${build.test.dir}/cobertura.ser" />
+			<arg value="--destination" />
 			<arg file="${build.test.classes.dir}" />
+			<arg value="--ignore" />
+			<arg value="org.apache.log4j.*" />
 			<arg file="${build.classes.dir}" />
 		</java>
 	</target>
 
 	<!--
 		This target is used when testing both instrumented and
-		non-instrumented code.  The net.sourceforge.cobertura.rawcoverage.dir
-		sysproperty is ignored if we're testing non-instrumented
-		code.
+		non-instrumented code.  The net.sourceforge.cobertura.datafile
+		sysproperty is only used if we're testing instrumented code.
 	-->
 	<target name="test" depends="compile">
 		<delete dir="${build.test.reports.dir}/junit-xml" />
 		<mkdir dir="${build.test.reports.dir}/junit-xml" />
 
 		<junit fork="true" failureProperty="test.failed" printsummary="true">
-			<sysproperty key="net.sourceforge.cobertura.rawcoverage.dir" file="${build.test.dir}" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${build.test.dir}/cobertura.ser" />
 			<sysproperty key="basedir" value="${basedir}"/>
 			<classpath location="${build.test.classes.dir}" />
 			<classpath location="${build.classes.dir}" />
@@ -117,10 +117,10 @@
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${etc.dir}" />
 			<classpath refid="base.path" />
+			<arg value="--datafile" />
+			<arg file="${build.test.dir}/cobertura.ser" />
 			<arg value="--format" />
 			<arg value="html" />
-			<arg value="--instrumentation" />
-			<arg file="${build.test.dir}/cobertura.ser" />
 			<arg value="--output" />
 			<arg file="${build.test.reports.dir}/coverage-html" />
 			<arg value="--source" />
@@ -133,10 +133,10 @@
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${etc.dir}" />
 			<classpath refid="base.path" />
+			<arg value="--datafile" />
+			<arg file="${build.test.dir}/cobertura.ser" />
 			<arg value="--format" />
 			<arg value="xml" />
-			<arg value="--instrumentation" />
-			<arg file="${build.test.dir}/cobertura.ser" />
 			<arg value="--output" />
 			<arg file="${build.test.reports.dir}/coverage-xml" />
 			<arg value="--source" />

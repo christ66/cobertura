@@ -25,7 +25,7 @@
  * that the number of lines and branches is correct.
  *
  * If you change this file you'll need to update the line
- * numbers referenced in net.sourceforge.cobertura.coverage.InstrumentTest
+ * numbers referenced in net.sourceforge.cobertura.instrument.InstrumentTest
  */
 public class HelloWorld
 {

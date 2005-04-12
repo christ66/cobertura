@@ -29,7 +29,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.TestCase;
-import net.sourceforge.cobertura.coverage.CoverageDataFactory;
+import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
+import net.sourceforge.cobertura.coveragedata.ProjectData;
 
 public class XMLReportTest extends TestCase
 {
@@ -37,8 +38,6 @@ public class XMLReportTest extends TestCase
 	private final static String basedir = (System.getProperty("basedir") != null)
 			? System.getProperty("basedir")
 			: ".";
-	private final static String pathToSerFile = basedir
-			+ "/build/test/cobertura.ser";
 	private final static String pathToTestOutput = basedir
 			+ "/build/test/XMLReportTest";
 	private final static String pathToXMLReport = pathToTestOutput
@@ -65,13 +64,13 @@ public class XMLReportTest extends TestCase
 	{
 		String[] args;
 
-		// This is a hacky way to save the ser file
-		CoverageDataFactory coverageDataFactory = CoverageDataFactory
-				.getInstance();
-		coverageDataFactory.run();
+		// Serialize the current coverage data to disk
+		ProjectData.saveGlobalProjectData();
+		String dataFileName = CoverageDataFileHandler.getDefaultDataFile()
+				.getAbsolutePath();
 
 		// Then we need to generate the XML report
-		args = new String[] { "-f", "xml", "-i", pathToSerFile, "-o",
+		args = new String[] { "-f", "xml", "--datafile", dataFileName, "-o",
 				pathToTestOutput, "-s", pathToSourceCode };
 		net.sourceforge.cobertura.reporting.Main.main(args);
 
