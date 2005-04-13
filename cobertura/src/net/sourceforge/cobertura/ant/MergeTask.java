@@ -85,7 +85,7 @@ public class MergeTask extends CommonMatchingTask
 		{
 			getProject().log("Adding " + filenames[i] + " to list",
 					Project.MSG_VERBOSE);
-			addArg("-i");
+			addArg("--datafile");
 			addArg(filenames[i]);
 		}
 
@@ -102,7 +102,7 @@ public class MergeTask extends CommonMatchingTask
 		initArgs();
 		if (toDir != null)
 		{
-			addArg("-o");
+			addArg("--output");
 			addArg(toDir.toString());
 		}
 

@@ -106,14 +106,14 @@ public class Main
 		LongOpt[] longOpts = new LongOpt[4];
 		longOpts[0] = new LongOpt("branch", LongOpt.REQUIRED_ARGUMENT, null,
 				'b');
-		longOpts[1] = new LongOpt("line", LongOpt.REQUIRED_ARGUMENT, null,
-				'l');
 		longOpts[2] = new LongOpt("directory", LongOpt.REQUIRED_ARGUMENT,
 				null, 'd');
-		longOpts[3] = new LongOpt("regex", LongOpt.REQUIRED_ARGUMENT, null,
-				'r');
+		longOpts[3] = new LongOpt("ignore", LongOpt.REQUIRED_ARGUMENT, null,
+				'i');
+		longOpts[1] = new LongOpt("line", LongOpt.REQUIRED_ARGUMENT, null,
+				'l');
 
-		Getopt g = new Getopt(getClass().getName(), args, ":b:l:d:r:",
+		Getopt g = new Getopt(getClass().getName(), args, ":b:d:i:l:",
 				longOpts);
 		int c;
 
@@ -129,17 +129,17 @@ public class Main
 							.getOptarg());
 					break;
 
-				case 'l':
-					lineCoverageRate = inRangeAndDivideByOneHundred(g
-							.getOptarg());
-					break;
-
 				case 'd':
 					setInstrumentationDirectory(new File(g.getOptarg()));
 					break;
 
-				case 'r':
+				case 'i':
 					setMinimumCoverageRate(g.getOptarg());
+					break;
+
+				case 'l':
+					lineCoverageRate = inRangeAndDivideByOneHundred(g
+							.getOptarg());
 					break;
 			}
 		}

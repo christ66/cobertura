@@ -77,6 +77,8 @@ import org.apache.tools.ant.types.Reference;
 public class CheckTask extends MatchingTask
 {
 
+	private String dataFile = null;
+
 	final Set regexes = new HashSet();
 
 	protected String branchCoverageRate = null;
@@ -96,23 +98,29 @@ public class CheckTask extends MatchingTask
 
 	public void execute() throws BuildException
 	{
-		if (lineCoverageRate != null)
-		{
-			getJava().createArg().setValue("-l");
-			getJava().createArg().setValue(lineCoverageRate);
-		}
-
 		if (branchCoverageRate != null)
 		{
-			getJava().createArg().setValue("-b");
+			getJava().createArg().setValue("--branch");
 			getJava().createArg().setValue(branchCoverageRate);
+		}
+
+		if (dataFile != null)
+		{
+			getJava().createArg().setValue("--datafile");
+			getJava().createArg().setValue(dataFile);
 		}
 
 		Iterator i = regexes.iterator();
 		while (i.hasNext())
 		{
-			getJava().createArg().setValue("-r");
+			getJava().createArg().setValue("--ignore");
 			getJava().createArg().setValue(i.next().toString());
+		}
+
+		if (lineCoverageRate != null)
+		{
+			getJava().createArg().setValue("--line");
+			getJava().createArg().setValue(lineCoverageRate);
 		}
 
 		if (getJava().executeJava() != 0)
@@ -171,6 +179,11 @@ public class CheckTask extends MatchingTask
 	public void setClasspathRef(Reference r)
 	{
 		createClasspath().setRefid(r);
+	}
+
+	public void setDataFile(String dataFile)
+	{
+		this.dataFile = dataFile;
 	}
 
 }

@@ -47,12 +47,12 @@ public class Main
 	public Main(String[] args)
 	{
 		LongOpt[] longOpts = new LongOpt[2];
-		longOpts[0] = new LongOpt("instrumentation",
-				LongOpt.REQUIRED_ARGUMENT, null, 'i');
+		longOpts[0] = new LongOpt("datafile",
+				LongOpt.REQUIRED_ARGUMENT, null, 'd');
 		longOpts[1] = new LongOpt("output", LongOpt.REQUIRED_ARGUMENT, null,
 				'o');
 
-		Getopt g = new Getopt(getClass().getName(), args, ":i:o:", longOpts);
+		Getopt g = new Getopt(getClass().getName(), args, ":d:o:", longOpts);
 		int c;
 
 		File destFile = new File(System.getProperty("user.dir"),
@@ -63,7 +63,7 @@ public class Main
 		{
 			switch (c)
 			{
-				case 'i':
+				case 'd':
 					System.out.println("cobertura loading: " + g.getOptarg());
 					File dataFile = new File(g.getOptarg());
 					projectData = CoverageDataFileHandler
@@ -90,7 +90,7 @@ public class Main
 		String commandsFileName = null;
 		for (int i = 0; i < args.length; i++)
 		{
-			if (args[i].equals("-commandsfile"))
+			if (args[i].equals("--commandsfile"))
 			{
 				hasCommandsFile = true;
 				commandsFileName = args[++i];

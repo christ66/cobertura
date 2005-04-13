@@ -244,12 +244,21 @@ public class ClassData extends CoverageDataContainer
 
 	public String getSourceFileName()
 	{
-		if (sourceFileName == null)
-			return null;
+		String baseName;
+		if (sourceFileName != null)
+			baseName = sourceFileName;
+		else {
+			int firstDollarSign = getName().indexOf('$');
+			if (firstDollarSign == -1)
+				baseName = getBaseName() + ".java";
+			else
+				baseName = getBaseName().substring(0, firstDollarSign - 1) + ".java";
+		}
+
 		String packageName = getPackageName();
 		if (packageName == null)
-			return sourceFileName;
-		return getPackageName().replace('.', '/') + "/" + sourceFileName;
+			return baseName;
+		return getPackageName().replace('.', '/') + '/' + baseName;
 	}
 
 	public int hashCode()
