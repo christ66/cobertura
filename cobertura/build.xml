@@ -247,7 +247,7 @@
 
 				<include name="examples/basic/README" />
 				<include name="examples/basic/build.properties" />
-				<include name="examples/basic/build.xml" />
+				<include name="examples/basic/*.xml" />
 				<include name="examples/basic/src/**" />
 			</fileset>
 		</copy>
@@ -273,7 +273,7 @@
 
 				<include name="examples/basic/README" />
 				<include name="examples/basic/build.properties" />
-				<include name="examples/basic/build.xml" />
+				<include name="examples/basic/*.xml" />
 				<include name="examples/basic/src/**" />
 			</fileset>
 		</copy>

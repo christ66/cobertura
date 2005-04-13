@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+	This build file does the same thing as the normal build.xml for
+	this example, except that we specify a location for the coverage
+	data file.
+-->
+
 <project name="cobertura.examples.basic" default="coverage" basedir=".">
 
 	<description>
@@ -49,7 +55,7 @@
 			Instrument the application classes, writing the
 			instrumented classes into ${build.instrumented.dir}.
 		-->
-		<cobertura-instrument todir="${instrumented.dir}">
+		<cobertura-instrument datafile="${coverage.dir}/basic_coverage.ser" todir="${instrumented.dir}">
 			<!--
 				The following line causes instrument to ignore any
 				source line containing a reference to log4j, for the
@@ -70,6 +76,12 @@
 
 	<target name="test" depends="init,compile">
 		<junit fork="yes" dir="${basedir}" failureProperty="test.failed">
+			<!--
+				This is really the only way to pass the file name to
+				Cobertura hooks that were added to your bytecode.
+			-->
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${coverage.dir}/basic_coverage.ser" />
+
 			<!--
 				Note the classpath order: instrumented classes are before the
 				original (uninstrumented) classes.  This is important.
@@ -102,8 +114,8 @@
 	</target>
 
 	<target name="coverage-report">
-		<cobertura-report srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
-		<cobertura-report srcdir="${src.dir}" destdir="${coverage.html.dir}" />
+		<cobertura-report datafile="${coverage.dir}/basic_coverage.ser" srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
+		<cobertura-report datafile="${coverage.dir}/basic_coverage.ser" srcdir="${src.dir}" destdir="${coverage.html.dir}" />
 	</target>
 
 	<target name="clean" description="Remove all files created by the build/test process.">
@@ -112,7 +124,7 @@
 		<delete dir="${reports.dir}" />
 		<delete dir="${coverage.dir}" />
 		<delete file="cobertura.log" />
-		<delete file="cobertura.ser" />
+		<delete file="basic_coverage.ser" />
 	</target>
 
 	<target name="coverage" depends="compile,instrument,test,coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports."/>
