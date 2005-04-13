@@ -208,7 +208,7 @@ public class ClassDataTest extends TestCase
 	public void testSourceFileName()
 	{
 		a.setSourceFileName(null);
-		assertEquals(null, a.getSourceFileName());
+		assertEquals("com/example/HelloWorld.java", a.getSourceFileName());
 		a.setSourceFileName("HelloWorld.java");
 		assertEquals("com/example/HelloWorld.java", a.getSourceFileName());
 	}

@@ -73,19 +73,24 @@ import org.apache.tools.ant.types.Reference;
  * Generate a coverage report based on coverage data generated 
  * by instrumented classes.
  */
-public class CoverageReportTask extends MatchingTask
+public class ReportTask extends MatchingTask
 {
 
-	private String coverageDataFileName = "cobertura.ser";
+	private String dataFile = null;
 	private String format = "html";
 	private Path src;
 	private File destDir;
 
 	private Java java = null;
 
-	public void setCoverageDataFileName(String coverageDataFileName)
+	public void setDataFile(String dataFile)
 	{
-		this.coverageDataFileName = coverageDataFileName;
+		this.dataFile = dataFile;
+	}
+
+	public void setDestDir(File destDir)
+	{
+		this.destDir = destDir;
 	}
 
 	public void setFormat(String format)
@@ -111,26 +116,24 @@ public class CoverageReportTask extends MatchingTask
 		}
 	}
 
-	public void setDestDir(File destDir)
-	{
-		this.destDir = destDir;
-	}
-
 	public void execute() throws BuildException
 	{
 		Header.print(System.out);
 
-		getJava().createArg().setValue("--datafile");
-		getJava().createArg().setValue(coverageDataFileName);
+		getJava().createArg().setValue("--format");
+		getJava().createArg().setValue(format);
 
-		getJava().createArg().setValue("--source");
-		getJava().createArg().setValue(src.toString());
+		if (dataFile != null)
+		{
+			getJava().createArg().setValue("--datafile");
+			getJava().createArg().setValue(dataFile);
+		}
 
 		getJava().createArg().setValue("--output");
 		getJava().createArg().setValue(destDir.toString());
 
-		getJava().createArg().setValue("--format");
-		getJava().createArg().setValue(format);
+		getJava().createArg().setValue("--source");
+		getJava().createArg().setValue(src.toString());
 
 		if (getJava().executeJava() != 0)
 		{

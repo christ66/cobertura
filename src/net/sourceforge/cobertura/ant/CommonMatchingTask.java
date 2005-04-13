@@ -116,7 +116,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 					"Error initializing commands file "
 							+ commandLineFile.getAbsolutePath(),
 					Project.MSG_ERR);
-			throw new BuildException("Unable to initialize commands file.");
+			throw new BuildException("Unable to initialize commands file.", ioe);
 		}
 	}
 
@@ -132,7 +132,8 @@ public abstract class CommonMatchingTask extends MatchingTask
 					"Error writing commands file "
 							+ commandLineFile.getAbsolutePath(),
 					Project.MSG_ERR);
-			throw new BuildException("Unable to write to commands file.");
+			ioe.printStackTrace();
+			throw new BuildException("Unable to write to commands file.", ioe);
 		}
 	}
 
@@ -149,11 +150,11 @@ public abstract class CommonMatchingTask extends MatchingTask
 					"Error saving commands file "
 							+ commandLineFile.getAbsolutePath(),
 					Project.MSG_ERR);
-			throw new BuildException("Unable to save the commands file.");
+			throw new BuildException("Unable to save the commands file.", ioe);
 		}
 
 		/* point to commands file */
-		getJava().createArg().setValue("-commandsfile");
+		getJava().createArg().setValue("--commandsfile");
 		getJava().createArg().setValue(commandLineFile.getAbsolutePath());
 	}
 

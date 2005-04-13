@@ -182,7 +182,7 @@ public class Main
 	private void parseArguments(String[] args)
 	{
 		// Parse our parameters
-		Collection classes = new Vector();
+		Collection locations = new Vector();
 		for (int i = 0; i < args.length; i++)
 		{
 			if (args[i].equals("--basedir"))
@@ -197,12 +197,12 @@ public class Main
 				this.ignoreRegexp = Pattern.compile(regex);
 			}
 			else
-				classes.add(args[i]);
+				locations.add(args[i]);
 		}
 
 		// Load coverage data, instrument classes, save coverage data
 		projectData = ProjectData.getGlobalProjectData();
-		Iterator iter = classes.iterator();
+		Iterator iter = locations.iterator();
 		while (iter.hasNext())
 			addInstrumentation((String)iter.next());
 		ProjectData.saveGlobalProjectData();
@@ -218,7 +218,7 @@ public class Main
 		String commandsFileName = null;
 		for (int i = 0; i < args.length; i++)
 		{
-			if (args[i].equals("-commandsfile"))
+			if (args[i].equals("--commandsfile"))
 			{
 				hasCommandsFile = true;
 				commandsFileName = args[++i];

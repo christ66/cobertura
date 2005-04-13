@@ -71,6 +71,8 @@ import org.apache.tools.ant.types.FileSet;
 public class InstrumentTask extends CommonMatchingTask
 {
 
+	private String dataFile = null;
+
 	Ignore ignoreRegex = null;
 
 	public InstrumentTask()
@@ -84,7 +86,7 @@ public class InstrumentTask extends CommonMatchingTask
 		return ignoreRegex;
 	}
 
-	void coverage(String[] filenames)
+	private void addFilenames(String[] filenames)
 	{
 		if (filenames.length == 0)
 		{
@@ -98,28 +100,35 @@ public class InstrumentTask extends CommonMatchingTask
 			addArg(filenames[i]);
 		}
 
-		saveArgs();
-
 		Header.print(System.out);
 		System.out.println("instrumenting " + filenames.length + " "
 				+ (filenames.length == 1 ? "class" : "classes")
 				+ (toDir != null ? " to " + toDir : ""));
-
-		/**
-		 * TODO: Do something here so that we can set System.in and System.out on
-		 * getJava() to the one we're using now.  So that when instrumentation calls
-		 * System.out, it will show up as "[instrument] doing stuff" instead of
-		 * "[java] doing stuff" in the ant output.
-		 */
-		if (getJava().executeJava() != 0)
-		{
-			throw new BuildException();
-		}
 	}
 
 	public void execute() throws BuildException
 	{
 		initArgs();
+
+		Set filenames = new HashSet();
+		Iterator iter = fileSets.iterator();
+		while (iter.hasNext())
+		{
+			FileSet fileSet = (FileSet)iter.next();
+
+			addArg("--basedir");
+			addArg(baseDir(fileSet));
+
+			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
+		}
+		addFilenames((String[])filenames.toArray(new String[filenames.size()]));
+
+		if (dataFile != null)
+		{
+			addArg("--datafile");
+			addArg(dataFile);
+		}
+
 		if (toDir != null)
 		{
 			addArg("--destination");
@@ -133,21 +142,25 @@ public class InstrumentTask extends CommonMatchingTask
 			addArg(ignoreRegex.getRegex());
 		}
 
-		Set filenames = new HashSet();
-		Iterator i = fileSets.iterator();
+		saveArgs();
 
-		while (i.hasNext())
+		/**
+		 * TODO: Do something here so that we can set System.in and System.out on
+		 * getJava() to the one we're using now.  So that when instrumentation calls
+		 * System.out, it will show up as "[instrument] doing stuff" instead of
+		 * "[java] doing stuff" in the ant output.
+		 */
+		if (getJava().executeJava() != 0)
 		{
-			FileSet fileSet = (FileSet)i.next();
-
-			addArg("--basedir");
-			addArg(baseDir(fileSet));
-
-			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
+			throw new BuildException();
 		}
-
-		coverage((String[])filenames.toArray(new String[filenames.size()]));
 
 		unInitArgs();
 	}
+
+	public void setDataFile(String dataFile)
+	{
+		this.dataFile = dataFile;
+	}
+
 }
