@@ -25,7 +25,6 @@ package net.sourceforge.cobertura.check;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,13 +46,6 @@ public class Main
 
 	Map minimumCoverageRates = new HashMap();
 	CoverageRate minimumCoverageRate;
-
-	File instrumentationDirectory = new File(System.getProperty("user.dir"));
-
-	void setInstrumentationDirectory(File instrumentationDirectory)
-	{
-		this.instrumentationDirectory = instrumentationDirectory;
-	}
 
 	double inRangeAndDivideByOneHundred(String coverageRateAsPercentage)
 	{
@@ -106,7 +98,7 @@ public class Main
 		LongOpt[] longOpts = new LongOpt[4];
 		longOpts[0] = new LongOpt("branch", LongOpt.REQUIRED_ARGUMENT, null,
 				'b');
-		longOpts[2] = new LongOpt("directory", LongOpt.REQUIRED_ARGUMENT,
+		longOpts[2] = new LongOpt("datafile", LongOpt.REQUIRED_ARGUMENT,
 				null, 'd');
 		longOpts[3] = new LongOpt("ignore", LongOpt.REQUIRED_ARGUMENT, null,
 				'i');
@@ -130,7 +122,7 @@ public class Main
 					break;
 
 				case 'd':
-					setInstrumentationDirectory(new File(g.getOptarg()));
+					CoverageDataFileHandler.setDefaultDataFile(g.getOptarg());
 					break;
 
 				case 'i':
@@ -147,20 +139,12 @@ public class Main
 		minimumCoverageRate = new CoverageRate(lineCoverageRate,
 				branchCoverageRate);
 
-		if (logger.isInfoEnabled())
-		{
-			logger.info("instrumentation directory: "
-					+ instrumentationDirectory);
-		}
-
-		File dataFile = new File(instrumentationDirectory,
-				CoverageDataFileHandler.FILE_NAME);
-		ProjectData projectData = CoverageDataFileHandler
-				.loadCoverageData(dataFile);
+		// Load coverage data
+		ProjectData projectData = ProjectData.getGlobalProjectData();
 
 		if (logger.isInfoEnabled())
 		{
-			logger.info("instrumentation has "
+			logger.info("Coverage data has "
 					+ projectData.getNumberOfClasses() + " classes");
 		}
 
