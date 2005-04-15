@@ -21,10 +21,10 @@
 
 package net.sourceforge.cobertura.instrument;
 
-import java.util.regex.Pattern;
-
 import net.sourceforge.cobertura.coveragedata.ClassData;
 
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.Perl5Matcher;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
@@ -36,6 +36,7 @@ import org.objectweb.asm.Opcodes;
  */
 public class MethodInstrumenter extends MethodAdapter implements Opcodes
 {
+	private final static Perl5Matcher pm = new Perl5Matcher();
 	private final String ownerClass;
 	private String myName;
 	private String myDescriptor;
@@ -114,7 +115,7 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 	{
 		super.visitMethodInsn(opcode, owner, name, desc);
 
-		if ((ignoreRegexp != null) && (ignoreRegexp.matcher(owner).matches()))
+		if ((ignoreRegexp != null) && (pm.matches(owner, ignoreRegexp)))
 			classData.removeLine(currentLine);
 	}
 

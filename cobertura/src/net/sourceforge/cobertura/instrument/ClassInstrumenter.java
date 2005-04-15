@@ -21,12 +21,11 @@
 
 package net.sourceforge.cobertura.instrument;
 
-import java.util.regex.Pattern;
-
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 
 import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.Pattern;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -35,7 +34,8 @@ import org.objectweb.asm.Opcodes;
 class ClassInstrumenter extends ClassAdapter implements Opcodes
 {
 
-	private static final Logger logger = Logger.getLogger(ClassInstrumenter.class);
+	private static final Logger logger = Logger
+			.getLogger(ClassInstrumenter.class);
 
 	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coveragedata/HasBeenInstrumented";
 	private Pattern ignoreRegexp;
