@@ -65,6 +65,8 @@ import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.sourceforge.cobertura.util.StringUtil;
+
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
@@ -116,7 +118,8 @@ public abstract class CommonMatchingTask extends MatchingTask
 					"Error initializing commands file "
 							+ commandLineFile.getAbsolutePath(),
 					Project.MSG_ERR);
-			throw new BuildException("Unable to initialize commands file.", ioe);
+			throw new BuildException("Unable to initialize commands file.",
+					ioe);
 		}
 	}
 
@@ -184,7 +187,8 @@ public abstract class CommonMatchingTask extends MatchingTask
 			{
 				String classpath = ((AntClassLoader)getClass()
 						.getClassLoader()).getClasspath();
-				createClasspath().setPath(classpath.replaceAll("%20", " "));
+				createClasspath().setPath(
+						StringUtil.replaceAll(classpath, "%20", " "));
 			}
 			else if (getClass().getClassLoader() instanceof URLClassLoader)
 			{
@@ -194,7 +198,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 				{
 					String classpath = earls[i].getFile();
 					createClasspath().setPath(
-							classpath.replaceAll("%20", " "));
+							StringUtil.replaceAll(classpath, "%20", " "));
 				}
 			}
 		}

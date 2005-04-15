@@ -36,6 +36,7 @@ import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.log4j.Logger;
 
@@ -204,8 +205,8 @@ public class XMLReport
 
 	private static String xmlEscape(String str)
 	{
-		str = str.replaceAll("<", "&lt;");
-		str = str.replaceAll(">", "&gt;");
+		str = StringUtil.replaceAll(str, "<", "&lt;");
+		str = StringUtil.replaceAll(str, ">", "&gt;");
 		return str;
 	}
 
