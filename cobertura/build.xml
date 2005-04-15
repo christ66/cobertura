@@ -27,7 +27,7 @@
 		<mkdir dir="${build.classes.dir}" />
 
 		<javac fork="true" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true">
-			<!-- <compilerarg value="-Xlint:unchecked"/> -->
+			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
 			<classpath refid="base.path" />
 		</javac>
@@ -35,7 +35,7 @@
 		<mkdir dir="${build.test.classes.dir}" />
 
 		<javac fork="true" srcdir="${test.src.dir}" destdir="${build.test.classes.dir}" debug="true">
-			<!-- <compilerarg value="-Xlint:unchecked"/> -->
+			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${build.test.classes.dir}" />
 			<classpath refid="base.path" />
