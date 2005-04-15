@@ -64,23 +64,6 @@ public class ProjectData extends CoverageDataContainer
 		this.classes.put(classData.getName(), classData);
 	}
 
-	/**
-	 * Returns true if the given object is an instance of the
-	 * ProjectData class, it contains the same number of classes
-	 * as this instance, and the classes in the two instances
-	 * are all equal.
-	 */
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-			return true;
-		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
-			return false;
-
-		//ProjectData coverageData = (ProjectData)obj;
-		return super.equals(obj);
-	}
-
 	public ClassData getClassData(String name)
 	{
 		return (ClassData)this.classes.get(name);

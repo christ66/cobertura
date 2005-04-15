@@ -96,11 +96,23 @@ public abstract class CopyFiles
 		{
 			if (in != null)
 			{
-				in.close();
+				try
+				{
+					in.close();
+				}
+				catch (IOException e)
+				{
+				}
 			}
 			if (out != null)
 			{
-				out.close();
+				try
+				{
+					out.close();
+				}
+				catch (IOException e)
+				{
+				}
 			}
 		}
 	}
