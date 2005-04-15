@@ -61,6 +61,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import net.sourceforge.cobertura.util.Header;
+import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
@@ -155,7 +156,8 @@ public class ReportTask extends MatchingTask
 			{
 				String classpath = ((AntClassLoader)getClass()
 						.getClassLoader()).getClasspath();
-				createClasspath().setPath(classpath.replaceAll("%20", " "));
+				createClasspath().setPath(
+						StringUtil.replaceAll(classpath, "%20", " "));
 			}
 			else if (getClass().getClassLoader() instanceof URLClassLoader)
 			{
@@ -165,7 +167,7 @@ public class ReportTask extends MatchingTask
 				{
 					String classpath = earls[i].getFile();
 					createClasspath().setPath(
-							classpath.replaceAll("%20", " "));
+							StringUtil.replaceAll(classpath, "%20", " "));
 				}
 			}
 		}
