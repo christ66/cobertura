@@ -69,7 +69,7 @@ public class Main
 			switch (c)
 			{
 				case 'f':
-					format = new String(g.getOptarg());
+					format = g.getOptarg();
 					if (!format.equalsIgnoreCase("html")
 							&& !format.equalsIgnoreCase("xml"))
 					{

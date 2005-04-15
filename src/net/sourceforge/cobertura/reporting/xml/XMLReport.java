@@ -45,7 +45,6 @@ public class XMLReport
 
 	private static final Logger logger = Logger.getLogger(XMLReport.class);
 
-	private final int indentRate = 2;
 	private final PrintWriter pw;
 
 	private int indent = 0;
@@ -87,12 +86,13 @@ public class XMLReport
 
 	void increaseIndentation()
 	{
-		indent += indentRate;
+		indent++;
 	}
 
 	void decreaseIndentation()
 	{
-		indent -= indentRate;
+		if (indent > 0)
+			indent--;
 	}
 
 	void indent()
