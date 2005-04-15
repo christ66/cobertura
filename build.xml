@@ -242,8 +242,9 @@
 				<include name="COPYRIGHT" />
 				<include name="README" />
 				<include name="lib/**" />
-				<!-- xerces is currently only used by the JUnit tests -->
+				<!-- xerces and xalan are currently only used by the JUnit tests -->
 				<exclude name="lib/xerces/**" />
+				<exclude name="lib/xalan/**" />
 				<include name="cobertura.jar" />
 
 				<include name="examples/basic/README" />
