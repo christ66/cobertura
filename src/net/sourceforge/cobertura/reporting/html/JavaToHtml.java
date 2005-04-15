@@ -91,7 +91,7 @@ public class JavaToHtml
 		else if (character == '\t')
 			return "        ";
 		else
-			return Character.toString(character);
+			return new Character(character).toString();
 	}
 
 	/**
