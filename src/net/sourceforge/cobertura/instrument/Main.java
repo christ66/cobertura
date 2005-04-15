@@ -36,12 +36,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 
 import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.Perl5Compiler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
@@ -139,9 +141,8 @@ public class Main
 		}
 		catch (IOException e)
 		{
-			logger
-					.warn("Unable to instrument file "
-							+ file.getAbsolutePath(), e);
+			logger.warn(
+					"Unable to instrument file " + file.getAbsolutePath(), e);
 		}
 		finally
 		{
@@ -194,7 +195,16 @@ public class Main
 			else if (args[i].equals("--ignore"))
 			{
 				String regex = args[++i];
-				this.ignoreRegexp = Pattern.compile(regex);
+				try
+				{
+					Perl5Compiler pc = new Perl5Compiler();
+					this.ignoreRegexp = pc.compile(regex);
+				}
+				catch (MalformedPatternException e)
+				{
+					logger.warn("The regular expression " + regex
+							+ " is invalid: " + e.getLocalizedMessage());
+				}
 			}
 			else
 				locations.add(args[i]);
@@ -269,5 +279,5 @@ public class Main
 		System.out.println("Instrument time: " + (stopTime - startTime)
 				+ "ms");
 	}
-	
+
 }
