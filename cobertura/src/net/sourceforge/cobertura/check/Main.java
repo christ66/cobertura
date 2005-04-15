@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
@@ -38,11 +37,18 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.Header;
 
 import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
 
 public class Main
 {
 
 	private static final Logger logger = Logger.getLogger(Main.class);
+
+	final Perl5Matcher pm = new Perl5Matcher();
+	final Perl5Compiler pc = new Perl5Compiler();
 
 	Map minimumCoverageRates = new HashMap();
 	CoverageRate minimumCoverageRate;
@@ -65,10 +71,11 @@ public class Main
 	}
 
 	void setMinimumCoverageRate(String minimumCoverageRate)
+			throws MalformedPatternException
 	{
 		StringTokenizer tokenizer = new StringTokenizer(minimumCoverageRate,
 				":");
-		minimumCoverageRates.put(Pattern.compile(tokenizer.nextToken()),
+		minimumCoverageRates.put(pc.compile(tokenizer.nextToken()),
 				new CoverageRate(inRangeAndDivideByOneHundred(tokenizer
 						.nextToken()), inRangeAndDivideByOneHundred(tokenizer
 						.nextToken())));
@@ -81,8 +88,7 @@ public class Main
 		{
 			Map.Entry entry = (Map.Entry)i.next();
 
-			Pattern pattern = (Pattern)entry.getKey();
-			if (pattern.matcher(classname).matches())
+			if (pm.matches(classname, (Pattern)entry.getKey()))
 			{
 				return (CoverageRate)entry.getValue();
 			}
@@ -90,7 +96,7 @@ public class Main
 		return minimumCoverageRate;
 	}
 
-	public Main(String[] args)
+	public Main(String[] args) throws MalformedPatternException
 	{
 		Header.print(System.out);
 		System.out.println("Cobertura coverage check");
@@ -205,7 +211,7 @@ public class Main
 		return decimal.setScale(1, BigDecimal.ROUND_DOWN).toString();
 	}
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws MalformedPatternException
 	{
 		new Main(args);
 	}
