@@ -2,8 +2,10 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- * Copyright (C) 2005 Joakim Erdfelt <joakim@erdfelt.net
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Joakim Erdfelt
+ * Copyright (C) 2005 Grzegorz Lukasik
+ * Contact information for the above is given in the COPYRIGHT file.
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
