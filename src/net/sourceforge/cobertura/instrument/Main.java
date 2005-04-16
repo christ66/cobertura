@@ -134,7 +134,11 @@ public class Main
 				File outputFile = new File(destinationDirectory, cv
 						.getClassName().replace('.', File.separatorChar)
 						+ ".class");
-				outputFile.getParentFile().mkdirs();
+				File parentFile = outputFile.getParentFile();
+				if (parentFile != null)
+				{
+					parentFile.mkdirs();
+				}
 				outputStream = new FileOutputStream(outputFile);
 				outputStream.write(instrumentedClass);
 			}
