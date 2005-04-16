@@ -1,8 +1,9 @@
 version 1.3
 	* Increased speed of HTML reports by filtering the files read
 	  in to determine cyclomatic complexity numbers on.
-	* In the lower left pane of the HTML reports, only the name of
-	  each class (not including the package) is shown.
+	* In the lower left pane of the HTML reports, classes are now
+	  sorted only by their class name (instead of by their package
+	  name plus class name).
 	* Changed the format of the XML reports to something that
 	  is hopefully easier to use and more natural.  This
 	  unfortunately breaks backward compatability.
