@@ -36,6 +36,7 @@ import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.reporting.Util;
 import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.log4j.Logger;
@@ -49,9 +50,13 @@ public class XMLReport
 
 	private int indent = 0;
 
+	private File sourceDirectory;
+
 	public XMLReport(ProjectData projectData, File outputDir,
 			File sourceDirectory) throws IOException
 	{
+		this.sourceDirectory = sourceDirectory;
+
 		pw = new PrintWriter(new FileWriter(new File(outputDir,
 				"coverage.xml")));
 
@@ -128,10 +133,12 @@ public class XMLReport
 	{
 		logger.debug("Dumping package " + packageData.getName());
 
+		double ccn = Util.getCCN(new File(sourceDirectory, packageData
+				.getSourceFileName()), false);
 		println("<package name=\"" + packageData.getName()
 				+ "\" line-rate=\"" + packageData.getLineCoverageRate()
 				+ "\" branch-rate=\"" + packageData.getBranchCoverageRate()
-				+ "\"" + ">");
+				+ "\" complexity=\"" + ccn + "\"" + ">");
 		increaseIndentation();
 		dumpClasses(packageData);
 		decreaseIndentation();
@@ -157,10 +164,13 @@ public class XMLReport
 	{
 		logger.debug("Dumping class " + classData.getName());
 
+		double ccn = Util.getCCN(new File(sourceDirectory, classData
+				.getSourceFileName()), false);
 		println("<class name=\"" + classData.getName() + "\" filename=\""
 				+ classData.getSourceFileName() + "\" line-rate=\""
 				+ classData.getLineCoverageRate() + "\" branch-rate=\""
-				+ classData.getBranchCoverageRate() + "\"" + ">");
+				+ classData.getBranchCoverageRate() + "\" complexity=\""
+				+ ccn + "\"" + ">");
 		increaseIndentation();
 
 		dumpMethods(classData);
