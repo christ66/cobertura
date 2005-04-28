@@ -63,7 +63,7 @@ public class XMLReport
 		try
 		{
 			println("<?xml version=\"1.0\"?>");
-			println("<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage.dtd\">");
+			println("<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-01.dtd\">");
 			println("");
 
 			if (sourceDirectory == null)
