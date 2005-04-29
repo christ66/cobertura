@@ -70,16 +70,22 @@ div#main {
 }
 
 div#navigation {
-	background-color: #ffffff;
+	background-color: #f8f8f8;
 	border: 1px solid #888888;
 	float: left;
 	font-weight: bold;
 	font-family: arial, helvetica, sans-serif;
-	margin: 1px;
+	margin: 1.0px;
 	margin-top: 0px;
 	padding: 0.5em;
 	text-align: right;
 	width: 15%;
+}
+
+div#navigation p {
+	background-color: #ffffff;
+	border: 1px solid #dddddd;
+	padding: 0.5em;
 }
 
 div.newsitem {
@@ -116,4 +122,18 @@ p.centered {
 
 p.right {
 	text-align: right;
+}
+
+table {
+	border: 1px solid #bbbbbb;
+	border-collapse: collapse;
+	border-spacing: 0px;
+	empty-cells: show;
+	margin-left: 1em;
+	margin-right: 3em;
+}
+
+td,th {
+	border: 1px solid #bbbbbb;
+	padding: 0.1em;
 }
