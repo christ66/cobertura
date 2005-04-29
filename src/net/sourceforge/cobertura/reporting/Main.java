@@ -75,8 +75,9 @@ public class Main
 					if (!format.equalsIgnoreCase("html")
 							&& !format.equalsIgnoreCase("xml"))
 					{
-						throw new Exception("Error: format \"" + format
-								+ "\" must be either html or xml");
+						System.err.println("Error: format \"" + format
+								+ "\" is invalid. Must be either html or xml");
+						System.exit(1);
 					}
 					break;
 

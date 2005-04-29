@@ -96,14 +96,6 @@ public class ReportTask extends MatchingTask
 
 	public void setFormat(String format)
 	{
-		// TODO: To avoid duplicate code, this check should only be
-		//       in net.sourceforge.cobertura.reporting.Main
-		if (!format.equalsIgnoreCase("html")
-				&& !format.equalsIgnoreCase("xml"))
-		{
-			throw new BuildException(
-					"Format must be either \"html\" or \"xml\"");
-		}
 		this.format = format;
 	}
 
@@ -140,7 +132,7 @@ public class ReportTask extends MatchingTask
 
 		if (getJava().executeJava() != 0)
 		{
-			throw new BuildException();
+			throw new BuildException("Error generating report. See messages above.");
 		}
 	}
 
