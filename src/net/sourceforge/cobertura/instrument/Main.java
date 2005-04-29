@@ -120,35 +120,21 @@ public class Main
 		}
 
 		InputStream inputStream = null;
-		OutputStream outputStream = null;
+		ClassWriter cw;
+		ClassInstrumenter cv;
 		try
 		{
 			inputStream = new FileInputStream(file);
 			ClassReader cr = new ClassReader(inputStream);
-			ClassWriter cw = new ClassWriter(true);
-			ClassInstrumenter cv = new ClassInstrumenter(projectData, cw,
-					ignoreRegexp);
+			cw = new ClassWriter(true);
+			cv = new ClassInstrumenter(projectData, cw, ignoreRegexp);
 			cr.accept(cv, false);
-			byte[] instrumentedClass = cw.toByteArray();
-
-			if (cv.isInstrumented())
-			{
-				File outputFile = new File(destinationDirectory, cv
-						.getClassName().replace('.', File.separatorChar)
-						+ ".class");
-				File parentFile = outputFile.getParentFile();
-				if (parentFile != null)
-				{
-					parentFile.mkdirs();
-				}
-				outputStream = new FileOutputStream(outputFile);
-				outputStream.write(instrumentedClass);
-			}
 		}
 		catch (IOException e)
 		{
 			logger.warn(
 					"Unable to instrument file " + file.getAbsolutePath(), e);
+			return;
 		}
 		finally
 		{
@@ -162,6 +148,42 @@ public class Main
 				{
 				}
 			}
+		}
+
+		OutputStream outputStream = null;
+		try
+		{
+			if (cv.isInstrumented())
+			{
+				// If destinationDirectory is null, then overwrite
+				// the original, uninstrumented file.
+				File outputFile;
+				if (destinationDirectory == null)
+					outputFile = file;
+				else
+					outputFile = new File(destinationDirectory, cv
+							.getClassName().replace('.', File.separatorChar)
+							+ ".class");
+
+				File parentFile = outputFile.getParentFile();
+				if (parentFile != null)
+				{
+					parentFile.mkdirs();
+				}
+
+				byte[] instrumentedClass = cw.toByteArray();
+				outputStream = new FileOutputStream(outputFile);
+				outputStream.write(instrumentedClass);
+			}
+		}
+		catch (IOException e)
+		{
+			logger.warn(
+					"Unable to instrument file " + file.getAbsolutePath(), e);
+			return;
+		}
+		finally
+		{
 			if (outputStream != null)
 			{
 				try

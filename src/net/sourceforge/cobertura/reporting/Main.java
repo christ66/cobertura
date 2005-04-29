@@ -51,7 +51,6 @@ public class Main
 
 		LongOpt[] longOpts = new LongOpt[4];
 		// TODO: Allow for multiple destination and multiple source directories
-		// TODO: Are format and datafile optional?  They should be
 		longOpts[0] = new LongOpt("format", LongOpt.REQUIRED_ARGUMENT, null,
 				'f');
 		longOpts[1] = new LongOpt("datafile",
