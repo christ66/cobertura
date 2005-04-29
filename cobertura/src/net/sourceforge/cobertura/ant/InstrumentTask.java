@@ -135,7 +135,8 @@ public class InstrumentTask extends CommonMatchingTask
 			addArg(toDir.toString());
 		}
 
-		// TODO: ignoreRegex.setRegex() is never called
+		// ignoreRegex.setRegex() is never called, but that's ok
+		// because ant sets it somehow, I think
 		if (ignoreRegex != null)
 		{
 			addArg("--ignore");

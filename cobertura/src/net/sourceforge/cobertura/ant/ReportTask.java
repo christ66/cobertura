@@ -96,6 +96,8 @@ public class ReportTask extends MatchingTask
 
 	public void setFormat(String format)
 	{
+		// TODO: To avoid duplicate code, this check should only be
+		//       in net.sourceforge.cobertura.reporting.Main
 		if (!format.equalsIgnoreCase("html")
 				&& !format.equalsIgnoreCase("xml"))
 		{
@@ -130,7 +132,7 @@ public class ReportTask extends MatchingTask
 			getJava().createArg().setValue(dataFile);
 		}
 
-		getJava().createArg().setValue("--output");
+		getJava().createArg().setValue("--destination");
 		getJava().createArg().setValue(destDir.toString());
 
 		getJava().createArg().setValue("--source");

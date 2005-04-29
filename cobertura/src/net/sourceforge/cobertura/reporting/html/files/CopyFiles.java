@@ -30,13 +30,13 @@ import java.io.InputStream;
 public abstract class CopyFiles
 {
 
-	public static void copy(File outputDir) throws IOException
+	public static void copy(File destinationDir) throws IOException
 	{
-		File cssOutputDir = new File(outputDir, "css");
-		File imagesOutputDir = new File(outputDir, "images");
-		File jsOutputDir = new File(outputDir, "js");
+		File cssOutputDir = new File(destinationDir, "css");
+		File imagesOutputDir = new File(destinationDir, "images");
+		File jsOutputDir = new File(destinationDir, "js");
 
-		outputDir.mkdirs();
+		destinationDir.mkdirs();
 		cssOutputDir.mkdir();
 		imagesOutputDir.mkdir();
 		jsOutputDir.mkdir();
@@ -58,8 +58,8 @@ public abstract class CopyFiles
 		copyResourceFromJar("stringbuilder.js", jsOutputDir);
 		//copyResourceFromJar("uscurrencysorttype.js", jsOutputDir);
 
-		copyResourceFromJar("help.html", outputDir);
-		copyResourceFromJar("index.html", outputDir);
+		copyResourceFromJar("help.html", destinationDir);
+		copyResourceFromJar("index.html", destinationDir);
 	}
 
 	/**
