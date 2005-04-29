@@ -40,21 +40,23 @@ public class Main
 	private static final Logger logger = Logger.getLogger(Main.class);
 
 	// TODO: make these not static?
-	static String format;
+	static String format = "html";
 	static File dataFile;
+	static File destinationDir;
 	static File sourceDir;
-	static File outputDir;
 
 	public static void main(String[] args) throws Exception
 	{
 		long startTime = System.currentTimeMillis();
 
 		LongOpt[] longOpts = new LongOpt[4];
+		// TODO: Allow for multiple destination and multiple source directories
+		// TODO: Are format and datafile optional?  They should be
 		longOpts[0] = new LongOpt("format", LongOpt.REQUIRED_ARGUMENT, null,
 				'f');
 		longOpts[1] = new LongOpt("datafile",
 				LongOpt.REQUIRED_ARGUMENT, null, 'd');
-		longOpts[2] = new LongOpt("output", LongOpt.REQUIRED_ARGUMENT, null,
+		longOpts[2] = new LongOpt("destination", LongOpt.REQUIRED_ARGUMENT, null,
 				'o');
 		longOpts[3] = new LongOpt("source", LongOpt.REQUIRED_ARGUMENT, null,
 				's');
@@ -95,13 +97,13 @@ public class Main
 					break;
 
 				case 'o':
-					outputDir = new File(g.getOptarg());
-					if (outputDir.exists() && outputDir.isFile())
+					destinationDir = new File(g.getOptarg());
+					if (destinationDir.exists() && destinationDir.isFile())
 					{
 						throw new Exception("Error: destination directory "
-								+ outputDir + " already exists and is a file");
+								+ destinationDir + " already exists and is a file");
 					}
-					outputDir.mkdirs();
+					destinationDir.mkdirs();
 					break;
 
 				case 's':
@@ -126,22 +128,22 @@ public class Main
 			logger.debug("format is " + format);
 			logger.debug("dataFile is "
 					+ dataFile.getAbsolutePath());
-			logger.debug("outputDir is " + outputDir.getAbsolutePath());
+			logger.debug("destinationDir is " + destinationDir.getAbsolutePath());
 			logger.debug("sourceDir is " + sourceDir.getAbsolutePath());
 		}
 
 		if (dataFile == null)
-			dataFile = new File(CoverageDataFileHandler.FILE_NAME);
+			dataFile = CoverageDataFileHandler.getDefaultDataFile();
 		ProjectData projectData = CoverageDataFileHandler
 				.loadCoverageData(dataFile);
 
 		if (format.equalsIgnoreCase("html"))
 		{
-			new HTMLReport(projectData, outputDir, sourceDir);
+			new HTMLReport(projectData, destinationDir, sourceDir);
 		}
 		else if (format.equalsIgnoreCase("xml"))
 		{
-			new XMLReport(projectData, outputDir, sourceDir);
+			new XMLReport(projectData, destinationDir, sourceDir);
 		}
 
 		long stopTime = System.currentTimeMillis();

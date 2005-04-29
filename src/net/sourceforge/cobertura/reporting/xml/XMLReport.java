@@ -52,12 +52,12 @@ public class XMLReport
 
 	private File sourceDirectory;
 
-	public XMLReport(ProjectData projectData, File outputDir,
+	public XMLReport(ProjectData projectData, File destinationDir,
 			File sourceDirectory) throws IOException
 	{
 		this.sourceDirectory = sourceDirectory;
 
-		pw = new PrintWriter(new FileWriter(new File(outputDir,
+		pw = new PrintWriter(new FileWriter(new File(destinationDir,
 				"coverage.xml")));
 
 		try

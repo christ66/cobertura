@@ -50,7 +50,7 @@ public class HTMLReport
 
 	private static final Logger logger = Logger.getLogger(HTMLReport.class);
 
-	private File outputDir;
+	private File destinationDir;
 
 	private File sourceDir;
 
@@ -62,7 +62,7 @@ public class HTMLReport
 	public HTMLReport(ProjectData projectData, File outputDir, File sourceDir)
 			throws Exception
 	{
-		this.outputDir = outputDir;
+		this.destinationDir = outputDir;
 		this.sourceDir = sourceDir;
 		this.projectData = projectData;
 
@@ -82,7 +82,7 @@ public class HTMLReport
 
 	private void generatePackageList() throws IOException
 	{
-		File file = new File(outputDir, "frame-packages.html");
+		File file = new File(destinationDir, "frame-packages.html");
 		PrintStream out = null;
 
 		try
@@ -160,7 +160,7 @@ public class HTMLReport
 			filename = "frame-classes-" + packageData.getName() + ".html";
 			classes = packageData.getChildren();
 		}
-		File file = new File(outputDir, filename);
+		File file = new File(destinationDir, filename);
 		PrintStream out = null;
 
 		try
@@ -248,7 +248,7 @@ public class HTMLReport
 		{
 			filename = "frame-summary-" + packageData.getName() + ".html";
 		}
-		File file = new File(outputDir, filename);
+		File file = new File(destinationDir, filename);
 		PrintStream out = null;
 
 		try
@@ -413,7 +413,7 @@ public class HTMLReport
 	private void generateSourceFile(ClassData classData) throws IOException
 	{
 		String filename = classData.getName() + ".html";
-		File file = new File(outputDir, filename);
+		File file = new File(destinationDir, filename);
 		PrintStream out = null;
 
 		try
