@@ -41,9 +41,9 @@ public class Main
 
 	// TODO: make these not static?
 	static String format = "html";
-	static File dataFile;
-	static File destinationDir;
-	static File sourceDir;
+	static File dataFile = null;
+	static File destinationDir = null;
+	static File sourceDir = null;
 
 	public static void main(String[] args) throws Exception
 	{
@@ -63,9 +63,7 @@ public class Main
 
 		Getopt g = new Getopt(Main.class.getName(), args, ":f:d:o:s:",
 				longOpts);
-
 		int c;
-
 		while ((c = g.getopt()) != -1)
 		{
 			switch (c)
@@ -85,15 +83,17 @@ public class Main
 					dataFile = new File(g.getOptarg());
 					if (!dataFile.exists())
 					{
-						throw new Exception("Error: data file "
+						System.err.println("Error: data file "
 								+ dataFile.getAbsolutePath()
 								+ " does not exist");
+						System.exit(1);
 					}
-					if (dataFile.isDirectory())
+					if (!dataFile.isFile())
 					{
-						throw new Exception("Error: data file "
+						System.err.println("Error: data file "
 								+ dataFile.getAbsolutePath()
-								+ " cannot be a directory");
+								+ " must be a regular file");
+						System.exit(1);
 					}
 					break;
 
@@ -101,8 +101,9 @@ public class Main
 					destinationDir = new File(g.getOptarg());
 					if (destinationDir.exists() && destinationDir.isFile())
 					{
-						throw new Exception("Error: destination directory "
+						System.err.println("Error: destination directory "
 								+ destinationDir + " already exists and is a file");
+						System.exit(1);
 					}
 					destinationDir.mkdirs();
 					break;
@@ -111,17 +112,34 @@ public class Main
 					sourceDir = new File(g.getOptarg());
 					if (!sourceDir.exists())
 					{
-						throw new Exception("Error: source directory "
+						System.err.println("Error: source directory "
 								+ sourceDir + " does not exist");
+						System.exit(1);
 					}
-					if (sourceDir.isFile())
+					if (!sourceDir.isDirectory())
 					{
-						throw new Exception("Error: source directory "
+						System.err.println("Error: source directory "
 								+ sourceDir
-								+ " should be a directory, not a file");
+								+ " must be a directory");
+						System.exit(1);
 					}
 					break;
 			}
+		}
+
+		if (dataFile == null)
+			dataFile = CoverageDataFileHandler.getDefaultDataFile();
+
+		if (destinationDir == null)
+		{
+			System.err.println("Error: destination directory must be set");
+			System.exit(1);
+		}
+
+		if (sourceDir == null)
+		{
+			System.err.println("Error: source directory must be set");
+			System.exit(1);
 		}
 
 		if (logger.isDebugEnabled())
@@ -133,10 +151,8 @@ public class Main
 			logger.debug("sourceDir is " + sourceDir.getAbsolutePath());
 		}
 
-		if (dataFile == null)
-			dataFile = CoverageDataFileHandler.getDefaultDataFile();
 		ProjectData projectData = CoverageDataFileHandler
-				.loadCoverageData(dataFile);
+		.loadCoverageData(dataFile);
 
 		if (format.equalsIgnoreCase("html"))
 		{
