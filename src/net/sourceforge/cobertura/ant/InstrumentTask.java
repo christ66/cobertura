@@ -110,19 +110,6 @@ public class InstrumentTask extends CommonMatchingTask
 	{
 		initArgs();
 
-		Set filenames = new HashSet();
-		Iterator iter = fileSets.iterator();
-		while (iter.hasNext())
-		{
-			FileSet fileSet = (FileSet)iter.next();
-
-			addArg("--basedir");
-			addArg(baseDir(fileSet));
-
-			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
-		}
-		addFilenames((String[])filenames.toArray(new String[filenames.size()]));
-
 		if (dataFile != null)
 		{
 			addArg("--datafile");
@@ -142,6 +129,19 @@ public class InstrumentTask extends CommonMatchingTask
 			addArg("--ignore");
 			addArg(ignoreRegex.getRegex());
 		}
+
+		Set filenames = new HashSet();
+		Iterator iter = fileSets.iterator();
+		while (iter.hasNext())
+		{
+			FileSet fileSet = (FileSet)iter.next();
+
+			addArg("--basedir");
+			addArg(baseDir(fileSet));
+
+			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
+		}
+		addFilenames((String[])filenames.toArray(new String[filenames.size()]));
 
 		saveArgs();
 
