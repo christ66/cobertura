@@ -53,10 +53,10 @@ public class Main
 		// TODO: Allow for multiple destination and multiple source directories
 		longOpts[0] = new LongOpt("format", LongOpt.REQUIRED_ARGUMENT, null,
 				'f');
-		longOpts[1] = new LongOpt("datafile",
-				LongOpt.REQUIRED_ARGUMENT, null, 'd');
-		longOpts[2] = new LongOpt("destination", LongOpt.REQUIRED_ARGUMENT, null,
-				'o');
+		longOpts[1] = new LongOpt("datafile", LongOpt.REQUIRED_ARGUMENT,
+				null, 'd');
+		longOpts[2] = new LongOpt("destination", LongOpt.REQUIRED_ARGUMENT,
+				null, 'o');
 		longOpts[3] = new LongOpt("source", LongOpt.REQUIRED_ARGUMENT, null,
 				's');
 
@@ -72,8 +72,10 @@ public class Main
 					if (!format.equalsIgnoreCase("html")
 							&& !format.equalsIgnoreCase("xml"))
 					{
-						System.err.println("Error: format \"" + format
-								+ "\" is invalid. Must be either html or xml");
+						System.err
+								.println("Error: format \""
+										+ format
+										+ "\" is invalid. Must be either html or xml");
 						System.exit(1);
 					}
 					break;
@@ -98,10 +100,12 @@ public class Main
 
 				case 'o':
 					destinationDir = new File(g.getOptarg());
-					if (destinationDir.exists() && destinationDir.isFile())
+					if (destinationDir.exists()
+							&& !destinationDir.isDirectory())
 					{
 						System.err.println("Error: destination directory "
-								+ destinationDir + " already exists and is a file");
+								+ destinationDir
+								+ " already exists but is not a directory");
 						System.exit(1);
 					}
 					destinationDir.mkdirs();
@@ -118,8 +122,7 @@ public class Main
 					if (!sourceDir.isDirectory())
 					{
 						System.err.println("Error: source directory "
-								+ sourceDir
-								+ " must be a directory");
+								+ sourceDir + " must be a directory");
 						System.exit(1);
 					}
 					break;
@@ -144,14 +147,14 @@ public class Main
 		if (logger.isDebugEnabled())
 		{
 			logger.debug("format is " + format);
-			logger.debug("dataFile is "
-					+ dataFile.getAbsolutePath());
-			logger.debug("destinationDir is " + destinationDir.getAbsolutePath());
+			logger.debug("dataFile is " + dataFile.getAbsolutePath());
+			logger.debug("destinationDir is "
+					+ destinationDir.getAbsolutePath());
 			logger.debug("sourceDir is " + sourceDir.getAbsolutePath());
 		}
 
 		ProjectData projectData = CoverageDataFileHandler
-		.loadCoverageData(dataFile);
+				.loadCoverageData(dataFile);
 
 		if (format.equalsIgnoreCase("html"))
 		{
