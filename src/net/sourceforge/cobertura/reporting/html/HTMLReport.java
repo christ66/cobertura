@@ -647,7 +647,8 @@ public class HTMLReport
 		String url2 = "frame-classes-" + packageData.getName() + ".html";
 		double lineCoverage = packageData.getLineCoverageRate();
 		double branchCoverage = packageData.getBranchCoverageRate();
-		double ccn = Util.getCCN(new File(sourceDir, packageData.getSourceFileName()), false);
+		double ccn = Util.getCCN(new File(sourceDir, packageData
+				.getSourceFileName()), false);
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><a href=\"" + url1
 				+ "\" onClick='parent.classList.location.href=\"" + url2
@@ -687,13 +688,13 @@ public class HTMLReport
 	{
 		double rest = 1d - percentValue;
 		StringBuffer sb = new StringBuffer();
-		sb
-				.append("<table cellpadding=\"0\" cellspacing=\"0\" align=\"right\">");
+		sb.append("<table cellpadding=\"0\" cellspacing=\"0\" "
+				+ "align=\"right\">");
 		sb.append("<tr>");
 		sb.append("<td>" + getPercentValue(percentValue) + "&nbsp;</td>");
 		sb.append("<td>");
-		sb
-				.append("<table class=\"percentGraph\" cellpadding=\"0\" cellspacing=\"0\">");
+		sb.append("<table class=\"percentGraph\" cellpadding=\"0\" "
+				+ "cellspacing=\"0\" width=\"100\">");
 		sb.append("<tr>");
 		sb.append("<td class=\"covered\" width=\""
 				+ (int)(percentValue * 100) + "\"></td>");
