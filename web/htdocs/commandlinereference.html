@@ -48,13 +48,29 @@ Example:
 <h2>Running Tests</h2>
 
 <p>
+You can basically run your tests the same way you always do.  The
+only change you need to make is to your classpath: you need to
+include cobertura.jar (which will include log4j and a few other
+jars) and you need to add the directory containing the instrumented
+classes BEFORE the directory containing the uninstrumented classes.
+The order is very important.
+</p>
+
+<p>
+Your tests do not have to be JUnit tests.  They don't even have
+to be automated.  If your application is a program with a GUI,
+you could fire it up, perform a few actions, then exit.
+Cobertura updates its data file whenever your program is accessed.
+</p>
+
+<p>
 Example:
 </p>
 
 <div class="codeblock">
 <p>
-<code>java -cp lib\cobertura.jar;C:\MyProject\build\instrumented;C:\MyProject\build\classes;C:\MyProject\build\test-classes -Dnet.sourceforge.cobertura.datafile=C:\MyProject\build\cobertura.ser ASimpleTestCase</code>
-</p>
+<code>java -cp C:\cobertura\lib\cobertura.jar;C:\MyProject\build\instrumented;C:\MyProject\build\classes;C:\MyProject\build\test-classes -Dnet.sourceforge.cobertura.datafile=C:\MyProject\build\cobertura.ser ASimpleTestCase</code>
+ </p>
 </div>
 
 
@@ -80,7 +96,7 @@ Example:
 
 <div class="codeblock">
 <p>
-<code>java -cp lib\cobertura.jar net.sourceforge.cobertura.reporting.Main --format html --datafile C:\MyProject\build\cobertura.ser --destination C:\MyProject\reports\coverage --source C:\MyProject\src</code>
+<code>cobertura-report.bat --format html --datafile C:\MyProject\build\cobertura.ser --destination C:\MyProject\reports\coverage --source C:\MyProject\src</code>
 </p>
 </div>
 
