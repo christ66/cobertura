@@ -30,7 +30,7 @@ div.bigger {
 div.codeblock {
 	background-color: #f0f0f0;
 	border: 1px dashed #bbbbbb;
-	font-family: arial, helvetica, sans-serif;
+	font-family: courier, monospace;
 	font-size: 85%;
 	margin: 1em;
 	margin-left: 3em;

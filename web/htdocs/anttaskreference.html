@@ -17,7 +17,7 @@ via ant tasks.
 <h2>cobertura-instrument Task</h2>
 
 <table>
-<tr><th>Parameter</th><th>Required?</th><th>Description</th><th>Default Value</tr>
+<tr><th>Parameter</th><th>Required?</th><th>Description</th><th>Default Value</th></tr>
 <tr><td>datafile</td><td>No</td><td>Specify the name of the file to use for storing the metadata about your classes.  This is a single file containing serialized Java classes.  It contains information about the names of classes in your project, their method names, line numbers, etc.  It will be updated as your tests are run, and will be referenced by the Cobertura reporting command.</td><td>"cobertura.ser" in the current directory</td></tr>
 <tr><td>todir</td><td>No</td><td>Specify the output directory for the instrumented classes.</td><td>If no destination directory is specified, then the uninstrumented classes will be overwritten with their instrumented counterparts.</td></tr>
 </table>
@@ -35,15 +35,13 @@ Example:
 </p>
 
 <div class="codeblock">
-<p>
-<code><pre>&lt;cobertura-instrument todir="${instrumented.dir}"&gt;
+<pre><code>&lt;cobertura-instrument todir="${instrumented.dir}"&gt;
     &lt;ignore regex="org.apache.log4j.*" /&gt;
     &lt;fileset dir="${classes.dir}"&gt;
         &lt;include name="**/*.class" /&gt;
         &lt;exclude name="**/*Test.class" /&gt;
     &lt;/fileset&gt;
-&lt;/cobertura-instrument&gt;</pre></code>
-</p>
+&lt;/cobertura-instrument&gt;</code></pre>
 </div>
 
 
@@ -76,11 +74,10 @@ TODO
 
 <p>
 Example:
+</p>
 
 <div class="codeblock">
-<p>
-<code><pre>&lt;cobertura-report format="html" destdir="${coveragereport.dir}" srcdir="${src.dir}" /&gt;</pre></code>
-</p>
+<pre><code>&lt;cobertura-report format="html" destdir="${coveragereport.dir}" srcdir="${src.dir}" /&gt;</code></pre>
 </div>
 
 
