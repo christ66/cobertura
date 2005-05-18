@@ -45,6 +45,8 @@ public class StringUtilTest extends TestCase
 		result = StringUtil.replaceAll("<init>V", "<", "&lt;");
 		result = StringUtil.replaceAll(result, ">", "&gt;");
 		assertEquals(result, "&lt;init&gt;V");
+		
+		assertEquals(null, StringUtil.replaceAll(null, "something", "anything"));
 	}
 
 	public static void main(String[] args)
