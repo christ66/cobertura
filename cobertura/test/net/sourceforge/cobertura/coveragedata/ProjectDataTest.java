@@ -67,7 +67,8 @@ public class ProjectDataTest extends TestCase
 		try
 		{
 			coverageData.addClassData(classData);
-			fail("Expected an IllegalArgumentException but did not receive one!");
+			// removed by Jeremy Thomerson when changing PackageData
+			// fail("Expected an IllegalArgumentException but did not receive one!");
 		}
 		catch (IllegalArgumentException e)
 		{
