@@ -23,11 +23,11 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -37,13 +37,11 @@ public class ProjectData extends CoverageDataContainer
 
 	private static final long serialVersionUID = 3;
 
-	private static final Logger logger = Logger.getLogger(ProjectData.class);
+	private static final Logger LOGGER = Logger.getLogger(ProjectData.class);
 
 	private static ProjectData globalProjectData = null;
 
 	private static SaveTimer saveTimer = null;
-
-	private Map classes = new HashMap();
 
 	public ProjectData()
 	{
@@ -51,6 +49,7 @@ public class ProjectData extends CoverageDataContainer
 
 	public void addClassData(ClassData classData)
 	{
+	    LOGGER.debug("ProjectData.addClassData: " + classData.getName());
 		String packageName = classData.getPackageName();
 		PackageData packageData = (PackageData)children.get(packageName);
 		if (packageData == null)
@@ -61,33 +60,47 @@ public class ProjectData extends CoverageDataContainer
 			this.children.put(packageName, packageData);
 		}
 		packageData.addClassData(classData);
-		this.classes.put(classData.getName(), classData);
 	}
 
 	public ClassData getClassData(String name)
 	{
-		return (ClassData)this.classes.get(name);
+	    for (Iterator it = children.values().iterator(); it.hasNext(); ) {
+	        PackageData packageData = (PackageData) it.next();
+	        ClassData classData = packageData.getClassData(name);
+	        if (classData != null) {
+	            return classData;
+	        }
+	    }
+		return null;
 	}
 
+	private Set fullClassNames = new HashSet(); // this is for full names, including $Foo of inner classes
 	public ClassData getOrCreateClassData(String name)
 	{
-		ClassData classData = (ClassData)this.classes.get(name);
-		if (classData == null)
-		{
-			classData = new ClassData(name);
+	    boolean done = fullClassNames.contains(name);
+		ClassData classData = new ClassData(name);
+	    if (!done) {
 			addClassData(classData);
+			fullClassNames.add(name);
+		} else {
+		    classData = getClassData(name);
 		}
 		return classData;
 	}
 
 	public Collection getClasses()
 	{
-		return this.classes.values();
+	    Collection result = new ArrayList(children.size() * 15);  // just an approximation, no science here
+	    for (Iterator it = children.values().iterator(); it.hasNext(); ) {
+	        PackageData packageData = (PackageData) it.next();
+	        result.addAll(packageData.getChildren());
+	    }
+		return result;
 	}
 
 	public int getNumberOfClasses()
 	{
-		return this.classes.size();
+		return getClasses().size();
 	}
 
 	/**
@@ -130,7 +143,7 @@ public class ProjectData extends CoverageDataContainer
 		// Read projectData from the serialized file.
 		if (dataFile.isFile())
 		{
-			logger.debug("Loading global project data from "
+			LOGGER.debug("Loading global project data from "
 					+ dataFile.getAbsolutePath());
 			globalProjectData = CoverageDataFileHandler
 					.loadCoverageData(dataFile);
@@ -139,7 +152,7 @@ public class ProjectData extends CoverageDataContainer
 			return globalProjectData;
 
 		// We could not read from the serialized file, so create a new object.
-		logger
+		LOGGER
 				.info("Coverage data file "
 						+ dataFile.getAbsolutePath()
 						+ " either does not exist or is not readable.  Creating a new data file.");

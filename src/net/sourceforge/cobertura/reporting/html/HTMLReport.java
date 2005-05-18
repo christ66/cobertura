@@ -182,16 +182,14 @@ public class HTMLReport
 			out.println("<h5>Classes</h5>");
 			out.println("<table width=\"100%\">");
 
-			Iterator iter;
 			Map sortedClassList = new TreeMap();
-			iter = classes.iterator();
-			while (iter.hasNext())
+			for (Iterator iter = classes.iterator(); iter.hasNext(); )
 			{
 				ClassData classData = (ClassData)iter.next();
 				sortedClassList.put(classData.getBaseName(), classData);
 			}
-			iter = sortedClassList.values().iterator();
-			while (iter.hasNext())
+
+			for (Iterator iter = sortedClassList.values().iterator(); iter.hasNext(); )
 			{
 				ClassData classData = (ClassData)iter.next();
 				out.println("<tr>");

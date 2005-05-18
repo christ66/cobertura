@@ -23,10 +23,19 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import org.apache.log4j.Logger;
+
+import net.sourceforge.cobertura.util.StringUtil;
+
+/**
+ * @author Mark Doliner
+ * @author Jeremy Thomerson
+ */
 public class PackageData extends CoverageDataContainer implements Comparable, HasBeenInstrumented
 {
 
 	private static final long serialVersionUID = 3;
+	private static final Logger LOGGER = Logger.getLogger(PackageData.class);
 
 	private String name;
 
@@ -38,16 +47,43 @@ public class PackageData extends CoverageDataContainer implements Comparable, Ha
 		this.name = name;
 	}
 
+	/**
+	 * @param fullName
+	 * @return The full name of the class without $Foo on inner classes (i.e. Class$Foo)
+	 */
+	private String getClassNameIgnoreInner(String fullName) {
+	    if (fullName.indexOf('$') != -1) {
+            return StringUtil.replaceAll(fullName, fullName.substring(fullName.lastIndexOf('$')), "");
+	    }
+	    return fullName;
+	}
+
+	public ClassData getClassData(String fullClassName) {
+	    String keyName = new ClassData(getClassNameIgnoreInner(fullClassName)).getBaseName();
+	    return (ClassData) children.get(keyName);
+	}
+
 	public void addClassData(ClassData classData)
 	{
-		if (children.containsKey(classData.getBaseName()))
-			throw new IllegalArgumentException("Package " + this.name
-					+ " already contains a class with the name "
-					+ classData.getBaseName());
+	    // this method aggregates data if classData is an inner class
+	    //  with the data from the top level class that it is contained in
+	    LOGGER.debug("addClassData: " + classData.getName());
+	    String parentClassName = getClassNameIgnoreInner(classData.getName());
+	    LOGGER.debug("\tparentClassName = " + parentClassName);
+	    String keyName = new ClassData(parentClassName).getBaseName();
+	    LOGGER.debug("\tkeyName = " + keyName);
+	    
+	    ClassData parent = getClassData(classData.getName());
+        if (parent == null) {
+            LOGGER.debug("\tno parent");
+            parent = new ClassData(parentClassName);
+        }
+        classData.merge(parent);
 
 		// Each key is a class basename, stored as an String object.
 		// Each value is information about the class, stored as a ClassData object.
-		children.put(classData.getBaseName(), classData);
+        LOGGER.debug("putting " + keyName + " = " + classData.getName());
+		children.put(keyName, classData);
 	}
 
 	/**
