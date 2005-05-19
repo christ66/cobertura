@@ -261,6 +261,35 @@ does not find an already existing cobertura.ser file.
 
 
 
+<br/>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+Can I point the cobertura-report ant task to multiple source directories?
+</p>
+</div>
+
+<div class="answer">
+<p>
+Unfortunately, no.  At this time Cobertura only supports one directory tree
+of source files.  This is covered by feature request
+<a href="http://sourceforge.net/tracker/index.php?func=detail&aid=1170482&group_id=130558&atid=720018">#1170482</a>.
+Ideally the ant task will allow multiple nested source directory elements.
+</p>
+
+<p>
+As a workaround, you can copy all your source trees into a temporary
+directory using ant, pass this to Cobertura, then remove this
+directory once Cobertura finishes.
+</p>
+</div>
+</div>
+
+
+
 </div>
 
 <?php include("footer.html"); ?>
