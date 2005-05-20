@@ -7,9 +7,11 @@ version 1.3
 	* Changed the format of the XML reports to something that
 	  is hopefully easier to use and more natural.  This
 	  unfortunately breaks backward compatability.
+	* We're using a DTD for the XML reports now.  See
+	  http://cobertura.sourceforge.net/xml/coverage-01.dtd
 	* Added the ability to specify the location of the coverage
 	  data files from the ant tasks and the command line.
-	* Compatable with Java 1.3.
+	* More user-friendly error checking and reporting.
 
 version 1.2
 	* Fix a bug that caused the XML reports to be invalid XML
