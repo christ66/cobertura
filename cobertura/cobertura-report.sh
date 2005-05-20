@@ -1,1 +1,1 @@
-java -cp lib\cobertura.jar net.sourceforge.cobertura.reporting.Main $1
+java -cp `dirname $0`/cobertura.jar net.sourceforge.cobertura.reporting.Main $*
