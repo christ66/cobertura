@@ -152,7 +152,6 @@ public class HTMLReport
 		if (packageData == null)
 		{
 			filename = "frame-classes.html";
-			//TODO: Need to sort classes
 			classes = projectData.getClasses();
 		}
 		else
@@ -237,6 +236,8 @@ public class HTMLReport
 
 	private void generateOverview(PackageData packageData) throws IOException
 	{
+		Iterator iter;
+
 		String filename;
 		if (packageData == null)
 		{
@@ -301,15 +302,11 @@ public class HTMLReport
 			}
 
 			// Output a line for each package or subpackage
-			// TODO: Do we need this extra "package.size() > 0" check?
-			if (packages.size() > 0)
+			iter = packages.iterator();
+			while (iter.hasNext())
 			{
-				Iterator iter = packages.iterator();
-				while (iter.hasNext())
-				{
-					PackageData subPackageData = (PackageData)iter.next();
-					out.println(generateTableRowForPackage(subPackageData));
-				}
+				PackageData subPackageData = (PackageData)iter.next();
+				out.println(generateTableRowForPackage(subPackageData));
 			}
 
 			out.println("</tbody>");
@@ -330,7 +327,7 @@ public class HTMLReport
 				classes = new TreeSet();
 				if (projectData.getNumberOfClasses() > 0)
 				{
-					Iterator iter = projectData.getClasses().iterator();
+					iter = projectData.getClasses().iterator();
 					while (iter.hasNext())
 					{
 						ClassData classData = (ClassData)iter.next();
@@ -354,7 +351,7 @@ public class HTMLReport
 				out.println(generateTableHeaderForClasses());
 				out.println("<tbody>");
 
-				Iterator iter = classes.iterator();
+				iter = classes.iterator();
 				while (iter.hasNext())
 				{
 					ClassData classData = (ClassData)iter.next();
