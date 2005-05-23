@@ -51,12 +51,10 @@ public abstract class CopyFiles
 		copyResourceFromJar("downsimple.png", imagesOutputDir);
 		copyResourceFromJar("upsimple.png", imagesOutputDir);
 
-		//copyResourceFromJar("numberksorttype.js", jsOutputDir);
-		copyResourceFromJar("percentagesorttype.js", jsOutputDir);
+		copyResourceFromJar("customsorttypes.js", jsOutputDir);
 		copyResourceFromJar("popup.js", jsOutputDir);
 		copyResourceFromJar("sortabletable.js", jsOutputDir);
 		copyResourceFromJar("stringbuilder.js", jsOutputDir);
-		//copyResourceFromJar("uscurrencysorttype.js", jsOutputDir);
 
 		copyResourceFromJar("help.html", destinationDir);
 		copyResourceFromJar("index.html", destinationDir);
