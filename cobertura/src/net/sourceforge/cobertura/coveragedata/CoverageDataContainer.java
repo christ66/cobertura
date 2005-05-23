@@ -118,7 +118,8 @@ public abstract class CoverageDataContainer
 
 	/**
 	 * @return The average line coverage rate for all children
-	 *         in this container.
+	 *         in this container.  This number will be a decimal
+	 *         between 0 and 1, inclusive.
 	 */
 	public double getLineCoverageRate()
 	{
