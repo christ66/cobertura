@@ -28,13 +28,16 @@ import java.io.PrintStream;
 public abstract class Header
 {
 
-	public static void print(PrintStream out)
+	public static String version()
 	{
 		Package thisPackage = Header.class.getPackage();
-		String version = (thisPackage != null ? thisPackage
+		return (thisPackage != null ? thisPackage
 				.getImplementationVersion() : "cvs");
+	}
 
-		out.println("Cobertura " + version);
+	public static void print(PrintStream out)
+	{
+		out.println("Cobertura " + version());
 		out.println("The copyright for this program is retained by its contributors");
 		out.println("See the included COPYRIGHT file for a complete list of contributors");
 		out.println("Cobertura is licensed under the GNU General Public License");
