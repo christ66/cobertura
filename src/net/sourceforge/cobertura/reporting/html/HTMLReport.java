@@ -182,13 +182,14 @@ public class HTMLReport
 			out.println("<table width=\"100%\">");
 
 			Map sortedClassList = new TreeMap();
-			for (Iterator iter = classes.iterator(); iter.hasNext(); )
+			for (Iterator iter = classes.iterator(); iter.hasNext();)
 			{
 				ClassData classData = (ClassData)iter.next();
 				sortedClassList.put(classData.getBaseName(), classData);
 			}
 
-			for (Iterator iter = sortedClassList.values().iterator(); iter.hasNext(); )
+			for (Iterator iter = sortedClassList.values().iterator(); iter
+					.hasNext();)
 			{
 				ClassData classData = (ClassData)iter.next();
 				out.println("<tr>");
@@ -601,30 +602,50 @@ public class HTMLReport
 		return sb.toString();
 	}
 
-	private static String generateTableColumnsForNA(double ccn)
-	{
-		return "<td class=\"value\">" + generateNAPercent() + "</td>"
-				+ "<td class=\"value\">" + generateNAPercent() + "</td>"
-				+ "<td class=\"value\">" + getDoubleValue(ccn) + "</td>";
-
-	}
-
+	/**
+	 * Return a string containing three HTML table cells.  The first
+	 * cell contains a graph showing the line coverage, the second
+	 * cell contains a graph showing the branch coverage, and the
+	 * third cell contains the code complexity.
+	 *
+	 * @param lineCoverage A number between 0 and 1, inclusive.  Or,
+	 *        if this class or package has no lines, then use "-1"
+	 *        and this method will display "N/A" in the table cell.
+	 * @param branchCoverage A number between 0 and 1, inclusive.  Or,
+	 *        if this class or package has no branches, then use "-1"
+	 *        and this method will display "N/A" in the table cell.
+	 * @param ccn The code complexity to display.  This should be greater
+	 *        than 1.
+	 * @return A string containing the HTML for three table cells.
+	 */
 	private static String generateTableColumnsFromData(double lineCoverage,
 			double branchCoverage, double ccn)
 	{
-		return "<td class=\"value\">" + generatePercentResult(lineCoverage)
-				+ "</td>" + "<td class=\"value\">"
-				+ generatePercentResult(branchCoverage) + "</td>"
-				+ "<td class=\"value\">" + getDoubleValue(ccn) + "</td>";
+		String lineCoverageCell = (lineCoverage == -1)
+				? generateNAPercent()
+				: generatePercentResult(lineCoverage);
 
+		String branchCoverageCell = (branchCoverage == -1)
+				? generateNAPercent()
+				: generatePercentResult(branchCoverage);
+
+		return "<td class=\"value\">" + lineCoverageCell + "</td>"
+				+ "<td class=\"value\">" + branchCoverageCell + "</td>"
+				+ "<td class=\"value\">" + getDoubleValue(ccn) + "</td>";
 	}
 
 	private String generateTableRowForTotal()
 	{
 		StringBuffer ret = new StringBuffer();
-		double lineCoverage = projectData.getLineCoverageRate();
-		double branchCoverage = projectData.getBranchCoverageRate();
+		double lineCoverage = -1;
+		double branchCoverage = -1;
 		double ccn = Util.getCCN(sourceDir, true);
+
+		if (projectData.getNumberOfValidLines() > 0)
+			lineCoverage = projectData.getLineCoverageRate();
+		if (projectData.getNumberOfValidBranches() > 0)
+			branchCoverage = projectData.getBranchCoverageRate();
+
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><b>All Packages</b></td>");
 		ret.append("<td class=\"value\">" + projectData.getNumberOfClasses()
@@ -640,10 +661,16 @@ public class HTMLReport
 		StringBuffer ret = new StringBuffer();
 		String url1 = "frame-summary-" + packageData.getName() + ".html";
 		String url2 = "frame-classes-" + packageData.getName() + ".html";
-		double lineCoverage = packageData.getLineCoverageRate();
-		double branchCoverage = packageData.getBranchCoverageRate();
+		double lineCoverage = -1;
+		double branchCoverage = -1;
 		double ccn = Util.getCCN(new File(sourceDir, packageData
 				.getSourceFileName()), false);
+
+		if (packageData.getNumberOfValidLines() > 0)
+			lineCoverage = packageData.getLineCoverageRate();
+		if (packageData.getNumberOfValidBranches() > 0)
+			branchCoverage = packageData.getBranchCoverageRate();
+
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><a href=\"" + url1
 				+ "\" onClick='parent.classList.location.href=\"" + url2
@@ -659,22 +686,21 @@ public class HTMLReport
 	private String generateTableRowForClass(ClassData classData)
 	{
 		StringBuffer ret = new StringBuffer();
-		double lineCoverage = classData.getLineCoverageRate();
-		double branchCoverage = classData.getBranchCoverageRate();
+		double lineCoverage = -1;
+		double branchCoverage = -1;
 		double ccn = Util.getCCN(new File(sourceDir, classData
 				.getSourceFileName()), false);
+
+		if (classData.getNumberOfValidLines() > 0)
+			lineCoverage = classData.getLineCoverageRate();
+		if (classData.getNumberOfValidBranches() > 0)
+			branchCoverage = classData.getBranchCoverageRate();
+
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><a href=\"" + classData.getName()
 				+ ".html\">" + classData.getName() + "</a></td>");
-		if (classData.getNumberOfValidLines() == 0)
-		{
-			ret.append(generateTableColumnsForNA(ccn));
-		}
-		else
-		{
-			ret.append(generateTableColumnsFromData(lineCoverage,
-					branchCoverage, ccn));
-		}
+		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
+				ccn));
 		ret.append("</tr>");
 		return ret.toString();
 	}
