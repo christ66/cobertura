@@ -153,7 +153,7 @@ public class InstrumentTask extends CommonMatchingTask
 		 */
 		if (getJava().executeJava() != 0)
 		{
-			throw new BuildException();
+			throw new BuildException("Error instrumenting classes. See messages above.");
 		}
 
 		unInitArgs();
