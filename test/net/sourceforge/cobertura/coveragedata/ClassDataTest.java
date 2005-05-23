@@ -211,6 +211,12 @@ public class ClassDataTest extends TestCase
 		assertEquals("com/example/HelloWorld.java", a.getSourceFileName());
 		a.setSourceFileName("HelloWorld.java");
 		assertEquals("com/example/HelloWorld.java", a.getSourceFileName());
+
+		ClassData d = new ClassData("org.jaxen.expr.IdentitySet$IdentityWrapp");
+		assertEquals("org/jaxen/expr/IdentitySet.java", d.getSourceFileName());
+
+		ClassData e = new ClassData("org.jaxen.expr.NodeComparator$1");
+		assertEquals("org/jaxen/expr/NodeComparator.java", e.getSourceFileName());
 	}
 
 	public void testTouch()

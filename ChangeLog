@@ -1,3 +1,7 @@
+version 1.4
+	* Fixed a bug that sometimes resulted in a
+	  StringIndexOutOfBoundsException when running cobertura-report
+
 version 1.3
 	* Increased speed of HTML reports by filtering the files read
 	  in to determine cyclomatic complexity numbers on.

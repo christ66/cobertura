@@ -248,11 +248,11 @@ public class ClassData extends CoverageDataContainer
 		if (sourceFileName != null)
 			baseName = sourceFileName;
 		else {
-			int firstDollarSign = getName().indexOf('$');
+			int firstDollarSign = getBaseName().indexOf('$');
 			if (firstDollarSign == -1)
 				baseName = getBaseName() + ".java";
 			else
-				baseName = getBaseName().substring(0, firstDollarSign - 1) + ".java";
+				baseName = getBaseName().substring(0, firstDollarSign) + ".java";
 		}
 
 		String packageName = getPackageName();
