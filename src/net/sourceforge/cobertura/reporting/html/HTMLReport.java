@@ -1,8 +1,8 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- * Copyright (C) 2005 Grzegorz Lukasik <hauserx@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -266,7 +266,7 @@ public class HTMLReport
 			out
 					.println("<script type=\"text/javascript\" src=\"js/sortabletable.js\"></script>");
 			out
-					.println("<script type=\"text/javascript\" src=\"js/percentagesorttype.js\"></script>");
+					.println("<script type=\"text/javascript\" src=\"js/customsorttypes.js\"></script>");
 			out.println("</head>");
 			out.println("<body>");
 
@@ -315,7 +315,7 @@ public class HTMLReport
 			out
 					.println("var packageTable = new SortableTable(document.getElementById(\"packageResults\"),");
 			out
-					.println("    [\"String\", \"Number\", \"Percentage\", \"Percentage\", \"Number\", \"Number\", \"Number\"]);");
+					.println("    [\"String\", \"Number\", \"Percentage\", \"Percentage\", \"LocalizedNumber\"]);");
 			out.println("packageTable.sort(0);");
 			out.println("</script>");
 			out.println("</p>");
@@ -364,7 +364,7 @@ public class HTMLReport
 				out
 						.println("var classTable = new SortableTable(document.getElementById(\"classResults\"),");
 				out
-						.println("    [\"String\", \"Percentage\", \"Percentage\", \"Number\", \"Number\", \"Number\"]);");
+						.println("    [\"String\", \"Percentage\", \"Percentage\", \"LocalizedNumber\"]);");
 				out.println("classTable.sort(0);");
 				out.println("</script>");
 				out.println("</p>");

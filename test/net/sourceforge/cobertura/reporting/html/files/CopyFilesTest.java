@@ -1,7 +1,7 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -78,7 +78,7 @@ public class CopyFilesTest extends TestCase
 
 		File jsDir = new File(tmpDir, "js");
 		assertTrue(jsDir.isDirectory());
-		assertTrue(new File(jsDir, "percentagesorttype.js").isFile());
+		assertTrue(new File(jsDir, "customsorttypes.js").isFile());
 		assertTrue(new File(jsDir, "popup.js").isFile());
 		assertTrue(new File(jsDir, "sortabletable.js").isFile());
 		assertTrue(new File(jsDir, "stringbuilder.js").isFile());
