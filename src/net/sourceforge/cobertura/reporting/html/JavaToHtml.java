@@ -28,7 +28,7 @@ import java.util.HashSet;
 public class JavaToHtml
 {
 
-	// TODO: Should use a J2SE 5.0 enum instead of this.
+	// Could use a J2SE 5.0 enum instead of this.
 	public final static class State
 	{
 

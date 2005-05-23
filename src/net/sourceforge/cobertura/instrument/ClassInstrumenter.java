@@ -88,7 +88,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 		if (((access & ACC_INTERFACE) != 0)
 				|| arrayContains(interfaces, hasBeenInstrumented))
 		{
-			// TODO: Need to also skip classes whose parents implement hasBeenInstrumented
+			// TODO: Need to also skip classes whose parent implements hasBeenInstrumented
 			//System.err.println("skipping class " + name);
 			super.visit(version, access, name, signature, superName,
 					interfaces);
