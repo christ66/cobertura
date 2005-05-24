@@ -23,8 +23,8 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class PackageData extends CoverageDataContainer
@@ -89,9 +89,9 @@ public class PackageData extends CoverageDataContainer
 		return super.equals(obj) && this.name.equals(packageData.name);
 	}
 
-	public Collection getClasses()
+	public SortedSet getClasses()
 	{
-		Collection classes = new TreeSet();
+		SortedSet classes = new TreeSet();
 		Iterator iter = this.children.values().iterator();
 		while (iter.hasNext()) {
 			SourceFileData sourceFileData = (SourceFileData)iter.next();
@@ -108,6 +108,11 @@ public class PackageData extends CoverageDataContainer
 	public String getSourceFileName()
 	{
 		return this.name.replace('.', '/');
+	}
+
+	public SortedSet getSourceFiles()
+	{
+		return new TreeSet(this.children.values());
 	}
 
 	public int hashCode()

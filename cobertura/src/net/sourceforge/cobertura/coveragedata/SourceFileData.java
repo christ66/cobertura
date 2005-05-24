@@ -23,6 +23,10 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import java.util.Iterator;
+
+import net.sourceforge.cobertura.util.StringUtil;
+
 public class SourceFileData extends CoverageDataContainer
 		implements Comparable, HasBeenInstrumented
 {
@@ -31,6 +35,7 @@ public class SourceFileData extends CoverageDataContainer
 
 	private String name;
 
+	// TODO: If the source file name must end in .java, then check for that.
 	public SourceFileData(String name)
 	{
 		if (name == null)
@@ -82,14 +87,86 @@ public class SourceFileData extends CoverageDataContainer
 		return super.equals(obj) && this.name.equals(sourceFileData.name);
 	}
 
+	public String getBaseName()
+	{
+		String fullNameWithoutExtension;
+		int lastDot = this.name.lastIndexOf('.');
+		if (lastDot == -1)
+		{
+			fullNameWithoutExtension = this.name;
+		}
+		else
+		{
+			fullNameWithoutExtension = this.name.substring(0, lastDot);
+		}
+
+		int lastSlash = fullNameWithoutExtension.lastIndexOf('/');
+		if (lastSlash == -1)
+		{
+			return fullNameWithoutExtension;
+		}
+		return fullNameWithoutExtension.substring(lastSlash + 1);
+	}
+
+	public long getHitCount(int lineNumber)
+	{
+		Iterator iter = this.children.values().iterator();
+		while (iter.hasNext())
+		{
+			ClassData classData = (ClassData)iter.next();
+			if (classData.isValidSourceLineNumber(lineNumber))
+				return classData.getHitCount(lineNumber);
+		}
+		return 0;
+	}
+
 	public String getName()
 	{
 		return this.name;
 	}
 
+	public String getNormalizedName()
+	{
+		String fullNameWithoutExtension;
+		int lastDot = this.name.lastIndexOf('.');
+		if (lastDot == -1)
+		{
+			fullNameWithoutExtension = this.name;
+		}
+		else
+		{
+			fullNameWithoutExtension = this.name.substring(0, lastDot);
+		}
+
+		return StringUtil.replaceAll(fullNameWithoutExtension, "/", ".");
+	}
+
+	public String getPackageName()
+	{
+		int lastSlash = this.name.lastIndexOf('/');
+		if (lastSlash == -1)
+		{
+			return this.name;
+		}
+		return StringUtil.replaceAll(this.name.substring(0, lastSlash), "/",
+				".");
+	}
+
 	public int hashCode()
 	{
 		return this.name.hashCode();
+	}
+
+	public boolean isValidSourceLineNumber(int lineNumber)
+	{
+		Iterator iter = this.children.values().iterator();
+		while (iter.hasNext())
+		{
+			ClassData classData = (ClassData)iter.next();
+			if (classData.isValidSourceLineNumber(lineNumber))
+				return true;
+		}
+		return false;
 	}
 
 }
