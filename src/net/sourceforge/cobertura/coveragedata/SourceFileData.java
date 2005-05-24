@@ -23,39 +23,32 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.TreeSet;
-
-public class PackageData extends CoverageDataContainer
+public class SourceFileData extends CoverageDataContainer
 		implements Comparable, HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 4;
+	private static final long serialVersionUID = 1;
 
 	private String name;
 
-	public PackageData(String name)
+	public SourceFileData(String name)
 	{
 		if (name == null)
 			throw new IllegalArgumentException(
-					"Package name must be specified.");
+					"Source file name must be specified.");
 		this.name = name;
 	}
 
 	public void addClassData(ClassData classData)
 	{
-		String sourceFileName = classData.getSourceFileName();
-		SourceFileData sourceFileData = (SourceFileData)children.get(sourceFileName);
-		if (sourceFileData == null)
-		{
-			sourceFileData = new SourceFileData(sourceFileName);
-			// Each key is a source file name, stored as an String object.
-			// Each value is information about the source file, stored as
-			// a SourceFileData object.
-			this.children.put(sourceFileName, sourceFileData);
-		}
-		sourceFileData.addClassData(classData);
+		if (children.containsKey(classData.getBaseName()))
+			throw new IllegalArgumentException("Source file " + this.name
+					+ " already contains a class with the name "
+					+ classData.getBaseName());
+
+		// Each key is a class basename, stored as an String object.
+		// Each value is information about the class, stored as a ClassData object.
+		children.put(classData.getBaseName(), classData);
 	}
 
 	/**
@@ -63,9 +56,9 @@ public class PackageData extends CoverageDataContainer
 	 */
 	public int compareTo(Object o)
 	{
-		if (!o.getClass().equals(PackageData.class))
+		if (!o.getClass().equals(SourceFileData.class))
 			return Integer.MAX_VALUE;
-		return this.name.compareTo(((PackageData)o).name);
+		return this.name.compareTo(((SourceFileData)o).name);
 	}
 
 	public boolean contains(String name)
@@ -75,7 +68,7 @@ public class PackageData extends CoverageDataContainer
 
 	/**
 	 * Returns true if the given object is an instance of the
-	 * PackageData class, and it contains the same data as this
+	 * SourceFileData class, and it contains the same data as this
 	 * class.
 	 */
 	public boolean equals(Object obj)
@@ -85,29 +78,13 @@ public class PackageData extends CoverageDataContainer
 		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
 			return false;
 
-		PackageData packageData = (PackageData)obj;
-		return super.equals(obj) && this.name.equals(packageData.name);
-	}
-
-	public Collection getClasses()
-	{
-		Collection classes = new TreeSet();
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext()) {
-			SourceFileData sourceFileData = (SourceFileData)iter.next();
-			classes.addAll(sourceFileData.getChildren());
-		}
-		return classes;
+		SourceFileData sourceFileData = (SourceFileData)obj;
+		return super.equals(obj) && this.name.equals(sourceFileData.name);
 	}
 
 	public String getName()
 	{
 		return this.name;
-	}
-
-	public String getSourceFileName()
-	{
-		return this.name.replace('.', '/');
 	}
 
 	public int hashCode()

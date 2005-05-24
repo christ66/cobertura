@@ -23,11 +23,11 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +35,7 @@ public class ProjectData extends CoverageDataContainer
 		implements HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 3;
+	private static final long serialVersionUID = 4;
 
 	private static final Logger LOGGER = Logger.getLogger(ProjectData.class);
 
@@ -43,13 +43,14 @@ public class ProjectData extends CoverageDataContainer
 
 	private static SaveTimer saveTimer = null;
 
+	private Map classes = new HashMap();
+
 	public ProjectData()
 	{
 	}
 
 	public void addClassData(ClassData classData)
 	{
-	    LOGGER.debug("ProjectData.addClassData: " + classData.getName());
 		String packageName = classData.getPackageName();
 		PackageData packageData = (PackageData)children.get(packageName);
 		if (packageData == null)
@@ -60,47 +61,33 @@ public class ProjectData extends CoverageDataContainer
 			this.children.put(packageName, packageData);
 		}
 		packageData.addClassData(classData);
+		this.classes.put(classData.getName(), classData);
 	}
 
 	public ClassData getClassData(String name)
 	{
-	    for (Iterator it = children.values().iterator(); it.hasNext(); ) {
-	        PackageData packageData = (PackageData) it.next();
-	        ClassData classData = packageData.getClassData(name);
-	        if (classData != null) {
-	            return classData;
-	        }
-	    }
-		return null;
+		return (ClassData)this.classes.get(name);
 	}
 
-	private Set fullClassNames = new HashSet(); // this is for full names, including $Foo of inner classes
 	public ClassData getOrCreateClassData(String name)
 	{
-	    boolean done = fullClassNames.contains(name);
-		ClassData classData = new ClassData(name);
-	    if (!done) {
+		ClassData classData = (ClassData)this.classes.get(name);
+		if (classData == null)
+		{
+			classData = new ClassData(name);
 			addClassData(classData);
-			fullClassNames.add(name);
-		} else {
-		    classData = getClassData(name);
 		}
 		return classData;
 	}
 
 	public Collection getClasses()
 	{
-	    Collection result = new ArrayList(children.size() * 15);  // just an approximation, no science here
-	    for (Iterator it = children.values().iterator(); it.hasNext(); ) {
-	        PackageData packageData = (PackageData) it.next();
-	        result.addAll(packageData.getChildren());
-	    }
-		return result;
+		return this.classes.values();
 	}
 
 	public int getNumberOfClasses()
 	{
-		return getClasses().size();
+		return this.classes.size();
 	}
 
 	/**

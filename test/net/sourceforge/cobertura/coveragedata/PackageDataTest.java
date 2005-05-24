@@ -36,6 +36,7 @@ public class PackageDataTest extends TestCase
 
 	public void testAddClass()
 	{
+		SourceFileData sourceFileData;
 		ClassData classData;
 
 		assertEquals(0, packageData.getNumberOfChildren());
@@ -46,7 +47,10 @@ public class PackageDataTest extends TestCase
 			classData.addLine(i, "test", "(I)B");
 		packageData.addClassData(classData);
 		assertEquals(1, packageData.getNumberOfChildren());
-		assertTrue(packageData.contains(classData.getBaseName()));
+		assertTrue(packageData.contains(classData.getSourceFileName()));
+		sourceFileData = (SourceFileData)packageData.getChild(classData
+				.getSourceFileName());
+		assertTrue(sourceFileData.contains(classData.getBaseName()));
 
 		classData = new ClassData("com.example.HelloWorldHelper");
 		classData.setSourceFileName("com/example/HelloWorldHelper.java");
@@ -54,7 +58,10 @@ public class PackageDataTest extends TestCase
 			classData.addLine(i, "test", "(I)B");
 		packageData.addClassData(classData);
 		assertEquals(2, packageData.getNumberOfChildren());
-		assertTrue(packageData.contains(classData.getBaseName()));
+		assertTrue(packageData.contains(classData.getSourceFileName()));
+		sourceFileData = (SourceFileData)packageData.getChild(classData
+				.getSourceFileName());
+		assertTrue(sourceFileData.contains(classData.getBaseName()));
 
 		// See what happens when we try to add the same class twice
 		classData = new ClassData("com.example.HelloWorld");

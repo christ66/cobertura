@@ -157,7 +157,7 @@ public class HTMLReport
 		else
 		{
 			filename = "frame-classes-" + packageData.getName() + ".html";
-			classes = packageData.getChildren();
+			classes = packageData.getClasses();
 		}
 		File file = new File(destinationDir, filename);
 		PrintStream out = null;
@@ -341,7 +341,7 @@ public class HTMLReport
 			}
 			else
 			{
-				classes = packageData.getChildren();
+				classes = packageData.getClasses();
 			}
 
 			// Output a line for each class

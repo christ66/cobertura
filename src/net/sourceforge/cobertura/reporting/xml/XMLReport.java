@@ -36,6 +36,7 @@ import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.reporting.Util;
 import net.sourceforge.cobertura.util.StringUtil;
 
@@ -140,12 +141,12 @@ public class XMLReport
 				+ "\" branch-rate=\"" + packageData.getBranchCoverageRate()
 				+ "\" complexity=\"" + ccn + "\"" + ">");
 		increaseIndentation();
-		dumpClasses(packageData);
+		dumpSourceFiles(packageData);
 		decreaseIndentation();
 		println("</package>");
 	}
 
-	private void dumpClasses(PackageData packageData)
+	private void dumpSourceFiles(PackageData packageData)
 	{
 		println("<classes>");
 		increaseIndentation();
@@ -153,11 +154,20 @@ public class XMLReport
 		Iterator it = packageData.getChildren().iterator();
 		while (it.hasNext())
 		{
-			dumpClass((ClassData)it.next());
+			dumpClasses((SourceFileData)it.next());
 		}
 
 		decreaseIndentation();
 		println("</classes>");
+	}
+
+	private void dumpClasses(SourceFileData sourceFileData)
+	{
+		Iterator it = sourceFileData.getChildren().iterator();
+		while (it.hasNext())
+		{
+			dumpClass((ClassData)it.next());
+		}
 	}
 
 	private void dumpClass(ClassData classData)
