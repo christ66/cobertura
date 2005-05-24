@@ -81,7 +81,7 @@
 		<delete dir="${build.test.reports.dir}/junit-xml" />
 		<mkdir dir="${build.test.reports.dir}/junit-xml" />
 
-		<junit fork="true" failureProperty="test.failed" printsummary="true">
+		<junit fork="true" failureProperty="test.failed" printsummary="true" timeout="60000">
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="${build.test.dir}/cobertura.ser" />
 			<sysproperty key="basedir" value="${basedir}"/>
 			<classpath location="${build.test.classes.dir}" />
