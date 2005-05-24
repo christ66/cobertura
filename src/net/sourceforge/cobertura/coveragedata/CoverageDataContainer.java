@@ -54,7 +54,7 @@ public abstract class CoverageDataContainer
 
 	/**
 	 * Determine if this CoverageDataContainer is equal to
-	 * another one.  Subclasses should override this as and
+	 * another one.  Subclasses should override this and
 	 * make sure they implement the hashCode method.
 	 *
 	 * @param obj An object to test for equality.

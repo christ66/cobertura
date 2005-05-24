@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
@@ -88,6 +90,19 @@ public class ProjectData extends CoverageDataContainer
 	public int getNumberOfClasses()
 	{
 		return this.classes.size();
+	}
+
+	public SortedSet getSourceFiles()
+	{
+		SortedSet sourceFiles = new TreeSet();
+
+		Iterator iter = this.children.values().iterator();
+		while (iter.hasNext()) {
+			PackageData packageData = (PackageData)iter.next();
+			sourceFiles.addAll(packageData.getChildren());
+		}
+
+		return sourceFiles;
 	}
 
 	/**
