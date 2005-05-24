@@ -45,10 +45,10 @@ import java.util.Set;
  * </p>
  */
 public class ClassData extends CoverageDataContainer
-		implements HasBeenInstrumented
+		implements Comparable, HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 3;
+	private static final long serialVersionUID = 4;
 
 	/**
 	 * Each key is a line number in this class, stored as an Integer object.
@@ -82,6 +82,16 @@ public class ClassData extends CoverageDataContainer
 		}
 		lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
 		methodNamesAndDescriptors.add(methodName + methodDescriptor);
+	}
+
+	/**
+	 * This is required because we implement Comparable.
+	 */
+	public int compareTo(Object o)
+	{
+		if (!o.getClass().equals(ClassData.class))
+			return Integer.MAX_VALUE;
+		return this.name.compareTo(((ClassData)o).name);
 	}
 
 	/**
@@ -247,12 +257,14 @@ public class ClassData extends CoverageDataContainer
 		String baseName;
 		if (sourceFileName != null)
 			baseName = sourceFileName;
-		else {
+		else
+		{
 			int firstDollarSign = getBaseName().indexOf('$');
 			if (firstDollarSign == -1)
 				baseName = getBaseName() + ".java";
 			else
-				baseName = getBaseName().substring(0, firstDollarSign) + ".java";
+				baseName = getBaseName().substring(0, firstDollarSign)
+						+ ".java";
 		}
 
 		String packageName = getPackageName();
