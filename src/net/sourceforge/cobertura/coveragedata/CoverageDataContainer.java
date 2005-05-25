@@ -2,8 +2,8 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- * Copyright (C) 2005 Jeremy Thomerson <jthomerson@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Jeremy Thomerson
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -24,7 +24,6 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -111,11 +110,12 @@ public abstract class CoverageDataContainer
 	 *
 	 * @return A collection of CoverageData objects.
 	 */
-	public Collection getChildren()
-	{
-		return this.children.values();
-	}
-
+	/*
+	 public Collection getChildren()
+	 {
+	 return this.children.values();
+	 }
+	 */
 	/**
 	 * @return The average line coverage rate for all children
 	 *         in this container.  This number will be a decimal

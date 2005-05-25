@@ -2,8 +2,8 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- * Copyright (C) 2005 Jeremy Thomerson <jthomerson@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Jeremy Thomerson
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -120,7 +120,7 @@ public class XMLReport
 		println("<packages>");
 		increaseIndentation();
 
-		Iterator it = projectData.getChildren().iterator();
+		Iterator it = projectData.getPackages().iterator();
 		while (it.hasNext())
 		{
 			dumpPackage((PackageData)it.next());
@@ -151,7 +151,7 @@ public class XMLReport
 		println("<classes>");
 		increaseIndentation();
 
-		Iterator it = packageData.getChildren().iterator();
+		Iterator it = packageData.getSourceFiles().iterator();
 		while (it.hasNext())
 		{
 			dumpClasses((SourceFileData)it.next());
@@ -163,7 +163,7 @@ public class XMLReport
 
 	private void dumpClasses(SourceFileData sourceFileData)
 	{
-		Iterator it = sourceFileData.getChildren().iterator();
+		Iterator it = sourceFileData.getClasses().iterator();
 		while (it.hasNext())
 		{
 			dumpClass((ClassData)it.next());
@@ -232,7 +232,7 @@ public class XMLReport
 
 	private void dumpLines(ClassData classData)
 	{
-		dumpLines(classData.getChildren());
+		dumpLines(classData.getLines());
 	}
 
 	private void dumpLines(ClassData classData, String methodNameAndSig)

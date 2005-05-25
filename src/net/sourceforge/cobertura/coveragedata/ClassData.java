@@ -2,7 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * <p>
@@ -202,6 +204,11 @@ public class ClassData extends CoverageDataContainer
 	private LineData getLineData(int lineNumber)
 	{
 		return (LineData)children.get(new Integer(lineNumber));
+	}
+
+	public SortedSet getLines()
+	{
+		return new TreeSet(this.children.values());
 	}
 
 	public Collection getLines(String methodNameAndDescriptor)
