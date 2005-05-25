@@ -2,7 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -25,7 +25,6 @@ package net.sourceforge.cobertura.coveragedata;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
@@ -92,14 +91,20 @@ public class ProjectData extends CoverageDataContainer
 		return this.classes.size();
 	}
 
+	public SortedSet getPackages()
+	{
+		return new TreeSet(this.children.values());
+	}
+
 	public SortedSet getSourceFiles()
 	{
 		SortedSet sourceFiles = new TreeSet();
 
 		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext()) {
+		while (iter.hasNext())
+		{
 			PackageData packageData = (PackageData)iter.next();
-			sourceFiles.addAll(packageData.getChildren());
+			sourceFiles.addAll(packageData.getSourceFiles());
 		}
 
 		return sourceFiles;
@@ -114,14 +119,14 @@ public class ProjectData extends CoverageDataContainer
 	 *         has a name beginning with the given packageName.  For
 	 *         example, "com.example.io"
 	 */
-	public Collection getSubPackages(String packageName)
+	public SortedSet getSubPackages(String packageName)
 	{
-		Collection subPackages = new HashSet();
+		SortedSet subPackages = new TreeSet();
 		Iterator iter = this.children.values().iterator();
 		while (iter.hasNext())
 		{
 			PackageData packageData = (PackageData)iter.next();
-			if (packageData.getName().equals(packageName))
+			if (packageData.getName().startsWith(packageName))
 				subPackages.add(packageData);
 		}
 		return subPackages;

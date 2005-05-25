@@ -2,8 +2,8 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2003 jcoverage ltd.
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- * Copyright (C) 2005 Jeremy Thomerson <jthomerson@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Jeremy Thomerson
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -24,6 +24,8 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import net.sourceforge.cobertura.util.StringUtil;
 
@@ -106,6 +108,11 @@ public class SourceFileData extends CoverageDataContainer
 			return fullNameWithoutExtension;
 		}
 		return fullNameWithoutExtension.substring(lastSlash + 1);
+	}
+
+	public SortedSet getClasses()
+	{
+		return new TreeSet(this.children.values());
 	}
 
 	public long getHitCount(int lineNumber)

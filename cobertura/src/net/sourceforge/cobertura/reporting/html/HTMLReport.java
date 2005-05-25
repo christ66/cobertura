@@ -32,9 +32,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import net.sourceforge.cobertura.coveragedata.PackageData;
@@ -103,9 +101,7 @@ public class HTMLReport
 					.println("<td nowrap=\"nowrap\"><a href=\"frame-summary.html\" onClick='parent.sourceFileList.location.href=\"frame-sourcefiles.html\"' target=\"summary\">All</a></td>");
 			out.println("</tr>");
 
-			SortedSet sortedPackages = new TreeSet();
-			sortedPackages.addAll(projectData.getChildren());
-			Iterator iter = sortedPackages.iterator();
+			Iterator iter = projectData.getPackages().iterator();
 			while (iter.hasNext())
 			{
 				PackageData packageData = (PackageData)iter.next();
@@ -139,7 +135,7 @@ public class HTMLReport
 	private void generateSourceFileLists() throws IOException
 	{
 		generateSourceFileList(null);
-		Iterator iter = projectData.getChildren().iterator();
+		Iterator iter = projectData.getPackages().iterator();
 		while (iter.hasNext())
 		{
 			PackageData packageData = (PackageData)iter.next();
@@ -151,7 +147,7 @@ public class HTMLReport
 			throws IOException
 	{
 		String filename;
-		Collection sourceFiles;
+		SortedSet sourceFiles;
 		if (packageData == null)
 		{
 			filename = "frame-sourcefiles.html";
@@ -184,16 +180,7 @@ public class HTMLReport
 			out.println("<h5>Classes</h5>");
 			out.println("<table width=\"100%\">");
 
-			Map sortedSourceFileList = new TreeMap();
 			for (Iterator iter = sourceFiles.iterator(); iter.hasNext();)
-			{
-				SourceFileData sourceFileData = (SourceFileData)iter.next();
-				sortedSourceFileList.put(sourceFileData.getBaseName(),
-						sourceFileData);
-			}
-
-			for (Iterator iter = sortedSourceFileList.values().iterator(); iter
-					.hasNext();)
 			{
 				SourceFileData sourceFileData = (SourceFileData)iter.next();
 				out.println("<tr>");
@@ -230,7 +217,7 @@ public class HTMLReport
 	private void generateOverviews() throws IOException
 	{
 		generateOverview(null);
-		Iterator iter = projectData.getChildren().iterator();
+		Iterator iter = projectData.getPackages().iterator();
 		while (iter.hasNext())
 		{
 			PackageData packageData = (PackageData)iter.next();
@@ -290,15 +277,14 @@ public class HTMLReport
 			out.println("</thead>");
 			out.println("<tbody>");
 
-			Collection packages;
+			SortedSet packages;
 			if (packageData == null)
 			{
 				// Output a summary line for all packages
 				out.println(generateTableRowForTotal());
 
 				// Get packages
-				// TODO TODO TODO: This needs to only look at classes in root package
-				packages = projectData.getChildren();
+				packages = projectData.getPackages();
 			}
 			else
 			{
@@ -329,7 +315,16 @@ public class HTMLReport
 			Collection sourceFiles;
 			if (packageData == null)
 			{
-				sourceFiles = projectData.getSourceFiles();
+				PackageData defaultPackage = (PackageData)projectData
+						.getChild("");
+				if (defaultPackage != null)
+				{
+					sourceFiles = defaultPackage.getSourceFiles();
+				}
+				else
+				{
+					sourceFiles = new TreeSet();
+				}
 			}
 			else
 			{
@@ -671,7 +666,7 @@ public class HTMLReport
 		ret.append("<td class=\"text\"><a href=\"" + url1
 				+ "\" onClick='parent.sourceFileList.location.href=\"" + url2
 				+ "\"'>" + generatePackageName(packageData) + "</a></td>");
-		ret.append("<td class=\"value\">" + packageData.getChildren().size()
+		ret.append("<td class=\"value\">" + packageData.getNumberOfChildren()
 				+ "</td>");
 		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
 				ccn));
