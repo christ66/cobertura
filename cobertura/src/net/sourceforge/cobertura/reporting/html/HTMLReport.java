@@ -584,7 +584,7 @@ public class HTMLReport
 						+ "&nbsp;</td>");
 		sb.append("<td>");
 		sb
-				.append("<table class=\"percentGraph\" cellpadding=\"0\" cellspacing=\"0\">");
+				.append("<table class=\"percentGraph\" cellpadding=\"0\" cellspacing=\"0\" width=\"100\">");
 		sb.append("<tr><td class=\"NA\" width=\"100\"></td></tr>");
 		sb.append("</table>");
 		sb.append("</td>");
@@ -624,7 +624,8 @@ public class HTMLReport
 		// any formatting so that the table column can be sorted correctly
 		return "<td class=\"value\">" + lineCoverageCell + "</td>"
 				+ "<td class=\"value\">" + branchCoverageCell + "</td>"
-				+ "<td class=\"value\"><span class=\"hidden\">" + ccn + ";</span>" + getDoubleValue(ccn) + "</td>";
+				+ "<td class=\"value\"><span class=\"hidden\">" + ccn
+				+ ";</span>" + getDoubleValue(ccn) + "</td>";
 	}
 
 	private String generateTableRowForTotal()
