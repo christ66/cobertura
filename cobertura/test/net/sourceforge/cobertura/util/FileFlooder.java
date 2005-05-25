@@ -1,7 +1,7 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2005 Jeremy Thomerson <jthomerson@users.sourceforge.net>
+ * Copyright (C) 2005 Jeremy Thomerson
  * 
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
