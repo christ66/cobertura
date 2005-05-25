@@ -306,7 +306,7 @@ public class HTMLReport
 			out
 					.println("var packageTable = new SortableTable(document.getElementById(\"packageResults\"),");
 			out
-					.println("    [\"String\", \"Number\", \"Percentage\", \"Percentage\", \"LocalizedNumber\"]);");
+					.println("    [\"String\", \"Number\", \"Percentage\", \"Percentage\", \"FormattedNumber\"]);");
 			out.println("packageTable.sort(0);");
 			out.println("</script>");
 			out.println("</p>");
@@ -354,7 +354,7 @@ public class HTMLReport
 				out
 						.println("var classTable = new SortableTable(document.getElementById(\"classResults\"),");
 				out
-						.println("    [\"String\", \"Percentage\", \"Percentage\", \"LocalizedNumber\"]);");
+						.println("    [\"String\", \"Percentage\", \"Percentage\", \"FormattedNumber\"]);");
 				out.println("classTable.sort(0);");
 				out.println("</script>");
 				out.println("</p>");
@@ -620,9 +620,11 @@ public class HTMLReport
 				? generateNAPercent()
 				: generatePercentResult(branchCoverage);
 
+		// The "hidden" CSS class is used below to write the ccn without
+		// any formatting so that the table column can be sorted correctly
 		return "<td class=\"value\">" + lineCoverageCell + "</td>"
 				+ "<td class=\"value\">" + branchCoverageCell + "</td>"
-				+ "<td class=\"value\">" + getDoubleValue(ccn) + "</td>";
+				+ "<td class=\"value\"><span class=\"hidden\">" + ccn + ";</span>" + getDoubleValue(ccn) + "</td>";
 	}
 
 	private String generateTableRowForTotal()

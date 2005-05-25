@@ -7,7 +7,7 @@ version 1.4
 	  Olivier Parent).
 	* Fixed a bug where the code complexity column would not always
 	  sort correctly in locales that use a comma to split the decimal
-	  part of the number (Thanks to Oliver Parent).
+	  part of the number (Thanks to Olivier Parent).
 	* Show "N/A" in the branch column of the HTML report for classes
 	  and packages that do not have any branches.
 

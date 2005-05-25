@@ -46,17 +46,20 @@ SortableTable.prototype.addSortType( "Percentage", percentageSortType );
 // locales.  The stock number converter only expects to sort
 // numbers which use a period as a separator instead of a
 // comma (like French).
-//
-// Note: This will probably have problems with numbers over
-//       1,000 in the US English locale.  (because the comma
-//       will be replaced with a period).  This is currently
-//       only being used to sort the code complexity number,
-//       which should really never be over 1,000, so it should
-//       be ok.
-function localizedNumberSortType( s )
+function formattedNumberSortType( s )
 {
-	s = s.replace( ",", "." );
-	return Number(s);
+	var ret;
+	var i = s.indexOf(';');
+
+	if (i != -1) {
+		s = s.substring(0, i);
+	}
+	ret = parseFloat(s);
+	if (isNaN(ret)) {
+		return -1;
+	}
+
+	return ret;
 }
 
-SortableTable.prototype.addSortType( "LocalizedNumber", localizedNumberSortType );
+SortableTable.prototype.addSortType( "FormattedNumber", formattedNumberSortType );
