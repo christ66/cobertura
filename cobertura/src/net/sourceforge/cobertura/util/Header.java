@@ -37,10 +37,6 @@ public abstract class Header
 
 	public static void print(PrintStream out)
 	{
-		out.println("Cobertura " + version());
-		out.println("The copyright for this program is retained by its contributors");
-		out.println("See the included COPYRIGHT file for a complete list of contributors");
-		out.println("Cobertura is licensed under the GNU General Public License");
-		out.println("Cobertura comes with ABSOLUTELY NO WARRANTY");
+		out.println("Cobertura " + version() + " - GNU GPL License (NO WARRANTY) - See COPYRIGHT file");
 	}
 }
