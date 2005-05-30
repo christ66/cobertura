@@ -32,7 +32,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import net.sourceforge.cobertura.coveragedata.PackageData;
@@ -158,9 +160,19 @@ public class HTMLReport
 			filename = "frame-sourcefiles-" + packageData.getName() + ".html";
 			sourceFiles = packageData.getSourceFiles();
 		}
+
+		// sourceFiles is sorted, but it's sorted by the full path
+		// to the file, and we only want to sort based on the
+		// file's basename.
+		SortedMap sortedSourceFiles = new TreeMap();
+		for (Iterator iter = sourceFiles.iterator(); iter.hasNext();)
+		{
+			SourceFileData sourceFileData = (SourceFileData)iter.next();
+			sortedSourceFiles.put(sourceFileData.getBaseName(), sourceFileData);
+		}
+
 		File file = new File(destinationDir, filename);
 		PrintStream out = null;
-
 		try
 		{
 			out = new PrintStream(new FileOutputStream(file));
@@ -180,7 +192,7 @@ public class HTMLReport
 			out.println("<h5>Classes</h5>");
 			out.println("<table width=\"100%\">");
 
-			for (Iterator iter = sourceFiles.iterator(); iter.hasNext();)
+			for (Iterator iter = sortedSourceFiles.values().iterator(); iter.hasNext();)
 			{
 				SourceFileData sourceFileData = (SourceFileData)iter.next();
 				out.println("<tr>");
