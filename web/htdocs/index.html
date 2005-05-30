@@ -51,6 +51,42 @@ decending order.
 <h1>News</h1>
 
 <div class="newsitem">
+<span class="date">30 May 2005</span>
+<div class="text">
+<p>
+Some bugs sprung up after we released the last version, so we
+decided to release 1.4 (after fixing the bugs, of course).
+</p>
+
+<p>
+The changes in 1.4 are:
+</p>
+
+<ul>
+<li>
+Fixed a bug that sometimes resulted in a
+StringIndexOutOfBoundsException when running cobertura-report
+(Thanks to Grzegorz Lukasik).
+</li>
+<li>
+Fixed a bug where classes without coverage data ("N/A") were
+not always sorted correctly in the HTML report (Thanks to
+Olivier Parent).
+</li>
+<li>
+Fixed a bug where the code complexity column would not always
+sort correctly in locales that use a comma to split the decimal
+part of the number (Thanks to Olivier Parent).
+</li>
+<li>
+Show "N/A" in the branch column of the HTML report for classes
+and packages that do not have any branches.
+</li>
+</ul>
+</div>
+</div>
+
+<div class="newsitem">
 <span class="date">20 May 2005</span>
 <div class="text">
 <p>
