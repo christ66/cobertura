@@ -25,7 +25,6 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -200,7 +199,7 @@ public abstract class CoverageDataContainer
 	/**
 	 * Merge two <code>CoverageDataContainer</code>s.
 	 *
-	 * @param data The container to merge into this one.
+	 * @param coverageData The container to merge into this one.
 	 */
 	public void merge(CoverageData coverageData)
 	{
