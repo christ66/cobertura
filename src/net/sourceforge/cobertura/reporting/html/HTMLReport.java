@@ -168,7 +168,8 @@ public class HTMLReport
 		for (Iterator iter = sourceFiles.iterator(); iter.hasNext();)
 		{
 			SourceFileData sourceFileData = (SourceFileData)iter.next();
-			sortedSourceFiles.put(sourceFileData.getBaseName(), sourceFileData);
+			sortedSourceFiles.put(sourceFileData.getBaseName(),
+					sourceFileData);
 		}
 
 		File file = new File(destinationDir, filename);
@@ -192,7 +193,8 @@ public class HTMLReport
 			out.println("<h5>Classes</h5>");
 			out.println("<table width=\"100%\">");
 
-			for (Iterator iter = sortedSourceFiles.values().iterator(); iter.hasNext();)
+			for (Iterator iter = sortedSourceFiles.values().iterator(); iter
+					.hasNext();)
 			{
 				SourceFileData sourceFileData = (SourceFileData)iter.next();
 				out.println("<tr>");
@@ -280,13 +282,7 @@ public class HTMLReport
 			out.println("</h5>");
 			out.println("<p>");
 			out.println("<table class=\"report\" id=\"packageResults\">");
-			out.println("<thead>");
-			out.println("<tr>");
-			out.println("  <td class=\"heading\">Package</td>");
-			out.println("  <td class=\"heading\"># Classes</td>");
-			out.println(generateCommonTableColumns());
-			out.println("</tr>");
-			out.println("</thead>");
+			out.println(generateTableHeader("Package", true));
 			out.println("<tbody>");
 
 			SortedSet packages;
@@ -343,12 +339,13 @@ public class HTMLReport
 				sourceFiles = packageData.getSourceFiles();
 			}
 
-			// Output a line for each class
+			// Output a line for each source file
 			if (sourceFiles.size() > 0)
 			{
 				out.println("<p>");
 				out.println("<table class=\"report\" id=\"classResults\">");
-				out.println(generateTableHeaderForClasses());
+				out.println(generateTableHeader("Classes in this Package",
+						false));
 				out.println("<tbody>");
 
 				iter = sourceFiles.iterator();
@@ -439,7 +436,7 @@ public class HTMLReport
 			// Output the coverage summary for this class
 			out.println("<p>");
 			out.println("<table class=\"report\">");
-			out.println(generateTableHeaderForClasses());
+			out.println(generateTableHeader("Classes in this File", false));
 			out.println(generateTableRowForSourceFile(sourceFileData));
 			out.println("</table>");
 			out.println("</p>");
@@ -528,6 +525,36 @@ public class HTMLReport
 		}
 	}
 
+	private static String generateTableHeader(String title,
+			boolean showColumnForNumberOfClasses)
+	{
+		StringBuffer ret = new StringBuffer();
+		ret.append("<thead>");
+		ret.append("<tr>");
+		ret.append("  <td class=\"heading\">" + title + "</td>");
+		if (showColumnForNumberOfClasses)
+		{
+			ret.append("  <td class=\"heading\"># Classes</td>");
+		}
+		ret.append("  <td class=\"heading\" width=\"20%\">"
+				+ generateHelpURL("Line Coverage",
+						"The percent of lines executed by this test run.")
+				+ "</td>");
+		ret.append("  <td class=\"heading\" width=\"20%\">"
+				+ generateHelpURL("Branch Coverage",
+						"The percent of branches executed by this test run.")
+				+ "</td>");
+		ret
+				.append("  <td class=\"heading\" width=\"10%\">"
+						+ generateHelpURL(
+								"Complexity",
+								"Average McCabe's cyclomatic code complexity for all methods.  This is basically a count of the number of different code paths in a method (incremented by 1 for each if statement, while loop, etc.)")
+						+ "</td>");
+		ret.append("</tr>");
+		ret.append("</thead>");
+		return ret.toString();
+	}
+
 	private static String generateHelpURL(String text, String description)
 	{
 		StringBuffer ret = new StringBuffer();
@@ -547,38 +574,6 @@ public class HTMLReport
 			ret.append(text);
 			ret.append("</a>");
 		}
-		return ret.toString();
-	}
-
-	private static String generateCommonTableColumns()
-	{
-		StringBuffer ret = new StringBuffer();
-		ret.append("  <td class=\"heading\" width=\"20%\">"
-				+ generateHelpURL("Line Coverage",
-						"The percent of lines executed by this test run.")
-				+ "</td>");
-		ret.append("  <td class=\"heading\" width=\"20%\">"
-				+ generateHelpURL("Branch Coverage",
-						"The percent of branches executed by this test run.")
-				+ "</td>");
-		ret
-				.append("  <td class=\"heading\" width=\"10%\">"
-						+ generateHelpURL(
-								"Complexity",
-								"Average McCabe's cyclomatic code complexity for all methods.  This is basically a count of the number of different code paths in a method (incremented by 1 for each if statement, while loop, etc.)")
-						+ "</td>");
-		return ret.toString();
-	}
-
-	private static String generateTableHeaderForClasses()
-	{
-		StringBuffer ret = new StringBuffer();
-		ret.append("<thead>");
-		ret.append("<tr>");
-		ret.append("  <td class=\"heading\">Classes in this Package</td>");
-		ret.append(generateCommonTableColumns());
-		ret.append("</tr>");
-		ret.append("</thead>");
 		return ret.toString();
 	}
 
