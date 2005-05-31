@@ -4,6 +4,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Joakim Erdfelt
+ * Copyright (C) 2005 Mark Sinke
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -66,8 +67,14 @@ public class Main
 				case 'd':
 					System.out.println("cobertura loading: " + g.getOptarg());
 					File dataFile = new File(g.getOptarg());
-					projectData = CoverageDataFileHandler
-							.loadCoverageData(dataFile);
+					if (projectData == null) {
+						projectData = CoverageDataFileHandler
+								.loadCoverageData(dataFile);
+					} else {
+						ProjectData projectDataNew = CoverageDataFileHandler
+						.loadCoverageData(dataFile);
+						projectData.merge(projectDataNew);
+					}
 					break;
 
 				case 'o':

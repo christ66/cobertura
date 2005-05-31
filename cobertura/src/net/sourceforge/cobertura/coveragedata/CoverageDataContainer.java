@@ -4,6 +4,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Jeremy Thomerson
+ * Copyright (C) 2005 Mark Sinke
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -24,6 +25,7 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -105,17 +107,6 @@ public abstract class CoverageDataContainer
 		return (CoverageData)this.children.get(name);
 	}
 
-	/**
-	 * Get all children of this container.
-	 *
-	 * @return A collection of CoverageData objects.
-	 */
-	/*
-	 public Collection getChildren()
-	 {
-	 return this.children.values();
-	 }
-	 */
 	/**
 	 * @return The average line coverage rate for all children
 	 *         in this container.  This number will be a decimal
@@ -204,6 +195,31 @@ public abstract class CoverageDataContainer
 	public int hashCode()
 	{
 		return this.children.size();
+	}
+
+	/**
+	 * Merge two <code>CoverageDataContainer</code>s.
+	 *
+	 * @param data The container to merge into this one.
+	 */
+	public void merge(CoverageData coverageData)
+	{
+		CoverageDataContainer container = (CoverageDataContainer)coverageData;
+		Iterator iter = container.children.keySet().iterator();
+		while (iter.hasNext())
+		{
+			Object key = iter.next();
+			CoverageData newChild = (CoverageData)container.children.get(key);
+			CoverageData existingChild = (CoverageData)this.children.get(key);
+			if (existingChild != null)
+			{
+				existingChild.merge(newChild);
+			}
+			else
+			{
+				this.children.put(key, newChild);
+			}
+		}
 	}
 
 }

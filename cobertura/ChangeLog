@@ -1,6 +1,7 @@
 version 1.5
 	* Shorten the header shown when running Cobertura (Thanks
 	  to Jarkko Viinamäki).
+	* Fixed the merge task (Thanks to Mark Sinke).
 
 version 1.4
 	* Fixed a bug that sometimes resulted in a

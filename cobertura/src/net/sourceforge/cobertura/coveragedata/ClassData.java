@@ -50,7 +50,7 @@ public class ClassData extends CoverageDataContainer
 		implements Comparable, HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 4;
+	private static final long serialVersionUID = 5;
 
 	/**
 	 * Each key is a line number in this class, stored as an Integer object.
@@ -319,11 +319,30 @@ public class ClassData extends CoverageDataContainer
 	 *
 	 * @param coverageData Some existing coverage data.
 	 */
-	public void merge(ClassData coverageData)
+	public void merge(CoverageData coverageData)
 	{
-		children.putAll(coverageData.children);
-		branches.putAll(coverageData.branches);
-		methodNamesAndDescriptors.addAll(coverageData
+		super.merge(coverageData);
+
+		ClassData classData = (ClassData)coverageData;
+
+		// We can't just call this.branches.putAll(classData.branches);
+		// Why not?  If we did a putAll, then the LineData objects from
+		// the coverageData class would overwrite the LineData objects
+		// that are already in "this.branches"  And we don't need to
+		// update the LineData objects that are already in this.branches
+		// because they are shared between this.branches and this.children,
+		// so the object hit counts will be moved when we called
+		// super.merge() above.
+		for (Iterator iter = classData.branches.keySet().iterator(); iter.hasNext();)
+		{
+			Object key = iter.next();
+			if (!this.branches.containsKey(key))
+			{
+				this.branches.put(key, classData.branches.get(key));
+			}
+		}
+
+		this.methodNamesAndDescriptors.addAll(classData
 				.getMethodNamesAndDescriptors());
 	}
 

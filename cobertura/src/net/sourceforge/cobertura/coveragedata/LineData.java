@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Mark Sinke
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -35,7 +36,7 @@ import java.io.Serializable;
 public class LineData
 		implements Comparable, CoverageData, HasBeenInstrumented, Serializable
 {
-	private static final long serialVersionUID = 3;
+	private static final long serialVersionUID = 4;
 
 	private long hits;
 	private boolean isBranch;
@@ -140,6 +141,18 @@ public class LineData
 	public boolean isBranch()
 	{
 		return isBranch;
+	}
+
+	public void merge(CoverageData coverageData)
+	{
+		LineData lineData = (LineData)coverageData;
+		this.hits += lineData.hits;
+		if (lineData.isBranch())
+			this.isBranch = true;
+		if (lineData.methodName != null)
+			this.methodName = lineData.methodName;
+		if (lineData.methodDescriptor != null)
+			this.methodDescriptor = lineData.methodDescriptor;
 	}
 
 	void setBranch(boolean isBranch)

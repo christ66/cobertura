@@ -36,7 +36,7 @@ public class ProjectData extends CoverageDataContainer
 		implements HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 4;
+	private static final long serialVersionUID = 5;
 
 	private static final Logger LOGGER = Logger.getLogger(ProjectData.class);
 
@@ -130,6 +130,21 @@ public class ProjectData extends CoverageDataContainer
 				subPackages.add(packageData);
 		}
 		return subPackages;
+	}
+
+	public void merge(CoverageData coverageData)
+	{
+		super.merge(coverageData);
+
+		ProjectData projectData = (ProjectData)coverageData;
+		for (Iterator iter = projectData.classes.keySet().iterator(); iter.hasNext();)
+		{
+			Object key = iter.next();
+			if (!this.classes.containsKey(key))
+			{
+				this.classes.put(key, projectData.classes.get(key));
+			}
+		}
 	}
 
 	public static ProjectData getGlobalProjectData()
