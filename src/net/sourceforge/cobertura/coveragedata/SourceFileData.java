@@ -33,7 +33,7 @@ public class SourceFileData extends CoverageDataContainer
 		implements Comparable, HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 1;
+	private static final long serialVersionUID = 2;
 
 	private String name;
 
@@ -174,6 +174,17 @@ public class SourceFileData extends CoverageDataContainer
 				return true;
 		}
 		return false;
+	}
+
+	public void merge(CoverageData coverageData)
+	{
+		super.merge(coverageData);
+
+		SourceFileData sourceFileData = (SourceFileData)coverageData;
+		if (sourceFileData.name != null)
+		{
+			this.name = sourceFileData.name;
+		}
 	}
 
 }

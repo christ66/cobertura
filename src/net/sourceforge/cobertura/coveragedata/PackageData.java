@@ -31,7 +31,7 @@ public class PackageData extends CoverageDataContainer
 		implements Comparable, HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 4;
+	private static final long serialVersionUID = 5;
 
 	private String name;
 
@@ -118,6 +118,17 @@ public class PackageData extends CoverageDataContainer
 	public int hashCode()
 	{
 		return this.name.hashCode();
+	}
+
+	public void merge(CoverageData coverageData)
+	{
+		super.merge(coverageData);
+
+		PackageData packageData = (PackageData)coverageData;
+		if (packageData.name != null)
+		{
+			this.name = packageData.name;
+		}
 	}
 
 }
