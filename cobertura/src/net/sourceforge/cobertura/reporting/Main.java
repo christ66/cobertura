@@ -156,6 +156,12 @@ public class Main
 		ProjectData projectData = CoverageDataFileHandler
 				.loadCoverageData(dataFile);
 
+		if (projectData == null)
+		{
+			System.err.println("Error: Unable to read from data file " + dataFile.getAbsolutePath());
+			System.exit(1);
+		}
+
 		if (format.equalsIgnoreCase("html"))
 		{
 			new HTMLReport(projectData, destinationDir, sourceDir);
