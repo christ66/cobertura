@@ -104,14 +104,9 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 			objects = new ObjectInputStream(dataFile);
 			return (ProjectData)objects.readObject();
 		}
-		catch (ClassNotFoundException e)
+		catch (Exception e)
 		{
-			logger.debug("Error reading from object stream.", e);
-			return null;
-		}
-		catch (IOException e)
-		{
-			logger.debug("Error reading from object stream.", e);
+			logger.error("Error reading from object stream.", e);
 			return null;
 		}
 		finally
