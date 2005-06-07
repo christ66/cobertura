@@ -2,6 +2,9 @@ version 1.5
 	* Shorten the header shown when running Cobertura (Thanks
 	  to Jarkko Viinamäki).
 	* Fixed the merge task (Thanks to Mark Sinke).
+	* Fix a bug where the class list in the HTML reports did
+	  not show multiple classes with the same name, but in
+	  different packages.
 
 version 1.4
 	* Fixed a bug that sometimes resulted in a

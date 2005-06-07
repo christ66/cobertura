@@ -31,11 +31,11 @@ import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
@@ -164,13 +164,10 @@ public class HTMLReport
 		// sourceFiles is sorted, but it's sorted by the full path
 		// to the file, and we only want to sort based on the
 		// file's basename.
-		SortedMap sortedSourceFiles = new TreeMap();
-		for (Iterator iter = sourceFiles.iterator(); iter.hasNext();)
-		{
-			SourceFileData sourceFileData = (SourceFileData)iter.next();
-			sortedSourceFiles.put(sourceFileData.getBaseName(),
-					sourceFileData);
-		}
+		Vector sortedSourceFiles = new Vector();
+		sortedSourceFiles.addAll(sourceFiles);
+		Collections.sort(sortedSourceFiles,
+				new SourceFileDataBaseNameComparator());
 
 		File file = new File(destinationDir, filename);
 		PrintStream out = null;
@@ -193,7 +190,7 @@ public class HTMLReport
 			out.println("<h5>Classes</h5>");
 			out.println("<table width=\"100%\">");
 
-			for (Iterator iter = sortedSourceFiles.values().iterator(); iter
+			for (Iterator iter = sortedSourceFiles.iterator(); iter
 					.hasNext();)
 			{
 				SourceFileData sourceFileData = (SourceFileData)iter.next();
@@ -437,6 +434,7 @@ public class HTMLReport
 			out.println("<p>");
 			out.println("<table class=\"report\">");
 			out.println(generateTableHeader("Classes in this File", false));
+			// TODO: Change this to actually show multiple classes.
 			out.println(generateTableRowForSourceFile(sourceFileData));
 			out.println("</table>");
 			out.println("</p>");
