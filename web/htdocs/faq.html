@@ -276,6 +276,37 @@ directory once Cobertura finishes.
 
 
 
+<br/>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+Why is Cobertura causing me to have classpath conflicts with ASM?
+</p>
+</div>
+
+<div class="answer">
+<p>
+Cobertura uses ASM to modify your bytecode.  There are a few other
+popular programs that use ASM: Groovy and Hibernate 3, to name two.
+You could have problems if Cobertura uses a different version of
+asm and you add both versions to your classpath.
+</p>
+
+<p>
+Cobertura only uses ASM when instrumenting.  Cobertura <i>does not
+need ASM in your classpath when running tests</i>.  If you're seeing
+classpath conflicts, just make sure the Cobertura instrument task is
+only using the asm jar that comes with Cobertura, and make sure no
+other programs are using the asm jar that comes with Cobertura.
+</p>
+</div>
+</div>
+
+
+
 </div>
 
 <?php include("footer.html"); ?>
