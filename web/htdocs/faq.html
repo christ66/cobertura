@@ -228,33 +228,20 @@ When I generate coverage reports, why do they always show
 Cobertura is probably using
 the wrong .ser file when generating the reports.  When you instrument
 your classes, Cobertura generates a .ser file containing basic
-information about each class.  It puts this file in the current
-working directory.  When you run your tests, Cobertura adds additional
-information to this same .ser file.  If it can not find the file
-cobertura.ser in the current working directory then it will create
-a new one.  It is important that you use the same cobertura.ser file
-when instrumenting, running, and generating reports.  There are two
-ways to do this.
+information about each class.  As your tests run, Cobertura
+adds additional information to this same data file.  If the instrumented
+classes can not find the data file when running then they
+will create a new one.  It is important that you use the same
+cobertura.ser file when instrumenting, running, and generating reports.
 </p>
-
-<ol>
-<li>
-Make sure you start in the same working directory when instrumenting,
-running your tests, and generating reports.
-</li>
-
-<li>
-Pass the
-<code>-Dnet.sourceforge.cobertura.rawcoverage.dir=C:\some\directory</code>
-property when instrumenting, running, and generating reports.
-</li>
-</ol>
 
 <p>
-In the future we'd like to change Cobertura to either throw an
-exception and stop or at least print a warning message if it
-does not find an already existing cobertura.ser file.
-</p>
+The best way to do this is to specify the location
+of the data file when running your tests.  You should pass the
+<code>-Dnet.sourceforge.cobertura.datafile=${basedir}/cobertura.ser</code>
+sysproperty to the JUnit task.
+</li>
+</ol>
 
 </div>
 </div>
