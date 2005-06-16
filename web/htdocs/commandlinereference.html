@@ -49,18 +49,23 @@ Example:
 
 <p>
 You can basically run your tests the same way you always do.  The
-only change you need to make is to your classpath: you need to
-include cobertura.jar (which will include log4j and a few other
-jars) and you need to add the directory containing the instrumented
-classes BEFORE the directory containing the uninstrumented classes.
-The order is very important.
+only changes you need to make are to your classpath:
 </p>
+
+<ul>
+<li>Include cobertura.jar (which will include log4j and a few other
+jars)</li>
+<li>Add the directory containing the instrumented
+classes BEFORE the directory containing the uninstrumented classes.
+The order is very important.</li>
+</ul>
 
 <p>
 Your tests do not have to be JUnit tests.  They don't even have
 to be automated.  If your application is a program with a GUI,
 you could fire it up, perform a few actions, then exit.
-Cobertura updates its data file whenever your program is accessed.
+Cobertura updates its data file whenever your instrumented classes
+are accessed.
 </p>
 
 <p>
