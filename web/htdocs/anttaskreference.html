@@ -23,11 +23,14 @@ via ant tasks.
 </table>
 
 <p>
-TODO: Add something about nested file sets.
+You must tell Cobertura which class files to instrument by passing
+in standard ant filesets.  Note: As of Cobertura 1.3, we only
+support <b>one</b> fileset at a time.
 </p>
 
 <p>
-TODO: Add something about nested "ignore."
+You can tell Cobertura to ignore certain classes by passing in
+an "ignore" regular expression.  See the example below.
 </p>
 
 <p>
@@ -50,16 +53,59 @@ Example:
 <h2>Running Tests</h2>
 
 <p>
-TODO: Add an example, similar to the one in our basic example.
-Mention the use of the net.sourceforge.cobertura.datafile
-system property.
+Here's an example call to the JUnit ant task that has been
+modified to work with Cobertura.  Important settings are
+highlighted in <span class="highlight">blue</span>.
 </p>
 
 <div class="codeblock">
-<p>
-<code>java -cp C:\cobertura\lib\cobertura.jar;C:\MyProject\build\instrumented;C:\MyProject\build\classes;C:\MyProject\build\test-classes -Dnet.sourceforge.cobertura.datafile=C:\MyProject\build\cobertura.ser ASimpleTestCase</code>
-</p>
+<pre><code>&lt;junit <span class="highlight">fork="yes"</span> dir="${basedir}" failureProperty="test.failed"&gt;
+	&lt;!--
+		Specify the name of the coverage data file to use.
+		The value specified below is the default.
+	--&gt;
+	<span class="highlight">&lt;sysproperty key="net.sourceforge.cobertura.datafile"
+		file="${basedir}/cobertura.ser" /&gt;</span>
+
+	&lt;!--
+		Note the classpath order: instrumented classes are before the
+		original (uninstrumented) classes.  This is important.
+	--&gt;
+	<span class="highlight">&lt;classpath location="${instrumented.dir}" /&gt;</span>
+	&lt;classpath location="${classes.dir}" /&gt;
+
+	&lt;!--
+		The instrumented classes reference classes used by the
+		Cobertura runtime, so Cobertura and its dependencies
+		must be on your classpath.
+	--&gt;
+	<span class="highlight">&lt;classpath refid="cobertura_classpath" /&gt;</span>
+
+	&lt;formatter type="xml" /&gt;
+	&lt;test name="${testcase}" todir="${reports.xml.dir}" if="testcase" /&gt;
+	&lt;batchtest todir="${reports.xml.dir}" unless="testcase"&gt;
+		&lt;fileset dir="${src.dir}"&gt;
+			&lt;include name="**/*Test.java" /&gt;
+		&lt;/fileset&gt;
+	&lt;/batchtest&gt;
+&lt;/junit&gt;</code></pre>
 </div>
+
+<p>
+It is important to set fork="true" because of the way Cobertura works.
+It only flushes its changes to the coverage data file to disk when
+the JVM exits.  If JUnit runs in the same JVM as ant, then the
+coverage data file will be updated AFTER, but you want to
+run cobertura-report BEFORE ant exits.
+</p>
+
+<p>
+For this same reason, if you're using ant 1.6.2 or higher then you
+might want to set forkmode="once"  This will cause only one JVM
+to be started for all your JUnit tests, and will reduce the overhead
+of Cobertura reading/writing the coverage data file each time a JVM
+starts/stops.
+</p>
 
 
 

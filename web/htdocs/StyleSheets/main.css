@@ -124,6 +124,10 @@ p.right {
 	text-align: right;
 }
 
+span.highlight {
+	color: #0000ff;
+}
+
 table {
 	border: 1px solid #bbbbbb;
 	border-collapse: collapse;
