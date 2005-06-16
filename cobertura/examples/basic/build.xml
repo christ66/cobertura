@@ -42,7 +42,7 @@
 		<!--
 			Remove the coverage data file and any old instrumentation.
 		-->
-		<delete file="${coverage.dir}/basic_coverage.ser"/>
+		<delete file="cobertura.ser"/>
 		<delete dir="${instrumented.dir}" />
 
 		<!--

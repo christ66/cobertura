@@ -77,8 +77,7 @@
 	<target name="test" depends="init,compile">
 		<junit fork="yes" dir="${basedir}" failureProperty="test.failed">
 			<!--
-				This is really the only way to pass the file name to
-				Cobertura hooks that were added to your bytecode.
+				Specify the name of the coverage data file to use.
 			-->
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="${coverage.dir}/basic_coverage.ser" />
 
@@ -124,7 +123,6 @@
 		<delete dir="${reports.dir}" />
 		<delete dir="${coverage.dir}" />
 		<delete file="cobertura.log" />
-		<delete file="basic_coverage.ser" />
 	</target>
 
 	<target name="coverage" depends="compile,instrument,test,coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports."/>
