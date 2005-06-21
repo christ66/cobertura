@@ -55,95 +55,6 @@
 		</copy>
 	</target>
 
-	<target name="instrument" depends="compile">
-		<delete file="${basedir}/cobertura.ser" />
-		<delete file="${build.test.dir}/cobertura.ser" />
-		<java fork="true" classname="net.sourceforge.cobertura.instrument.Main">
-			<classpath location="${build.classes.dir}" />
-			<classpath location="${etc.dir}" />
-			<classpath refid="base.path" />
-			<arg value="--datafile" />
-			<arg file="${build.test.dir}/cobertura.ser" />
-			<arg value="--destination" />
-			<arg file="${build.test.classes.dir}" />
-			<arg value="--ignore" />
-			<arg value="org.apache.log4j.*" />
-			<arg file="${build.classes.dir}" />
-		</java>
-	</target>
-
-	<!--
-		This target is used when testing both instrumented and
-		non-instrumented code.  The net.sourceforge.cobertura.datafile
-		sysproperty is only used if we're testing instrumented code.
-	-->
-	<target name="test" depends="compile">
-		<delete dir="${build.test.reports.dir}/junit-xml" />
-		<mkdir dir="${build.test.reports.dir}/junit-xml" />
-
-		<junit fork="true" failureProperty="test.failed" printsummary="true" timeout="60000">
-			<sysproperty key="net.sourceforge.cobertura.datafile" file="${build.test.dir}/cobertura.ser" />
-			<sysproperty key="basedir" value="${basedir}"/>
-			<classpath location="${build.test.classes.dir}" />
-			<classpath location="${build.classes.dir}" />
-			<classpath location="${etc.dir}" />
-			<classpath refid="base.path" />
-			<formatter type="xml" />
-			<test name="${testcase}" todir="${build.test.reports.dir}/junit-xml" if="testcase" />
-			<batchtest todir="${build.test.reports.dir}/junit-xml" unless="testcase">
-				<fileset dir="${build.test.classes.dir}">
-					<include name="**/*Test.class" />
-				</fileset>
-			</batchtest>
-		</junit>
-
-		<delete dir="${build.test.reports.dir}/junit-html" />
-		<mkdir dir="${build.test.reports.dir}/junit-html" />
-
-		<junitreport todir="${build.test.reports.dir}/junit-xml">
-			<fileset dir="${build.test.reports.dir}/junit-xml">
-				<include name="TEST-*.xml" />
-			</fileset>
-			<report format="frames" todir="${build.test.reports.dir}/junit-html" />
-		</junitreport>
-
-		<fail message="Tests failed." if="test.failed" />
-	</target>
-
-	<target name="coverage-report">
-		<delete dir="${build.test.reports.dir}/coverage-html" />
-		<mkdir dir="${build.test.reports.dir}/coverage-html" />
-		<java fork="true" classname="net.sourceforge.cobertura.reporting.Main">
-			<classpath location="${build.classes.dir}" />
-			<classpath location="${etc.dir}" />
-			<classpath refid="base.path" />
-			<arg value="--format" />
-			<arg value="html" />
-			<arg value="--datafile" />
-			<arg file="${build.test.dir}/cobertura.ser" />
-			<arg value="--destination" />
-			<arg file="${build.test.reports.dir}/coverage-html" />
-			<arg value="--source" />
-			<arg file="${src.dir}" />
-		</java>
-
-		<delete dir="${build.test.reports.dir}/coverage-xml" />
-		<mkdir dir="${build.test.reports.dir}/coverage-xml" />
-		<java fork="true" classname="net.sourceforge.cobertura.reporting.Main">
-			<classpath location="${build.classes.dir}" />
-			<classpath location="${etc.dir}" />
-			<classpath refid="base.path" />
-			<arg value="--format" />
-			<arg value="xml" />
-			<arg value="--datafile" />
-			<arg file="${build.test.dir}/cobertura.ser" />
-			<arg value="--destination" />
-			<arg file="${build.test.reports.dir}/coverage-xml" />
-			<arg value="--source" />
-			<arg file="${src.dir}" />
-		</java>
-	</target>
-
 	<target name="jar" depends="init,compile">
 		<mkdir dir="${build.dist.dir}" />
 
@@ -215,6 +126,100 @@
 				<attribute name="Implementation-Version" value="${version}"/>
 			</manifest>
 		</jar>
+	</target>
+
+	<target name="instrument" depends="jar">
+		<delete file="${basedir}/cobertura.ser" />
+		<delete file="${build.dir}/cobertura.ser" />
+
+		<taskdef classpath="cobertura.jar" resource="tasks.properties"/>
+
+		<cobertura-instrument datafile="${build.dir}/cobertura.ser" todir="${build.instrumented.dir}">
+		    <fileset dir="${build.classes.dir}">
+		        <include name="**/*.class" />
+		        <exclude name="**/*Test.class" />
+		    </fileset>
+		</cobertura-instrument>
+	</target>
+
+	<!--
+		This target is used when testing both instrumented and
+		non-instrumented code.  The net.sourceforge.cobertura.datafile
+		sysproperty is only used if we're testing instrumented code.
+	-->
+	<target name="test" depends="compile">
+		<delete dir="${build.test.reports.dir}/junit-xml" />
+		<mkdir dir="${build.test.reports.dir}/junit-xml" />
+
+		<junit fork="true" forkmode="once" failureProperty="test.failed" printsummary="true" timeout="60000">
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${build.dir}/cobertura.ser" />
+			<sysproperty key="basedir" value="${basedir}"/>
+			<classpath location="${build.test.classes.dir}" />
+			<classpath location="${build.instrumented.dir}" />
+			<classpath location="${build.classes.dir}" />
+			<classpath location="${etc.dir}" />
+			<classpath refid="base.path" />
+			<formatter type="xml" />
+			<test name="${testcase}" todir="${build.test.reports.dir}/junit-xml" if="testcase" />
+			<batchtest todir="${build.test.reports.dir}/junit-xml" unless="testcase">
+				<fileset dir="${build.test.classes.dir}">
+					<include name="**/*Test.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<delete dir="${build.test.reports.dir}/junit-html" />
+		<mkdir dir="${build.test.reports.dir}/junit-html" />
+
+		<junitreport todir="${build.test.reports.dir}/junit-xml">
+			<fileset dir="${build.test.reports.dir}/junit-xml">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${build.test.reports.dir}/junit-html" />
+		</junitreport>
+
+		<fail message="Tests failed." if="test.failed" />
+	</target>
+
+	<target name="coverage-report">
+		<taskdef classpath="cobertura.jar" resource="tasks.properties"/>
+
+		<delete dir="${build.test.reports.dir}/coverage-html" />
+		<mkdir dir="${build.test.reports.dir}/coverage-html" />
+		<cobertura-report datafile="${build.dir}/cobertura.ser"
+		                  destdir="${build.test.reports.dir}/coverage-html"
+		                  format="html"
+		                  srcdir="${src.dir}" />
+
+		<delete dir="${build.test.reports.dir}/coverage-xml" />
+		<mkdir dir="${build.test.reports.dir}/coverage-xml" />
+		<cobertura-report datafile="${build.dir}/cobertura.ser"
+		                  destdir="${build.test.reports.dir}/coverage-xml"
+		                  format="xml"
+		                  srcdir="${src.dir}" />
+	</target>
+
+	<target name="format">
+		<property name="dir.jalopy" value="${lib.dir}/jalopy" />
+		<taskdef name="jalopy" classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
+			<classpath>
+				<fileset dir="${dir.jalopy}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</taskdef>
+
+		<jalopy fileformat="unix"
+			convention="etc/jalopy.xml"
+			loglevel="info"
+			classpathref="base.path">
+			<fileset dir="${src.dir}">
+				<include name="**/*.java" />
+			</fileset>
+			<fileset dir="${test.src.dir}">
+				<include name="**/*.java" />
+			</fileset>
+		</jalopy>
 	</target>
 
 	<target name="javadoc">
