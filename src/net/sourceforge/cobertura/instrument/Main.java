@@ -83,8 +83,11 @@ public class Main
 	private static final Logger logger = Logger.getLogger(Main.class);
 
 	private File destinationDirectory = null;
+
 	private File baseDir = null;
+
 	private Pattern ignoreRegexp = null;
+
 	private ProjectData projectData = null;
 
 	/**
@@ -210,6 +213,8 @@ public class Main
 
 	private void parseArguments(String[] args)
 	{
+		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
+
 		// Parse our parameters
 		Collection locations = new Vector();
 		for (int i = 0; i < args.length; i++)
@@ -217,7 +222,7 @@ public class Main
 			if (args[i].equals("--basedir"))
 				baseDir = new File(args[++i]);
 			else if (args[i].equals("--datafile"))
-				CoverageDataFileHandler.setDefaultDataFile(args[++i]);
+				dataFile = new File(args[++i]);
 			else if (args[i].equals("--destination"))
 				destinationDirectory = new File(args[++i]);
 			else if (args[i].equals("--ignore"))
@@ -239,11 +244,13 @@ public class Main
 		}
 
 		// Load coverage data, instrument classes, save coverage data
-		projectData = ProjectData.getGlobalProjectData();
+		projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+		if (projectData == null)
+			projectData = new ProjectData();
 		Iterator iter = locations.iterator();
 		while (iter.hasNext())
 			addInstrumentation((String)iter.next());
-		ProjectData.saveGlobalProjectData();
+		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
 	}
 
 	public static void main(String[] args)
