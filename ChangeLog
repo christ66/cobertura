@@ -6,6 +6,12 @@ version 1.5
 	  not show multiple classes with the same name, but in
 	  different packages.
 	* Don't save the data file twice after instrumenting.
+	* When instrumenting, you can now specify a zip, jar, war,
+	  ear or sar file and Cobertura will instrument any classes
+	  inside of the archive.  You must explicity give the name
+	  of the archive when instrumenting--you can not give the
+	  name of the directory containing the archive (Thanks to
+	  Grzegorz Lukasik).
 
 version 1.4
 	* Fixed a bug that sometimes resulted in a
