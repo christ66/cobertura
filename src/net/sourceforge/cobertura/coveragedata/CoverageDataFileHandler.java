@@ -48,20 +48,13 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 	private static final Logger logger = Logger
 			.getLogger(CoverageDataFileHandler.class);
 
-	private static File defaultDataFile = null;
-
 	public static File getDefaultDataFile()
 	{
-		if (defaultDataFile != null)
-			return defaultDataFile;
-		if (System.getProperty("net.sourceforge.cobertura.datafile") != null)
-			return new File(System.getProperty("net.sourceforge.cobertura.datafile"));
+		String systemProperty = System
+				.getProperty("net.sourceforge.cobertura.datafile");
+		if (systemProperty != null)
+			return new File(systemProperty);
 		return new File(FILE_NAME);
-	}
-
-	public static void setDefaultDataFile(String fileName)
-	{
-		defaultDataFile = new File(fileName);
 	}
 
 	public static ProjectData loadCoverageData(File dataFile)
@@ -102,7 +95,10 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		try
 		{
 			objects = new ObjectInputStream(dataFile);
-			return (ProjectData)objects.readObject();
+			ProjectData projectData = (ProjectData)objects.readObject();
+			logger.info("Loaded information on "
+					+ projectData.getNumberOfClasses() + " classes.");
+			return projectData;
 		}
 		catch (Exception e)
 		{
@@ -165,11 +161,8 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		{
 			objects = new ObjectOutputStream(dataFile);
 			objects.writeObject(projectData);
-			if (logger.isInfoEnabled())
-			{
-				logger.info("Saved information on "
-						+ projectData.getNumberOfClasses() + " classes.");
-			}
+			logger.info("Saved information on "
+					+ projectData.getNumberOfClasses() + " classes.");
 		}
 		catch (IOException e)
 		{
