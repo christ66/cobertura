@@ -38,7 +38,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 			.getLogger(ClassInstrumenter.class);
 
 	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coveragedata/HasBeenInstrumented";
-	private Pattern ignoreRegexp;
+	private Pattern ignoreRegex;
 	private ProjectData projectData;
 	private ClassData classData;
 	private String myName;
@@ -59,7 +59,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 	{
 		super(cv);
 		this.projectData = projectData;
-		this.ignoreRegexp = ignoreRegexp;
+		this.ignoreRegex = ignoreRegexp;
 	}
 
 	private boolean arrayContains(Object[] array, Object key)
@@ -125,7 +125,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 			return mv;
 
 		return mv == null ? null : new MethodInstrumenter(classData, mv,
-				this.myName, name, desc, ignoreRegexp);
+				this.myName, name, desc, ignoreRegex);
 	}
 
 	public void visitEnd()

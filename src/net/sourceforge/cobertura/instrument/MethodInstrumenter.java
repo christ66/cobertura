@@ -40,7 +40,7 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 	private final String ownerClass;
 	private String myName;
 	private String myDescriptor;
-	private Pattern ignoreRegexp;
+	private Pattern ignoreRegex;
 	private ClassData classData;
 
 	private int currentLine = 0;
@@ -54,7 +54,7 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 		this.ownerClass = owner;
 		this.myName = myName;
 		this.myDescriptor = myDescriptor;
-		this.ignoreRegexp = ignoreRegexp;
+		this.ignoreRegex = ignoreRegexp;
 	}
 
 	public void visitJumpInsn(int opcode, Label label)
@@ -115,7 +115,7 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 	{
 		super.visitMethodInsn(opcode, owner, name, desc);
 
-		if ((ignoreRegexp != null) && (pm.matches(owner, ignoreRegexp)))
+		if ((ignoreRegex != null) && (pm.matches(owner, ignoreRegex)))
 			classData.removeLine(currentLine);
 	}
 

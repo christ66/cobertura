@@ -91,7 +91,7 @@ public class Main
 
 	private File baseDir = null;
 
-	private Pattern ignoreRegexp = null;
+	private Pattern ignoreRegex = null;
 
 	private ProjectData projectData = null;
 
@@ -149,7 +149,7 @@ public class Main
 					ClassReader cr = new ClassReader(entryBytes);
 					ClassWriter cw = new ClassWriter(true);
 					ClassInstrumenter cv = new ClassInstrumenter(projectData,
-							cw, ignoreRegexp);
+							cw, ignoreRegex);
 					cr.accept(cv, false);
 
 					// If class was instrumented, get bytes that define the
@@ -288,7 +288,7 @@ public class Main
 			inputStream = new FileInputStream(file);
 			ClassReader cr = new ClassReader(inputStream);
 			cw = new ClassWriter(true);
-			cv = new ClassInstrumenter(projectData, cw, ignoreRegexp);
+			cv = new ClassInstrumenter(projectData, cw, ignoreRegex);
 			cr.accept(cv, false);
 		}
 		catch (Throwable t)
@@ -411,7 +411,7 @@ public class Main
 				try
 				{
 					Perl5Compiler pc = new Perl5Compiler();
-					this.ignoreRegexp = pc.compile(regex);
+					this.ignoreRegex = pc.compile(regex);
 				}
 				catch (MalformedPatternException e)
 				{

@@ -80,12 +80,6 @@ public class InstrumentTask extends CommonMatchingTask
 		super("net.sourceforge.cobertura.instrument.Main");
 	}
 
-	public Ignore createIgnore()
-	{
-		ignoreRegex = new Ignore();
-		return ignoreRegex;
-	}
-
 	private void addFilenames(String[] filenames)
 	{
 		if (filenames.length == 0)
@@ -104,6 +98,12 @@ public class InstrumentTask extends CommonMatchingTask
 		System.out.println("instrumenting " + filenames.length + " "
 				+ (filenames.length == 1 ? "class" : "classes")
 				+ (toDir != null ? " to " + toDir : ""));
+	}
+
+	public Ignore createIgnore()
+	{
+		ignoreRegex = new Ignore();
+		return ignoreRegex;
 	}
 
 	public void execute() throws BuildException
@@ -130,18 +130,7 @@ public class InstrumentTask extends CommonMatchingTask
 			addArg(ignoreRegex.getRegex());
 		}
 
-		Set filenames = new HashSet();
-		Iterator iter = fileSets.iterator();
-		while (iter.hasNext())
-		{
-			FileSet fileSet = (FileSet)iter.next();
-
-			addArg("--basedir");
-			addArg(baseDir(fileSet));
-
-			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
-		}
-		addFilenames((String[])filenames.toArray(new String[filenames.size()]));
+		handleFilesets();
 
 		saveArgs();
 
@@ -157,6 +146,22 @@ public class InstrumentTask extends CommonMatchingTask
 		}
 
 		unInitArgs();
+	}
+
+	private void handleFilesets()
+	{
+		Set filenames = new HashSet();
+		Iterator iter = fileSets.iterator();
+		while (iter.hasNext())
+		{
+			FileSet fileSet = (FileSet)iter.next();
+
+			addArg("--basedir");
+			addArg(baseDir(fileSet));
+
+			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
+		}
+		addFilenames((String[])filenames.toArray(new String[filenames.size()]));
 	}
 
 	public void setDataFile(String dataFile)

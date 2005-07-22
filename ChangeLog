@@ -12,13 +12,13 @@ version 1.5
 	  of the archive when instrumenting--you can not give the
 	  name of the directory containing the archive (Thanks to
 	  Grzegorz Lukasik).
-	* The merge task now supports checking against a project's
+	* The check task now supports checking against a project's
 	  total branch and line coverage rates (Thanks to Nathan
 	  Wilson).
-	* The merge ant task now allows you to fail the ant build,
+	* The check ant task now allows you to fail the ant build,
 	  if desired (Thanks to Nathan Wilson).
-	* Changed "ignore" to "regex" in the merge task.  See the
-	  online documentation for usage information.
+	* Changed some of the parameters for the check task.  See
+	  the online documentation for usage information.
 	* Add the combined line-rate and branch-rate for all
 	  packages to all XML reports.
 	* Add a timestamp and version number to all XML reports.
