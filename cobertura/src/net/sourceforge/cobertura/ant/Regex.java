@@ -60,22 +60,22 @@ public class Regex
 {
 
 	String pattern;
-	String lineCoverageRate;
-	String branchCoverageRate;
+	String lineRate;
+	String branchRate;
 
 	public void setPattern(String pattern)
 	{
 		this.pattern = pattern;
 	}
 
-	public void setBranch(String branchCoverageRate)
+	public void setBranchRate(String branchRate)
 	{
-		this.branchCoverageRate = branchCoverageRate;
+		this.branchRate = branchRate;
 	}
 
-	public void setLine(String lineCoverageRate)
+	public void setLineRate(String lineRate)
 	{
-		this.lineCoverageRate = lineCoverageRate;
+		this.lineRate = lineRate;
 	}
 
 	public String toString()
@@ -83,9 +83,9 @@ public class Regex
 		StringBuffer sb = new StringBuffer();
 		sb.append(pattern);
 		sb.append(':');
-		sb.append(lineCoverageRate);
+		sb.append(lineRate);
 		sb.append(':');
-		sb.append(branchCoverageRate);
+		sb.append(branchRate);
 		return sb.toString();
 	}
 }
