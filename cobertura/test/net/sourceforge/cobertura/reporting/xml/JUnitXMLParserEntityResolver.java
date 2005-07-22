@@ -48,13 +48,12 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class JUnitXMLParserEntityResolver extends DefaultHandler
 {
-	private final static String coverageDTD = "coverage-01.dtd";
 
 	private final File localDTD;
 
 	public JUnitXMLParserEntityResolver(String basedir)
 	{
-		localDTD = new File(basedir + "/etc/coverage-01.dtd");
+		localDTD = new File(basedir + "/etc", XMLReport.coverageDTD);
 	}
 
 	public InputSource resolveEntity(String publicId, String systemId)
@@ -64,7 +63,7 @@ public class JUnitXMLParserEntityResolver extends DefaultHandler
 		// version instead of the remote version
 		try
 		{
-			if (systemId.endsWith(coverageDTD))
+			if (systemId.endsWith(XMLReport.coverageDTD))
 				return new InputSource(new FileInputStream(localDTD));
 		}
 		catch (FileNotFoundException e)
@@ -79,9 +78,9 @@ public class JUnitXMLParserEntityResolver extends DefaultHandler
 		try {
 			super.resolveEntity(publicId, systemId);
 		} catch (Exception exception) {
-		    // apparently 1.5 throws an IOException here, but we can't catch it specifically if
-		    //	we're not on 1.5 (docs on both kind of say that they throw it)
-		    //	actual code on 1.4.2 has it remmed out so that it only throws SAXException  
+			// apparently 1.5 throws an IOException here, but we can't catch it specifically if
+			//	we're not on 1.5 (docs on both kind of say that they throw it)
+			//	actual code on 1.4.2 has it remmed out so that it only throws SAXException  
 			throw new SAXException(exception);
 		}
 

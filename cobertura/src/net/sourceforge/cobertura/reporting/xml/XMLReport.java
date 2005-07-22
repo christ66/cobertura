@@ -47,6 +47,8 @@ public class XMLReport
 
 	private static final Logger logger = Logger.getLogger(XMLReport.class);
 
+	protected final static String coverageDTD = "coverage-02.dtd";
+
 	private final PrintWriter pw;
 
 	private int indent = 0;
@@ -64,21 +66,21 @@ public class XMLReport
 		try
 		{
 			println("<?xml version=\"1.0\"?>");
-			println("<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-01.dtd\">");
+			println("<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/"
+					+ coverageDTD + "\">");
 			println("");
 
-			if (sourceDirectory == null)
-			{
-				// TODO: Set a schema?
-				//println("<coverage xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
-				println("<coverage>");
-			}
-			else
-			{
-				// TODO: Set a schema?
-				//println("<coverage src=\"" + sourceDirectory + "\" xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
-				println("<coverage src=\"" + sourceDirectory + "\">");
-			}
+			StringBuffer sourceDirectories = new StringBuffer();
+			if (sourceDirectory != null)
+				sourceDirectories.append("src=\"" + sourceDirectory + "\"");
+
+			// TODO: Set a schema?
+			//println("<coverage " + sourceDirectories.toString() + " xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
+			println("<coverage line-rate=\""
+					+ projectData.getLineCoverageRate() + "\" branch-rate=\""
+					+ projectData.getBranchCoverageRate() + "\" "
+					+ sourceDirectories.toString() + ">");
+
 			increaseIndentation();
 			dumpPackages(projectData);
 			decreaseIndentation();
