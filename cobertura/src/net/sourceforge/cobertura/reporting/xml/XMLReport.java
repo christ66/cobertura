@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -38,6 +39,7 @@ import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.reporting.Util;
+import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.log4j.Logger;
@@ -78,7 +80,9 @@ public class XMLReport
 			//println("<coverage " + sourceDirectories.toString() + " xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
 			println("<coverage line-rate=\""
 					+ projectData.getLineCoverageRate() + "\" branch-rate=\""
-					+ projectData.getBranchCoverageRate() + "\" "
+					+ projectData.getBranchCoverageRate() + "\" version=\""
+					+ Header.version() + "\" timestamp=\""
+					+ new Date().getTime() + "\" "
 					+ sourceDirectories.toString() + ">");
 
 			increaseIndentation();

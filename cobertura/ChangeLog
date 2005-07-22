@@ -19,8 +19,9 @@ version 1.5
 	  if desired (Thanks to Nathan Wilson).
 	* Changed "ignore" to "regex" in the merge task.  See the
 	  online documentation for usage information.
-	* Changed XML report to show the combined line-rate and
-	  branch-rate for all packages.
+	* Add the combined line-rate and branch-rate for all
+	  packages to all XML reports.
+	* Add a timestamp and version number to all XML reports.
 
 version 1.4
 	* Fixed a bug that sometimes resulted in a
