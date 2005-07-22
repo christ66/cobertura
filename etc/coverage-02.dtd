@@ -1,6 +1,8 @@
 <!ELEMENT coverage (packages)>
 <!ATTLIST coverage line-rate   CDATA #REQUIRED>
 <!ATTLIST coverage branch-rate CDATA #REQUIRED>
+<!ATTLIST coverage version CDATA #REQUIRED>
+<!ATTLIST coverage timestamp CDATA #REQUIRED>
 <!ATTLIST coverage src CDATA "">
 
 <!ELEMENT packages (package*)>
