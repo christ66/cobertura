@@ -101,8 +101,8 @@
 		</junitreport>
 	</target>
 
-	<target name="check-coverage">
-		<cobertura-check totalline="100" />
+	<target name="coverage-check">
+		<cobertura-check branchrate="34" totallinerate="100" />
 	</target>
 
 	<target name="coverage-report">

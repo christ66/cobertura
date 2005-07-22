@@ -82,13 +82,13 @@ public class CheckTask extends MatchingTask
 
 	final Set regexes = new HashSet();
 
-	private String branchCoverageRate = null;
+	private String branchRate = null;
 
-	private String lineCoverageRate = null;
+	private String lineRate = null;
 
-	private String totalBranchCoverageRate = null;
+	private String totalBranchRate = null;
 
-	private String totalLineCoverageRate = null;
+	private String totalLineRate = null;
 
 	private boolean haltOnFailure = true;
 
@@ -102,28 +102,28 @@ public class CheckTask extends MatchingTask
 			getJava().createArg().setValue(dataFile);
 		}
 
-		if (branchCoverageRate != null)
+		if (branchRate != null)
 		{
 			getJava().createArg().setValue("--branch");
-			getJava().createArg().setValue(branchCoverageRate);
+			getJava().createArg().setValue(branchRate);
 		}
 
-		if (lineCoverageRate != null)
+		if (lineRate != null)
 		{
 			getJava().createArg().setValue("--line");
-			getJava().createArg().setValue(lineCoverageRate);
+			getJava().createArg().setValue(lineRate);
 		}
 
-		if (totalBranchCoverageRate != null)
+		if (totalBranchRate != null)
 		{
 			getJava().createArg().setValue("--totalbranch");
-			getJava().createArg().setValue(totalBranchCoverageRate);
+			getJava().createArg().setValue(totalBranchRate);
 		}
 
-		if (totalLineCoverageRate != null)
+		if (totalLineRate != null)
 		{
 			getJava().createArg().setValue("--totalline");
-			getJava().createArg().setValue(totalLineCoverageRate);
+			getJava().createArg().setValue(totalLineRate);
 		}
 
 		Iterator iter = regexes.iterator();
@@ -202,24 +202,24 @@ public class CheckTask extends MatchingTask
 		this.dataFile = dataFile;
 	}
 
-	public void setBranchCoverageRate(String branchCoverageRate)
+	public void setBranchRate(String branchRate)
 	{
-		this.branchCoverageRate = branchCoverageRate;
+		this.branchRate = branchRate;
 	}
 
-	public void setLineCoverageRate(String lineCoverageRate)
+	public void setLineRate(String lineRate)
 	{
-		this.lineCoverageRate = lineCoverageRate;
+		this.lineRate = lineRate;
 	}
 
-	public void setTotalBranch(String totalBranchCoverageRate)
+	public void setTotalBranchRate(String totalBranchRate)
 	{
-		this.totalBranchCoverageRate = totalBranchCoverageRate;
+		this.totalBranchRate = totalBranchRate;
 	}
 
-	public void setTotalLine(String totalLineCoverageRate)
+	public void setTotalLineRate(String totalLineRate)
 	{
-		this.totalLineCoverageRate = totalLineCoverageRate;
+		this.totalLineRate = totalLineRate;
 	}
 
 	public void setHaltOnFailure(boolean haltOnFailure)
