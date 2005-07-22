@@ -22,6 +22,7 @@ version 1.5
 	* Add the combined line-rate and branch-rate for all
 	  packages to all XML reports.
 	* Add a timestamp and version number to all XML reports.
+	* The command line Windows batch scripts work better.
 
 version 1.4
 	* Fixed a bug that sometimes resulted in a
