@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Nathan Wilson
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -25,6 +26,7 @@ package net.sourceforge.cobertura.check;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,10 +50,21 @@ public class Main
 	private static final Logger logger = Logger.getLogger(Main.class);
 
 	final Perl5Matcher pm = new Perl5Matcher();
+
 	final Perl5Compiler pc = new Perl5Compiler();
 
-	Map minimumCoverageRates = new HashMap();
+	/**
+	 * The default CoverageRate needed for a class to pass the check.
+	 */
 	CoverageRate minimumCoverageRate;
+
+	/**
+	 * The keys of this map contain regular expression Patterns that
+	 * match against classes.  The values of this map contain
+	 * CoverageRate objects that specify the minimum coverage rates
+	 * needed for a class that matches the pattern.
+	 */
+	Map minimumCoverageRates = new HashMap();
 
 	double inRangeAndDivideByOneHundred(String coverageRateAsPercentage)
 	{
@@ -66,8 +79,9 @@ public class Main
 		{
 			return (double)coverageRateAsPercentage / 100;
 		}
-		throw new IllegalArgumentException(
-				"Invalid value, valid range is [0 .. 100]");
+		throw new IllegalArgumentException("The value "
+				+ coverageRateAsPercentage
+				+ "% is invalid.  Percentages must be between 0 and 100.");
 	}
 
 	void setMinimumCoverageRate(String minimumCoverageRate)
@@ -75,48 +89,61 @@ public class Main
 	{
 		StringTokenizer tokenizer = new StringTokenizer(minimumCoverageRate,
 				":");
-		minimumCoverageRates.put(pc.compile(tokenizer.nextToken()),
+		this.minimumCoverageRates.put(pc.compile(tokenizer.nextToken()),
 				new CoverageRate(inRangeAndDivideByOneHundred(tokenizer
 						.nextToken()), inRangeAndDivideByOneHundred(tokenizer
 						.nextToken())));
 	}
 
+	/**
+	 * This method returns the CoverageRate object that
+	 * applies to the given class.  If checks if there is a
+	 * pattern that matches the class name, and returns that
+	 * if it finds one.  Otherwise it uses the global minimum
+	 * rates that were passed in.
+	 */
 	CoverageRate findMinimumCoverageRate(String classname)
 	{
-		Iterator i = minimumCoverageRates.entrySet().iterator();
-		while (i.hasNext())
+		Iterator iter = this.minimumCoverageRates.entrySet().iterator();
+		while (iter.hasNext())
 		{
-			Map.Entry entry = (Map.Entry)i.next();
+			Map.Entry entry = (Map.Entry)iter.next();
 
 			if (pm.matches(classname, (Pattern)entry.getKey()))
 			{
 				return (CoverageRate)entry.getValue();
 			}
 		}
-		return minimumCoverageRate;
+		return this.minimumCoverageRate;
 	}
 
 	public Main(String[] args) throws MalformedPatternException
 	{
+		int exitStatus = 0;
+
 		Header.print(System.out);
-		System.out.println("Cobertura coverage check");
 
-		LongOpt[] longOpts = new LongOpt[4];
-		longOpts[0] = new LongOpt("branch", LongOpt.REQUIRED_ARGUMENT, null,
+		LongOpt[] longOpts = new LongOpt[6];
+		longOpts[0] = new LongOpt("datafile", LongOpt.REQUIRED_ARGUMENT, null,
+				'd');
+		longOpts[1] = new LongOpt("regex", LongOpt.REQUIRED_ARGUMENT, null, 'r');
+		longOpts[2] = new LongOpt("branch", LongOpt.REQUIRED_ARGUMENT, null,
 				'b');
-		longOpts[2] = new LongOpt("datafile", LongOpt.REQUIRED_ARGUMENT,
-				null, 'd');
-		longOpts[3] = new LongOpt("ignore", LongOpt.REQUIRED_ARGUMENT, null,
-				'i');
-		longOpts[1] = new LongOpt("line", LongOpt.REQUIRED_ARGUMENT, null,
-				'l');
+		longOpts[3] = new LongOpt("line", LongOpt.REQUIRED_ARGUMENT, null, 'l');
+		longOpts[4] = new LongOpt("totalbranch", LongOpt.REQUIRED_ARGUMENT,
+				null, 'B');
+		longOpts[5] = new LongOpt("totalline", LongOpt.REQUIRED_ARGUMENT, null,
+				'L');
 
-		Getopt g = new Getopt(getClass().getName(), args, ":b:d:i:l:",
+		Getopt g = new Getopt(getClass().getName(), args, ":b:B:d:l:L:r",
 				longOpts);
 		int c;
 
-		double branchCoverageRate = 0.8;
-		double lineCoverageRate = 0.7;
+		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
+		double branchCoverageRate = 0.0;
+		double lineCoverageRate = 0.0;
+		double totalBranchCoverageRate = 0.0;
+		double totalLineCoverageRate = 0.0;
 
 		while ((c = g.getopt()) != -1)
 		{
@@ -127,32 +154,61 @@ public class Main
 							.getOptarg());
 					break;
 
-				case 'd':
-					CoverageDataFileHandler.setDefaultDataFile(g.getOptarg());
+				case 'B':
+					totalBranchCoverageRate = inRangeAndDivideByOneHundred(g
+							.getOptarg());
 					break;
 
-				case 'i':
-					setMinimumCoverageRate(g.getOptarg());
+				case 'd':
+					dataFile = new File(g.getOptarg());
 					break;
 
 				case 'l':
 					lineCoverageRate = inRangeAndDivideByOneHundred(g
 							.getOptarg());
 					break;
+
+				case 'L':
+					totalLineCoverageRate = inRangeAndDivideByOneHundred(g
+							.getOptarg());
+					break;
+
+				case 'r':
+					setMinimumCoverageRate(g.getOptarg());
+					break;
+
 			}
 		}
 
-		minimumCoverageRate = new CoverageRate(lineCoverageRate,
+		ProjectData projectData = CoverageDataFileHandler
+				.loadCoverageData(dataFile);
+
+		if (projectData == null)
+		{
+			System.err.println("Error: Unable to read from data file "
+					+ dataFile.getAbsolutePath());
+			System.exit(1);
+		}
+
+		// If they didn't specify any thresholds, then use some defaults
+		if ((branchCoverageRate == 0) && (lineCoverageRate == 0)
+				&& (totalLineCoverageRate == 0)
+				&& (totalBranchCoverageRate == 0)
+				&& (this.minimumCoverageRates.size() == 0))
+		{
+			branchCoverageRate = 0.5;
+			lineCoverageRate = 0.5;
+			totalBranchCoverageRate = 0.5;
+			totalLineCoverageRate = 0.5;
+		}
+
+		this.minimumCoverageRate = new CoverageRate(lineCoverageRate,
 				branchCoverageRate);
 
-		// Load coverage data
-		ProjectData projectData = ProjectData.getGlobalProjectData();
-
-		if (logger.isInfoEnabled())
-		{
-			logger.info("Coverage data has "
-					+ projectData.getNumberOfClasses() + " classes");
-		}
+		double totalLines = 0;
+		double totalLinesCovered = 0;
+		double totalBranches = 0;
+		double totalBranchesCovered = 0;
 
 		Iterator iter = projectData.getClasses().iterator();
 		while (iter.hasNext())
@@ -161,48 +217,72 @@ public class Main
 			CoverageRate coverageRate = findMinimumCoverageRate(classData
 					.getName());
 
-			if (logger.isInfoEnabled())
+			if (totalBranchCoverageRate > 0.0)
 			{
-				StringBuffer sb = new StringBuffer();
-				sb.append(classData.getName());
-				sb.append(", line: ");
-				sb.append(percentage(classData.getLineCoverageRate()));
-				sb.append("% (");
-				sb.append(percentage(classData.getLineCoverageRate()));
-				sb.append("%), branch: ");
-				sb.append(percentage(classData.getBranchCoverageRate()));
-				sb.append("% (");
-				sb.append(percentage(classData.getBranchCoverageRate()));
-				sb.append("%)");
-				logger.info(sb.toString());
+				totalBranches += classData.getNumberOfValidBranches();
+				totalBranchesCovered += classData.getNumberOfCoveredBranches();
+			}
+
+			if (totalLineCoverageRate > 0.0)
+			{
+				totalLines += classData.getNumberOfValidLines();
+				totalLinesCovered += classData.getNumberOfCoveredLines();
+			}
+
+			logger.debug("Class " + classData.getName()
+					+ ", line coverage rate: "
+					+ percentage(classData.getLineCoverageRate())
+					+ "%, branch coverage rate: "
+					+ percentage(classData.getBranchCoverageRate()) + "%");
+
+			if (classData.getBranchCoverageRate() < coverageRate
+					.getBranchCoverageRate())
+			{
+				System.err.println(classData.getName()
+						+ " failed check. Branch coverage rate of "
+						+ percentage(classData.getBranchCoverageRate())
+						+ "% is below "
+						+ percentage(coverageRate.getBranchCoverageRate())
+						+ "%");
+				exitStatus |= 2;
 			}
 
 			if (classData.getLineCoverageRate() < coverageRate
 					.getLineCoverageRate())
 			{
-				StringBuffer sb = new StringBuffer();
-				sb.append(classData.getName());
-				sb.append(" line coverage rate of: ");
-				sb.append(percentage(classData.getLineCoverageRate()));
-				sb.append("% (required: ");
-				sb.append(percentage(coverageRate.getLineCoverageRate()));
-				sb.append("%)");
-				System.out.println(sb.toString());
-			}
-
-			if (classData.getBranchCoverageRate() < coverageRate
-					.getBranchCoverageRate())
-			{
-				StringBuffer sb = new StringBuffer();
-				sb.append(classData.getName());
-				sb.append(" branch coverage rate of: ");
-				sb.append(percentage(classData.getBranchCoverageRate()));
-				sb.append("% (required: ");
-				sb.append(percentage(coverageRate.getBranchCoverageRate()));
-				sb.append("%)");
-				System.out.println(sb.toString());
+				System.err.println(classData.getName()
+						+ " failed check. Line coverage rate of "
+						+ percentage(classData.getLineCoverageRate())
+						+ "% is below "
+						+ percentage(coverageRate.getLineCoverageRate()) + "%");
+				exitStatus |= 4;
 			}
 		}
+
+		// Check the rates for the overal project
+		if ((totalBranches > 0)
+				&& (totalBranchCoverageRate > (totalBranchesCovered / totalBranches)))
+		{
+			System.err
+					.println("Project failed check. "
+							+ "Total branch coverage rate of "
+							+ percentage(totalBranchesCovered / totalBranches)
+							+ "% is below "
+							+ percentage(totalBranchCoverageRate) + "%");
+			exitStatus |= 8;
+		}
+
+		if ((totalLines > 0)
+				&& (totalLineCoverageRate > (totalLinesCovered / totalLines)))
+		{
+			System.err.println("Project failed check. "
+					+ "Total line coverage rate of "
+					+ percentage(totalLinesCovered / totalLines)
+					+ "% is below " + percentage(totalLineCoverageRate) + "%");
+			exitStatus |= 16;
+		}
+
+		System.exit(exitStatus);
 	}
 
 	private String percentage(double coverateRate)
