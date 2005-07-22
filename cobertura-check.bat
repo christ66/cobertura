@@ -18,4 +18,4 @@ shift
 goto getArgs
 :doneStart
 
-java -cp %COBERTURA_HOME%cobertura.jar net.sourceforge.cobertura.reporting.Main %CMD_LINE_ARGS%
+java -cp %COBERTURA_HOME%cobertura.jar net.sourceforge.cobertura.check.Main %CMD_LINE_ARGS%
