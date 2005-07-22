@@ -101,6 +101,10 @@
 		</junitreport>
 	</target>
 
+	<target name="check-coverage">
+		<cobertura-check totalline="100" />
+	</target>
+
 	<target name="coverage-report">
 		<cobertura-report srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
 		<cobertura-report srcdir="${src.dir}" destdir="${coverage.html.dir}" />

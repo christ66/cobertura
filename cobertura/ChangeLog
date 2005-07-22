@@ -12,6 +12,13 @@ version 1.5
 	  of the archive when instrumenting--you can not give the
 	  name of the directory containing the archive (Thanks to
 	  Grzegorz Lukasik).
+	* The merge task now supports checking against a project's
+	  total branch and line coverage rates (Thanks to Nathan
+	  Wilson).
+	* The merge ant task now allows you to fail the ant build,
+	  if desired (Thanks to Nathan Wilson).
+	* Changed "ignore" to "regex" in the merge task.  See the
+	  online documentation for usage information.
 
 version 1.4
 	* Fixed a bug that sometimes resulted in a

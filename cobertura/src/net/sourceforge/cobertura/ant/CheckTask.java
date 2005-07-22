@@ -5,6 +5,7 @@
  * reserved.
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Nathan Wilson
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -81,40 +82,30 @@ public class CheckTask extends MatchingTask
 
 	final Set regexes = new HashSet();
 
-	protected String branchCoverageRate = null;
-	protected String lineCoverageRate = null;
+	private String branchCoverageRate = null;
+
+	private String lineCoverageRate = null;
+
+	private String totalBranchCoverageRate = null;
+
+	private String totalLineCoverageRate = null;
+
+	private boolean haltOnFailure = true;
 
 	private Java java = null;
 
-	public void setBranch(String branchCoverageRate)
-	{
-		this.branchCoverageRate = branchCoverageRate;
-	}
-
-	public void setLine(String lineCoverageRate)
-	{
-		this.lineCoverageRate = lineCoverageRate;
-	}
-
 	public void execute() throws BuildException
 	{
-		if (branchCoverageRate != null)
-		{
-			getJava().createArg().setValue("--branch");
-			getJava().createArg().setValue(branchCoverageRate);
-		}
-
 		if (dataFile != null)
 		{
 			getJava().createArg().setValue("--datafile");
 			getJava().createArg().setValue(dataFile);
 		}
 
-		Iterator i = regexes.iterator();
-		while (i.hasNext())
+		if (branchCoverageRate != null)
 		{
-			getJava().createArg().setValue("--ignore");
-			getJava().createArg().setValue(i.next().toString());
+			getJava().createArg().setValue("--branch");
+			getJava().createArg().setValue(branchCoverageRate);
 		}
 
 		if (lineCoverageRate != null)
@@ -123,10 +114,35 @@ public class CheckTask extends MatchingTask
 			getJava().createArg().setValue(lineCoverageRate);
 		}
 
-		if (getJava().executeJava() != 0)
+		if (totalBranchCoverageRate != null)
 		{
-			throw new BuildException();
+			getJava().createArg().setValue("--totalbranch");
+			getJava().createArg().setValue(totalBranchCoverageRate);
 		}
+
+		if (totalLineCoverageRate != null)
+		{
+			getJava().createArg().setValue("--totalline");
+			getJava().createArg().setValue(totalLineCoverageRate);
+		}
+
+		Iterator iter = regexes.iterator();
+		while (iter.hasNext())
+		{
+			getJava().createArg().setValue("--regex");
+			getJava().createArg().setValue(iter.next().toString());
+		}
+
+		int returnCode = getJava().executeJava();
+
+		// Check the return code and print a message
+		if (returnCode == 0)
+			System.out.println("All checks passed.");
+		else if (haltOnFailure)
+			throw new BuildException(
+					"Coverage check failed. See messages above.");
+		else
+			System.err.println("Coverage check failed. See messages above.");
 	}
 
 	public Regex createRegex()
@@ -184,6 +200,31 @@ public class CheckTask extends MatchingTask
 	public void setDataFile(String dataFile)
 	{
 		this.dataFile = dataFile;
+	}
+
+	public void setBranchCoverageRate(String branchCoverageRate)
+	{
+		this.branchCoverageRate = branchCoverageRate;
+	}
+
+	public void setLineCoverageRate(String lineCoverageRate)
+	{
+		this.lineCoverageRate = lineCoverageRate;
+	}
+
+	public void setTotalBranch(String totalBranchCoverageRate)
+	{
+		this.totalBranchCoverageRate = totalBranchCoverageRate;
+	}
+
+	public void setTotalLine(String totalLineCoverageRate)
+	{
+		this.totalLineCoverageRate = totalLineCoverageRate;
+	}
+
+	public void setHaltOnFailure(boolean haltOnFailure)
+	{
+		this.haltOnFailure = haltOnFailure;
 	}
 
 }
