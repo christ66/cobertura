@@ -1,17 +1,24 @@
 version 1.5
 	* Shortened the header shown when running Cobertura (Thanks
 	  to Jarkko Viinamäki).
-	* Fixed the merge task (Thanks to Mark Sinke).
-	* Fixed a bug where the class list in the HTML reports did
-	  not show multiple classes with the same name, but in
-	  different packages.
 	* Don't save the data file twice after instrumenting.
+	* Print a warning when running cobertura-report with a
+	  data file that does not contain information from the
+	  instrument step.
 	* When instrumenting, you can now specify a zip, jar, war,
 	  ear or sar file and Cobertura will instrument any classes
 	  inside of the archive.  You must explicity give the name
-	  of the archive when instrumenting--you can not give the
-	  name of the directory containing the archive (Thanks to
+	  of the archive when instrumenting--giving the name of the
+	  directory containing the archive will not work (Thanks to
 	  Grzegorz Lukasik).
+	* Fixed a bug where the class list in the HTML reports did
+	  not show multiple classes with the same name, but in
+	  different packages.
+	* Add a timestamp and version number to all HTML reports.
+	* Add a timestamp and version number to all XML reports.
+	* Add the combined line-rate and branch-rate for all
+	  packages to all XML reports.
+	* Fixed the merge task (Thanks to Mark Sinke).
 	* The check task now supports checking against a project's
 	  total branch and line coverage rates (Thanks to Nathan
 	  Wilson).
@@ -19,10 +26,6 @@ version 1.5
 	  if desired (Thanks to Nathan Wilson).
 	* Changed some of the parameters for the check task.  See
 	  the online documentation for usage information.
-	* Add the combined line-rate and branch-rate for all
-	  packages to all XML reports.
-	* Add a timestamp and version number to all XML reports.
-	* Add a timestamp and version number to all HTML reports.
 	* The command line Windows batch scripts work better.
 
 version 1.4

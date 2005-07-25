@@ -216,6 +216,7 @@ public abstract class CoverageDataContainer
 			}
 			else
 			{
+				// TODO: Shouldn't we be cloning newChild here?  I think so.
 				this.children.put(key, newChild);
 			}
 		}

@@ -61,6 +61,7 @@ public class ClassData extends CoverageDataContainer
 	private Set methodNamesAndDescriptors = new HashSet();
 
 	private String name = null;
+
 	private String sourceFileName = null;
 
 	public ClassData(String name)
@@ -321,9 +322,13 @@ public class ClassData extends CoverageDataContainer
 	 */
 	public void merge(CoverageData coverageData)
 	{
-		super.merge(coverageData);
-
 		ClassData classData = (ClassData)coverageData;
+
+		// If objects contain data for different classes then don't merge
+		if (!this.getName().equals(classData.getName()))
+			return;
+
+		super.merge(coverageData);
 
 		// We can't just call this.branches.putAll(classData.branches);
 		// Why not?  If we did a putAll, then the LineData objects from
@@ -344,6 +349,8 @@ public class ClassData extends CoverageDataContainer
 
 		this.methodNamesAndDescriptors.addAll(classData
 				.getMethodNamesAndDescriptors());
+		if (classData.sourceFileName != null)
+			this.sourceFileName = classData.sourceFileName;
 	}
 
 	public void removeLine(int lineNumber)
