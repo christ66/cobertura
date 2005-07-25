@@ -22,7 +22,9 @@
 package net.sourceforge.cobertura.instrument;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.coveragedata.SourceFileData;
 
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.Pattern;
@@ -38,10 +40,15 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 			.getLogger(ClassInstrumenter.class);
 
 	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coveragedata/HasBeenInstrumented";
+
 	private Pattern ignoreRegex;
+
 	private ProjectData projectData;
+
 	private ClassData classData;
+
 	private String myName;
+
 	private boolean instrument = false;
 
 	public String getClassName()
@@ -81,7 +88,13 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 			String superName, String[] interfaces)
 	{
 		this.myName = name.replace('/', '.');
-		classData = projectData.getOrCreateClassData(this.myName);
+		classData = this.projectData.getOrCreateClassData(this.myName);
+
+		PackageData packageData = (PackageData)projectData.getChild(classData
+				.getPackageName());
+		SourceFileData sourceFileData = (SourceFileData)packageData
+				.getChild(classData.getSourceFileName());
+		sourceFileData.setContainsInstrumentationInfo();
 
 		// Do not attempt to instrument interfaces or classes that
 		// have already been instrumented
@@ -91,7 +104,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 			// TODO: Need to also skip classes whose parent implements hasBeenInstrumented
 			//System.err.println("skipping class " + name);
 			super.visit(version, access, name, signature, superName,
-					interfaces);
+							interfaces);
 		}
 		else
 		{
@@ -100,7 +113,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 			// Flag this class as having been instrumented
 			String[] newInterfaces = new String[interfaces.length + 1];
 			System.arraycopy(interfaces, 0, newInterfaces, 0,
-					interfaces.length);
+							interfaces.length);
 			newInterfaces[newInterfaces.length - 1] = hasBeenInstrumented;
 
 			super.visit(version, access, name, signature, superName,

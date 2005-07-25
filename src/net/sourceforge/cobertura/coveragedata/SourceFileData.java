@@ -33,9 +33,11 @@ public class SourceFileData extends CoverageDataContainer
 		implements Comparable, HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 2;
+	private static final long serialVersionUID = 3;
 
 	private String name;
+
+	private boolean containsInstrumentationInfo = false;
 
 	// TODO: If the source file name must end in .java, then check for that.
 	public SourceFileData(String name)
@@ -73,6 +75,11 @@ public class SourceFileData extends CoverageDataContainer
 		return this.children.containsKey(name);
 	}
 
+	public boolean containsInstrumentationInfo()
+	{
+		return this.containsInstrumentationInfo;
+	}
+
 	/**
 	 * Returns true if the given object is an instance of the
 	 * SourceFileData class, and it contains the same data as this
@@ -86,7 +93,9 @@ public class SourceFileData extends CoverageDataContainer
 			return false;
 
 		SourceFileData sourceFileData = (SourceFileData)obj;
-		return super.equals(obj) && this.name.equals(sourceFileData.name);
+		return super.equals(obj)
+				&& this.name.equals(sourceFileData.name)
+				&& this.containsInstrumentationInfo == sourceFileData.containsInstrumentationInfo;
 	}
 
 	public String getBaseName()
@@ -185,6 +194,15 @@ public class SourceFileData extends CoverageDataContainer
 		{
 			this.name = sourceFileData.name;
 		}
+		if (!this.containsInstrumentationInfo)
+		{
+			this.containsInstrumentationInfo = sourceFileData.containsInstrumentationInfo;
+		}
+	}
+
+	public void setContainsInstrumentationInfo()
+	{
+		this.containsInstrumentationInfo = true;
 	}
 
 }

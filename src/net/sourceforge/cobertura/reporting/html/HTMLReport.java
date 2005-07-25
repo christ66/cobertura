@@ -398,10 +398,11 @@ public class HTMLReport
 			{
 				generateSourceFile(sourceFileData);
 			}
-			catch (Exception e)
+			catch (IOException e)
 			{
 				logger.info("Could not generate HTML file for source file "
-						+ sourceFileData.getName());
+						+ sourceFileData.getName() + ": "
+						+ e.getLocalizedMessage());
 			}
 		}
 	}
@@ -409,6 +410,14 @@ public class HTMLReport
 	private void generateSourceFile(SourceFileData sourceFileData)
 			throws IOException
 	{
+		if (!sourceFileData.containsInstrumentationInfo())
+		{
+			logger.warn("Data file does not contain instrumentation "
+					+ "information for the file " + sourceFileData.getName()
+					+ ".  Ensure this class was instrumented, and this "
+					+ "data file contains the instrumentation information.");
+		}
+
 		String filename = sourceFileData.getNormalizedName() + ".html";
 		File file = new File(destinationDir, filename);
 		PrintStream out = null;
