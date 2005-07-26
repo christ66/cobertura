@@ -6,6 +6,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Nathan Wilson
+ * Copyright (C) 2005 Alex Ruiz
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -90,6 +91,8 @@ public class CheckTask extends MatchingTask
 
 	private String totalLineRate = null;
 
+	private String failureProperty = null;
+
 	private boolean haltOnFailure = true;
 
 	private Java java = null;
@@ -137,12 +140,20 @@ public class CheckTask extends MatchingTask
 
 		// Check the return code and print a message
 		if (returnCode == 0)
+		{
 			System.out.println("All checks passed.");
-		else if (haltOnFailure)
-			throw new BuildException(
-					"Coverage check failed. See messages above.");
+		}
 		else
-			System.err.println("Coverage check failed. See messages above.");
+		{
+			if (haltOnFailure)
+				throw new BuildException(
+						"Coverage check failed. See messages above.");
+			else if (failureProperty != null)
+				getProject().setProperty(failureProperty, "true");
+			else
+				System.err
+						.println("Coverage check failed. See messages above.");
+		}
 	}
 
 	public Regex createRegex()
@@ -220,6 +231,11 @@ public class CheckTask extends MatchingTask
 	public void setTotalLineRate(String totalLineRate)
 	{
 		this.totalLineRate = totalLineRate;
+	}
+
+	public void setFailureProperty(String failureProperty)
+	{
+		this.failureProperty = failureProperty;
 	}
 
 	public void setHaltOnFailure(boolean haltOnFailure)

@@ -24,6 +24,8 @@ version 1.5
 	  Wilson).
 	* The check ant task now allows you to fail the ant build,
 	  if desired (Thanks to Nathan Wilson).
+	* The check task can set an ant property to "true" on
+	  failture (Thanks to Alex Ruiz).
 	* Changed some of the parameters for the check task.  See
 	  the online documentation for usage information.
 	* The command line Windows batch scripts work better.
