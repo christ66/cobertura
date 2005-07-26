@@ -137,10 +137,17 @@ Example:
 <tr><th>Parameter</th><th>Required?</th><th>Description</th><th>Default Value</th></tr>
 <tr><td>branchrate</td><td>No</td><td>Specify the minimum acceptable branch coverage rate needed by each class.  This should be an integer value between 0 and 100.</td><td>0</td></tr>
 <tr><td>datafile</td><td>No</td><td>Specify the name of the file containing metadata about your classes.</td><td>"cobertura.ser" in the current directory</td></tr>
+<tr><td>failureproperty</td><td>No</td><td>If haltonfailure is false and any of the specified checks fails, then Cobertura will set the given property to "true"</td><td>None</td></tr>
+<tr><td>haltonfailure</td><td>No</td><td>If this property is true and any of the specified checks fails, then Cobertura will cause the ant build to fail.</td><td>True</td></tr>
 <tr><td>linerate</td><td>No</td><td>Specify the minimum acceptable line coverage rate needed by each class.  This should be an integer value between 0 and 100.</td><td>0</td></tr>
 <tr><td>totalbranchrate</td><td>No</td><td>Specify the minimum acceptable average branch coverage rate needed by the project as a whole.  This should be an integer value between 0 and 100.</td><td>0</td></tr>
 <tr><td>totallinerate</td><td>No</td><td>Specify the minimum acceptable average line coverage rate needed by the project as a whole.  This should be an integer value between 0 and 100.</td><td>0</td></tr>
 </table>
+
+<p>
+If you do not specify branchrate, linerate, totalbranchrate or
+totallinerate, then Cobertura will use 50% for all of these values.
+</p>
 
 <p>
 You can specify finer-grained thresholds for certain classes
@@ -152,7 +159,7 @@ Example:
 </p>
 
 <div class="codeblock">
-<pre><code>&lt;cobertura-check branchrate="30" linerate="20" totalbranchrate="60" totallinerate="80"&gt;
+<pre><code>&lt;cobertura-check branchrate="30" totalbranchrate="60" totallinerate="80"&gt;
     &lt;regex pattern="com.example.reallyimportant.*" branchrate="80" linerate="90"/&gt;
     &lt;regex pattern="com.example.boringcode.*" branchrate="40" linerate="30"/&gt;
 &lt;/cobertura-check&gt;</code></pre>
