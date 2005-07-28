@@ -72,20 +72,16 @@ public class XMLReport
 					+ coverageDTD + "\">");
 			println("");
 
-			StringBuffer sourceDirectories = new StringBuffer();
-			if (sourceDirectory != null)
-				sourceDirectories.append("src=\"" + sourceDirectory + "\"");
-
 			// TODO: Set a schema?
 			//println("<coverage " + sourceDirectories.toString() + " xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
 			println("<coverage line-rate=\""
 					+ projectData.getLineCoverageRate() + "\" branch-rate=\""
 					+ projectData.getBranchCoverageRate() + "\" version=\""
 					+ Header.version() + "\" timestamp=\""
-					+ new Date().getTime() + "\" "
-					+ sourceDirectories.toString() + ">");
+					+ new Date().getTime() + "\">");
 
 			increaseIndentation();
+			dumpSources(sourceDirectory);
 			dumpPackages(projectData);
 			decreaseIndentation();
 			println("</coverage>");
@@ -119,6 +115,25 @@ public class XMLReport
 	{
 		indent();
 		pw.println(ln);
+	}
+
+	private void dumpSources(File sourceDirectory)
+	{
+		if (sourceDirectory == null)
+			return;
+
+		println("<sources>");
+		increaseIndentation();
+
+		dumpSource(sourceDirectory);
+
+		decreaseIndentation();
+		println("</sources>");
+	}
+
+	private void dumpSource(File sourceDirectory)
+	{
+		println("<source>" + sourceDirectory.getAbsolutePath() + "</source>");
 	}
 
 	private void dumpPackages(ProjectData projectData)
