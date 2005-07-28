@@ -1,4 +1,4 @@
-<!ELEMENT coverage (sources*,packages)>
+<!ELEMENT coverage (sources?,packages)>
 <!ATTLIST coverage line-rate   CDATA #REQUIRED>
 <!ATTLIST coverage branch-rate CDATA #REQUIRED>
 <!ATTLIST coverage version     CDATA #REQUIRED>
