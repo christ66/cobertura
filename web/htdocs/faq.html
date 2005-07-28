@@ -298,9 +298,8 @@ asm and you add both versions to your classpath.
 <p>
 Cobertura only uses ASM when instrumenting.  Cobertura <i>does not
 need ASM in your classpath when running tests</i>.  If you're seeing
-classpath conflicts, just make sure the Cobertura instrument task is
-only using the asm jar that comes with Cobertura, and make sure no
-other programs are using the asm jar that comes with Cobertura.
+classpath conflicts, just make sure the asm jar that comes with
+Cobertura is used only by Cobertura, and only when instrumenting.
 </p>
 </div>
 </div>
