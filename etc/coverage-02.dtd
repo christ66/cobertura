@@ -1,9 +1,12 @@
-<!ELEMENT coverage (packages)>
+<!ELEMENT coverage (sources*,packages)>
 <!ATTLIST coverage line-rate   CDATA #REQUIRED>
 <!ATTLIST coverage branch-rate CDATA #REQUIRED>
 <!ATTLIST coverage version     CDATA #REQUIRED>
 <!ATTLIST coverage timestamp   CDATA #REQUIRED>
-<!ATTLIST coverage src         CDATA "">
+
+<!ELEMENT sources (source*)>
+
+<!ELEMENT source (#PCDATA)>
 
 <!ELEMENT packages (package*)>
 
