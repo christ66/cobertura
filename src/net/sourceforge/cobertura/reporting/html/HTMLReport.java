@@ -412,7 +412,7 @@ public class HTMLReport
 	{
 		if (!sourceFileData.containsInstrumentationInfo())
 		{
-			logger.warn("Data file does not contain instrumentation "
+			logger.info("Data file does not contain instrumentation "
 					+ "information for the file " + sourceFileData.getName()
 					+ ".  Ensure this class was instrumented, and this "
 					+ "data file contains the instrumentation information.");
