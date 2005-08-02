@@ -29,9 +29,8 @@ public class JavaToHtml
 {
 
 	// Could use a J2SE 5.0 enum instead of this.
-	public final static class State
+	public abstract static class State
 	{
-
 		public final static int COMMENT_JAVADOC = 0;
 		public final static int COMMENT_MULTI = 1;
 		public final static int COMMENT_SINGLE = 2;
@@ -41,10 +40,6 @@ public class JavaToHtml
 		public final static int PACKAGE_NAME = 6;
 		public final static int QUOTE_DOUBLE = 8;
 		public final static int QUOTE_SINGLE = 9;
-
-		private State()
-		{
-		}
 	}
 
 	// TODO: Set a style for JavaDoc tags
@@ -352,4 +347,5 @@ public class JavaToHtml
 	{
 		state = State.DEFAULT;
 	}
+
 }

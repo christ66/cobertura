@@ -152,7 +152,7 @@ public class HTMLReport
 			throws IOException
 	{
 		String filename;
-		SortedSet sourceFiles;
+		Collection sourceFiles;
 		if (packageData == null)
 		{
 			filename = "frame-sourcefiles.html";
@@ -164,9 +164,9 @@ public class HTMLReport
 			sourceFiles = packageData.getSourceFiles();
 		}
 
-		// sourceFiles is sorted, but it's sorted by the full path
-		// to the file, and we only want to sort based on the
-		// file's basename.
+		// sourceFiles may be sorted, but if so it's sorted by
+		// the full path to the file, and we only want to sort
+		// based on the file's basename.
 		Vector sortedSourceFiles = new Vector();
 		sortedSourceFiles.addAll(sourceFiles);
 		Collections.sort(sortedSourceFiles,
@@ -661,7 +661,7 @@ public class HTMLReport
 
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><b>All Packages</b></td>");
-		ret.append("<td class=\"value\">" + projectData.getNumberOfClasses()
+		ret.append("<td class=\"value\">" + projectData.getNumberOfSourceFiles()
 				+ "</td>");
 		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
 				ccn));

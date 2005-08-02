@@ -36,7 +36,7 @@ public class ProjectData extends CoverageDataContainer
 		implements HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 5;
+	private static final long serialVersionUID = 6;
 
 	private static final Logger LOGGER = Logger.getLogger(ProjectData.class);
 
@@ -44,11 +44,11 @@ public class ProjectData extends CoverageDataContainer
 
 	private static SaveTimer saveTimer = null;
 
-	private Map classes = new HashMap();
+	/** This collection is used for quicker access to the list of source files. */
+	private Map sourceFiles = new HashMap();
 
-	public ProjectData()
-	{
-	}
+	/** This collection is used for quicker access to the list of classes. */
+	private Map classes = new HashMap();
 
 	public void addClassData(ClassData classData)
 	{
@@ -62,6 +62,7 @@ public class ProjectData extends CoverageDataContainer
 			this.children.put(packageName, packageData);
 		}
 		packageData.addClassData(classData);
+		this.sourceFiles.put(classData.getSourceFileName(), packageData.getChild(classData.getSourceFileName()));
 		this.classes.put(classData.getName(), classData);
 	}
 
@@ -91,23 +92,19 @@ public class ProjectData extends CoverageDataContainer
 		return this.classes.size();
 	}
 
+	public int getNumberOfSourceFiles()
+	{
+		return this.sourceFiles.size();
+	}
+
 	public SortedSet getPackages()
 	{
 		return new TreeSet(this.children.values());
 	}
 
-	public SortedSet getSourceFiles()
+	public Collection getSourceFiles()
 	{
-		SortedSet sourceFiles = new TreeSet();
-
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
-		{
-			PackageData packageData = (PackageData)iter.next();
-			sourceFiles.addAll(packageData.getSourceFiles());
-		}
-
-		return sourceFiles;
+		return this.sourceFiles.values();
 	}
 
 	/**
