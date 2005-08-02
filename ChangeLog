@@ -1,6 +1,9 @@
 version 1.6
 	* Can now use multiple filesets in the cobertura-instrument
-	  task (Thanks to Grzegorz Lukasik)
+	  task (Thanks to Grzegorz Lukasik).
+	* Fixed a bug where the total number of classes displayed in
+	  the HTML report included anonymous classes when it should
+	  not have.
 
 version 1.5
 	* Shortened the header shown when running Cobertura (Thanks
