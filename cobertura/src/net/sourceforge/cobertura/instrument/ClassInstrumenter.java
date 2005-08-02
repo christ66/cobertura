@@ -21,13 +21,14 @@
 
 package net.sourceforge.cobertura.instrument;
 
+import java.util.Collection;
+
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 
 import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.Pattern;
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -41,7 +42,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 
 	private final static String hasBeenInstrumented = "net/sourceforge/cobertura/coveragedata/HasBeenInstrumented";
 
-	private Pattern ignoreRegex;
+	private Collection ignoreRegexs;
 
 	private ProjectData projectData;
 
@@ -62,11 +63,11 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 	}
 
 	public ClassInstrumenter(ProjectData projectData, final ClassVisitor cv,
-			Pattern ignoreRegexp)
+			final Collection ignoreRegexs)
 	{
 		super(cv);
 		this.projectData = projectData;
-		this.ignoreRegex = ignoreRegexp;
+		this.ignoreRegexs = ignoreRegexs;
 	}
 
 	private boolean arrayContains(Object[] array, Object key)
@@ -138,7 +139,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 			return mv;
 
 		return mv == null ? null : new MethodInstrumenter(classData, mv,
-				this.myName, name, desc, ignoreRegex);
+				this.myName, name, desc, ignoreRegexs);
 	}
 
 	public void visitEnd()

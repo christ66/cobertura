@@ -1,3 +1,7 @@
+version 1.6
+	* Can now use multiple filesets in the cobertura-instrument
+	  task (Thanks to Grzegorz Lukasik)
+
 version 1.5
 	* Shortened the header shown when running Cobertura (Thanks
 	  to Jarkko Viinamäki).

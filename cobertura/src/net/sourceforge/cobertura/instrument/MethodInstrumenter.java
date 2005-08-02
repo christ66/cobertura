@@ -21,6 +21,9 @@
 
 package net.sourceforge.cobertura.instrument;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import net.sourceforge.cobertura.coveragedata.ClassData;
 
 import org.apache.oro.text.regex.Pattern;
@@ -36,25 +39,31 @@ import org.objectweb.asm.Opcodes;
  */
 public class MethodInstrumenter extends MethodAdapter implements Opcodes
 {
+
 	private final static Perl5Matcher pm = new Perl5Matcher();
+
 	private final String ownerClass;
+
 	private String myName;
+
 	private String myDescriptor;
-	private Pattern ignoreRegex;
+
+	private Collection ignoreRegexs;
+
 	private ClassData classData;
 
 	private int currentLine = 0;
 
 	public MethodInstrumenter(ClassData classData, final MethodVisitor mv,
-			final String owner, final String myName,
-			final String myDescriptor, final Pattern ignoreRegexp)
+			final String owner, final String myName, final String myDescriptor,
+			final Collection ignoreRegexs)
 	{
 		super(mv);
 		this.classData = classData;
 		this.ownerClass = owner;
 		this.myName = myName;
 		this.myDescriptor = myDescriptor;
-		this.ignoreRegex = ignoreRegexp;
+		this.ignoreRegexs = ignoreRegexs;
 	}
 
 	public void visitJumpInsn(int opcode, Label label)
@@ -115,8 +124,18 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 	{
 		super.visitMethodInsn(opcode, owner, name, desc);
 
-		if ((ignoreRegex != null) && (pm.matches(owner, ignoreRegex)))
-			classData.removeLine(currentLine);
+		// If any of the ignore patterns match this line
+		// then remove it from our data
+		Iterator iter = ignoreRegexs.iterator();
+		while (iter.hasNext())
+		{
+			Pattern ignoreRegex = (Pattern)iter.next();
+			if ((ignoreRegexs != null) && (pm.matches(owner, ignoreRegex)))
+			{
+				classData.removeLine(currentLine);
+				return;
+			}
+		}
 	}
 
 }
