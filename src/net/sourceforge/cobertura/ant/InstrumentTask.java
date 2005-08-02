@@ -6,6 +6,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Joakim Erdfelt
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -57,10 +58,7 @@
 
 package net.sourceforge.cobertura.ant;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import net.sourceforge.cobertura.util.Header;
 
@@ -93,11 +91,6 @@ public class InstrumentTask extends CommonMatchingTask
 					Project.MSG_VERBOSE);
 			addArg(filenames[i]);
 		}
-
-		Header.print(System.out);
-		System.out.println("instrumenting " + filenames.length + " "
-				+ (filenames.length == 1 ? "class" : "classes")
-				+ (toDir != null ? " to " + toDir : ""));
 	}
 
 	public Ignore createIgnore()
@@ -150,7 +143,7 @@ public class InstrumentTask extends CommonMatchingTask
 
 	private void handleFilesets()
 	{
-		Set filenames = new HashSet();
+		int numberOfClasses = 0;
 		Iterator iter = fileSets.iterator();
 		while (iter.hasNext())
 		{
@@ -159,9 +152,15 @@ public class InstrumentTask extends CommonMatchingTask
 			addArg("--basedir");
 			addArg(baseDir(fileSet));
 
-			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
+			String[] fileNames = getFilenames(fileSet);
+			numberOfClasses += fileNames.length;
+			addFilenames(getFilenames(fileSet));
 		}
-		addFilenames((String[])filenames.toArray(new String[filenames.size()]));
+
+		Header.print(System.out);
+		System.out.println("instrumenting " + numberOfClasses + " "
+				+ (numberOfClasses == 1 ? "class" : "classes")
+				+ (toDir != null ? " to " + toDir : ""));
 	}
 
 	public void setDataFile(String dataFile)

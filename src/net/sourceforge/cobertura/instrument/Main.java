@@ -49,7 +49,6 @@ import net.sourceforge.cobertura.util.IOUtil;
 
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -89,90 +88,198 @@ public class Main
 
 	private File destinationDirectory = null;
 
-	private File baseDir = null;
+	private Collection ignoreRegexs = new Vector();
 
-	private Pattern ignoreRegex = null;
+	private ProjectData projectData;
 
-	private ProjectData projectData = null;
-
-	/**
-	 * @param file A file.
-	 * @return True if the specified file has "class" as its extension,
-	 * false otherwise.
-	 */
-	private static boolean isClass(File file)
+	private Main(String[] args)
 	{
-		return file.getName().endsWith(".class");
-	}
+		File dataFile = null;
+		File currentBaseDir = null;
+		Collection baseDirs = new Vector();
+		Collection locations = new Vector();
 
-	/**
-	 * @param entry A zip entry.
-	 * @return True if the specified entry has "class" as its extension,
-	 * false otherwise.
-	 */
-	private static boolean isClass(ZipEntry entry)
-	{
-		return entry.getName().endsWith(".class");
-	}
-
-	/**
-	 * @return True if file has an extension that matches one of the
-	 *         standard java archives, false otherwise.
-	 */
-	private static boolean isArchive(File file)
-	{
-		String name = file.getName();
-		return name.endsWith(".jar") || name.endsWith(".zip")
-				|| name.endsWith(".war") || name.endsWith(".ear")
-				|| name.endsWith(".sar");
-	}
-
-	private void addInstrumentationToArchive(ZipInputStream archive,
-			ZipOutputStream output) throws Exception
-	{
-		ZipEntry entry;
-		while ((entry = archive.getNextEntry()) != null)
+		// Parse our parameters
+		for (int i = 0; i < args.length; i++)
 		{
-			try
+			if (args[i].equals("--basedir"))
 			{
-				ZipEntry outputEntry = new ZipEntry(entry.getName());
-				output.putNextEntry(outputEntry);
+				currentBaseDir = new File(args[++i]);
+			}
 
-				// Read current entry
-				byte[] entryBytes = IOUtil
-						.createByteArrayFromInputStream(archive);
-
-				// Check if we have class file
-				if (isClass(entry))
+			else if (args[i].equals("--datafile"))
+			{
+				if (dataFile != null)
 				{
-					// Instrument class
-					ClassReader cr = new ClassReader(entryBytes);
-					ClassWriter cw = new ClassWriter(true);
-					ClassInstrumenter cv = new ClassInstrumenter(projectData,
-							cw, ignoreRegex);
-					cr.accept(cv, false);
+					System.err.println("You may only specify one data file.");
+					System.exit(-1);
+				}
+				dataFile = new File(args[++i]);
+			}
 
-					// If class was instrumented, get bytes that define the
-					// class
-					if (cv.isInstrumented())
-					{
-						logger.debug("Putting instrumeted entry: "
-								+ entry.getName());
-						entryBytes = cw.toByteArray();
-					}
+			else if (args[i].equals("--destination"))
+			{
+				if (this.destinationDirectory != null)
+				{
+					System.err
+							.println("You may only specify one destination directory.");
+					System.exit(-1);
+				}
+				this.destinationDirectory = new File(args[++i]);
+			}
+
+			else if (args[i].equals("--ignore"))
+			{
+				String regex = args[++i];
+				try
+				{
+					Perl5Compiler pc = new Perl5Compiler();
+					this.ignoreRegexs.add(pc.compile(regex));
+				}
+				catch (MalformedPatternException e)
+				{
+					logger.warn("The regular expression " + regex
+							+ " is invalid: " + e.getLocalizedMessage());
+				}
+			}
+
+			else
+			{
+				locations.add(args[i]);
+				baseDirs.add(currentBaseDir);
+			}
+
+		}
+
+		// Load coverage data
+		if (dataFile == null)
+			dataFile = CoverageDataFileHandler.getDefaultDataFile();
+		this.projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+		if (this.projectData == null)
+			this.projectData = new ProjectData();
+
+		// Instrument classes
+		Iterator iter = locations.iterator();
+		Iterator baseDirIter = baseDirs.iterator();
+		while (iter.hasNext())
+			addInstrumentation((File)baseDirIter.next(), (String)iter.next());
+
+		// Save coverage data
+		CoverageDataFileHandler.saveCoverageData(this.projectData, dataFile);
+	}
+
+	private void addInstrumentation(File baseDir, String filename)
+	{
+		logger.debug("filename: " + filename);
+
+		File file;
+		if (baseDir == null)
+			file = new File(filename);
+		else
+			file = new File(baseDir, filename);
+
+		addInstrumentation(file);
+	}
+
+	// TODO: Don't attempt to instrument a file if the outputFile already
+	//       exists and is newer than the input file.
+	private void addInstrumentation(File file)
+	{
+		if (isClass(file))
+		{
+			addInstrumentationToSingleClass(file);
+		}
+		else if (file.isDirectory())
+		{
+			File[] contents = file.listFiles();
+			for (int i = 0; i < contents.length; i++)
+				addInstrumentation(contents[i]);
+		}
+		else if (isArchive(file))
+		{
+			addInstrumentationToArchive(file);
+		}
+	}
+
+	private void addInstrumentationToSingleClass(File file)
+	{
+		logger.debug("Instrumenting class " + file.getAbsolutePath());
+
+		InputStream inputStream = null;
+		ClassWriter cw;
+		ClassInstrumenter cv;
+		try
+		{
+			inputStream = new FileInputStream(file);
+			ClassReader cr = new ClassReader(inputStream);
+			cw = new ClassWriter(true);
+			cv = new ClassInstrumenter(this.projectData, cw, this.ignoreRegexs);
+			cr.accept(cv, false);
+		}
+		catch (Throwable t)
+		{
+			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
+					t);
+			return;
+		}
+		finally
+		{
+			if (inputStream != null)
+			{
+				try
+				{
+					inputStream.close();
+				}
+				catch (IOException e)
+				{
+				}
+			}
+		}
+
+		OutputStream outputStream = null;
+		try
+		{
+			if (cv.isInstrumented())
+			{
+				// If destinationDirectory is null, then overwrite
+				// the original, uninstrumented file.
+				File outputFile;
+				if (destinationDirectory == null)
+					outputFile = file;
+				else
+					outputFile = new File(destinationDirectory, cv
+							.getClassName().replace('.', File.separatorChar)
+							+ ".class");
+
+				File parentFile = outputFile.getParentFile();
+				if (parentFile != null)
+				{
+					parentFile.mkdirs();
 				}
 
-				// Add entry to the output
-				output.write(entryBytes);
-				output.closeEntry();
-				archive.closeEntry();
+				byte[] instrumentedClass = cw.toByteArray();
+				outputStream = new FileOutputStream(outputFile);
+				outputStream.write(instrumentedClass);
 			}
-			catch (Exception e)
+		}
+		catch (IOException e)
+		{
+			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
+					e);
+			return;
+		}
+		finally
+		{
+			if (outputStream != null)
 			{
-				logger.warn("Problems with archive entry: " + entry);
-				throw e;
+				try
+				{
+					outputStream.close();
+				}
+				catch (IOException e)
+				{
+				}
 			}
-			output.flush();
 		}
 	}
 
@@ -276,168 +383,90 @@ public class Main
 		}
 	}
 
-	private void addInstrumentationToSingleClass(File file)
+	private void addInstrumentationToArchive(ZipInputStream archive,
+			ZipOutputStream output) throws Exception
 	{
-		logger.debug("Instrumenting class " + file.getAbsolutePath());
-
-		InputStream inputStream = null;
-		ClassWriter cw;
-		ClassInstrumenter cv;
-		try
+		ZipEntry entry;
+		while ((entry = archive.getNextEntry()) != null)
 		{
-			inputStream = new FileInputStream(file);
-			ClassReader cr = new ClassReader(inputStream);
-			cw = new ClassWriter(true);
-			cv = new ClassInstrumenter(projectData, cw, ignoreRegex);
-			cr.accept(cv, false);
-		}
-		catch (Throwable t)
-		{
-			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
-					t);
-			return;
-		}
-		finally
-		{
-			if (inputStream != null)
+			try
 			{
-				try
-				{
-					inputStream.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
-		}
+				ZipEntry outputEntry = new ZipEntry(entry.getName());
+				output.putNextEntry(outputEntry);
 
-		OutputStream outputStream = null;
-		try
-		{
-			if (cv.isInstrumented())
+				// Read current entry
+				byte[] entryBytes = IOUtil
+						.createByteArrayFromInputStream(archive);
+
+				// Check if we have class file
+				if (isClass(entry))
+				{
+					// Instrument class
+					ClassReader cr = new ClassReader(entryBytes);
+					ClassWriter cw = new ClassWriter(true);
+					ClassInstrumenter cv = new ClassInstrumenter(
+							this.projectData, cw, this.ignoreRegexs);
+					cr.accept(cv, false);
+
+					// If class was instrumented, get bytes that define the
+					// class
+					if (cv.isInstrumented())
+					{
+						logger.debug("Putting instrumeted entry: "
+								+ entry.getName());
+						entryBytes = cw.toByteArray();
+					}
+				}
+
+				// Add entry to the output
+				output.write(entryBytes);
+				output.closeEntry();
+				archive.closeEntry();
+			}
+			catch (Exception e)
 			{
-				// If destinationDirectory is null, then overwrite
-				// the original, uninstrumented file.
-				File outputFile;
-				if (destinationDirectory == null)
-					outputFile = file;
-				else
-					outputFile = new File(destinationDirectory, cv
-							.getClassName().replace('.', File.separatorChar)
-							+ ".class");
-
-				File parentFile = outputFile.getParentFile();
-				if (parentFile != null)
-				{
-					parentFile.mkdirs();
-				}
-
-				byte[] instrumentedClass = cw.toByteArray();
-				outputStream = new FileOutputStream(outputFile);
-				outputStream.write(instrumentedClass);
+				logger.warn("Problems with archive entry: " + entry);
+				throw e;
 			}
-		}
-		catch (IOException e)
-		{
-			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
-					e);
-			return;
-		}
-		finally
-		{
-			if (outputStream != null)
-			{
-				try
-				{
-					outputStream.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
+			output.flush();
 		}
 	}
 
-	// TODO: Don't attempt to instrument a file if the outputFile already
-	//       exists and is newer than the input file.
-	private void addInstrumentation(File file)
+	/**
+	 * @return True if file has an extension that matches one of the
+	 *         standard java archives, false otherwise.
+	 */
+	private static boolean isArchive(File file)
 	{
-		if (isClass(file))
-		{
-			addInstrumentationToSingleClass(file);
-		}
-		else if (file.isDirectory())
-		{
-			File[] contents = file.listFiles();
-			for (int i = 0; i < contents.length; i++)
-				addInstrumentation(contents[i]);
-		}
-		else if (isArchive(file))
-		{
-			addInstrumentationToArchive(file);
-		}
+		String name = file.getName();
+		return name.endsWith(".jar") || name.endsWith(".zip")
+				|| name.endsWith(".war") || name.endsWith(".ear")
+				|| name.endsWith(".sar");
 	}
 
-	private void addInstrumentation(String filename)
+	/**
+	 * @param file A file.
+	 * @return True if the specified file has "class" as its extension,
+	 * false otherwise.
+	 */
+	private static boolean isClass(File file)
 	{
-		logger.debug("filename: " + filename);
-
-		File file;
-		if (baseDir == null)
-			file = new File(filename);
-		else
-			file = new File(baseDir, filename);
-
-		addInstrumentation(file);
+		return file.getName().endsWith(".class");
 	}
 
-	private void parseArguments(String[] args)
+	/**
+	 * @param entry A zip entry.
+	 * @return True if the specified entry has "class" as its extension,
+	 * false otherwise.
+	 */
+	private static boolean isClass(ZipEntry entry)
 	{
-		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
-
-		// Parse our parameters
-		Collection locations = new Vector();
-		for (int i = 0; i < args.length; i++)
-		{
-			if (args[i].equals("--basedir"))
-				baseDir = new File(args[++i]);
-			else if (args[i].equals("--datafile"))
-				dataFile = new File(args[++i]);
-			else if (args[i].equals("--destination"))
-				destinationDirectory = new File(args[++i]);
-			else if (args[i].equals("--ignore"))
-			{
-				String regex = args[++i];
-				try
-				{
-					Perl5Compiler pc = new Perl5Compiler();
-					this.ignoreRegex = pc.compile(regex);
-				}
-				catch (MalformedPatternException e)
-				{
-					logger.warn("The regular expression " + regex
-							+ " is invalid: " + e.getLocalizedMessage());
-				}
-			}
-			else
-				locations.add(args[i]);
-		}
-
-		// Load coverage data, instrument classes, save coverage data
-		projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-		if (projectData == null)
-			projectData = new ProjectData();
-		Iterator iter = locations.iterator();
-		while (iter.hasNext())
-			addInstrumentation((String)iter.next());
-		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
+		return entry.getName().endsWith(".class");
 	}
 
 	public static void main(String[] args)
 	{
 		long startTime = System.currentTimeMillis();
-
-		Main main = new Main();
 
 		boolean hasCommandsFile = false;
 		String commandsFileName = null;
@@ -488,7 +517,8 @@ public class Main
 			args = (String[])arglist.toArray(new String[arglist.size()]);
 		}
 
-		main.parseArguments(args);
+		// Instrument!
+		new Main(args);
 
 		long stopTime = System.currentTimeMillis();
 		System.out.println("Instrument time: " + (stopTime - startTime) + "ms");
