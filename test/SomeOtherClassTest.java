@@ -66,5 +66,7 @@ public class SomeOtherClassTest extends TestCase {
 		obj.decrementCounter();
 		obj.decrementCounter();
 		obj.getCounter();
+        
+        assertNotNull(obj); // obviously a no-op assertion 
 	}
 }

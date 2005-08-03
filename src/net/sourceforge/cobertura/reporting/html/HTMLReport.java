@@ -53,7 +53,7 @@ import org.apache.log4j.Logger;
 public class HTMLReport
 {
 
-	private static final Logger logger = Logger.getLogger(HTMLReport.class);
+	private static final Logger LOGGER = Logger.getLogger(HTMLReport.class);
 
 	private File destinationDir;
 
@@ -402,7 +402,7 @@ public class HTMLReport
 			}
 			catch (IOException e)
 			{
-				logger.info("Could not generate HTML file for source file "
+				LOGGER.info("Could not generate HTML file for source file "
 						+ sourceFileData.getName() + ": "
 						+ e.getLocalizedMessage());
 			}
@@ -414,7 +414,7 @@ public class HTMLReport
 	{
 		if (!sourceFileData.containsInstrumentationInfo())
 		{
-			logger.info("Data file does not contain instrumentation "
+			LOGGER.info("Data file does not contain instrumentation "
 					+ "information for the file " + sourceFileData.getName()
 					+ ".  Ensure this class was instrumented, and this "
 					+ "data file contains the instrumentation information.");
@@ -685,7 +685,17 @@ public class HTMLReport
 		String url2 = "frame-sourcefiles-" + packageData.getName() + ".html";
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-		double ccn = 0;//Util.getCCN(finder.findFile(packageData.getSourceFileName()), false);
+        File[] files = finder.findDirectory(packageData.getSourceFileName());
+        if (files.length == 0) {
+            LOGGER.warn("No directories found for package: " + packageData.getSourceFileName());
+        }
+
+        double ccnSum = 0; 
+        for (int i = 0; i < files.length; i++) {
+            ccnSum += Util.getCCN(files[i], false);
+        }
+        
+        double ccn = ccnSum / (double) files.length;
 
 		if (packageData.getNumberOfValidLines() > 0)
 			lineCoverage = packageData.getLineCoverageRate();
