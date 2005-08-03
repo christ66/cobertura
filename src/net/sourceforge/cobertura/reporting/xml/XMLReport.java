@@ -152,7 +152,7 @@ public class XMLReport
 	{
 		logger.debug("Dumping package " + packageData.getName());
 
-		double ccn = Util.getCCN(finder.findFile(packageData.getSourceFileName()), false);
+        double ccn = packageData.getCCN(finder);
 		println("<package name=\"" + packageData.getName()
 				+ "\" line-rate=\"" + packageData.getLineCoverageRate()
 				+ "\" branch-rate=\"" + packageData.getBranchCoverageRate()

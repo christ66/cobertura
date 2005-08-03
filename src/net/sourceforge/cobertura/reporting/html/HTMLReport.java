@@ -685,17 +685,7 @@ public class HTMLReport
 		String url2 = "frame-sourcefiles-" + packageData.getName() + ".html";
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-        File[] files = finder.findDirectory(packageData.getSourceFileName());
-        if (files.length == 0) {
-            LOGGER.warn("No directories found for package: " + packageData.getSourceFileName());
-        }
-
-        double ccnSum = 0; 
-        for (int i = 0; i < files.length; i++) {
-            ccnSum += Util.getCCN(files[i], false);
-        }
-        
-        double ccn = ccnSum / (double) files.length;
+        double ccn = packageData.getCCN(finder);
 
 		if (packageData.getNumberOfValidLines() > 0)
 			lineCoverage = packageData.getLineCoverageRate();

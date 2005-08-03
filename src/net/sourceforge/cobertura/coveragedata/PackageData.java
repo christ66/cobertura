@@ -23,15 +23,22 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.apache.log4j.Logger;
+
+import net.sourceforge.cobertura.reporting.Util;
+import net.sourceforge.cobertura.util.FileFinder;
 
 public class PackageData extends CoverageDataContainer
 		implements Comparable, HasBeenInstrumented
 {
 
 	private static final long serialVersionUID = 5;
+    private static final Logger LOGGER = Logger.getLogger(PackageData.class);
 
 	private String name;
 
@@ -42,6 +49,20 @@ public class PackageData extends CoverageDataContainer
 					"Package name must be specified.");
 		this.name = name;
 	}
+    
+    public double getCCN(FileFinder finder) {
+        File[] files = finder.findDirectory(getSourceFileName());
+        if (files.length == 0) {
+            LOGGER.warn("No directories found for package: " + getSourceFileName());
+        }
+
+        double ccnSum = 0; 
+        for (int i = 0; i < files.length; i++) {
+            ccnSum += Util.getCCN(files[i], false);
+        }
+        
+        return ccnSum / (double) files.length;
+    }
 
 	public void addClassData(ClassData classData)
 	{
