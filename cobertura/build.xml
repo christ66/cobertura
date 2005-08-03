@@ -215,7 +215,14 @@
 		<cobertura-report datafile="${build.dir}/cobertura.ser"
 		                  destdir="${build.test.reports.dir}/coverage-xml"
 		                  format="xml"
-		                  srcdir="${src.dir}" />
+					      >
+			<fileset dir="${src.dir}">
+				<include name="**/*.java" />
+			</fileset>				  
+			<fileset dir="${othersrc.dir}">
+				<include name="**/*.java" />
+			</fileset>
+		</cobertura-report>
 	</target>
 
 	<target name="format">
