@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2005 Jeremy Thomerson
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -44,6 +45,7 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.reporting.Util;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
+import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
 
 import org.apache.log4j.Logger;
@@ -55,18 +57,18 @@ public class HTMLReport
 
 	private File destinationDir;
 
-	private File sourceDir;
+	private FileFinder finder;
 
 	private ProjectData projectData;
 
 	/**
 	 * Create a coverage report
 	 */
-	public HTMLReport(ProjectData projectData, File outputDir, File sourceDir)
+	public HTMLReport(ProjectData projectData, File outputDir, FileFinder finder)
 			throws Exception
 	{
 		this.destinationDir = outputDir;
-		this.sourceDir = sourceDir;
+		this.finder = finder;
 		this.projectData = projectData;
 
 		CopyFiles.copy(outputDir);
@@ -460,8 +462,7 @@ public class HTMLReport
 			BufferedReader br = null;
 			try
 			{
-				File sourceFile = new File(sourceDir, sourceFileData
-						.getName());
+				File sourceFile = finder.findFile(sourceFileData.getName());
 				br = new BufferedReader(new FileReader(sourceFile));
 				String lineStr;
 				JavaToHtml javaToHtml = new JavaToHtml();
@@ -647,12 +648,20 @@ public class HTMLReport
 				+ ";</span>" + getDoubleValue(ccn) + "</td>";
 	}
 
-	private String generateTableRowForTotal()
-	{
+	private String generateTableRowForTotal() {
 		StringBuffer ret = new StringBuffer();
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-		double ccn = Util.getCCN(sourceDir, true);
+		
+		double ccnSum = 0;
+		int count = 0;
+		for (Iterator it = finder.getBaseDirectories().iterator(); it.hasNext(); ) {
+			File basedir = (File) it.next();
+			ccnSum += Util.getCCN(basedir.getAbsoluteFile(), true);
+			count++;
+		}
+		
+		double ccn = ccnSum / (double) count;
 
 		if (projectData.getNumberOfValidLines() > 0)
 			lineCoverage = projectData.getLineCoverageRate();
@@ -676,8 +685,7 @@ public class HTMLReport
 		String url2 = "frame-sourcefiles-" + packageData.getName() + ".html";
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-		double ccn = Util.getCCN(new File(sourceDir, packageData
-				.getSourceFileName()), false);
+		double ccn = 0;//Util.getCCN(finder.findFile(packageData.getSourceFileName()), false);
 
 		if (packageData.getNumberOfValidLines() > 0)
 			lineCoverage = packageData.getLineCoverageRate();
@@ -701,8 +709,11 @@ public class HTMLReport
 		StringBuffer ret = new StringBuffer();
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-		double ccn = Util.getCCN(
-				new File(sourceDir, sourceFileData.getName()), false);
+		File file = finder.findFile(sourceFileData.getName());
+		if (file == null) {
+			System.out.println("FILE IS NULL: " + sourceFileData.getName());
+		}
+		double ccn = Util.getCCN(file, false);
 
 		if (sourceFileData.getNumberOfValidLines() > 0)
 			lineCoverage = sourceFileData.getLineCoverageRate();

@@ -1,4 +1,3 @@
-
 <project name="cobertura" default="coverage" basedir=".">
 
 	<description>
@@ -32,6 +31,13 @@
 			<classpath refid="base.path" />
 		</javac>
 
+		<mkdir dir="${build.otherclasses.dir}" />
+		<javac fork="true" srcdir="${othersrc.dir}" destdir="${build.otherclasses.dir}" debug="true">
+			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
+			<classpath location="${build.classes.dir}" />
+			<classpath refid="base.path" />
+		</javac>
+
 		<mkdir dir="${build.test.classes.dir}" />
 
 		<javac fork="true" srcdir="${test.src.dir}" destdir="${build.test.classes.dir}" debug="true">
@@ -39,6 +45,7 @@
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${build.test.classes.dir}" />
 			<classpath refid="base.path" />
+			<classpath location="${build.otherclasses.dir}" />
 		</javac>
 
 		<!-- Copy jar resources (css, images, log4j property file, etc.) -->
@@ -139,6 +146,10 @@
 		        <include name="**/*.class" />
 		        <exclude name="**/*Test.class" />
 		    </fileset>
+		    <fileset dir="${build.otherclasses.dir}">
+		        <include name="**/*.class" />
+		        <exclude name="**/*Test.class" />
+		    </fileset>
 		</cobertura-instrument>
 	</target>
 
@@ -157,6 +168,7 @@
 			<classpath location="${build.test.classes.dir}" />
 			<classpath location="${build.instrumented.dir}" />
 			<classpath location="${build.classes.dir}" />
+			<classpath location="${build.otherclasses.dir}" />
 			<classpath location="${etc.dir}" />
 			<classpath refid="base.path" />
 			<formatter type="xml" />
@@ -189,7 +201,14 @@
 		<cobertura-report datafile="${build.dir}/cobertura.ser"
 		                  destdir="${build.test.reports.dir}/coverage-html"
 		                  format="html"
-		                  srcdir="${src.dir}" />
+		                  >
+			<fileset dir="${src.dir}">
+				<include name="**/*.java" />
+			</fileset>				  
+			<fileset dir="${othersrc.dir}">
+				<include name="**/*.java" />
+			</fileset>
+	    </cobertura-report>
 
 		<delete dir="${build.test.reports.dir}/coverage-xml" />
 		<mkdir dir="${build.test.reports.dir}/coverage-xml" />
