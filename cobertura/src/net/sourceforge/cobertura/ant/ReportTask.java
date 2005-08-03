@@ -5,6 +5,7 @@
  * reserved.
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Jeremy Thomerson
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -57,130 +58,123 @@
 package net.sourceforge.cobertura.ant;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import net.sourceforge.cobertura.util.Header;
-import net.sourceforge.cobertura.util.StringUtil;
 
-import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.taskdefs.MatchingTask;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * Generate a coverage report based on coverage data generated 
  * by instrumented classes.
  */
-public class ReportTask extends MatchingTask
+public class ReportTask extends CommonMatchingTask
 {
 
 	private String dataFile = null;
 	private String format = "html";
-	private Path src;
 	private File destDir;
+	private String srcDir;
 
 	private Java java = null;
 
-	public void setDataFile(String dataFile)
-	{
-		this.dataFile = dataFile;
+	public ReportTask() {
+		super("net.sourceforge.cobertura.reporting.Main");
 	}
-
-	public void setDestDir(File destDir)
+	
+	private void addFilenames(String[] filenames)
 	{
-		this.destDir = destDir;
-	}
-
-	public void setFormat(String format)
-	{
-		this.format = format;
-	}
-
-	public void setSrcDir(Path srcDir)
-	{
-		if (src == null)
+		if (filenames.length == 0)
 		{
-			src = srcDir;
+			return;
 		}
-		else
+
+		for (int i = 0; i < filenames.length; i++)
 		{
-			src.append(srcDir);
+			getProject().log("Adding " + filenames[i] + " to list",
+					Project.MSG_VERBOSE);
+			addArg(filenames[i]);
 		}
+
+		Header.print(System.out);
+//		System.out.println("instrumenting " + filenames.length + " "
+//				+ (filenames.length == 1 ? "class" : "classes")
+//				+ (toDir != null ? " to " + toDir : ""));
 	}
 
 	public void execute() throws BuildException
 	{
-		Header.print(System.out);
-
-		getJava().createArg().setValue("--format");
-		getJava().createArg().setValue(format);
+		initArgs();
 
 		if (dataFile != null)
 		{
-			getJava().createArg().setValue("--datafile");
-			getJava().createArg().setValue(dataFile);
+			addArg("--datafile");
+			addArg(dataFile);
+		}
+		
+		addArg("--destination");
+		addArg(this.destDir.getAbsolutePath());
+		
+		addArg("--format");
+		addArg(format);
+		
+		if (srcDir != null) {
+			addArg("--basedir");
+			addArg(srcDir);
 		}
 
-		getJava().createArg().setValue("--destination");
-		getJava().createArg().setValue(destDir.toString());
+		handleFilesets();
 
-		getJava().createArg().setValue("--source");
-		getJava().createArg().setValue(src.toString());
+		saveArgs();
 
+		/**
+		 * TODO: Do something here so that we can set System.in and System.out on
+		 * getJava() to the one we're using now.  So that when instrumentation calls
+		 * System.out, it will show up as "[instrument] doing stuff" instead of
+		 * "[java] doing stuff" in the ant output.
+		 */
 		if (getJava().executeJava() != 0)
 		{
-			throw new BuildException("Error generating report. See messages above.");
+			throw new BuildException("Error running reports. See messages above.");
 		}
+
+		unInitArgs();
 	}
 
-	protected Java getJava()
-	{
-		if (java == null)
+	private void handleFilesets() {
+		Set filenames = new HashSet();
+		Iterator iter = fileSets.iterator();
+		while (iter.hasNext())
 		{
-			java = (Java)getProject().createTask("java");
-			java.setTaskName(getTaskName());
-			java.setClassname("net.sourceforge.cobertura.reporting.Main");
-			java.setFork(true);
-			java.setDir(getProject().getBaseDir());
+			FileSet fileSet = (FileSet)iter.next();
 
-			if (getClass().getClassLoader() instanceof AntClassLoader)
-			{
-				String classpath = ((AntClassLoader)getClass()
-						.getClassLoader()).getClasspath();
-				createClasspath().setPath(
-						StringUtil.replaceAll(classpath, "%20", " "));
-			}
-			else if (getClass().getClassLoader() instanceof URLClassLoader)
-			{
-				URL[] earls = ((URLClassLoader)getClass().getClassLoader())
-						.getURLs();
-				for (int i = 0; i < earls.length; i++)
-				{
-					String classpath = earls[i].getFile();
-					createClasspath().setPath(
-							StringUtil.replaceAll(classpath, "%20", " "));
-				}
-			}
+			addArg("--basedir");
+			addArg(baseDir(fileSet));
+
+			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
 		}
-		return java;
+		addFilenames((String[])filenames.toArray(new String[filenames.size()]));
 	}
 
-	public Path createClasspath()
-	{
-		return getJava().createClasspath().createPath();
+	public void setDataFile(String dataFile) {
+		this.dataFile = dataFile;
 	}
 
-	public void setClasspath(Path classpath)
-	{
-		createClasspath().append(classpath);
+	public void setDestDir(File destDir) {
+		this.destDir = destDir;
 	}
 
-	public void setClasspathRef(Reference r)
-	{
-		createClasspath().setRefid(r);
+	public void setFormat(String format) {
+		this.format = format;
 	}
-
+	
+	public void setSrcDir(String dir) {
+		srcDir = dir;
+	}
 }

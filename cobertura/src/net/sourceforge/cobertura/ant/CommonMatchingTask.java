@@ -6,6 +6,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Joakim Erdfelt
+ * Copyright (C) 2005 Jeremy Thomerson
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -241,8 +242,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 		return getDirectoryScanner(fileSet).getExcludedFiles();
 	}
 
-	String[] getFilenames(FileSet fileSet)
-	{
+	String[] getFilenames(FileSet fileSet) {
 		String[] filesToReturn = getIncludedFiles(fileSet);
 
 		if (toDir != null)
@@ -256,8 +256,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 		return filesToReturn;
 	}
 
-	String baseDir(FileSet fileSet)
-	{
+	String baseDir(FileSet fileSet) {
 		return fileSet.getDirectoryScanner(getProject()).getBasedir()
 				.toString();
 	}

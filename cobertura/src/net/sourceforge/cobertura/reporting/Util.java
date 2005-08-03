@@ -60,6 +60,9 @@ public abstract class Util
 	 */
 	public static double getCCN(File file, boolean recursive)
 	{
+		if (file == null) {
+			return 0;
+		}
 		int ccnAccumulator = 0;
 
 		Vector files = getListOfFiles(file, recursive);
@@ -99,35 +102,24 @@ public abstract class Util
 	 * @return A Vector containing <code>String</code>s that
 	 *         are absolute paths to Java source files.
 	 */
-	private static Vector getListOfFiles(File file, boolean recursive)
-	{
+	private static Vector getListOfFiles(File file, boolean recursive) {
 		Vector ret = new Vector();
 
-		if (file.isFile())
-		{
+		if (file.isFile()) {
 			ret.add(file.getAbsolutePath());
-		}
-		else if (file.isDirectory())
-		{
-			File[] files = file.listFiles(new FileFilter()
-			{
-				public boolean accept(File pathname)
-				{
+		} else if (file.isDirectory()) {
+			File[] files = file.listFiles(new FileFilter() {
+				public boolean accept(File pathname) {
 					return pathname.isDirectory()
 							|| pathname.getAbsolutePath().endsWith(".java");
 				}
 			});
 
-			for (int i = 0; i < files.length; i++)
-			{
-				if (recursive)
-				{
+			for (int i = 0; i < files.length; i++) {
+				if (recursive) {
 					ret.addAll(getListOfFiles(files[i], true));
-				}
-				else
-				{
-					if (files[i].isFile())
-					{
+				} else {
+					if (files[i].isFile()) {
 						ret.add(files[i].getAbsolutePath());
 					}
 				}
