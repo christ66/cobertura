@@ -23,8 +23,10 @@ package net.sourceforge.cobertura.util;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -56,9 +58,13 @@ public class FileFinder {
 
 	public void addSourceFilePath(String path) {
 		change();
-		sourceFilePaths.add(path);
+		sourceFilePaths.add(getCorrectedPath(path));
 	}
 	
+    private String getCorrectedPath(String path) {
+        return path.replace('/', '\\');
+    }
+    
 	public List getBaseDirectories() {
 		return new ArrayList(baseDirectories);
 	}
@@ -68,21 +74,40 @@ public class FileFinder {
 		return new ArrayList(cached);
 	}
 	
-	public File findFile(String filePart) {
-		compute();
-		List mine = Collections.EMPTY_LIST;
-		synchronized(this) {
-			mine = new ArrayList(cached);
-		}
-		for (Iterator it = mine.iterator(); it.hasNext(); ) {
-			String path = (String) it.next();
-			if (path.replace('/', '\\').endsWith(filePart.replace('/', '\\'))) {
-				return new File(path);
-			}
-		}
-		return null;
-	}
-	
+    public File findFile(String filePart) {
+        compute();
+        List mine = Collections.EMPTY_LIST;
+        synchronized(this) {
+            mine = new ArrayList(cached);
+        }
+        String tempFilePart = getCorrectedPath(filePart);
+        for (Iterator it = mine.iterator(); it.hasNext(); ) {
+            String path = (String) it.next();
+            if (path.endsWith(tempFilePart)) {
+                return new File(path);
+            }
+        }
+        return null;
+    }
+    
+    public File[] findDirectory(String filePart) {
+        compute();
+        List mine = Collections.EMPTY_LIST;
+        synchronized(this) {
+            mine = new ArrayList(cached);
+        }
+        Set paths = new HashSet();
+        String tempFilePart = getCorrectedPath(filePart);
+        for (Iterator it = mine.iterator(); it.hasNext(); ) {
+            String path = (String) it.next();
+            if (new File(path).getParent().endsWith(tempFilePart)) {
+                paths.add(new File(path).getParentFile());
+            }
+        }
+        
+        return (File[]) paths.toArray(new File[paths.size()]);
+    }
+    
 	private synchronized void change() {
 		changed = true;
 	}
