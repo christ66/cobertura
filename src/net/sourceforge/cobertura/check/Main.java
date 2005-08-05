@@ -23,9 +23,6 @@
 
 package net.sourceforge.cobertura.check;
 
-import gnu.getopt.Getopt;
-import gnu.getopt.LongOpt;
-
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -123,60 +120,37 @@ public class Main
 
 		Header.print(System.out);
 
-		LongOpt[] longOpts = new LongOpt[6];
-		longOpts[0] = new LongOpt("datafile", LongOpt.REQUIRED_ARGUMENT, null,
-				'd');
-		longOpts[1] = new LongOpt("regex", LongOpt.REQUIRED_ARGUMENT, null, 'r');
-		longOpts[2] = new LongOpt("branch", LongOpt.REQUIRED_ARGUMENT, null,
-				'b');
-		longOpts[3] = new LongOpt("line", LongOpt.REQUIRED_ARGUMENT, null, 'l');
-		longOpts[4] = new LongOpt("totalbranch", LongOpt.REQUIRED_ARGUMENT,
-				null, 'B');
-		longOpts[5] = new LongOpt("totalline", LongOpt.REQUIRED_ARGUMENT, null,
-				'L');
-
-		Getopt g = new Getopt(getClass().getName(), args, ":b:B:d:l:L:r",
-				longOpts);
-		int c;
-
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 		double branchCoverageRate = 0.0;
 		double lineCoverageRate = 0.0;
 		double totalBranchCoverageRate = 0.0;
 		double totalLineCoverageRate = 0.0;
 
-		while ((c = g.getopt()) != -1)
+		for (int i = 0; i < args.length; i++)
 		{
-			switch (c)
+			if (args[i].equals("--branch"))
 			{
-				case 'b':
-					branchCoverageRate = inRangeAndDivideByOneHundred(g
-							.getOptarg());
-					break;
-
-				case 'B':
-					totalBranchCoverageRate = inRangeAndDivideByOneHundred(g
-							.getOptarg());
-					break;
-
-				case 'd':
-					dataFile = new File(g.getOptarg());
-					break;
-
-				case 'l':
-					lineCoverageRate = inRangeAndDivideByOneHundred(g
-							.getOptarg());
-					break;
-
-				case 'L':
-					totalLineCoverageRate = inRangeAndDivideByOneHundred(g
-							.getOptarg());
-					break;
-
-				case 'r':
-					setMinimumCoverageRate(g.getOptarg());
-					break;
-
+				branchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
+			}
+			else if (args[i].equals("--datafile"))
+			{
+				dataFile = new File(args[++i]);
+			}
+			else if (args[i].equals("--line"))
+			{
+				lineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
+			}
+			else if (args[i].equals("--regex"))
+			{
+				setMinimumCoverageRate(args[++i]);
+			}
+			else if (args[i].equals("--totalbranch"))
+			{
+				totalBranchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
+			}
+			else if (args[i].equals("--totalline"))
+			{
+				totalLineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
 			}
 		}
 
