@@ -24,9 +24,6 @@
 
 package net.sourceforge.cobertura.merge;
 
-import gnu.getopt.Getopt;
-import gnu.getopt.LongOpt;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -47,51 +44,37 @@ public class Main
 
 	public Main(String[] args)
 	{
-		LongOpt[] longOpts = new LongOpt[2];
-		longOpts[0] = new LongOpt("datafile",
-				LongOpt.REQUIRED_ARGUMENT, null, 'd');
-		longOpts[1] = new LongOpt("output", LongOpt.REQUIRED_ARGUMENT, null,
-				'o');
-
-		Getopt g = new Getopt(getClass().getName(), args, ":d:o:", longOpts);
-		int c;
-
-		File destFile = new File(System.getProperty("user.dir"),
-				CoverageDataFileHandler.FILE_NAME);
+		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 		ProjectData projectData = null;
 
-		while ((c = g.getopt()) != -1)
+		for (int i = 0; i < args.length; i++)
 		{
-			switch (c)
+			if (args[i].equals("--datafile"))
 			{
-				case 'd':
-					System.out.println("cobertura loading: " + g.getOptarg());
-					File dataFile = new File(g.getOptarg());
-					if (projectData == null) {
-						projectData = CoverageDataFileHandler
-								.loadCoverageData(dataFile);
-					} else {
-						ProjectData projectDataNew = CoverageDataFileHandler
-						.loadCoverageData(dataFile);
-						projectData.merge(projectDataNew);
-					}
-					break;
-
-				case 'o':
-					destFile = new File(g.getOptarg());
-					destFile.getParentFile().mkdirs();
-					break;
+				File newDataFile = new File(args[++i]);
+				if (projectData == null) {
+					projectData = CoverageDataFileHandler
+							.loadCoverageData(newDataFile);
+				} else {
+					ProjectData projectDataNew = CoverageDataFileHandler
+					.loadCoverageData(newDataFile);
+					projectData.merge(projectDataNew);
+				}
+			}
+			else if (args[i].equals("--output"))
+			{
+				dataFile = new File(args[++i]);
+				dataFile.getParentFile().mkdirs();
 			}
 		}
 
 		if (projectData != null)
-			CoverageDataFileHandler.saveCoverageData(projectData, destFile);
+			CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
 	}
 
 	public static void main(String[] args)
 	{
 		Header.print(System.out);
-		System.out.println("Cobertura instrumentation merge tool");
 
 		boolean hasCommandsFile = false;
 		String commandsFileName = null;
