@@ -51,6 +51,100 @@ decending order.
 <h1>News</h1>
 
 <div class="newsitem">
+<span class="date">5 August 2005</span>
+<div class="text">
+<p>
+We've decided to release Cobertura 1.5.  This release includes
+a lot of good changes.  However, it does <i>not</i> yet support
+instrumenting multiple directories for classes or generating a
+report using multiple source directories.  Cobertura 1.6
+will include both of these enhancements, and will hopefully be
+released in about two weeks.
+</p>
+
+<p>
+The changes in 1.5 are:
+</p>
+
+<ul>
+<li>
+Shortened the header shown when running Cobertura (Thanks
+to Jarkko Viinamäki).
+</li>
+
+<li>
+Don't save the data file twice after instrumenting.
+</li>
+
+<li>
+Print a warning when running cobertura-report with a
+data file that does not contain information from the
+instrument step.
+</li>
+
+<li>
+When instrumenting, you can now specify a zip, jar, war,
+ear or sar file and Cobertura will instrument any classes
+inside of the archive.  You must explicity give the name
+of the archive when instrumenting--giving the name of the
+directory containing the archive will not work (Thanks to
+Grzegorz Lukasik).
+</li>
+
+<li>
+Fixed a bug where the class list in the HTML reports did
+not show multiple classes with the same name, but in
+different packages.
+</li>
+
+<li>
+Add a timestamp and version number to all HTML reports.
+</li>
+
+<li>
+Add a timestamp and version number to all XML reports.
+</li>
+
+<li>
+Add the combined line-rate and branch-rate for all
+packages to all XML reports.
+</li>
+
+<li>
+Fixed the merge task (Thanks to Mark Sinke).
+</li>
+
+<li>
+The check task now supports checking against a project's
+total branch and line coverage rates (Thanks to Nathan
+Wilson).
+</li>
+
+<li>
+The check ant task now allows you to fail the ant build,
+if desired (Thanks to Nathan Wilson).
+</li>
+
+<li>
+The check task can set an ant property to "true" on
+failure (Thanks to Alex Ruiz).
+</li>
+
+<li>
+Changed some of the parameters for the check task.  See
+the online documentation for usage information.
+</li>
+
+<li>
+The command line Windows batch scripts work better.
+</li>
+
+</ul>
+
+</div>
+</div>
+
+<div class="newsitem">
 <span class="date">30 May 2005</span>
 <div class="text">
 <p>
