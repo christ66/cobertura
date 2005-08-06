@@ -52,16 +52,37 @@ public class Main {
 			if (args[i].equals("--basedir")) {
 				finder.addBaseDirectory(new File(args[++i]));
 			} else if (args[i].equals("--datafile")) {
-				dataFile = new File(args[++i]);
+				setDataFile( args[++i]);
 			} else if (args[i].equals("--destination")) {
-				destinationDir = new File(args[++i]);
-				destinationDir.mkdirs();
+				setDestination( args[++i]);
 			} else if (args[i].equals("--format")) {
-				format = args[++i];
-				checkFormat();
+				setFormat( args[++i]);
 			} else {
 				finder.addSourceFilePath(args[i]);
 			}
+		}
+
+		if (dataFile == null)
+			dataFile = CoverageDataFileHandler.getDefaultDataFile();
+
+		if (destinationDir == null)
+		{
+			System.err.println("Error: destination directory must be set");
+			System.exit(1);
+		}
+
+		if (format == null)
+		{
+			System.err.println("Error: format must be set");
+			System.exit(1);
+		}
+		
+		if (LOGGER.isDebugEnabled())
+		{
+			LOGGER.debug("format is " + format);
+			LOGGER.debug("dataFile is " + dataFile.getAbsolutePath());
+			LOGGER.debug("destinationDir is "
+					+ destinationDir.getAbsolutePath());
 		}
 
 		ProjectData projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
@@ -78,7 +99,9 @@ public class Main {
 		}
 	}
 	
-	private void checkFormat() {
+	private void setFormat(String value) 
+	{
+		format = value;
 		if (!format.equalsIgnoreCase("html") && !format.equalsIgnoreCase("xml")) {
 			System.err.println("" +
 					"Error: format \"" +
@@ -86,6 +109,35 @@ public class Main {
 					);
 			System.exit(1);
 		}
+	}
+
+	private void setDataFile(String value) 
+	{
+		dataFile = new File(value);
+		if (!dataFile.exists())
+		{
+			System.err.println("Error: data file " + dataFile.getAbsolutePath()
+					+ " does not exist");
+			System.exit(1);
+		}
+		if (!dataFile.isFile())
+		{
+			System.err.println("Error: data file " + dataFile.getAbsolutePath()
+					+ " must be a regular file");
+			System.exit(1);
+		}
+	}
+
+	private void setDestination(String value) 
+	{
+		destinationDir = new File(value);
+		if (destinationDir.exists() && !destinationDir.isDirectory())
+		{
+			System.err.println("Error: destination directory " + destinationDir
+					+ " already exists but is not a directory");
+			System.exit(1);
+		}
+		destinationDir.mkdirs();
 	}
 	
 	public static void main(String[] args) throws Exception {
