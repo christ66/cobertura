@@ -32,17 +32,21 @@ public class ClassDataTest extends TestCase
 	private final ClassData a = new ClassData("com.example.HelloWorld");
 	private final ClassData b = new ClassData("com.example.HelloWorld");
 	private final ClassData c = new ClassData("com.example.HelloWorld");
+	private final ClassData defPckg = new ClassData("DefaultPackageClass");
 
 	public void setUp()
 	{
 		a.setSourceFileName("com/example/HelloWorld.java");
 		b.setSourceFileName("com/example/HelloWorld.java");
 		c.setSourceFileName("com/example/HelloWorld.java");
+		defPckg.setSourceFileName("DefaultPackageClass.java");
 
 		for (int i = 1; i <= 5; i++)
 			b.addLine(i, "test", "(I)B");
 		for (int i = 1; i <= 5; i++)
 			c.addLine(i, "test", "(I)B");
+		for (int i = 1; i <= 5; i++)
+			defPckg.addLine(i, "test", "(I)B");
 
 		b.touch(1);
 		b.touch(2);
@@ -116,6 +120,10 @@ public class ClassDataTest extends TestCase
 		assertEquals("HelloWorld", a.getBaseName());
 		assertEquals("com.example", a.getPackageName());
 		assertEquals("com.example.HelloWorld", a.getName());
+		
+		assertEquals("DefaultPackageClass", defPckg.getBaseName());
+		assertEquals("", defPckg.getPackageName());
+		assertEquals("DefaultPackageClass", defPckg.getName());
 	}
 
 	public void testEquals()
@@ -127,12 +135,20 @@ public class ClassDataTest extends TestCase
 		assertTrue(a.equals(a));
 		assertFalse(a.equals(b));
 		assertFalse(a.equals(c));
+		assertFalse(a.equals(defPckg));
 		assertFalse(b.equals(a));
 		assertTrue(b.equals(b));
 		assertFalse(b.equals(c));
+		assertFalse(b.equals(defPckg));
 		assertFalse(c.equals(a));
 		assertFalse(c.equals(b));
 		assertTrue(c.equals(c));
+		assertFalse(c.equals(defPckg));
+		assertFalse(defPckg.equals(a));
+		assertFalse(defPckg.equals(b));
+		assertFalse(defPckg.equals(c));
+		assertTrue(defPckg.equals(defPckg));
+		
 
 		c.touch(1);
 		c.touch(2);
@@ -217,6 +233,8 @@ public class ClassDataTest extends TestCase
 
 		ClassData e = new ClassData("org.jaxen.expr.NodeComparator$1");
 		assertEquals("org/jaxen/expr/NodeComparator.java", e.getSourceFileName());
+		
+		assertEquals( "DefaultPackageClass.java", defPckg.getSourceFileName());
 	}
 
 	public void testTouch()
