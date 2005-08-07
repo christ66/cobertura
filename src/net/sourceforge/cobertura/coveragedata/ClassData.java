@@ -285,7 +285,7 @@ public class ClassData extends CoverageDataContainer
 		}
 
 		String packageName = getPackageName();
-		if (packageName == null)
+		if ( packageName.equals(""))
 			return baseName;
 		return getPackageName().replace('.', '/') + '/' + baseName;
 	}
