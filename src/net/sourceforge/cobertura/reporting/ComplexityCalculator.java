@@ -219,9 +219,8 @@ public class ComplexityCalculator {
 		public double averageCCN() {
 			if( methodsNum==0) {
 				return 0;
-			} else {
-				return accumlatedCCN/methodsNum;
 			}
+			return accumlatedCCN/methodsNum;
 		}
 		public void add( Complexity second) {
 			accumlatedCCN += second.accumlatedCCN;
