@@ -45,7 +45,6 @@ import java.util.zip.ZipOutputStream;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.IOUtil;
 
 import org.apache.log4j.Logger;
@@ -88,8 +87,6 @@ public class Main
     private static final Logger logger = Logger.getLogger(Main.class);
 
     private File destinationDirectory = null;
-
-    private File baseDir = null;
 
     private Collection ignoreRegexes = new Vector();
 
@@ -372,23 +369,18 @@ public class Main
             for (int i = 0; i < contents.length; i++)
                 addInstrumentation(contents[i]);
         }
-        else if (isArchive(file))
-        {
-            addInstrumentationToArchive(file);
-        }
     }
 
-    private void addInstrumentation(String filename)
+    private void addInstrumentation(String baseDir, String filename)
     {
-        logger.debug("filename: " + filename);
-
-        File file;
-        if (baseDir == null)
-            file = new File(filename);
-        else
-            file = new File(baseDir, filename);
-
-        addInstrumentation(file);
+    	logger.debug("filename: " + filename);
+    	File file = new File( baseDir, filename);
+    	
+    	if( isArchive(file)) {
+    		addInstrumentationToArchive(file);
+    	} else {
+    		addInstrumentation(file);
+    	}
     }
 
     private void parseArguments(String[] args)
@@ -396,11 +388,14 @@ public class Main
         File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 
         // Parse our parameters
-        FileFinder finder = new FileFinder();
+        List filePaths = new ArrayList();
         for (int i = 0; i < args.length; i++)
         {
-            if (args[i].equals("--basedir"))
-                finder.addBaseDirectory(new File(args[++i]));
+            if (args[i].equals("--basedir")) 
+            {
+            	filePaths.add( args[i]);
+            	filePaths.add( args[++i]);
+            }
             else if (args[i].equals("--datafile"))
                 dataFile = new File(args[++i]);
             else if (args[i].equals("--destination"))
@@ -419,17 +414,30 @@ public class Main
                             + " is invalid: " + e.getLocalizedMessage());
                 }
             }
-            else
-                finder.addSourceFilePath(args[i]);
+            else {
+            	filePaths.add( args[i]);
+            }
         }
 
-        // Load coverage data, instrument classes, save coverage data
+        // Load coverage data
         projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
         if (projectData == null)
             projectData = new ProjectData();
-        Iterator iter = finder.getFilePaths().iterator();
-        while (iter.hasNext())
-            addInstrumentation((String)iter.next());
+
+        // Instrument classes
+        String baseDir = null;
+		logger.debug( "Obtained " + filePaths.size() + " file path entries.");
+        Iterator iter = filePaths.iterator();
+        while (iter.hasNext()) {
+        	String act = (String) iter.next();
+        	if( act.equals("--basedir")) {
+       			baseDir = (String) iter.next();
+        	} else {
+        		addInstrumentation( baseDir, act);
+        	}
+        }
+        
+        // Save coverage data
         CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
     }
 

@@ -58,16 +58,12 @@
 package net.sourceforge.cobertura.ant;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import net.sourceforge.cobertura.util.Header;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.FileSet;
 
 /**
@@ -81,8 +77,6 @@ public class ReportTask extends CommonMatchingTask
 	private String format = "html";
 	private File destDir;
 	private String srcDir;
-
-	private Java java = null;
 
 	public ReportTask() {
 		super("net.sourceforge.cobertura.reporting.Main");
@@ -101,15 +95,11 @@ public class ReportTask extends CommonMatchingTask
 					Project.MSG_VERBOSE);
 			addArg(filenames[i]);
 		}
-
-		Header.print(System.out);
-//		System.out.println("instrumenting " + filenames.length + " "
-//				+ (filenames.length == 1 ? "class" : "classes")
-//				+ (toDir != null ? " to " + toDir : ""));
 	}
 
 	public void execute() throws BuildException
 	{
+		Header.print(System.out);
 		initArgs();
 
 		if (dataFile != null)
@@ -125,7 +115,6 @@ public class ReportTask extends CommonMatchingTask
 		addArg(format);
 		
 		if (srcDir != null) {
-			addArg("--basedir");
 			addArg(srcDir);
 		}
 
@@ -147,8 +136,9 @@ public class ReportTask extends CommonMatchingTask
 		unInitArgs();
 	}
 
+	// TODO: InstrumentTask contains almost exactly the same code
 	private void handleFilesets() {
-		Set filenames = new HashSet();
+		int numberOfClasses = 0;
 		Iterator iter = fileSets.iterator();
 		while (iter.hasNext())
 		{
@@ -157,9 +147,10 @@ public class ReportTask extends CommonMatchingTask
 			addArg("--basedir");
 			addArg(baseDir(fileSet));
 
-			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
+			String[] fileNames = getFilenames(fileSet);
+			numberOfClasses += fileNames.length;
+			addFilenames(fileNames);
 		}
-		addFilenames((String[])filenames.toArray(new String[filenames.size()]));
 	}
 
 	public void setDataFile(String dataFile) {
