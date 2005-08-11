@@ -35,6 +35,7 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.html.HTMLReport;
 import net.sourceforge.cobertura.reporting.xml.XMLReport;
 import net.sourceforge.cobertura.util.FileFinder;
+import net.sourceforge.cobertura.util.Header;
 
 import org.apache.log4j.Logger;
 
@@ -147,6 +148,8 @@ public class Main {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		Header.print(System.out);
+
 		long startTime = System.currentTimeMillis();
 
 		Main main = new Main();

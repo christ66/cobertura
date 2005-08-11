@@ -60,8 +60,6 @@ package net.sourceforge.cobertura.ant;
 import java.io.File;
 import java.util.Iterator;
 
-import net.sourceforge.cobertura.util.Header;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
@@ -99,7 +97,6 @@ public class ReportTask extends CommonMatchingTask
 
 	public void execute() throws BuildException
 	{
-		Header.print(System.out);
 		initArgs();
 
 		if (dataFile != null)

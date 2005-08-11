@@ -45,6 +45,7 @@ import java.util.zip.ZipOutputStream;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.IOUtil;
 
 import org.apache.log4j.Logger;
@@ -84,422 +85,427 @@ import org.objectweb.asm.ClassWriter;
 public class Main
 {
 
-    private static final Logger logger = Logger.getLogger(Main.class);
+	private static final Logger logger = Logger.getLogger(Main.class);
 
-    private File destinationDirectory = null;
+	private File destinationDirectory = null;
 
-    private Collection ignoreRegexes = new Vector();
+	private Collection ignoreRegexes = new Vector();
 
-    private ProjectData projectData = null;
+	private ProjectData projectData = null;
 
-    /**
-     * @param file A file.
-     * @return True if the specified file has "class" as its extension,
-     * false otherwise.
-     */
-    private static boolean isClass(File file)
-    {
-        return file.getName().endsWith(".class");
-    }
+	/**
+	 * @param file A file.
+	 * @return True if the specified file has "class" as its extension,
+	 * false otherwise.
+	 */
+	private static boolean isClass(File file)
+	{
+		return file.getName().endsWith(".class");
+	}
 
-    /**
-     * @param entry A zip entry.
-     * @return True if the specified entry has "class" as its extension,
-     * false otherwise.
-     */
-    private static boolean isClass(ZipEntry entry)
-    {
-        return entry.getName().endsWith(".class");
-    }
+	/**
+	 * @param entry A zip entry.
+	 * @return True if the specified entry has "class" as its extension,
+	 * false otherwise.
+	 */
+	private static boolean isClass(ZipEntry entry)
+	{
+		return entry.getName().endsWith(".class");
+	}
 
-    /**
-     * @return True if file has an extension that matches one of the
-     *         standard java archives, false otherwise.
-     */
-    private static boolean isArchive(File file)
-    {
-        String name = file.getName();
-        return name.endsWith(".jar") || name.endsWith(".zip")
-                || name.endsWith(".war") || name.endsWith(".ear")
-                || name.endsWith(".sar");
-    }
+	/**
+	 * @return True if file has an extension that matches one of the
+	 *         standard java archives, false otherwise.
+	 */
+	private static boolean isArchive(File file)
+	{
+		String name = file.getName();
+		return name.endsWith(".jar") || name.endsWith(".zip")
+				|| name.endsWith(".war") || name.endsWith(".ear")
+				|| name.endsWith(".sar");
+	}
 
-    private void addInstrumentationToArchive(ZipInputStream archive,
-            ZipOutputStream output) throws Exception
-    {
-        ZipEntry entry;
-        while ((entry = archive.getNextEntry()) != null)
-        {
-            try
-            {
-                ZipEntry outputEntry = new ZipEntry(entry.getName());
-                output.putNextEntry(outputEntry);
+	private void addInstrumentationToArchive(ZipInputStream archive,
+			ZipOutputStream output) throws Exception
+	{
+		ZipEntry entry;
+		while ((entry = archive.getNextEntry()) != null)
+		{
+			try
+			{
+				ZipEntry outputEntry = new ZipEntry(entry.getName());
+				output.putNextEntry(outputEntry);
 
-                // Read current entry
-                byte[] entryBytes = IOUtil
-                        .createByteArrayFromInputStream(archive);
+				// Read current entry
+				byte[] entryBytes = IOUtil
+						.createByteArrayFromInputStream(archive);
 
-                // Check if we have class file
-                if (isClass(entry))
-                {
-                    // Instrument class
-                    ClassReader cr = new ClassReader(entryBytes);
-                    ClassWriter cw = new ClassWriter(true);
-                    ClassInstrumenter cv = new ClassInstrumenter(projectData,
-                            cw, ignoreRegexes);
-                    cr.accept(cv, false);
+				// Check if we have class file
+				if (isClass(entry))
+				{
+					// Instrument class
+					ClassReader cr = new ClassReader(entryBytes);
+					ClassWriter cw = new ClassWriter(true);
+					ClassInstrumenter cv = new ClassInstrumenter(projectData,
+							cw, ignoreRegexes);
+					cr.accept(cv, false);
 
-                    // If class was instrumented, get bytes that define the
-                    // class
-                    if (cv.isInstrumented())
-                    {
-                        logger.debug("Putting instrumeted entry: "
-                                + entry.getName());
-                        entryBytes = cw.toByteArray();
-                    }
-                }
+					// If class was instrumented, get bytes that define the
+					// class
+					if (cv.isInstrumented())
+					{
+						logger.debug("Putting instrumeted entry: "
+								+ entry.getName());
+						entryBytes = cw.toByteArray();
+					}
+				}
 
-                // Add entry to the output
-                output.write(entryBytes);
-                output.closeEntry();
-                archive.closeEntry();
-            }
-            catch (Exception e)
-            {
-                logger.warn("Problems with archive entry: " + entry);
-                throw e;
-            }
-            output.flush();
-        }
-    }
+				// Add entry to the output
+				output.write(entryBytes);
+				output.closeEntry();
+				archive.closeEntry();
+			}
+			catch (Exception e)
+			{
+				logger.warn("Problems with archive entry: " + entry);
+				throw e;
+			}
+			output.flush();
+		}
+	}
 
-    private void addInstrumentationToArchive(File archive)
-    {
-        logger.debug("Instrumenting archive " + archive.getAbsolutePath());
+	private void addInstrumentationToArchive(File archive)
+	{
+		logger.debug("Instrumenting archive " + archive.getAbsolutePath());
 
-        File outputFile = null;
-        ZipInputStream input = null;
-        ZipOutputStream output = null;
-        try
-        {
-            // Open archive
-            try
-            {
-                input = new ZipInputStream(new FileInputStream(archive));
-            }
-            catch (FileNotFoundException e)
-            {
-                logger.warn("Cannot open archive file: "
-                        + archive.getAbsolutePath(), e);
-                return;
-            }
+		File outputFile = null;
+		ZipInputStream input = null;
+		ZipOutputStream output = null;
+		try
+		{
+			// Open archive
+			try
+			{
+				input = new ZipInputStream(new FileInputStream(archive));
+			}
+			catch (FileNotFoundException e)
+			{
+				logger.warn("Cannot open archive file: "
+						+ archive.getAbsolutePath(), e);
+				return;
+			}
 
-            // Open output archive
-            try
-            {
-                // check if destination folder is set
-                if (destinationDirectory != null)
-                {
-                    // if so, create output file in it
-                    outputFile = new File(destinationDirectory, archive
-                            .getName());
-                }
-                else
-                {
-                    // otherwise create output file in temporary location
-                    outputFile = File.createTempFile(
-                            "CoberturaInstrumentedArchive", "jar");
-                    outputFile.deleteOnExit();
-                }
-                output = new ZipOutputStream(new FileOutputStream(outputFile));
-            }
-            catch (IOException e)
-            {
-                logger.warn("Cannot open file for instrumented archive: "
-                        + archive.getAbsolutePath(), e);
-                return;
-            }
+			// Open output archive
+			try
+			{
+				// check if destination folder is set
+				if (destinationDirectory != null)
+				{
+					// if so, create output file in it
+					outputFile = new File(destinationDirectory, archive
+							.getName());
+				}
+				else
+				{
+					// otherwise create output file in temporary location
+					outputFile = File.createTempFile(
+							"CoberturaInstrumentedArchive", "jar");
+					outputFile.deleteOnExit();
+				}
+				output = new ZipOutputStream(new FileOutputStream(outputFile));
+			}
+			catch (IOException e)
+			{
+				logger.warn("Cannot open file for instrumented archive: "
+						+ archive.getAbsolutePath(), e);
+				return;
+			}
 
-            // Instrument classes in archive
-            try
-            {
-                addInstrumentationToArchive(input, output);
-            }
-            catch (Exception e)
-            {
-                logger.warn("Cannot instrument archive: "
-                        + archive.getAbsolutePath(), e);
-                return;
-            }
-        }
-        finally
-        {
-            if (input != null)
-            {
-                try
-                {
-                    input.close();
-                }
-                catch (IOException e)
-                {
-                }
-            }
-            if (output != null)
-            {
-                try
-                {
-                    output.close();
-                }
-                catch (IOException e)
-                {
-                }
-            }
-        }
+			// Instrument classes in archive
+			try
+			{
+				addInstrumentationToArchive(input, output);
+			}
+			catch (Exception e)
+			{
+				logger.warn("Cannot instrument archive: "
+						+ archive.getAbsolutePath(), e);
+				return;
+			}
+		}
+		finally
+		{
+			if (input != null)
+			{
+				try
+				{
+					input.close();
+				}
+				catch (IOException e)
+				{
+				}
+			}
+			if (output != null)
+			{
+				try
+				{
+					output.close();
+				}
+				catch (IOException e)
+				{
+				}
+			}
+		}
 
-        // If destination folder was not set, overwrite orginal archive with
-        // instrumented one
-        if (destinationDirectory == null)
-        {
-            try
-            {
-                IOUtil.moveFile(outputFile, archive);
-            }
-            catch (IOException e)
-            {
-                logger.warn("Cannot instrument archive: "
-                        + archive.getAbsolutePath(), e);
-                return;
-            }
-        }
-    }
+		// If destination folder was not set, overwrite orginal archive with
+		// instrumented one
+		if (destinationDirectory == null)
+		{
+			try
+			{
+				IOUtil.moveFile(outputFile, archive);
+			}
+			catch (IOException e)
+			{
+				logger.warn("Cannot instrument archive: "
+						+ archive.getAbsolutePath(), e);
+				return;
+			}
+		}
+	}
 
-    private void addInstrumentationToSingleClass(File file)
-    {
-        logger.debug("Instrumenting class " + file.getAbsolutePath());
+	private void addInstrumentationToSingleClass(File file)
+	{
+		logger.debug("Instrumenting class " + file.getAbsolutePath());
 
-        InputStream inputStream = null;
-        ClassWriter cw;
-        ClassInstrumenter cv;
-        try
-        {
-            inputStream = new FileInputStream(file);
-            ClassReader cr = new ClassReader(inputStream);
-            cw = new ClassWriter(true);
-            cv = new ClassInstrumenter(projectData, cw, ignoreRegexes);
-            cr.accept(cv, false);
-        }
-        catch (Throwable t)
-        {
-            logger.warn("Unable to instrument file " + file.getAbsolutePath(),
-                    t);
-            return;
-        }
-        finally
-        {
-            if (inputStream != null)
-            {
-                try
-                {
-                    inputStream.close();
-                }
-                catch (IOException e)
-                {
-                }
-            }
-        }
+		InputStream inputStream = null;
+		ClassWriter cw;
+		ClassInstrumenter cv;
+		try
+		{
+			inputStream = new FileInputStream(file);
+			ClassReader cr = new ClassReader(inputStream);
+			cw = new ClassWriter(true);
+			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes);
+			cr.accept(cv, false);
+		}
+		catch (Throwable t)
+		{
+			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
+					t);
+			return;
+		}
+		finally
+		{
+			if (inputStream != null)
+			{
+				try
+				{
+					inputStream.close();
+				}
+				catch (IOException e)
+				{
+				}
+			}
+		}
 
-        OutputStream outputStream = null;
-        try
-        {
-            if (cv.isInstrumented())
-            {
-                // If destinationDirectory is null, then overwrite
-                // the original, uninstrumented file.
-                File outputFile;
-                if (destinationDirectory == null)
-                    outputFile = file;
-                else
-                    outputFile = new File(destinationDirectory, cv
-                            .getClassName().replace('.', File.separatorChar)
-                            + ".class");
+		OutputStream outputStream = null;
+		try
+		{
+			if (cv.isInstrumented())
+			{
+				// If destinationDirectory is null, then overwrite
+				// the original, uninstrumented file.
+				File outputFile;
+				if (destinationDirectory == null)
+					outputFile = file;
+				else
+					outputFile = new File(destinationDirectory, cv
+							.getClassName().replace('.', File.separatorChar)
+							+ ".class");
 
-                File parentFile = outputFile.getParentFile();
-                if (parentFile != null)
-                {
-                    parentFile.mkdirs();
-                }
+				File parentFile = outputFile.getParentFile();
+				if (parentFile != null)
+				{
+					parentFile.mkdirs();
+				}
 
-                byte[] instrumentedClass = cw.toByteArray();
-                outputStream = new FileOutputStream(outputFile);
-                outputStream.write(instrumentedClass);
-            }
-        }
-        catch (IOException e)
-        {
-            logger.warn("Unable to instrument file " + file.getAbsolutePath(),
-                    e);
-            return;
-        }
-        finally
-        {
-            if (outputStream != null)
-            {
-                try
-                {
-                    outputStream.close();
-                }
-                catch (IOException e)
-                {
-                }
-            }
-        }
-    }
+				byte[] instrumentedClass = cw.toByteArray();
+				outputStream = new FileOutputStream(outputFile);
+				outputStream.write(instrumentedClass);
+			}
+		}
+		catch (IOException e)
+		{
+			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
+					e);
+			return;
+		}
+		finally
+		{
+			if (outputStream != null)
+			{
+				try
+				{
+					outputStream.close();
+				}
+				catch (IOException e)
+				{
+				}
+			}
+		}
+	}
 
-    // TODO: Don't attempt to instrument a file if the outputFile already
-    //       exists and is newer than the input file.
-    private void addInstrumentation(File file)
-    {
-        if (isClass(file))
-        {
-            addInstrumentationToSingleClass(file);
-        }
-        else if (file.isDirectory())
-        {
-            File[] contents = file.listFiles();
-            for (int i = 0; i < contents.length; i++)
-                addInstrumentation(contents[i]);
-        }
-    }
+	// TODO: Don't attempt to instrument a file if the outputFile already
+	//       exists and is newer than the input file.
+	private void addInstrumentation(File file)
+	{
+		if (isClass(file))
+		{
+			addInstrumentationToSingleClass(file);
+		}
+		else if (file.isDirectory())
+		{
+			File[] contents = file.listFiles();
+			for (int i = 0; i < contents.length; i++)
+				addInstrumentation(contents[i]);
+		}
+	}
 
-    private void addInstrumentation(String baseDir, String filename)
-    {
-    	logger.debug("filename: " + filename);
-    	File file = new File( baseDir, filename);
-    	
+	private void addInstrumentation(String baseDir, String filename)
+	{
+		logger.debug("filename: " + filename);
+		File file = new File(baseDir, filename);
+
     	if( isArchive(file)) {
-    		addInstrumentationToArchive(file);
+			addInstrumentationToArchive(file);
     	} else {
-    		addInstrumentation(file);
-    	}
-    }
+			addInstrumentation(file);
+		}
+	}
 
-    private void parseArguments(String[] args)
-    {
-        File dataFile = CoverageDataFileHandler.getDefaultDataFile();
+	private void parseArguments(String[] args)
+	{
+		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 
-        // Parse our parameters
-        List filePaths = new ArrayList();
-        for (int i = 0; i < args.length; i++)
-        {
-            if (args[i].equals("--basedir")) 
-            {
-            	filePaths.add( args[i]);
-            	filePaths.add( args[++i]);
-            }
-            else if (args[i].equals("--datafile"))
-                dataFile = new File(args[++i]);
-            else if (args[i].equals("--destination"))
-                destinationDirectory = new File(args[++i]);
-            else if (args[i].equals("--ignore"))
-            {
-                String regex = args[++i];
-                try
-                {
-                    Perl5Compiler pc = new Perl5Compiler();
-                    this.ignoreRegexes.add(pc.compile(regex));
-                }
-                catch (MalformedPatternException e)
-                {
-                    logger.warn("The regular expression " + regex
-                            + " is invalid: " + e.getLocalizedMessage());
-                }
-            }
+		// Parse our parameters
+		List filePaths = new ArrayList();
+		for (int i = 0; i < args.length; i++)
+		{
+			if (args[i].equals("--basedir"))
+			{
+				filePaths.add(args[i]);
+				filePaths.add(args[++i]);
+			}
+			else if (args[i].equals("--datafile"))
+				dataFile = new File(args[++i]);
+			else if (args[i].equals("--destination"))
+				destinationDirectory = new File(args[++i]);
+			else if (args[i].equals("--ignore"))
+			{
+				String regex = args[++i];
+				try
+				{
+					Perl5Compiler pc = new Perl5Compiler();
+					this.ignoreRegexes.add(pc.compile(regex));
+				}
+				catch (MalformedPatternException e)
+				{
+					logger.warn("The regular expression " + regex
+							+ " is invalid: " + e.getLocalizedMessage());
+				}
+			}
             else {
-            	filePaths.add( args[i]);
-            }
-        }
+				filePaths.add(args[i]);
+			}
+		}
 
-        // Load coverage data
-        projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-        if (projectData == null)
-            projectData = new ProjectData();
+		// Load coverage data
+		projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+		if (projectData == null)
+			projectData = new ProjectData();
 
-        // Instrument classes
-        String baseDir = null;
-		logger.debug( "Obtained " + filePaths.size() + " file path entries.");
-        Iterator iter = filePaths.iterator();
+		// Instrument classes
+		System.out.println("Instrumenting "	+ filePaths.size() + " "
+				+ (filePaths.size() == 1 ? "class" : "classes")
+				+ (destinationDirectory != null ? " to "
+						+ destinationDirectory.getAbsoluteFile() : ""));
+		String baseDir = null;
+		Iterator iter = filePaths.iterator();
         while (iter.hasNext()) {
-        	String act = (String) iter.next();
+			String act = (String)iter.next();
         	if( act.equals("--basedir")) {
-       			baseDir = (String) iter.next();
+				baseDir = (String)iter.next();
         	} else {
-        		addInstrumentation( baseDir, act);
-        	}
-        }
-        
-        // Save coverage data
-        CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
-    }
+				addInstrumentation(baseDir, act);
+			}
+		}
 
-    public static void main(String[] args)
-    {
-        long startTime = System.currentTimeMillis();
+		// Save coverage data
+		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
+	}
 
-        Main main = new Main();
+	public static void main(String[] args)
+	{
+		Header.print(System.out);
 
-        boolean hasCommandsFile = false;
-        String commandsFileName = null;
-        for (int i = 0; i < args.length; i++)
-        {
-            if (args[i].equals("--commandsfile"))
-            {
-                hasCommandsFile = true;
-                commandsFileName = args[++i];
-            }
-        }
+		long startTime = System.currentTimeMillis();
 
-        if (hasCommandsFile)
-        {
-            List arglist = new ArrayList();
-            BufferedReader bufferedReader = null;
+		Main main = new Main();
 
-            try
-            {
-                bufferedReader = new BufferedReader(new FileReader(
-                        commandsFileName));
-                String line;
+		boolean hasCommandsFile = false;
+		String commandsFileName = null;
+		for (int i = 0; i < args.length; i++)
+		{
+			if (args[i].equals("--commandsfile"))
+			{
+				hasCommandsFile = true;
+				commandsFileName = args[++i];
+			}
+		}
 
-                while ((line = bufferedReader.readLine()) != null)
-                    arglist.add(line);
+		if (hasCommandsFile)
+		{
+			List arglist = new ArrayList();
+			BufferedReader bufferedReader = null;
 
-            }
-            catch (IOException e)
-            {
-                logger.fatal("Unable to read temporary commands file "
-                        + commandsFileName + ".");
-                logger.info(e);
-            }
-            finally
-            {
-                if (bufferedReader != null)
-                {
-                    try
-                    {
-                        bufferedReader.close();
-                    }
-                    catch (IOException e)
-                    {
-                    }
-                }
-            }
+			try
+			{
+				bufferedReader = new BufferedReader(new FileReader(
+						commandsFileName));
+				String line;
 
-            args = (String[])arglist.toArray(new String[arglist.size()]);
-        }
+				while ((line = bufferedReader.readLine()) != null)
+					arglist.add(line);
 
-        main.parseArguments(args);
+			}
+			catch (IOException e)
+			{
+				logger.fatal("Unable to read temporary commands file "
+						+ commandsFileName + ".");
+				logger.info(e);
+			}
+			finally
+			{
+				if (bufferedReader != null)
+				{
+					try
+					{
+						bufferedReader.close();
+					}
+					catch (IOException e)
+					{
+					}
+				}
+			}
 
-        long stopTime = System.currentTimeMillis();
-        System.out.println("Instrument time: " + (stopTime - startTime) + "ms");
-    }
+			args = (String[])arglist.toArray(new String[arglist.size()]);
+		}
+
+		main.parseArguments(args);
+
+		long stopTime = System.currentTimeMillis();
+		System.out.println("Instrument time: " + (stopTime - startTime) + "ms");
+	}
 
 }

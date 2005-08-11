@@ -60,8 +60,6 @@ package net.sourceforge.cobertura.ant;
 
 import java.util.Iterator;
 
-import net.sourceforge.cobertura.util.Header;
-
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
@@ -143,7 +141,6 @@ public class InstrumentTask extends CommonMatchingTask
 
 	private void handleFilesets()
 	{
-		int numberOfClasses = 0;
 		Iterator iter = fileSets.iterator();
 		while (iter.hasNext())
 		{
@@ -151,16 +148,8 @@ public class InstrumentTask extends CommonMatchingTask
 
 			addArg("--basedir");
 			addArg(baseDir(fileSet));
-
-			String[] fileNames = getFilenames(fileSet);
-			numberOfClasses += fileNames.length;
 			addFilenames(getFilenames(fileSet));
 		}
-
-		Header.print(System.out);
-		System.out.println("instrumenting " + numberOfClasses + " "
-				+ (numberOfClasses == 1 ? "class" : "classes")
-				+ (toDir != null ? " to " + toDir : ""));
 	}
 
 	public void setDataFile(String dataFile)
