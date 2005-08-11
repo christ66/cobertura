@@ -2,6 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Jeremy Thomerson
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -21,128 +22,184 @@
 package net.sourceforge.cobertura.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 
 /**
- * This class allows you to add multiple source directories
- * and file paths to it, and it will find in which of those
- * base directories the file exists.
+ * Maps source file names to existing files. After adding description
+ * of places files can be found in, it can be used to localize 
+ * the files. 
+ * 
+ * <p>
+ * FileFinder supports two types of source files locations:
+ * <ul>
+ *     <li>source root directory, defines the directory under 
+ *     which source files are located,</li>
+ *     <li>pair (base directory, file path relative to base directory).</li>
+ * </ul>
+ * The difference between these two is that in case of the first you add all
+ * source files under the specified root directory, and in the second you add
+ * exactly one file. In both cases file to be found has to be located under 
+ * subdirectory that maps to package definition provided with the source file name.      
  *  
  * @author Jeremy Thomerson
  */
 public class FileFinder {
 
 	private static Logger LOGGER = Logger.getLogger(FileFinder.class);
-	private List baseDirectories = new ArrayList();
-	private List sourceFilePaths = new ArrayList();
 	
-	private List cached = null;
-	private boolean changed;
+	// Contains Strings with directory paths
+	private Set sourceDirectories = new HashSet();
 	
-	public FileFinder() {
-		// no-op
-	}
-	
-	public void addBaseDirectory(File path) {
-		change();
-		baseDirectories.add(path);
+	// Contains pairs (String directoryRoot, Set fileNamesRelativeToRoot)
+	private Map sourceFilesMap = new HashMap();
+
+	/**
+	 * Adds directory that is a root of sources. A source file
+	 * that is under this directory will be found if relative
+	 * path to the file from root matches package name.
+	 * <p>
+	 * Example:
+	 * <pre>
+	 * fileFinder.addSourceDirectory( "C:/MyProject/src/main");
+	 * fileFinder.addSourceDirectory( "C:/MyProject/src/test");
+	 * </pre>
+	 * In path both / and \ can be used.
+	 * </p> 
+	 * 
+	 * @param directory The root of source files 
+	 * @throws NullPointerException if <code>directory</code> is <code>null</code>
+	 */
+	public void addSourceDirectory( String directory) {
+		if( LOGGER.isDebugEnabled())
+			LOGGER.debug( "Adding sourceDirectory=[" + directory + "]");
+
+		// Change \ to / in case of Windows users
+		directory = getCorrectedPath(directory);
+		sourceDirectories.add(directory);
 	}
 
-	public void addSourceFilePath(String path) {
-		change();
-		sourceFilePaths.add(getCorrectedPath(path));
-	}
+	/**
+	 * Adds file by specifying root directory and relative path to the
+	 * file in it. Adds exactly one file, relative path should match
+	 * package that the source file is in, otherwise it will be not
+	 * found later.
+	 * <p>
+	 * Example:
+	 * <pre>
+	 * fileFinder.addSourceFile( "C:/MyProject/src/main", "com/app/MyClass.java");
+	 * fileFinder.addSourceFile( "C:/MyProject/src/test", "com/app/MyClassTest.java");
+	 * </pre>
+	 * In paths both / and \ can be used.
+	 * </p>
+	 * 
+	 * @param baseDir sources root directory
+	 * @param file path to source file relative to <code>baseDir</code>
+	 * @throws NullPointerException if either <code>baseDir</code> or <code>file</code> is <code>null</code>
+	 */
+	public void addSourceFile( String baseDir, String file) {
+		if( LOGGER.isDebugEnabled())
+			LOGGER.debug( "Adding sourceFile baseDir=[" + baseDir + "] file=[" + file + "]");
+
+		if( baseDir==null || file==null)
+			throw new NullPointerException();
 	
-    private String getCorrectedPath(String path) {
-        return path.replace('/', '\\');
-    }
-    
-	public List getBaseDirectories() {
-		return new ArrayList(baseDirectories);
-	}
-	
-	public List getFilePaths() {
-		compute();
-		return new ArrayList(cached);
-	}
-	
-    public File findFile(String filePart) {
-        compute();
-        List mine = Collections.EMPTY_LIST;
-        synchronized(this) {
-            mine = new ArrayList(cached);
-        }
-        String tempFilePart = getCorrectedPath(filePart);
-        for (Iterator it = mine.iterator(); it.hasNext(); ) {
-            String path = (String) it.next();
-            if (path.endsWith(tempFilePart)) {
-                return new File(path);
-            }
-        }
-        return null;
-    }
-    
-    public File[] findDirectory(String filePart) {
-        compute();
-        List mine = Collections.EMPTY_LIST;
-        synchronized(this) {
-            mine = new ArrayList(cached);
-        }
-        Set paths = new HashSet();
-        String tempFilePart = getCorrectedPath(filePart);
-        for (Iterator it = mine.iterator(); it.hasNext(); ) {
-            String path = (String) it.next();
-            if (new File(path).getParent().endsWith(tempFilePart)) {
-                paths.add(new File(path).getParentFile());
-            }
-        }
-        
-        return (File[]) paths.toArray(new File[paths.size()]);
-    }
-    
-	private synchronized void change() {
-		changed = true;
-	}
-	
-	private synchronized boolean isChanged() {
-		return changed;
-	}
-	
-	private synchronized void compute() {
-		if (isChanged()) {
-			List results = new ArrayList(sourceFilePaths.size());
-			for (Iterator it = sourceFilePaths.iterator(); it.hasNext(); ) {
-				String filePart = (String) it.next();
-				String path = getPath(filePart);
-				if (path != null) {
-					results.add(path);
-				} else {
-					LOGGER.warn("File not found for: " + filePart + "(base directories: " + baseDirectories + ")");
-				}
-			}
-			cached = results;
-			changed = false;
+		// Change \ to / in case of Windows users
+		file = getCorrectedPath( file);
+		baseDir = getCorrectedPath( baseDir);
+		
+		// Add file to sourceFilesMap
+		Set container = (Set) sourceFilesMap.get(baseDir);
+		if( container==null) {
+			container = new HashSet();
+			sourceFilesMap.put( baseDir, container);
 		}
+		container.add( file);
 	}
-	
-	private String getPath(String path) {
-		String result = null;
-		for (Iterator it = baseDirectories.iterator(); it.hasNext(); ) {
-			File baseDir = (File) it.next();
-			File file = new File(baseDir, path);
-			if (file.exists()) {
-				result = file.getAbsolutePath();
+
+	/**
+	 * Maps source file name to existing file.
+	 * When mapping file name first values that were added with
+	 * {@link #addSourceDirectory} and later added with {@link #addSourceFile} are checked.
+	 * 
+	 * @param fileName source file to be mapped
+	 * @return existing file that maps to passed sourceFile 
+	 * @throws IOException if cannot map source file to existing file
+	 * @throws NullPointerException if sourceFile is null
+	 */
+	public File getFileForSource(String fileName) throws IOException {
+		// Correct file name
+		if( LOGGER.isDebugEnabled())
+			LOGGER.debug( "Searching for file, name=[" + fileName + "]");
+		fileName = getCorrectedPath( fileName);
+
+		// Check inside sourceDirectories
+		for( Iterator it=sourceDirectories.iterator(); it.hasNext();) {
+			String directory = (String)it.next();
+			File file = new File( directory, fileName);
+			if( file.isFile()) {
+				LOGGER.debug( "Found inside sourceDirectories");
+				return file;
 			}
 		}
 		
+		// Check inside sourceFilesMap
+		for( Iterator it=sourceFilesMap.keySet().iterator(); it.hasNext();) {
+			String directory = (String)it.next();
+			Set container = (Set) sourceFilesMap.get(directory);
+			if( !container.contains( fileName))
+				continue;
+			File file = new File( directory, fileName);
+			if( file.isFile()) {
+				LOGGER.debug( "Found inside sourceFilesMap");
+				return file;
+			}
+		}
+
+		// Have not found? Throw an error.
+		LOGGER.debug( "File not found");
+		throw new IOException( "Cannot find source file, name=["+fileName+"]");
+	}
+
+	/**
+	 * Returns a list with string for all source directories.
+	 * Example: <code>[C:/MyProject/src/main,C:/MyProject/src/test]</code>
+	 * 
+	 * @return list with Strings for all source roots, or empty list if no source roots were specified 
+	 */
+	public List getSourceDirectoryList() {
+		// Get names from sourceDirectories
+		List result = new ArrayList();
+		for( Iterator it=sourceDirectories.iterator(); it.hasNext();) {
+			result.add( it.next());
+		}
+		
+		// Get names from sourceFilesMap
+		for( Iterator it=sourceFilesMap.keySet().iterator(); it.hasNext();) {
+			result.add(it.next());
+		}
+		
+		// Return combined names
 		return result;
 	}
+
+    private String getCorrectedPath(String path) {
+        return path.replace('\\', '/');
+    }
+
+    /**
+     * Returns string representation of FileFinder.
+     */
+    public String toString() {
+    	return "FileFinder, source directories: " + getSourceDirectoryList().toString();
+    }
 }

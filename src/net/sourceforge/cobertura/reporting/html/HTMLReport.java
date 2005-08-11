@@ -43,7 +43,7 @@ import java.util.Vector;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
-import net.sourceforge.cobertura.reporting.Util;
+import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
@@ -58,17 +58,20 @@ public class HTMLReport
 	private File destinationDir;
 
 	private FileFinder finder;
+	
+	private ComplexityCalculator complexity;
 
 	private ProjectData projectData;
 
 	/**
 	 * Create a coverage report
 	 */
-	public HTMLReport(ProjectData projectData, File outputDir, FileFinder finder)
+	public HTMLReport(ProjectData projectData, File outputDir, FileFinder finder, ComplexityCalculator complexity)
 			throws Exception
 	{
 		this.destinationDir = outputDir;
 		this.finder = finder;
+		this.complexity = complexity;
 		this.projectData = projectData;
 
 		CopyFiles.copy(outputDir);
@@ -462,7 +465,8 @@ public class HTMLReport
 			BufferedReader br = null;
 			try
 			{
-				File sourceFile = finder.findFile(sourceFileData.getName());
+				// TODO: If file was not found, do not generate a table with source at all.
+				File sourceFile = finder.getFileForSource(sourceFileData.getName());
 				br = new BufferedReader(new FileReader(sourceFile));
 				String lineStr;
 				JavaToHtml javaToHtml = new JavaToHtml();
@@ -652,17 +656,8 @@ public class HTMLReport
 		StringBuffer ret = new StringBuffer();
 		double lineCoverage = -1;
 		double branchCoverage = -1;
+        double ccn = complexity.getCCNForProject(projectData);
 		
-		double ccnSum = 0;
-		int count = 0;
-		for (Iterator it = finder.getBaseDirectories().iterator(); it.hasNext(); ) {
-			File basedir = (File) it.next();
-			ccnSum += Util.getCCN(basedir.getAbsoluteFile(), true);
-			count++;
-		}
-		
-		double ccn = ccnSum / (double) count;
-
 		if (projectData.getNumberOfValidLines() > 0)
 			lineCoverage = projectData.getLineCoverageRate();
 		if (projectData.getNumberOfValidBranches() > 0)
@@ -685,7 +680,7 @@ public class HTMLReport
 		String url2 = "frame-sourcefiles-" + packageData.getName() + ".html";
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-        double ccn = packageData.getCCN(finder);
+        double ccn = complexity.getCCNForPackage(packageData);
 
 		if (packageData.getNumberOfValidLines() > 0)
 			lineCoverage = packageData.getLineCoverageRate();
@@ -709,11 +704,7 @@ public class HTMLReport
 		StringBuffer ret = new StringBuffer();
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-		File file = finder.findFile(sourceFileData.getName());
-		if (file == null) {
-			System.out.println("FILE IS NULL: " + sourceFileData.getName());
-		}
-		double ccn = Util.getCCN(file, false);
+		double ccn = complexity.getCCNForSourceFile(sourceFileData);
 
 		if (sourceFileData.getNumberOfValidLines() > 0)
 			lineCoverage = sourceFileData.getLineCoverageRate();

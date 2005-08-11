@@ -71,7 +71,7 @@ public class XMLReportTest extends TestCase
 
 		// Then we need to generate the XML report
 		args = new String[] { "--format", "xml", "--datafile", dataFileName, "--destination",
-				pathToTestOutput, "--source", pathToSourceCode };
+				pathToTestOutput, pathToSourceCode };
 		net.sourceforge.cobertura.reporting.Main.main(args);
 
 		// Create a validating XML document parser

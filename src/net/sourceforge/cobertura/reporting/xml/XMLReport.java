@@ -38,7 +38,7 @@ import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
-import net.sourceforge.cobertura.reporting.Util;
+import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.StringUtil;
@@ -54,11 +54,13 @@ public class XMLReport
 
 	private final PrintWriter pw;
 	private final FileFinder finder;
+	private final ComplexityCalculator complexity;
 	private int indent = 0;
 
 	public XMLReport(ProjectData projectData, File destinationDir,
-			FileFinder finder) throws IOException
+			FileFinder finder, ComplexityCalculator complexity) throws IOException
 	{
+		this.complexity = complexity;
 		this.finder = finder;
 
 		pw = new PrintWriter(new FileWriter(new File(destinationDir,
@@ -120,17 +122,17 @@ public class XMLReport
 	{
 		println("<sources>");
 		increaseIndentation();
-		for (Iterator it = finder.getBaseDirectories().iterator(); it.hasNext(); ) {
-			File dir = (File) it.next();
+		for (Iterator it = finder.getSourceDirectoryList().iterator(); it.hasNext(); ) {
+			String dir = (String) it.next();
 			dumpSource(dir);
 		}
 		decreaseIndentation();
 		println("</sources>");
 	}
 
-	private void dumpSource(File sourceDirectory)
+	private void dumpSource(String sourceDirectory)
 	{
-		println("<source>" + sourceDirectory.getAbsolutePath() + "</source>");
+		println("<source>" + sourceDirectory + "</source>");
 	}
 
 	private void dumpPackages(ProjectData projectData)
@@ -152,11 +154,10 @@ public class XMLReport
 	{
 		logger.debug("Dumping package " + packageData.getName());
 
-        double ccn = packageData.getCCN(finder);
 		println("<package name=\"" + packageData.getName()
 				+ "\" line-rate=\"" + packageData.getLineCoverageRate()
 				+ "\" branch-rate=\"" + packageData.getBranchCoverageRate()
-				+ "\" complexity=\"" + ccn + "\"" + ">");
+				+ "\" complexity=\"" + complexity.getCCNForPackage(packageData) + "\"" + ">");
 		increaseIndentation();
 		dumpSourceFiles(packageData);
 		decreaseIndentation();
@@ -191,13 +192,11 @@ public class XMLReport
 	{
 		logger.debug("Dumping class " + classData.getName());
 
-		double ccn = Util.getCCN(finder.findFile(classData
-				.getSourceFileName()), false);
 		println("<class name=\"" + classData.getName() + "\" filename=\""
 				+ classData.getSourceFileName() + "\" line-rate=\""
 				+ classData.getLineCoverageRate() + "\" branch-rate=\""
 				+ classData.getBranchCoverageRate() + "\" complexity=\""
-				+ ccn + "\"" + ">");
+				+ complexity.getCCNForClass(classData) + "\"" + ">");
 		increaseIndentation();
 
 		dumpMethods(classData);

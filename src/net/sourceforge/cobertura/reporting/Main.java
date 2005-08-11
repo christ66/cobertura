@@ -48,9 +48,10 @@ public class Main {
 	
 	private void parseArguments(String[] args) throws Exception {
 		FileFinder finder = new FileFinder();
+		String baseDir = null;
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("--basedir")) {
-				finder.addBaseDirectory(new File(args[++i]));
+				baseDir = args[++i];
 			} else if (args[i].equals("--datafile")) {
 				setDataFile( args[++i]);
 			} else if (args[i].equals("--destination")) {
@@ -58,7 +59,11 @@ public class Main {
 			} else if (args[i].equals("--format")) {
 				setFormat( args[++i]);
 			} else {
-				finder.addSourceFilePath(args[i]);
+            	if( baseDir==null) {
+            		finder.addSourceDirectory( args[i]);
+            	} else {
+            		finder.addSourceFile( baseDir, args[i]);
+            	}
 			}
 		}
 
@@ -92,10 +97,11 @@ public class Main {
 			System.exit(1);
 		}
 
+		ComplexityCalculator complexity = new ComplexityCalculator(finder);
 		if (format.equalsIgnoreCase("html")) {
-			new HTMLReport(projectData, destinationDir, finder);
+			new HTMLReport(projectData, destinationDir, finder, complexity);
 		} else if (format.equalsIgnoreCase("xml")) {
-			new XMLReport(projectData, destinationDir, finder);
+			new XMLReport(projectData, destinationDir, finder, complexity);
 		}
 	}
 	
