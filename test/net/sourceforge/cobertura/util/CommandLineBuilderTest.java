@@ -25,6 +25,7 @@
 package net.sourceforge.cobertura.util;
 
 import java.io.File;
+import java.io.IOException;
 
 import junit.framework.TestCase;
 
@@ -150,13 +151,17 @@ public class CommandLineBuilderTest extends TestCase {
 		String[] result = CommandLineBuilder.preprocessCommandLineArguments( args);
 		assertSame( args, result);
 		
-		args = new String[]{ "Hello", "--commandsfile" };
-		result = CommandLineBuilder.preprocessCommandLineArguments( args);
-		assertSame( args, result);
+		try {
+			args = new String[]{ "Hello", "--commandsfile" };
+			result = CommandLineBuilder.preprocessCommandLineArguments( args);
+			fail( "IllegalArgumentException expected");
+		} catch( IllegalArgumentException ex) {}
 
-		args = new String[]{ "Hello", "--commandsfile", "hello.cmd" };
-		result = CommandLineBuilder.preprocessCommandLineArguments( args);
-		assertSame( args, result);
+		try {
+			args = new String[]{ "Hello", "--commandsfile", "hello.cmd" };
+			result = CommandLineBuilder.preprocessCommandLineArguments( args);
+			fail( "IO Exception expected");
+		} catch( IOException ex) {}
 	}
 	
 }
