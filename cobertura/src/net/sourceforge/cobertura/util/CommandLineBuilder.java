@@ -175,15 +175,16 @@ public class CommandLineBuilder {
 	 * @return arguments readed from commandsfile, or <code>args</code> if commandsfile option
 	 * was not specified, or file cannot be readed
 	 * @throws NullPointerException if args is null, or any argument is null
+	 * @throws IllegalArgumentException if --commandsfile is specified as last option
+	 * @throws IOException if I/O related error with temporary command line file occur
 	 */
-	public static String[] preprocessCommandLineArguments(String[] args) {
+	public static String[] preprocessCommandLineArguments(String[] args) throws IOException {
 		boolean hasCommandsFile = false;
 		String commandsFileName = null;
 		for (int i = 0; i < args.length; i++) {
 			if ( args[i].equals( "--commandsfile")) {
 				if( i==args.length-1) {
-					logger.fatal( "'--commandsfile' specified as last option, ignoring.");
-					return args;
+					throw new IllegalArgumentException("'--commandsfile' specified as last option.");
 				}
 				hasCommandsFile = true;
 				commandsFileName = args[++i];
@@ -203,10 +204,9 @@ public class CommandLineBuilder {
 					arglist.add(line);
 
 			} catch (IOException e) {
-				logger.fatal("Unable to read temporary commands file "
-						+ commandsFileName + ".");
 				logger.info(e);
-				return args;
+				throw new IOException( "Unable to read temporary commands file "
+						+ commandsFileName + ".");
 			} finally {
 				if (bufferedReader != null) {
 					try {

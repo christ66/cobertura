@@ -151,7 +151,13 @@ public class Main {
 
 		Main main = new Main();
 
-        args = CommandLineBuilder.preprocessCommandLineArguments( args);
+		try {
+			args = CommandLineBuilder.preprocessCommandLineArguments( args);
+		} catch( Exception ex) {
+			System.err.println( "Error: Cannot process arguments: " + ex.getMessage());
+			System.exit(1);
+		}
+		
 		main.parseArguments(args);
 
 		long stopTime = System.currentTimeMillis();

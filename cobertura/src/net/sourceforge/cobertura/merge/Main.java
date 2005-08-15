@@ -68,7 +68,12 @@ public class Main
 	{
 		Header.print(System.out);
 
-		args = CommandLineBuilder.preprocessCommandLineArguments( args);
+		try {
+			args = CommandLineBuilder.preprocessCommandLineArguments( args);
+		} catch( Exception ex) {
+			System.err.println( "Error: Cannot process arguments: " + ex.getMessage());
+			System.exit(1);
+		}
 		new Main(args);
 	}
 }
