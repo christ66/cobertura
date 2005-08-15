@@ -4,6 +4,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Jeremy Thomerson
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -23,17 +24,13 @@
 
 package net.sourceforge.cobertura.reporting;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.html.HTMLReport;
 import net.sourceforge.cobertura.reporting.xml.XMLReport;
+import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
 
@@ -154,41 +151,7 @@ public class Main {
 
 		Main main = new Main();
 
-		boolean hasCommandsFile = false;
-		String commandsFileName = null;
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("--commandsfile")) {
-				hasCommandsFile = true;
-				commandsFileName = args[++i];
-			}
-		}
-
-		if (hasCommandsFile) {
-			List arglist = new ArrayList();
-			BufferedReader bufferedReader = null;
-
-			try {
-				bufferedReader = new BufferedReader(new FileReader(commandsFileName));
-				String line = null;
-
-				while ((line = bufferedReader.readLine()) != null) {
-					arglist.add(line);
-				}
-			} catch (IOException e) {
-				LOGGER.fatal("Unable to read temporary commands file " + commandsFileName + ".", e);
-			} finally {
-				if (bufferedReader != null) {
-					try {
-						bufferedReader.close();
-					} catch (IOException e) {
-						// no-op
-					}
-				}
-			}
-
-			args = (String[])arglist.toArray(new String[arglist.size()]);
-		}
-
+        args = CommandLineBuilder.preprocessCommandLineArguments( args);
 		main.parseArguments(args);
 
 		long stopTime = System.currentTimeMillis();

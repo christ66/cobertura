@@ -6,6 +6,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Joakim Erdfelt
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -58,17 +59,17 @@
 package net.sourceforge.cobertura.ant;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.tools.ant.AntClassLoader;
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
@@ -82,15 +83,10 @@ import org.apache.tools.ant.util.SourceFileScanner;
 public abstract class CommonMatchingTask extends MatchingTask
 {
 
-	private static final String LINESEP = System
-			.getProperty("line.separator");
-
 	final String className;
 	final List fileSets = new LinkedList();
 
 	private Java java = null;
-	private File commandLineFile = null;
-	private FileWriter commandLineWriter = null;
 
 	File toDir = null;
 
@@ -102,68 +98,6 @@ public abstract class CommonMatchingTask extends MatchingTask
 	private String getClassName()
 	{
 		return className;
-	}
-
-	protected void initArgs()
-	{
-		try
-		{
-			commandLineFile = File.createTempFile("cobertura.", ".cmdline");
-			commandLineFile.deleteOnExit();
-			commandLineWriter = new FileWriter(commandLineFile);
-		}
-		catch (IOException ioe)
-		{
-			getProject().log(
-					"Error initializing commands file "
-							+ commandLineFile.getAbsolutePath(),
-					Project.MSG_ERR);
-			throw new BuildException("Unable to initialize commands file.",
-					ioe);
-		}
-	}
-
-	protected void addArg(String arg)
-	{
-		try
-		{
-			commandLineWriter.write(arg + LINESEP);
-		}
-		catch (IOException ioe)
-		{
-			getProject().log(
-					"Error writing commands file "
-							+ commandLineFile.getAbsolutePath(),
-					Project.MSG_ERR);
-			ioe.printStackTrace();
-			throw new BuildException("Unable to write to commands file.", ioe);
-		}
-	}
-
-	protected void saveArgs()
-	{
-		try
-		{
-			commandLineWriter.flush();
-			commandLineWriter.close();
-		}
-		catch (IOException ioe)
-		{
-			getProject().log(
-					"Error saving commands file "
-							+ commandLineFile.getAbsolutePath(),
-					Project.MSG_ERR);
-			throw new BuildException("Unable to save the commands file.", ioe);
-		}
-
-		/* point to commands file */
-		getJava().createArg().setValue("--commandsfile");
-		getJava().createArg().setValue(commandLineFile.getAbsolutePath());
-	}
-
-	protected void unInitArgs()
-	{
-		commandLineFile.delete();
 	}
 
 	protected Java getJava()
@@ -206,6 +140,27 @@ public abstract class CommonMatchingTask extends MatchingTask
 		return java;
 	}
 
+	protected void createArgumentsForFilesets( CommandLineBuilder builder) throws IOException {
+		Iterator iter = fileSets.iterator();
+		while (iter.hasNext())
+		{
+			FileSet fileSet = (FileSet)iter.next();
+
+			builder.addArg("--basedir", baseDir(fileSet));
+			createArgumentsForFilenames( builder, getFilenames(fileSet));
+		}
+	}
+
+	private void createArgumentsForFilenames( CommandLineBuilder builder, String[] filenames) throws IOException
+	{
+		for (int i = 0; i < filenames.length; i++)
+		{
+			getProject().log("Adding " + filenames[i] + " to list",
+					Project.MSG_VERBOSE);
+			builder.addArg(filenames[i]);
+		}
+	}
+	
 	public void setTodir(File toDir)
 	{
 		this.toDir = toDir;

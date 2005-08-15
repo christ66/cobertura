@@ -6,6 +6,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Joakim Erdfelt
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -57,10 +58,13 @@
 
 package net.sourceforge.cobertura.ant;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import net.sourceforge.cobertura.util.CommandLineBuilder;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -74,38 +78,8 @@ public class MergeTask extends CommonMatchingTask
 		super("net.sourceforge.cobertura.merge.Main");
 	}
 
-	void merge(String[] filenames)
+	void handleFilesets( CommandLineBuilder builder) throws IOException
 	{
-		if (filenames.length == 0)
-		{
-			return;
-		}
-
-		for (int i = 0; i < filenames.length; i++)
-		{
-			getProject().log("Adding " + filenames[i] + " to list",
-					Project.MSG_VERBOSE);
-			addArg("--datafile");
-			addArg(filenames[i]);
-		}
-
-		saveArgs();
-
-		if (getJava().executeJava() != 0)
-		{
-			throw new BuildException();
-		}
-	}
-
-	public void execute() throws BuildException
-	{
-		initArgs();
-		if (toDir != null)
-		{
-			addArg("--output");
-			addArg(toDir.toString());
-		}
-
 		Set filenames = new HashSet();
 		Iterator i = fileSets.iterator();
 		while (i.hasNext())
@@ -113,9 +87,44 @@ public class MergeTask extends CommonMatchingTask
 			FileSet fileSet = (FileSet)i.next();
 			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
 		}
+		
+		Iterator it = filenames.iterator();
+		while( it.hasNext()) {
+			String fileName = (String) it.next();
+			getProject().log("Adding " + fileName + " to list",
+					Project.MSG_VERBOSE);
+			builder.addArg("--datafile", fileName);
+		}
+	}
 
-		merge((String[])filenames.toArray(new String[filenames.size()]));
+	public void execute() throws BuildException {
+		CommandLineBuilder builder = null;
+		try {
+			builder = new CommandLineBuilder();
+			if (toDir != null)
+				builder.addArg("--output", toDir.getAbsolutePath());
 
-		unInitArgs();
+			handleFilesets(builder);
+
+			builder.saveArgs();
+		} catch (IOException ioe) {
+			getProject().log("Error creating commands file.", Project.MSG_ERR);
+			throw new BuildException("Unable to create the commands file.", ioe);
+		}
+
+		/**
+		 * TODO: Do something here so that we can set System.in and System.out
+		 * on getJava() to the one we're using now. So that when instrumentation
+		 * calls System.out, it will show up as "[instrument] doing stuff"
+		 * instead of "[java] doing stuff" in the ant output.
+		 */
+		getJava().createArg().setValue("--commandsfile");
+		getJava().createArg().setValue(builder.getCommandLineFile());
+		if (getJava().executeJava() != 0) {
+			throw new BuildException(
+					"Error running reports. See messages above.");
+		}
+
+		builder.dispose();
 	}
 }
