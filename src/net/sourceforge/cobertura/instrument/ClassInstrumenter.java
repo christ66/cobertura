@@ -34,7 +34,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-class ClassInstrumenter extends ClassAdapter implements Opcodes
+class ClassInstrumenter extends ClassAdapter
 {
 
 	private static final Logger logger = Logger
@@ -99,7 +99,7 @@ class ClassInstrumenter extends ClassAdapter implements Opcodes
 
 		// Do not attempt to instrument interfaces or classes that
 		// have already been instrumented
-		if (((access & ACC_INTERFACE) != 0)
+		if (((access & Opcodes.ACC_INTERFACE) != 0)
 				|| arrayContains(interfaces, hasBeenInstrumented))
 		{
 			// TODO: Need to also skip classes whose parent implements hasBeenInstrumented
