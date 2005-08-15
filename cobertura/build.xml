@@ -183,7 +183,7 @@
 		<delete dir="${build.test.reports.dir}/junit-html" />
 		<mkdir dir="${build.test.reports.dir}/junit-html" />
 
-		<junitreport todir="${build.test.reports.dir}/junit-xml">
+		<junitreport todir="${build.test.reports.dir}/junit-html">
 			<fileset dir="${build.test.reports.dir}/junit-xml">
 				<include name="TEST-*.xml" />
 			</fileset>
