@@ -134,7 +134,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		}
 		catch (IOException e)
 		{
-			logger.error(e);
+			logger.error( "Cannot save coverage data", e);
 		}
 		finally
 		{
@@ -146,7 +146,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 				}
 				catch (IOException e)
 				{
-					logger.debug(e);
+					logger.debug( "Problems with coverage data stream close", e);
 				}
 			}
 		}
@@ -166,7 +166,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		}
 		catch (IOException e)
 		{
-			logger.error(e);
+			logger.error( "Cannot save coverage data", e);
 		}
 		finally
 		{
@@ -178,7 +178,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 				}
 				catch (IOException e)
 				{
-					logger.debug(e);
+					logger.debug( "Problems with stream close", e);
 				}
 			}
 		}
