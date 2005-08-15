@@ -204,7 +204,7 @@ public class CommandLineBuilder {
 					arglist.add(line);
 
 			} catch (IOException e) {
-				logger.info(e);
+				logger.info( "I/O error when reading temporary commands file", e);
 				throw new IOException( "Unable to read temporary commands file "
 						+ commandsFileName + ".");
 			} finally {
