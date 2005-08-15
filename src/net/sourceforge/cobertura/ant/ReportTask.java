@@ -6,6 +6,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Jeremy Thomerson
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -58,11 +59,12 @@
 package net.sourceforge.cobertura.ant;
 
 import java.io.File;
-import java.util.Iterator;
+import java.io.IOException;
+
+import net.sourceforge.cobertura.util.CommandLineBuilder;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
 
 /**
  * Generate a coverage report based on coverage data generated 
@@ -80,74 +82,41 @@ public class ReportTask extends CommonMatchingTask
 		super("net.sourceforge.cobertura.reporting.Main");
 	}
 	
-	private void addFilenames(String[] filenames)
-	{
-		if (filenames.length == 0)
-		{
-			return;
+	public void execute() throws BuildException {
+		CommandLineBuilder builder = null;
+		try {
+			builder = new CommandLineBuilder();
+			if (dataFile != null)
+				builder.addArg("--datafile", dataFile);
+			if (destDir != null)
+				builder.addArg("--destination", destDir.getAbsolutePath());
+			if (format != null)
+				builder.addArg("--format", format);
+			if (srcDir != null)
+				builder.addArg(srcDir);
+
+			createArgumentsForFilesets(builder);
+
+			builder.saveArgs();
+		} catch (IOException ioe) {
+			getProject().log("Error creating commands file.", Project.MSG_ERR);
+			throw new BuildException("Unable to create the commands file.", ioe);
 		}
-
-		for (int i = 0; i < filenames.length; i++)
-		{
-			getProject().log("Adding " + filenames[i] + " to list",
-					Project.MSG_VERBOSE);
-			addArg(filenames[i]);
-		}
-	}
-
-	public void execute() throws BuildException
-	{
-		initArgs();
-
-		if (dataFile != null)
-		{
-			addArg("--datafile");
-			addArg(dataFile);
-		}
-		
-		addArg("--destination");
-		addArg(this.destDir.getAbsolutePath());
-		
-		addArg("--format");
-		addArg(format);
-		
-		if (srcDir != null) {
-			addArg(srcDir);
-		}
-
-		handleFilesets();
-
-		saveArgs();
 
 		/**
-		 * TODO: Do something here so that we can set System.in and System.out on
-		 * getJava() to the one we're using now.  So that when instrumentation calls
-		 * System.out, it will show up as "[instrument] doing stuff" instead of
-		 * "[java] doing stuff" in the ant output.
+		 * TODO: Do something here so that we can set System.in and System.out
+		 * on getJava() to the one we're using now. So that when instrumentation
+		 * calls System.out, it will show up as "[instrument] doing stuff"
+		 * instead of "[java] doing stuff" in the ant output.
 		 */
-		if (getJava().executeJava() != 0)
-		{
-			throw new BuildException("Error running reports. See messages above.");
+		getJava().createArg().setValue("--commandsfile");
+		getJava().createArg().setValue(builder.getCommandLineFile());
+		if (getJava().executeJava() != 0) {
+			throw new BuildException(
+					"Error running reports. See messages above.");
 		}
 
-		unInitArgs();
-	}
-
-	// TODO: InstrumentTask contains almost exactly the same code
-	private void handleFilesets() {
-		int numberOfClasses = 0;
-		Iterator iter = fileSets.iterator();
-		while (iter.hasNext())
-		{
-			FileSet fileSet = (FileSet)iter.next();
-
-			addArg("--basedir");
-			addArg(baseDir(fileSet));
-
-			String[] fileNames = getFilenames(fileSet);
-			numberOfClasses += fileNames.length;
-			addFilenames(fileNames);
-		}
+		builder.dispose();
 	}
 
 	public void setDataFile(String dataFile) {

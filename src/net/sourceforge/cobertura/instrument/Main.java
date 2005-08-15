@@ -25,12 +25,10 @@
 
 package net.sourceforge.cobertura.instrument;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,6 +43,7 @@ import java.util.zip.ZipOutputStream;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.IOUtil;
 
@@ -453,55 +452,7 @@ public class Main
 
 		Main main = new Main();
 
-		boolean hasCommandsFile = false;
-		String commandsFileName = null;
-		for (int i = 0; i < args.length; i++)
-		{
-			if (args[i].equals("--commandsfile"))
-			{
-				hasCommandsFile = true;
-				commandsFileName = args[++i];
-			}
-		}
-
-		if (hasCommandsFile)
-		{
-			List arglist = new ArrayList();
-			BufferedReader bufferedReader = null;
-
-			try
-			{
-				bufferedReader = new BufferedReader(new FileReader(
-						commandsFileName));
-				String line;
-
-				while ((line = bufferedReader.readLine()) != null)
-					arglist.add(line);
-
-			}
-			catch (IOException e)
-			{
-				logger.fatal("Unable to read temporary commands file "
-						+ commandsFileName + ".");
-				logger.info(e);
-			}
-			finally
-			{
-				if (bufferedReader != null)
-				{
-					try
-					{
-						bufferedReader.close();
-					}
-					catch (IOException e)
-					{
-					}
-				}
-			}
-
-			args = (String[])arglist.toArray(new String[arglist.size()]);
-		}
-
+		args = CommandLineBuilder.preprocessCommandLineArguments( args);
 		main.parseArguments(args);
 
 		long stopTime = System.currentTimeMillis();

@@ -58,11 +58,12 @@
 
 package net.sourceforge.cobertura.ant;
 
-import java.util.Iterator;
+import java.io.IOException;
+
+import net.sourceforge.cobertura.util.CommandLineBuilder;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
 
 public class InstrumentTask extends CommonMatchingTask
 {
@@ -76,80 +77,48 @@ public class InstrumentTask extends CommonMatchingTask
 		super("net.sourceforge.cobertura.instrument.Main");
 	}
 
-	private void addFilenames(String[] filenames)
-	{
-		if (filenames.length == 0)
-		{
-			return;
-		}
-
-		for (int i = 0; i < filenames.length; i++)
-		{
-			getProject().log("Adding " + filenames[i] + " to list",
-					Project.MSG_VERBOSE);
-			addArg(filenames[i]);
-		}
-	}
-
 	public Ignore createIgnore()
 	{
 		ignoreRegex = new Ignore();
 		return ignoreRegex;
 	}
 
-	public void execute() throws BuildException
-	{
-		initArgs();
+	public void execute() throws BuildException {
+		CommandLineBuilder builder = null;
+		try {
+			builder = new CommandLineBuilder();
+			if (dataFile != null)
+				builder.addArg("--datafile", dataFile);
+			if (toDir != null)
+				builder.addArg("--destination", toDir.getAbsolutePath());
 
-		if (dataFile != null)
-		{
-			addArg("--datafile");
-			addArg(dataFile);
+			// ignoreRegex.setRegex() is never called, but that's ok
+			// because ant sets it somehow, I think
+			if (ignoreRegex != null)
+				builder.addArg("--ignore", ignoreRegex.getRegex());
+
+			createArgumentsForFilesets(builder);
+
+			builder.saveArgs();
+		} catch (IOException ioe) {
+			getProject().log("Error creating commands file.", Project.MSG_ERR);
+			throw new BuildException("Unable to create the commands file.", ioe);
 		}
-
-		if (toDir != null)
-		{
-			addArg("--destination");
-			addArg(toDir.toString());
-		}
-
-		// ignoreRegex.setRegex() is never called, but that's ok
-		// because ant sets it somehow, I think
-		if (ignoreRegex != null)
-		{
-			addArg("--ignore");
-			addArg(ignoreRegex.getRegex());
-		}
-
-		handleFilesets();
-
-		saveArgs();
 
 		/**
-		 * TODO: Do something here so that we can set System.in and System.out on
-		 * getJava() to the one we're using now.  So that when instrumentation calls
-		 * System.out, it will show up as "[instrument] doing stuff" instead of
-		 * "[java] doing stuff" in the ant output.
+		 * TODO: Do something here so that we can set System.in and System.out
+		 * on getJava() to the one we're using now. So that when instrumentation
+		 * calls System.out, it will show up as "[instrument] doing stuff"
+		 * instead of "[java] doing stuff" in the ant output.
 		 */
-		if (getJava().executeJava() != 0)
-		{
-			throw new BuildException("Error instrumenting classes. See messages above.");
+		getJava().createArg().setValue("--commandsfile");
+		getJava().createArg().setValue(builder.getCommandLineFile());
+		if (getJava().executeJava() != 0) {
+			throw new BuildException(
+					"Error instrumenting classes. See messages above.");
 		}
 
-		unInitArgs();
-	}
-
-	private void handleFilesets()
-	{
-		Iterator iter = fileSets.iterator();
-		while (iter.hasNext())
-		{
-			FileSet fileSet = (FileSet)iter.next();
-
-			addArg("--basedir");
-			addArg(baseDir(fileSet));
-			addFilenames(getFilenames(fileSet));
-		}
+		builder.dispose();
 	}
 
 	public void setDataFile(String dataFile)

@@ -5,6 +5,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Joakim Erdfelt
  * Copyright (C) 2005 Mark Sinke
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -24,24 +25,15 @@
 
 package net.sourceforge.cobertura.merge;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Header;
-
-import org.apache.log4j.Logger;
 
 public class Main
 {
-
-	private static final Logger logger = Logger.getLogger(Main.class);
-
 	public Main(String[] args)
 	{
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
@@ -76,56 +68,7 @@ public class Main
 	{
 		Header.print(System.out);
 
-		boolean hasCommandsFile = false;
-		String commandsFileName = null;
-		for (int i = 0; i < args.length; i++)
-		{
-			if (args[i].equals("--commandsfile"))
-			{
-				hasCommandsFile = true;
-				commandsFileName = args[++i];
-			}
-		}
-
-		if (hasCommandsFile)
-		{
-			List arglist = new ArrayList();
-			BufferedReader bufreader = null;
-
-			try
-			{
-				bufreader = new BufferedReader(new FileReader(
-						commandsFileName));
-				String line;
-
-				while ((line = bufreader.readLine()) != null)
-				{
-					arglist.add(line);
-				}
-
-			}
-			catch (IOException e)
-			{
-				logger.fatal("Unable to read temporary commands file "
-						+ commandsFileName + ".");
-				logger.info(e);
-			}
-			finally
-			{
-				if (bufreader != null)
-				{
-					try
-					{
-						bufreader.close();
-					}
-					catch (IOException e)
-					{
-					}
-				}
-			}
-			args = (String[])arglist.toArray(new String[arglist.size()]);
-		}
-
+		args = CommandLineBuilder.preprocessCommandLineArguments( args);
 		new Main(args);
 	}
 }
