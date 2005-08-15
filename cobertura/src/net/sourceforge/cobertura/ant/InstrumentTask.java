@@ -105,12 +105,7 @@ public class InstrumentTask extends CommonMatchingTask
 			throw new BuildException("Unable to create the commands file.", ioe);
 		}
 
-		/**
-		 * TODO: Do something here so that we can set System.in and System.out
-		 * on getJava() to the one we're using now. So that when instrumentation
-		 * calls System.out, it will show up as "[instrument] doing stuff"
-		 * instead of "[java] doing stuff" in the ant output.
-		 */
+		// Execute GPL licensed code in separate virtual machine
 		getJava().createArg().setValue("--commandsfile");
 		getJava().createArg().setValue(builder.getCommandLineFile());
 		if (getJava().executeJava() != 0) {
