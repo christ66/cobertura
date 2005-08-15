@@ -99,13 +99,13 @@ public class FileFixture {
         if (fileRoot.isFile()) {
             fileRoot.delete();
             return;
-        } else {
-            File[] files = fileRoot.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                deleteTree(files[i]);
-            }
-            fileRoot.delete();
         }
+
+        File[] files = fileRoot.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            deleteTree(files[i]);
+        }
+        fileRoot.delete();
     }
 
     public void tearDown() {
