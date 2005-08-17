@@ -277,7 +277,7 @@ public class ClassData extends CoverageDataContainer
 		else
 		{
 			int firstDollarSign = getBaseName().indexOf('$');
-			if (firstDollarSign == -1)
+			if (firstDollarSign == -1 || firstDollarSign == 0)
 				baseName = getBaseName() + ".java";
 			else
 				baseName = getBaseName().substring(0, firstDollarSign)
