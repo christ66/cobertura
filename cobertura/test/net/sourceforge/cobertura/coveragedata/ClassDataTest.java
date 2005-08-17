@@ -235,6 +235,9 @@ public class ClassDataTest extends TestCase
 		assertEquals("org/jaxen/expr/NodeComparator.java", e.getSourceFileName());
 		
 		assertEquals( "DefaultPackageClass.java", defPckg.getSourceFileName());
+		
+		ClassData f = new ClassData("$strangeClass");
+		assertEquals( "$strangeClass.java", f.getSourceFileName());
 	}
 
 	public void testTouch()
