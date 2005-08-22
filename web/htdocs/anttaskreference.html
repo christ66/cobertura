@@ -24,8 +24,7 @@ via ant tasks.
 
 <p>
 You must tell Cobertura which class files to instrument by passing
-in standard ant filesets.  Note: As of Cobertura 1.4, we only
-support <b>one</b> fileset at a time.
+in standard ant filesets.
 </p>
 
 <p>
@@ -41,6 +40,10 @@ Example:
 <pre><code>&lt;cobertura-instrument todir="${instrumented.dir}"&gt;
     &lt;ignore regex="org.apache.log4j.*" /&gt;
     &lt;fileset dir="${classes.dir}"&gt;
+        &lt;include name="**/*.class" /&gt;
+        &lt;exclude name="**/*Test.class" /&gt;
+    &lt;/fileset&gt;
+    &lt;fileset dir="${guiclasses.dir}"&gt;
         &lt;include name="**/*.class" /&gt;
         &lt;exclude name="**/*Test.class" /&gt;
     &lt;/fileset&gt;
@@ -95,7 +98,7 @@ highlighted in <span class="highlight">blue</span>.
 It is important to set fork="true" because of the way Cobertura works.
 It only flushes its changes to the coverage data file to disk when
 the JVM exits.  If JUnit runs in the same JVM as ant, then the
-coverage data file will be updated AFTER, but you want to
+coverage data file will be updated AFTER ant exits, but you want to
 run cobertura-report BEFORE ant exits.
 </p>
 
@@ -121,11 +124,33 @@ starts/stops.
 </table>
 
 <p>
+Alternately, you may specify source directories using nested filesets.
+This is required if you have more than one directory of source code.
+</p>
+
+<p>
 Example:
 </p>
 
 <div class="codeblock">
 <pre><code>&lt;cobertura-report format="html" destdir="${coveragereport.dir}" srcdir="${src.dir}" /&gt;</code></pre>
+</div>
+
+<p>
+Example with multiple source directories:
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;cobertura-report format="html" destdir="${coveragereport.dir}" &gt;
+    &lt;fileset dir="${src.dir}"&gt;
+        &lt;include name="**/*.java" /&gt;
+        &lt;exclude name="**/*Stub.java" /&gt;
+    &lt;/fileset&gt;
+    &lt;fileset dir="${guisrc.dir}"&gt;
+        &lt;include name="**/*.java" /&gt;
+        &lt;exclude name="**/*RB.java" /&gt;
+    &lt;/fileset&gt;
+&lt;/cobertura-report&gt;</code></pre>
 </div>
 
 

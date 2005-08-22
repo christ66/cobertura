@@ -43,10 +43,11 @@ Who started this project?
 
 <div class="answer">
 <p>
-Cobertura was started by Mark Doliner, an employee of
-<a href="http://www.sas.com/">SAS</a>.  SAS sponsored
-the initial creation of the project, and continues allowing Mark to
-maintain the project.
+Cobertura is based on jcoverage, which was created by
+jcoverage ltd.  Cobertura was started by Mark Doliner,
+an employee of <a href="http://www.sas.com/">SAS</a>.
+SAS sponsored the initial creation of the project, and
+continues allowing Mark to maintain the project.
 </p>
 </div>
 </div>
@@ -74,6 +75,11 @@ Cobertura is currently developed by
 <li>Grzegorz Lukasik</li>
 <li>Jeremy Thomerson</li>
 </ul>
+
+<p>
+With help from other supporters of open source
+development.
+</p>
 </div>
 </div>
 
@@ -139,11 +145,11 @@ What do I need to use Cobertura?
 
 <div class="answer">
 <p>
-A computer with Java 1.4 or newer.  We have run Cobertura on
-Windows 2000 and Linux (Fedora Core 3) using the 1.4.2 JDK,
+A computer with Java 1.3 or newer.  We have run Cobertura on
+Windows 2000 and Linux (Fedora Core 4) using the 1.4.2 JDK,
 however, it should work on any platform.  The Cobertura
 download packages include all the dependencies you'll need
-(ASM, java-getopt, log4j, etc.)
+(ASM, log4j, etc.)
 </p>
 </div>
 </div>
@@ -241,11 +247,11 @@ tracker</a>.
 <div class="question">
 <p>
 When I generate coverage reports, why do they always show
-100% coverage everwhere?
+100% coverage everywhere?
 </p>
 <p>
 When I generate coverage reports, why do they always show
-0% coverage everwhere?
+0% coverage everywhere?
 </p>
 </div>
 
@@ -268,35 +274,6 @@ of the data file when running your tests.  You should pass the
 sysproperty to the JUnit task.
 </p>
 
-</div>
-</div>
-
-
-
-<br/>
-
-
-
-<div class="faq">
-<div class="question">
-<p>
-Can I point the cobertura-report ant task to multiple source directories?
-</p>
-</div>
-
-<div class="answer">
-<p>
-Unfortunately, no.  At this time Cobertura only supports one directory tree
-of source files.  This is covered by feature request
-<a href="http://sourceforge.net/tracker/index.php?func=detail&amp;aid=1170482&amp;group_id=130558&amp;atid=720018">#1170482</a>.
-Ideally the ant task will allow multiple nested source directory elements.
-</p>
-
-<p>
-As a workaround, you can copy all your source trees into a temporary
-directory using ant, pass this to Cobertura, then remove this
-directory once Cobertura finishes.
-</p>
 </div>
 </div>
 
