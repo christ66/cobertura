@@ -1,6 +1,3 @@
-version 1.7
-	* None
-
 version 1.6
 	* Can now use multiple filesets in the cobertura-instrument
 	  task (Thanks to Grzegorz Lukasik).
