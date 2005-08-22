@@ -106,8 +106,23 @@
 	</target>
 
 	<target name="coverage-report">
+		<!--
+			Generate an XML file containing the coverage data using
+			the "srcdir" attribute.
+		-->
 		<cobertura-report srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
-		<cobertura-report srcdir="${src.dir}" destdir="${coverage.html.dir}" />
+	</target>
+
+	<target name="alternate-coverage-report">
+		<!--
+			Generate a series of HTML files containing the coverage
+			data in a user-readable form using nested source filesets.
+		-->
+		<cobertura-report destdir="${coverage.html.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.java"/>
+			</fileset>
+		</cobertura-report>
 	</target>
 
 	<target name="clean" description="Remove all files created by the build/test process.">
@@ -119,6 +134,6 @@
 		<delete file="cobertura.ser" />
 	</target>
 
-	<target name="coverage" depends="compile,instrument,test,coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports."/>
+	<target name="coverage" depends="compile,instrument,test,coverage-report,alternate-coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports."/>
 
 </project>
