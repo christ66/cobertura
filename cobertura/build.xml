@@ -309,6 +309,7 @@
 				<include name="lib/**" />
 				<include name="resources/**" />
 				<include name="src/**" />
+				<include name="src-2/**" />
 				<include name="test/**" />
 
 				<include name="examples/basic/README" />
