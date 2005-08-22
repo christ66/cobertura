@@ -1,8 +1,11 @@
+version 1.7
+	* None
+
 version 1.6
 	* Can now use multiple filesets in the cobertura-instrument
 	  task (Thanks to Grzegorz Lukasik).
 	* Can now use multiple filesets in the cobertura-report task
-	  (Thanks to Jeremy Thomerson and Grzegorz Lukasik).
+	  (Thanks to Jeremy Thomerson, Grzegorz Lukasik and James Seigel).
 	* No longer using the Java version of GNU GetOpt
 	* Fixed a bug where the total number of classes displayed in
 	  the HTML report included anonymous classes when it should
