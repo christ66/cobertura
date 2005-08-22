@@ -252,10 +252,9 @@
 		<delete dir="${build.api.dir}" />
 		<mkdir dir="${build.api.dir}" />
 
-		<javadoc access="private" author="true" breakiterator="true" destdir="${build.api.dir}" failonerror="true" linksource="true" serialwarn="false" source="1.4" version="true" windowtitle="Cobertura api">
+		<javadoc access="private" author="true" breakiterator="true" destdir="${build.api.dir}" failonerror="true" linksource="true" serialwarn="false" source="1.3" version="true" windowtitle="Cobertura API">
 			<fileset dir="${src.dir}" />
 			<classpath location="${ant.home}/lib/ant.jar" />
-			<classpath location="${test.classes.dir}" />
 			<classpath refid="base.path" />
 		</javadoc>
 	</target>
