@@ -1,5 +1,9 @@
 version 1.7
-	* None
+	* log4j is no longer used by the Cobertura classes that are
+	  accessed by instrumented Java code.  This means you will
+	  not need to add log4j to your project's classpath in order
+	  to use Cobertura (but log4j is still required when
+	  instrumenting and reporting).
 
 version 1.6
 	* Can now use multiple filesets in the cobertura-instrument

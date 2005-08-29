@@ -31,8 +31,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import org.apache.log4j.Logger;
-
 /**
  * This contains methods used for reading and writing the
  * "cobertura.ser" file.
@@ -44,9 +42,6 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 	 * Default file name used to write instrumentation information.
 	 */
 	public static final String FILE_NAME = "cobertura.ser";
-
-	private static final Logger logger = Logger
-			.getLogger(CoverageDataFileHandler.class);
 
 	public static File getDefaultDataFile()
 	{
@@ -61,7 +56,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 	{
 		InputStream is = null;
 
-		logger.info("Loading coverage data from " + dataFile.getAbsolutePath());
+		//System.out.println("Cobertura: Loading coverage data from " + dataFile.getAbsolutePath());
 		try
 		{
 			is = new FileInputStream(dataFile);
@@ -69,8 +64,9 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		}
 		catch (IOException e)
 		{
-			logger.debug("Error loading file " + dataFile.getAbsolutePath(),
-					e);
+			System.err.println("Cobertura: Error reading file "
+					+ dataFile.getAbsolutePath());
+			e.printStackTrace();
 			return null;
 		}
 		finally
@@ -82,8 +78,9 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 				}
 				catch (IOException e)
 				{
-					logger.debug("Error closing file "
-							+ dataFile.getAbsolutePath(), e);
+					System.err.println("Cobertura: Error closing file "
+							+ dataFile.getAbsolutePath());
+					e.printStackTrace();
 				}
 		}
 	}
@@ -96,13 +93,14 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		{
 			objects = new ObjectInputStream(dataFile);
 			ProjectData projectData = (ProjectData)objects.readObject();
-			logger.info("Loaded information on "
+			System.out.println("Cobertura: Loaded information on "
 					+ projectData.getNumberOfClasses() + " classes.");
 			return projectData;
 		}
 		catch (Exception e)
 		{
-			logger.error("Error reading from object stream.", e);
+			System.err.println("Cobertura: Error reading from object stream.");
+			e.printStackTrace();
 			return null;
 		}
 		finally
@@ -115,7 +113,9 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 				}
 				catch (IOException e)
 				{
-					logger.debug("Error closing object stream.", e);
+					System.err
+							.println("Cobertura: Error closing object stream.");
+					e.printStackTrace();
 				}
 			}
 		}
@@ -126,7 +126,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 	{
 		FileOutputStream os = null;
 
-		logger.info("Saving coverage data to " + dataFile.getAbsolutePath());
+		//System.out.println("Cobertura: Saving coverage data to " + dataFile.getAbsolutePath());
 		try
 		{
 			os = new FileOutputStream(dataFile);
@@ -134,7 +134,9 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		}
 		catch (IOException e)
 		{
-			logger.error( "Cannot save coverage data", e);
+			System.err.println("Cobertura: Error writing file "
+					+ dataFile.getAbsolutePath());
+			e.printStackTrace();
 		}
 		finally
 		{
@@ -146,7 +148,9 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 				}
 				catch (IOException e)
 				{
-					logger.debug( "Problems with coverage data stream close", e);
+					System.err.println("Cobertura: Error closing file "
+							+ dataFile.getAbsolutePath());
+					e.printStackTrace();
 				}
 			}
 		}
@@ -161,12 +165,12 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		{
 			objects = new ObjectOutputStream(dataFile);
 			objects.writeObject(projectData);
-			logger.info("Saved information on "
-					+ projectData.getNumberOfClasses() + " classes.");
+			System.out.println("Cobertura: Saved information on " + projectData.getNumberOfClasses() + " classes.");
 		}
 		catch (IOException e)
 		{
-			logger.error( "Cannot save coverage data", e);
+			System.err.println("Cobertura: Error writing to object stream.");
+			e.printStackTrace();
 		}
 		finally
 		{
@@ -178,7 +182,9 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 				}
 				catch (IOException e)
 				{
-					logger.debug( "Problems with stream close", e);
+					System.err
+							.println("Cobertura: Error closing object stream.");
+					e.printStackTrace();
 				}
 			}
 		}

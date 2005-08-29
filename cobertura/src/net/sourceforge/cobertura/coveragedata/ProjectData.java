@@ -30,15 +30,11 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
-
 public class ProjectData extends CoverageDataContainer
 		implements HasBeenInstrumented
 {
 
 	private static final long serialVersionUID = 6;
-
-	private static final Logger LOGGER = Logger.getLogger(ProjectData.class);
 
 	private static ProjectData globalProjectData = null;
 
@@ -146,14 +142,6 @@ public class ProjectData extends CoverageDataContainer
 
 	public static ProjectData getGlobalProjectData()
 	{
-		if (saveTimer == null)
-		{
-			saveTimer = new SaveTimer();
-			Runtime.getRuntime().addShutdownHook(new Thread(saveTimer));
-			//Timer timer = new Timer(true);
-			//timer.schedule(saveTimer, 100);
-		}
-
 		if (globalProjectData != null)
 			return globalProjectData;
 
@@ -162,20 +150,27 @@ public class ProjectData extends CoverageDataContainer
 		// Read projectData from the serialized file.
 		if (dataFile.isFile())
 		{
-			LOGGER.debug("Loading global project data from "
-					+ dataFile.getAbsolutePath());
+			//System.out.println("Cobertura: Loading global project data from " + dataFile.getAbsolutePath());
 			globalProjectData = CoverageDataFileHandler
 					.loadCoverageData(dataFile);
 		}
-		if (globalProjectData != null)
-			return globalProjectData;
 
-		// We could not read from the serialized file, so create a new object.
-		LOGGER
-				.info("Coverage data file "
-						+ dataFile.getAbsolutePath()
-						+ " either does not exist or is not readable.  Creating a new data file.");
-		globalProjectData = new ProjectData();
+		if (globalProjectData == null)
+		{
+			// We could not read from the serialized file, so create a new object.
+			System.out.println("Cobertura: Coverage data file "
+							+ dataFile.getAbsolutePath()
+							+ " either does not exist or is not readable.  Creating a new data file.");
+			globalProjectData = new ProjectData();
+
+			// Add a hook to save the data when the JVM exits
+			saveTimer = new SaveTimer();
+			Runtime.getRuntime().addShutdownHook(new Thread(saveTimer));
+
+			// Possibly also save the coverage data every x seconds?
+			//Timer timer = new Timer(true);
+			//timer.schedule(saveTimer, 100);
+		}
 
 		return globalProjectData;
 	}
