@@ -1,10 +1,12 @@
 <?php
 
-function getFileExtension($filename) {
+function getFileExtension($filename)
+{
     return strchr($filename, ".");
 }
 
-function listFilesInDirectory($directory) {
+function listFilesInDirectory($directory)
+{
 	// Does directory exist?
 	if (!is_dir($directory))
 		return;
@@ -28,7 +30,8 @@ function listFilesInDirectory($directory) {
 	return $files;
 }
 
-function println($text) {
+function println($text)
+{
 	print($text . "\n");
 }
 

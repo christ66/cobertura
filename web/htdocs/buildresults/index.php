@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Cruise Control</title>
+<title>Build Results</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="refresh" content="0;URL=projects.php">
 </head>

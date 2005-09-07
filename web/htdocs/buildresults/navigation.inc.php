@@ -42,7 +42,7 @@ function cc_printNavigationBuilds($project, $build) {
 		println("	<tr><td><span class=\"header-data\">Most Recent</span></td></tr>");
 		for ($i = 0; ($i < count($builds)) && ($i < 10); $i++) {
 			print("	<tr><td class=\"table-nowrap\">");
-			print("&nbsp;<a class=\"link\" href=\"buildinfo.php?project=${project}&log=" . $builds[$i] . "\">" . cc_getDateOfLogFile($builds[$i]) . "</a>");
+			print("&nbsp;<a class=\"link\" href=\"buildinfo.php?project=${project}&amp;log=" . $builds[$i] . "\">" . cc_getDateOfLogFile($builds[$i]) . "</a>");
 			if ($label = cc_getLabelOfLogFile($builds[$i]))
 				print(" (<span class=\"table-text-success\">build.${label}</span>)");
 			else
@@ -53,23 +53,23 @@ function cc_printNavigationBuilds($project, $build) {
 			println("	<tr><td>&nbsp;</td></tr>");
 			println("	<tr><td><span class=\"header-data\">Older</span></td></tr>");
 			println("	<tr><td>");
-			println("		<form method=\"GET\" action=\"buildinfo.php\">");
-			println("		<input type=\"hidden\" name=\"project\" value=\"${project}\">");
-			println("		<select name=\"build\" onchange=\"form.submit()\">");
+			println("		<form method=\"get\" action=\"buildinfo.php\">");
+			println("		<input type=\"hidden\" name=\"project\" value=\"${project}\"/>");
+			println("		<select name=\"log\" onchange=\"form.submit()\">");
 			for ($i = 10; $i < count($builds); $i++) {
 				print("			<option value=\"" . $builds[$i] . "\"");
 				if (isset($build) && $build == $builds[$i])
 					print(" selected=\"true\"");
 				print(">" . cc_getDateOfLogFile($builds[$i]) . "&nbsp;");
 				if ($buildnum = cc_getLabelOfLogFile($builds[$i]))
-					print(" (<span class=\"table-text-success\">build.${buildnum}</span>)");
+					print(" (build.${buildnum})");
 				else
-					print(" (<span class=\"table-text-error\">FAILED!</span>)");
+					print(" (FAILED!)");
 				println("</option>");
 			}
 			println("		</select>");
 			println("		</form>");
-			println("	</tr></td>");
+			println("	</td></tr>");
 		}
 	}
 	println("</table>");

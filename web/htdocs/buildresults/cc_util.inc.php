@@ -9,6 +9,7 @@ $additionalfiles = "/home/groups/c/co/cobertura/buildlogs/files";
 
 class cc_Modification {
 	var $type;
+	var $action;
 	var $filename;
 	var $project;
 	var $date;
@@ -138,7 +139,9 @@ class cc_LogParser {
 				$this->nexttestcase->time = $attrs["TIME"];
 			}
 		} else if ($this->stacksize == 3) {
-			if (($name == "ERROR") && ($this->stack[2] == "TESTCASE") && ($this->stack[1] == "TESTSUITE") && ($this->stack[0] == "CRUISECONTROL")) {
+			if (($name == "FILE") && ($this->stack[2] == "MODIFICATION") && ($this->stack[1] == "MODIFICATIONS") && ($this->stack[0] == "CRUISECONTROL")) {
+				$this->nextmodification->action = $attrs["ACTION"];
+			} else if (($name == "ERROR") && ($this->stack[2] == "TESTCASE") && ($this->stack[1] == "TESTSUITE") && ($this->stack[0] == "CRUISECONTROL")) {
 				$this->nextproblem = new cc_testError();
 				$this->nextproblem->message = $attrs["MESSAGE"];
 				$this->nextproblem->type = $attrs["TYPE"];
@@ -160,7 +163,10 @@ class cc_LogParser {
 			print("Malformed XML!");
 
 		if (($this->stacksize >= 2) && ($name == "MESSAGE") && ($this->stack[1] == "BUILD") && ($this->stack[0] == "CRUISECONTROL")) {
-			array_push($this->compileMessages, $this->nextcompilemessage);
+			if (strlen($this->nextcompilemessage) > 0)
+			{
+				array_push($this->compileMessages, $this->nextcompilemessage);
+			}
 			unset($this->nextcompilemessage);
 		} else if ($this->stacksize == 1) {
 			if (($name == "TESTSUITE") && ($this->stack[0] == "CRUISECONTROL")) {
@@ -327,8 +333,10 @@ function cc_printErrorBox($text) {
 
 
 function cc_printPageHeader($project, $build, $file) {
-	println("<html>");
-	println("<head>");
+	println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+	println("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en-US\" lang=\"en-US\">");
+	println("<head profile=\"http://www.w3.org/2000/08/w3c-synd/#\">");
+	println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 	println("<title>Build Results: " . cc_getPageTitle($project, $build, $file) . "</title>");
 	println("<link type=\"text/css\" rel=\"stylesheet\" href=\"StyleSheets/main.css\"/>");
 	println("<script type=\"text/javascript\" language=\"javascript\">");
@@ -347,28 +355,28 @@ function cc_printPageHeader($project, $build, $file) {
 	println("</script>");
 	println("</head>");
 	println("");
-	println("<body background=\"images/bluebg.gif\" topmargin=\"0\" leftmargin=\"0\" marginheight=\"0\" marginwidth=\"0\">");
+	println("<body background=\"images/bluebg.gif\">");
+	//println("<body>");
 	println("	<br/>");
 	println("	<table border=\"0\" align=\"center\" cellpadding=\"0\" cellspacing=\"1\" width=\"98%\">");
 	println("		<tr>");
 	println("			<!-- Left hand column, containing the navigation menu -->");
 	println("			<td valign=\"top\" width=\"15%\">");
-	println("				<p>");
 	println("				<table border=\"0\" align=\"center\" width=\"98%\" bgcolor=\"#FFFFFF\" cellpadding=\"0\" cellspacing=\"0\">");
-	println("					<tr><td bgcolor=\"#FFFFFF\"><img border=\"0\" src=\"images/bluestripestop.gif\"></td><td align=\"right\" bgcolor=\"#FFFFFF\"><img border=\"0\" src=\"images/bluestripestopright.gif\"></td></tr>");
+	println("					<tr><td bgcolor=\"#FFFFFF\"><img alt=\"\" border=\"0\" src=\"images/bluestripestop.gif\"/></td><td align=\"right\" bgcolor=\"#FFFFFF\"><img alt=\"\"border=\"0\" src=\"images/bluestripestopright.gif\"/></td></tr>");
 	println("					<tr>");
 	println("						<td colspan=\"2\">");
 	cc_printNavigation($project, $build, $file);
 	println("						</td>");
 	println("					</tr>");
-	println("					<tr><td bgcolor=\"#FFFFFF\"><img border=\"0\" src=\"images/bluestripesbottom.gif\"></td><td align=\"right\" bgcolor=\"#FFFFFF\"><img border=\"0\" src=\"images/bluestripesbottomright.gif\"></td></tr>");
+	println("					<tr><td bgcolor=\"#FFFFFF\"><img alt=\"\" border=\"0\" src=\"images/bluestripesbottom.gif\"/></td><td align=\"right\" bgcolor=\"#FFFFFF\"><img alt=\"\" border=\"0\" src=\"images/bluestripesbottomright.gif\"/></td></tr>");
 	println("				</table>");
 	println("			</td>");
 	println("");
 	println("			<!-- Main information frame -->");
 	println("			<td valign=\"top\">");
 	println("				<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"><tbody>");
-	println("					<tr><td bgcolor=\"#FFFFFF\"><img border=\"0\" src=\"images/bluestripestop.gif\"></td><td align=\"right\" bgcolor=\"#FFFFFF\"><img border=\"0\" src=\"images/bluestripestopright.gif\"></td></tr>");
+	println("					<tr><td bgcolor=\"#FFFFFF\"><img alt=\"\" border=\"0\" src=\"images/bluestripestop.gif\"/></td><td align=\"right\" bgcolor=\"#FFFFFF\"><img alt=\"\" border=\"0\" src=\"images/bluestripestopright.gif\"/></td></tr>");
 	println("					<tr>");
 	println("						<td bgcolor=\"#FFFFFF\" colspan=\"2\">");
 	println("							<span class=\"header-data\">&nbsp;" . cc_getBreadcrumbs($project, $build, $file) . "</span>");
@@ -381,7 +389,7 @@ function cc_printPageFooter() {
 	println("\n\n\n\n");
 	println("						</td>");
 	println("					</tr>");
-	println("					<tr><td bgcolor=\"#FFFFFF\"><img border=\"0\" src=\"images/bluestripesbottom.gif\"></td><td align=\"right\" bgcolor=\"#FFFFFF\"><img border=\"0\" src=\"images/bluestripesbottomright.gif\"></td></tr>");
+	println("					<tr><td bgcolor=\"#FFFFFF\"><img alt=\"\" border=\"0\" src=\"images/bluestripesbottom.gif\"/></td><td align=\"right\" bgcolor=\"#FFFFFF\"><img alt=\"\" border=\"0\" src=\"images/bluestripesbottomright.gif\"/></td></tr>");
 	println("				</tbody></table>");
 	println("			</td>");
 	println("		</tr>");
