@@ -31,7 +31,7 @@
 
 <head profile="http://www.w3.org/2000/08/w3c-synd/#">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-	<link rel="stylesheet" type="text/css" href="StyleSheets/main.css"/>
+	<link rel="stylesheet" type="text/css" href="/StyleSheets/main.css"/>
 	<title>Cobertura<?php if (isset($title)) { print(": $title"); } ?></title>
 </head>
 
@@ -52,7 +52,7 @@
 			if ($i > 0)
 				print("</p>");
 			print("<p>");
-			print("<small>$next[0]</small><br/>");
+			print("<span class=\"smaller\">$next[0]</span><br/>");
 		}
 	}
 	print("</p>");

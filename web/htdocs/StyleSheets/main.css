@@ -21,6 +21,7 @@ blockquote {
 body {
 	background-color: #aacccc;
 	font-size: 105%;
+	margin: 10px;
 }
 
 div.bigger {
@@ -62,30 +63,33 @@ div#footer {
 div#main {
 	background-color: #ffffff;
 	border: 1px solid #888888;
-	float: left;
-	margin: 1px;
-	margin-top: 0px;
-	padding: 0.5em;
-	width: 80%;
+	margin-left: 202px;
+	padding: 5px;
+	/* Work around an IE5x bug.  See http://www.glish.com/css/hacks.asp */
+	voice-family: "\"}\"";
+	voice-family: inherit;
+	margin-left: 204px;
 }
 
 div#navigation {
 	background-color: #f8f8f8;
 	border: 1px solid #888888;
-	float: left;
 	font-weight: bold;
 	font-family: arial, helvetica, sans-serif;
-	margin: 1.0px;
-	margin-top: 0px;
-	padding: 0.5em;
-	text-align: right;
-	width: 15%;
+	position: absolute;
+	left: 10px;
+	width: 200px;
 }
 
 div#navigation p {
 	background-color: #ffffff;
 	border: 1px solid #dddddd;
-	padding: 0.5em;
+	padding: 8px;
+	margin: 4px;
+}
+
+div#navigation img {
+	margin: 4px;
 }
 
 div.newsitem {
@@ -126,6 +130,10 @@ p.right {
 
 span.highlight {
 	color: #0000ff;
+}
+
+span.smaller {
+	font-size: 85%;
 }
 
 table {
