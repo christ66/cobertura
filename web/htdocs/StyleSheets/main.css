@@ -12,9 +12,7 @@ blockquote {
 	border: 1px dashed #bbbbbb;
 	font-family: arial, helvetica, sans-serif;
 	font-size: 85%;
-	margin: 1em;
-	margin-left: 3em;
-	margin-right: 3em;
+	margin: 1em 3em;
 	padding: 0.5em;
 }
 
@@ -33,9 +31,7 @@ div.codeblock {
 	border: 1px dashed #bbbbbb;
 	font-family: courier, monospace;
 	font-size: 85%;
-	margin: 1em;
-	margin-left: 3em;
-	margin-right: 3em;
+	margin: 1em 3em;
 	padding: 0.5em;
 }
 
@@ -64,7 +60,7 @@ div#main {
 	background-color: #ffffff;
 	border: 1px solid #888888;
 	margin-left: 202px;
-	padding: 5px;
+	padding: 10px;
 	/* Work around an IE5x bug.  See http://www.glish.com/css/hacks.asp */
 	voice-family: "\"}\"";
 	voice-family: inherit;
