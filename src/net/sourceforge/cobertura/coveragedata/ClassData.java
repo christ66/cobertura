@@ -262,7 +262,7 @@ public class ClassData extends CoverageDataContainer
 
 	/**
 	 * Return the name of the file containing this class.  If this
-	 * classes sourceFileName has not been set (for whatever reason)
+	 * class' sourceFileName has not been set (for whatever reason)
 	 * then this method will attempt to infer the name of the source
 	 * file using the class name.
 	 *
