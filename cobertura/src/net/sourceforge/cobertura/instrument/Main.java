@@ -420,7 +420,8 @@ public class Main
 		}
 
 		// Load coverage data
-		projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+		if (dataFile.isFile())
+			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
 		if (projectData == null)
 			projectData = new ProjectData();
 
