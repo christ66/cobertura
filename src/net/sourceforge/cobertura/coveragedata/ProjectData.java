@@ -162,15 +162,15 @@ public class ProjectData extends CoverageDataContainer
 							+ dataFile.getAbsolutePath()
 							+ " either does not exist or is not readable.  Creating a new data file.");
 			globalProjectData = new ProjectData();
-
-			// Add a hook to save the data when the JVM exits
-			saveTimer = new SaveTimer();
-			Runtime.getRuntime().addShutdownHook(new Thread(saveTimer));
-
-			// Possibly also save the coverage data every x seconds?
-			//Timer timer = new Timer(true);
-			//timer.schedule(saveTimer, 100);
 		}
+
+		// Add a hook to save the data when the JVM exits
+		saveTimer = new SaveTimer();
+		Runtime.getRuntime().addShutdownHook(new Thread(saveTimer));
+
+		// Possibly also save the coverage data every x seconds?
+		//Timer timer = new Timer(true);
+		//timer.schedule(saveTimer, 100);
 
 		return globalProjectData;
 	}
