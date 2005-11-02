@@ -59,16 +59,11 @@
 package net.sourceforge.cobertura.ant;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.FileSet;
 
 public class MergeTask extends CommonMatchingTask
 {
@@ -80,26 +75,6 @@ public class MergeTask extends CommonMatchingTask
 		super("net.sourceforge.cobertura.merge.Main");
 	}
 
-	void handleFilesets( CommandLineBuilder builder) throws IOException
-	{
-		Set filenames = new HashSet();
-		Iterator i = fileSets.iterator();
-		while (i.hasNext())
-		{
-			FileSet fileSet = (FileSet)i.next();
-			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
-		}
-
-		Iterator it = filenames.iterator();
-		while (it.hasNext())
-		{
-			String fileName = (String) it.next();
-			getProject().log("Adding " + fileName + " to list",
-					Project.MSG_VERBOSE);
-			builder.addArg(fileName);
-		}
-	}
-
 	public void execute() throws BuildException {
 		CommandLineBuilder builder = null;
 		try {
@@ -107,7 +82,7 @@ public class MergeTask extends CommonMatchingTask
 			if (dataFile != null)
 				builder.addArg("--datafile", dataFile);
 
-			handleFilesets(builder);
+			createArgumentsForFilesets(builder);
 
 			builder.saveArgs();
 		} catch (IOException ioe) {

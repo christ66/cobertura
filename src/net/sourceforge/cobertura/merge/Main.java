@@ -40,6 +40,7 @@ public class Main
 	public Main(String[] args)
 	{
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
+		String baseDir = ".";
 		Vector filesToMerge = new Vector();
 
 		// Go through all the parameters
@@ -47,8 +48,10 @@ public class Main
 		{
 			if (args[i].equals("--datafile"))
 				dataFile = new File(args[++i]);
+			else if (args[i].equals("--basedir"))
+				baseDir = args[++i];
 			else
-				filesToMerge.add(args[i]);
+				filesToMerge.add(baseDir + File.separator + args[i]);
 		}
 
 		// Load the data file
@@ -75,7 +78,8 @@ public class Main
 			File newDataFile = new File(newDataFileName);
 			ProjectData projectDataNew = CoverageDataFileHandler
 					.loadCoverageData(newDataFile);
-			projectData.merge(projectDataNew);
+			if (projectDataNew != null)
+				projectData.merge(projectDataNew);
 		}
 
 		// Save the combined data file
