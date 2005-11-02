@@ -149,4 +149,41 @@ coverage and a branch coverage of 65 or greater.
 </p>
 
 
+
+<br/>
+<h2>Merging Datafiles</h2>
+
+<p>
+<code>cobertura-merge.bat [--datafile <i>file</i>] <i>datafile</i> [<i>...</i>]</code>
+</p>
+
+<p>
+This can be run after your JUnit tests to merge multiple data files
+into a single data file.
+</p>
+
+<table>
+<tr><th>Parameter</th><th>Required?</th><th>Description</th><th>Default Value</th></tr>
+<tr><td>--datafile</td><td>No</td><td>Specify the name of the file containing metadata about your classes.  This is the "destination" file into which the contents of the other data files will be merged.</td><td>"cobertura.ser" in the current directory</td></tr>
+</table>
+
+<p>
+Example:
+</p>
+
+<div class="codeblock">
+<p>
+<code>cobertura-merge.bat --datafile C:\MyProject\build\cobertura.ser C:\MyProject\testrundir\server\cobertura.ser C:\MyProject\testrundir\client\cobertura.ser</code>
+</p>
+</div>
+
+<p>
+The above example merges a 'cobertura.ser' file from a server
+process and from a client process into one combined file in the
+build directory.  You can then use cobertura-report to create
+a report based on this new data file.
+</p>
+
+
+
 <?php include("footer.html"); ?>

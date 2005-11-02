@@ -192,4 +192,32 @@ Example:
 
 
 
+<br/>
+<h2>cobertura-merge Task</h2>
+
+<table>
+<tr><th>Parameter</th><th>Required?</th><th>Description</th><th>Default Value</th></tr>
+<tr><td>datafile</td><td>No</td><td>Specify the name of the file containing metadata about your classes.  This is the "destination" file into which the contents of the other data files will be merged.</td><td>"cobertura.ser" in the current directory</td></tr>
+</table>
+
+<p>
+You must tell Cobertura which coverage data files to merge by passing
+in standard ant filesets.
+</p>
+
+<p>
+Example:
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;cobertura-merge&gt;
+    &lt;fileset dir="${test.execution.dir}"&gt;
+        &lt;include name="server/cobertura.ser" /&gt;
+        &lt;include name="client/cobertura.ser" /&gt;
+    &lt;/fileset&gt;
+&lt;/cobertura-merge&gt;</code></pre>
+</div>
+
+
+
 <?php include("footer.html"); ?>
