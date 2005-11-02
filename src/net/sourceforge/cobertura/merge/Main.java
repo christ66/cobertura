@@ -26,6 +26,8 @@
 package net.sourceforge.cobertura.merge;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.Vector;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
@@ -34,34 +36,50 @@ import net.sourceforge.cobertura.util.Header;
 
 public class Main
 {
+
 	public Main(String[] args)
 	{
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
-		ProjectData projectData = null;
+		Vector filesToMerge = new Vector();
 
+		// Go through all the parameters
 		for (int i = 0; i < args.length; i++)
 		{
 			if (args[i].equals("--datafile"))
-			{
-				File newDataFile = new File(args[++i]);
-				if (projectData == null) {
-					projectData = CoverageDataFileHandler
-							.loadCoverageData(newDataFile);
-				} else {
-					ProjectData projectDataNew = CoverageDataFileHandler
-					.loadCoverageData(newDataFile);
-					projectData.merge(projectDataNew);
-				}
-			}
-			else if (args[i].equals("--output"))
-			{
 				dataFile = new File(args[++i]);
-				dataFile.getParentFile().mkdirs();
-			}
+			else
+				filesToMerge.add(args[i]);
 		}
 
-		if (projectData != null)
-			CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
+		// Load the data file
+		ProjectData projectData = CoverageDataFileHandler
+				.loadCoverageData(dataFile);
+		if (projectData == null)
+		{
+			System.err.println("Error: Unable to read from data file "
+					+ dataFile.getAbsolutePath());
+			System.exit(1);
+		}
+
+		if (filesToMerge.size() == 0)
+		{
+			System.err.println("Error: No files were specified for merging.");
+			System.exit(1);
+		}
+
+		// Merge everything
+		Iterator iter = filesToMerge.iterator();
+		while (iter.hasNext())
+		{
+			String newDataFileName = (String)iter.next();
+			File newDataFile = new File(newDataFileName);
+			ProjectData projectDataNew = CoverageDataFileHandler
+					.loadCoverageData(newDataFile);
+			projectData.merge(projectDataNew);
+		}
+
+		// Save the combined data file
+		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
 	}
 
 	public static void main(String[] args)

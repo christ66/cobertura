@@ -65,8 +65,8 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		catch (IOException e)
 		{
 			System.err.println("Cobertura: Error reading file "
-					+ dataFile.getAbsolutePath());
-			e.printStackTrace();
+					+ dataFile.getAbsolutePath() + ": "
+					+ e.getLocalizedMessage());
 			return null;
 		}
 		finally
@@ -79,8 +79,8 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 				catch (IOException e)
 				{
 					System.err.println("Cobertura: Error closing file "
-							+ dataFile.getAbsolutePath());
-					e.printStackTrace();
+							+ dataFile.getAbsolutePath() + ": "
+							+ e.getLocalizedMessage());
 				}
 		}
 	}

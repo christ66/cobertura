@@ -58,7 +58,6 @@
 
 package net.sourceforge.cobertura.ant;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -77,8 +76,6 @@ import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.util.IdentityMapper;
-import org.apache.tools.ant.util.SourceFileScanner;
 
 public abstract class CommonMatchingTask extends MatchingTask
 {
@@ -87,8 +84,6 @@ public abstract class CommonMatchingTask extends MatchingTask
 	final List fileSets = new LinkedList();
 
 	private Java java = null;
-
-	File toDir = null;
 
 	public CommonMatchingTask(String className)
 	{
@@ -160,11 +155,6 @@ public abstract class CommonMatchingTask extends MatchingTask
 			builder.addArg(filenames[i]);
 		}
 	}
-	
-	public void setTodir(File toDir)
-	{
-		this.toDir = toDir;
-	}
 
 	public Path createClasspath()
 	{
@@ -199,14 +189,6 @@ public abstract class CommonMatchingTask extends MatchingTask
 	String[] getFilenames(FileSet fileSet)
 	{
 		String[] filesToReturn = getIncludedFiles(fileSet);
-
-		if (toDir != null)
-		{
-			IdentityMapper m = new IdentityMapper();
-			SourceFileScanner sfs = new SourceFileScanner(this);
-			filesToReturn = sfs.restrict(getIncludedFiles(fileSet), fileSet
-					.getDir(getProject()), toDir, m);
-		}
 
 		return filesToReturn;
 	}
