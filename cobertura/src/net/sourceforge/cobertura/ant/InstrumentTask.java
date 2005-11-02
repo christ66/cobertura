@@ -58,6 +58,7 @@
 
 package net.sourceforge.cobertura.ant;
 
+import java.io.File;
 import java.io.IOException;
 
 import net.sourceforge.cobertura.util.CommandLineBuilder;
@@ -69,6 +70,8 @@ public class InstrumentTask extends CommonMatchingTask
 {
 
 	private String dataFile = null;
+
+	private File toDir = null;
 
 	Ignore ignoreRegex = null;
 
@@ -119,6 +122,11 @@ public class InstrumentTask extends CommonMatchingTask
 	public void setDataFile(String dataFile)
 	{
 		this.dataFile = dataFile;
+	}
+
+	public void setToDir(File toDir)
+	{
+		this.toDir = toDir;
 	}
 
 }

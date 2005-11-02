@@ -73,6 +73,8 @@ import org.apache.tools.ant.types.FileSet;
 public class MergeTask extends CommonMatchingTask
 {
 
+	private String dataFile = null;
+
 	public MergeTask()
 	{
 		super("net.sourceforge.cobertura.merge.Main");
@@ -87,13 +89,14 @@ public class MergeTask extends CommonMatchingTask
 			FileSet fileSet = (FileSet)i.next();
 			filenames.addAll(Arrays.asList(getFilenames(fileSet)));
 		}
-		
+
 		Iterator it = filenames.iterator();
-		while( it.hasNext()) {
+		while (it.hasNext())
+		{
 			String fileName = (String) it.next();
 			getProject().log("Adding " + fileName + " to list",
 					Project.MSG_VERBOSE);
-			builder.addArg("--datafile", fileName);
+			builder.addArg(fileName);
 		}
 	}
 
@@ -101,8 +104,8 @@ public class MergeTask extends CommonMatchingTask
 		CommandLineBuilder builder = null;
 		try {
 			builder = new CommandLineBuilder();
-			if (toDir != null)
-				builder.addArg("--output", toDir.getAbsolutePath());
+			if (dataFile != null)
+				builder.addArg("--datafile", dataFile);
 
 			handleFilesets(builder);
 
@@ -122,4 +125,10 @@ public class MergeTask extends CommonMatchingTask
 
 		builder.dispose();
 	}
+
+	public void setDataFile(String dataFile)
+	{
+		this.dataFile = dataFile;
+	}
+
 }

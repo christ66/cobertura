@@ -4,8 +4,12 @@ version 1.7
 	  not need to add log4j to your project's classpath in order
 	  to use Cobertura (but log4j is still required when
 	  instrumenting and reporting).
-	* Upgrade from asm 2.0 to asm 2.1.  No code changes were
+	* Upgraded from asm 2.0 to asm 2.1.  No code changes were
 	  needed.
+	* Fixed the ability to specify a data file in the merge task.
+	* Changed the command-line interface to the merge task and
+	  added a helper batch/shell script.
+	* Added better error checking to the merge task.
 
 version 1.6
 	* Can now use multiple filesets in the cobertura-instrument
