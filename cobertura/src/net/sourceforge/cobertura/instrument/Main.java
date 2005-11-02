@@ -147,7 +147,7 @@ public class Main
 					ClassWriter cw = new ClassWriter(true);
 					ClassInstrumenter cv = new ClassInstrumenter(projectData,
 							cw, ignoreRegexes);
-					cr.accept(cv, false);
+					cr.accept(cv, CustomAttribute.getExtraAttributes(), false);
 
 					// If class was instrumented, get bytes that define the
 					// class
@@ -286,7 +286,7 @@ public class Main
 			ClassReader cr = new ClassReader(inputStream);
 			cw = new ClassWriter(true);
 			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes);
-			cr.accept(cv, false);
+			cr.accept(cv, CustomAttribute.getExtraAttributes(), false);
 		}
 		catch (Throwable t)
 		{
@@ -334,10 +334,10 @@ public class Main
 				outputStream.write(instrumentedClass);
 			}
 		}
-		catch (IOException e)
+		catch (Throwable t)
 		{
 			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
-					e);
+					t);
 			return;
 		}
 		finally
