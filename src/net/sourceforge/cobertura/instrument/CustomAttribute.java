@@ -1,6 +1,7 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
+ * Copyright (C) 2005 Eugene Kuleshov
  * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Cobertura is free software; you can redistribute it and/or modify
