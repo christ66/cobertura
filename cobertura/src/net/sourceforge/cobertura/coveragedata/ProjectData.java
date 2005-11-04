@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -164,6 +165,23 @@ public class ProjectData extends CoverageDataContainer
 			globalProjectData = new ProjectData();
 		}
 
+		// Hack for Tomcat - by saving project data right now we force loading
+		// of classes involved in this process (like ObjectOutputStream)
+		// so that it won't be necessary to load them on JVM shutdown
+		if( System.getProperty("catalina.home")!=null) {
+			saveGlobalProjectData();
+			
+			// Additionaly force loading of other classes that might be not loaded
+			// becouse saved project data was empty
+			ClassData.class.toString();
+			CoverageData.class.toString();
+			CoverageDataContainer.class.toString();
+			HasBeenInstrumented.class.toString();
+			LineData.class.toString();
+			PackageData.class.toString();
+			SourceFileData.class.toString();
+		}
+		
 		// Add a hook to save the data when the JVM exits
 		saveTimer = new SaveTimer();
 		Runtime.getRuntime().addShutdownHook(new Thread(saveTimer));
