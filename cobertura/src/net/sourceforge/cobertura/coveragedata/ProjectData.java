@@ -4,6 +4,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2005 Björn Beskow
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -131,6 +132,14 @@ public class ProjectData extends CoverageDataContainer
 		super.merge(coverageData);
 
 		ProjectData projectData = (ProjectData)coverageData;
+ 		for (Iterator iter = projectData.sourceFiles.keySet().iterator(); iter.hasNext();)
+ 		{
+ 			Object key = iter.next();
+ 			if (!this.sourceFiles.containsKey(key))
+ 			{
+ 				this.sourceFiles.put(key, projectData.sourceFiles.get(key));
+ 			}
+ 		}
 		for (Iterator iter = projectData.classes.keySet().iterator(); iter.hasNext();)
 		{
 			Object key = iter.next();

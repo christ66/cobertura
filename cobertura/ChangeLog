@@ -6,6 +6,8 @@ version 1.7
 	  instrumenting and reporting).
 	* Upgraded from asm 2.0 to asm 2.1.  No code changes were
 	  needed.
+	* Improved the merge task.  It should work correctly now
+	  (with help from  Björn Beskow).
 	* Fixed the ability to specify a data file in the merge task.
 	* Changed the command-line interface to the merge task and
 	  added a helper batch/shell script.

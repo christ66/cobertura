@@ -190,14 +190,7 @@ public class SourceFileData extends CoverageDataContainer
 		super.merge(coverageData);
 
 		SourceFileData sourceFileData = (SourceFileData)coverageData;
-		if (sourceFileData.name != null)
-		{
-			this.name = sourceFileData.name;
-		}
-		if (!this.containsInstrumentationInfo)
-		{
-			this.containsInstrumentationInfo = sourceFileData.containsInstrumentationInfo;
-		}
+		this.containsInstrumentationInfo |= sourceFileData.containsInstrumentationInfo;
 	}
 
 	public void setContainsInstrumentationInfo()
