@@ -147,8 +147,7 @@ public class LineData
 	{
 		LineData lineData = (LineData)coverageData;
 		this.hits += lineData.hits;
-		if (lineData.isBranch())
-			this.isBranch = true;
+		this.isBranch |= lineData.isBranch();
 		if (lineData.methodName != null)
 			this.methodName = lineData.methodName;
 		if (lineData.methodDescriptor != null)

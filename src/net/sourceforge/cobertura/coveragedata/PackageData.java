@@ -120,15 +120,4 @@ public class PackageData extends CoverageDataContainer
 		return this.name.hashCode();
 	}
 
-	public void merge(CoverageData coverageData)
-	{
-		super.merge(coverageData);
-
-		PackageData packageData = (PackageData)coverageData;
-		if (packageData.name != null)
-		{
-			this.name = packageData.name;
-		}
-	}
-
 }

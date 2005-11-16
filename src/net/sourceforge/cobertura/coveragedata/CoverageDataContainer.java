@@ -216,7 +216,9 @@ public abstract class CoverageDataContainer
 			}
 			else
 			{
-				// TODO: Shouldn't we be cloning newChild here?  I think so.
+				// TODO: Shouldn't we be cloning newChild here?  I think so that
+				//       would be better... but we would need to override the
+				//       clone() method all over the place?
 				this.children.put(key, newChild);
 			}
 		}
