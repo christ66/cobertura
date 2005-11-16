@@ -1,4 +1,4 @@
-version 1.7
+﻿version 1.7
 	* log4j is no longer used by the Cobertura classes that are
 	  accessed by instrumented Java code.  This means you will
 	  not need to add log4j to your project's classpath in order
@@ -12,6 +12,11 @@ version 1.7
 	* Changed the command-line interface to the merge task and
 	  added a helper batch/shell script.
 	* Added better error checking to the merge task.
+	* Fixed a bug where an empty or incomplete coverage data
+	  file would be written when you test classes inside Tomcat,
+	  and you stop Tomcat using the shutdown.bat or shutdown.sh
+	  scripts.  This would result in an EOFException when running
+	  cobertura-report.
 
 version 1.6
 	* Can now use multiple filesets in the cobertura-instrument
