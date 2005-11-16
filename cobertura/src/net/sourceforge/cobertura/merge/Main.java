@@ -54,15 +54,12 @@ public class Main
 				filesToMerge.add(baseDir + File.separator + args[i]);
 		}
 
-		// Load the data file
-		ProjectData projectData = CoverageDataFileHandler
-				.loadCoverageData(dataFile);
+		// Load coverage data
+		ProjectData projectData = null;
+		if (dataFile.isFile())
+			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
 		if (projectData == null)
-		{
-			System.err.println("Error: Unable to read from data file "
-					+ dataFile.getAbsolutePath());
-			System.exit(1);
-		}
+			projectData = new ProjectData();
 
 		if (filesToMerge.size() == 0)
 		{
