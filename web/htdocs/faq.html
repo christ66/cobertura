@@ -339,19 +339,18 @@ WebLogic, WebSphere, etc).  Now run your tests.
 As your classes are accessed, they will create a "cobertura.ser" file
 on the disk.  You may need to dig around a bit to find it.  Cobertura
 puts this file in what it considers to be the current working
-directory.  Typically this is the directory
-<code>webapps/projectname</code>.  Note: <b>This file is not written
+directory.  Typically this is the directory that the application
+server was started from (for example, <code>C:\Tomcat\bin</code>)
+Note: <b>This file is not written
 to the disk until the application server exits</b>.  See below for
 how to work around this.
 </p>
 
 <p>
-Now that you know where the cobertura.ser file is, you have two options.
-You could use cobertura-merge to merge the new data file with the one
-that was created during instrumentation.  Or, when you deploy your
-application you can move the original cobertura.ser to the application
-directory, and then move it back when you're finished testing.  Then
-run cobertura-report.
+Now that you know where the cobertura.ser file is, you should modify
+your deploy step so that it moves the original cobertura.ser to the
+appropriate directory in your application server, and then moves it
+back when finished testing.  Then run cobertura-report.
 </p>
 </div>
 </div>
@@ -376,10 +375,12 @@ file is invalid (possibly throwing an EOFException).
 <p>
 Cobertura only writes the coverage data file at shutdown.  It does
 this by adding a shutdown hook with
-<code>Runtime.getRuntime().addShutdownHook()"</code>.
-Apparently JBoss uses <code>System.halt()</code> when it shuts down.
-When <code>System.halt()</code> is used, the shutdown hook is not
-called.
+<code>Runtime.getRuntime().addShutdownHook()</code>.
+JBoss has its own shutdown hook that calls <code>System.halt()</code>
+when its finished.  If the JBoss shutdown hook finishes before the
+Cobertura shutdown hook, then the call to <code>System.halt()</code>
+causes the JVM to halt and the cobertura.ser file will be
+incomplete.
 </p>
 
 <p>
@@ -409,7 +410,20 @@ our application server after running our tests.
 It is possible to instruct Cobertura to write the data
 file.  One of your classes should call the static method
 <code>net.sourceforge.cobertura.coveragedata.ProjectData.saveGlobalProjectData()</code>.
+For example, you could add something like this to a
+"logout" method in your web application:
 </p>
+
+<blockquote>
+<pre>try {
+    String className = "net.sourceforge.cobertura.coveragedata.ProjectData";
+    String methodName = "saveGlobalProjectData";
+    Class saveClass = Class.forName(className);
+    Method saveMethod = saveClass.getDeclaredMethod(methodName, new Class[0]);
+    saveMethod.invoke(null,new Object[0]);
+} catch (Throwable t) {
+}</pre>
+</blockquote>
 
 <p>
 We are looking for a better alternative to this.  Feel
@@ -424,11 +438,20 @@ file on a given interval.  See
 <a href="https://sourceforge.net/tracker/index.php?func=detail&aid=1255463&group_id=130558&atid=720017">patch
 #1255463</a> for details.</li>
 
+<li>Add the ability for end-users to add a "magic"
+string literal to their code that Cobertura would
+remove during instrumentation and replace with a
+call to flush the coverage data to disk.  This
+idea was proposed by Eugene Kuleshov in an
+<a href="https://sourceforge.net/mailarchive/message.php?msg_id=13889985">email
+to the cobertura-devel mailing list</a>.</li>
+</li>
+
 <li>After ASM 2.2 is released, possibly save the coverage
 data when exiting a method, as suggested by Eugene
 Kuleshov in an
 <a href="https://sourceforge.net/mailarchive/message.php?msg_id=13879807">email
-to the cobertura-devail mailing list</a>.</li>
+to the cobertura-devel mailing list</a>.</li>
 
 <li>Provide web application developers with an easy way
 for them to ask Cobertura to flush the coverage data to
