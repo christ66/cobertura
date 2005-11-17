@@ -47,7 +47,15 @@ div.faq div.question {
 	font-weight: bold;
 }
 
+div.faq div.question p {
+	margin-bottom: 0px;
+}
+
 div.faq div.answer {
+}
+
+div.faq div.answer p {
+	margin-top: 0px;
 }
 
 div#footer {
