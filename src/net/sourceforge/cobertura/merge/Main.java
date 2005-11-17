@@ -26,8 +26,9 @@
 package net.sourceforge.cobertura.merge;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
@@ -40,8 +41,8 @@ public class Main
 	public Main(String[] args)
 	{
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
-		String baseDir = ".";
-		Vector filesToMerge = new Vector();
+		File baseDir = null;
+		List filesToMerge = new ArrayList();
 
 		// Go through all the parameters
 		for (int i = 0; i < args.length; i++)
@@ -49,9 +50,9 @@ public class Main
 			if (args[i].equals("--datafile"))
 				dataFile = new File(args[++i]);
 			else if (args[i].equals("--basedir"))
-				baseDir = args[++i];
+				baseDir = new File(args[++i]);
 			else
-				filesToMerge.add(baseDir + File.separator + args[i]);
+				filesToMerge.add( new File(baseDir, args[i]));
 		}
 
 		// Load coverage data
@@ -61,7 +62,7 @@ public class Main
 		if (projectData == null)
 			projectData = new ProjectData();
 
-		if (filesToMerge.size() == 0)
+		if (filesToMerge.isEmpty())
 		{
 			System.err.println("Error: No files were specified for merging.");
 			System.exit(1);
@@ -71,8 +72,7 @@ public class Main
 		Iterator iter = filesToMerge.iterator();
 		while (iter.hasNext())
 		{
-			String newDataFileName = (String)iter.next();
-			File newDataFile = new File(newDataFileName);
+			File newDataFile = (File)iter.next();
 			ProjectData projectDataNew = CoverageDataFileHandler
 					.loadCoverageData(newDataFile);
 			if (projectDataNew != null)
