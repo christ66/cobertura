@@ -85,7 +85,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		}
 	}
 
-	private static ProjectData loadCoverageData(InputStream dataFile)
+	private static ProjectData loadCoverageData(InputStream dataFile) throws IOException
 	{
 		ObjectInputStream objects = null;
 
@@ -96,6 +96,9 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 			System.out.println("Cobertura: Loaded information on "
 					+ projectData.getNumberOfClasses() + " classes.");
 			return projectData;
+		}
+		catch (IOException e) {
+			throw e;
 		}
 		catch (Exception e)
 		{
