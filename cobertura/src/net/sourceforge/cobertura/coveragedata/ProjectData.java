@@ -106,13 +106,14 @@ public class ProjectData extends CoverageDataContainer
 	}
 
 	/**
-	 * Get all subpackages of the given package.
+	 * Get all subpackages of the given package. Includes also specified package if
+	 * it exists.
 	 *
 	 * @param packageName The package name to find subpackages for.
 	 *        For example, "com.example"
 	 * @return A collection containing PackageData objects.  Each one
 	 *         has a name beginning with the given packageName.  For
-	 *         example, "com.example.io"
+	 *         example: "com.example.io", "com.example.io.internal"
 	 */
 	public SortedSet getSubPackages(String packageName)
 	{
