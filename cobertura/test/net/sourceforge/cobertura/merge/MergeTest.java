@@ -32,6 +32,9 @@ import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 
+/**
+ * Tests merge feature by calling directly ProjectData.merge method.
+ */
 public class MergeTest extends TestCase {
 	private ClassData firstClass = new ClassData("test.First");
 	private ClassData secondClass = new ClassData("test.Second");
