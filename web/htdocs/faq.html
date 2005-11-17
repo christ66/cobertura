@@ -78,7 +78,8 @@ Cobertura is currently developed by
 
 <p>
 With help from other supporters of open source
-development.
+development.  See the COPYRIGHT file distributed
+with Cobertura for the full list of contributors.
 </p>
 </div>
 </div>
@@ -146,10 +147,10 @@ What do I need to use Cobertura?
 <div class="answer">
 <p>
 A computer with Java 1.3 or newer.  We have run Cobertura on
-Windows 2000 and Linux (Fedora Core 4) using the 1.4.2 JDK,
-however, it should work on any platform.  The Cobertura
-download packages include all the dependencies you'll need
-(ASM, log4j, etc.)
+Windows XP and Linux (Fedora Core 4) using the 1.4.2 JDK.
+However, it should work on any platform and with any 1.3
+or newer JDK.  The Cobertura download packages include all
+the dependencies you'll need (ASM, log4j, etc.)
 </p>
 </div>
 </div>
@@ -185,6 +186,11 @@ command line that is too large for Windows.  You can see the
 bug report</a> and a
 <a href="http://bugzilla.jcoverage.com/attachment.cgi?id=3&amp;action=view">patch
 from someone in the community</a> in the jcoverage bugzilla.
+</p>
+
+<p>
+Also, the version of BCEL distributed with jcoverage 1.0.5 causes
+problems when used with Java classes compiled with a 1.5 JDK.
 </p>
 </div>
 
@@ -304,6 +310,131 @@ need ASM in your classpath when running tests</i>.  If you're seeing
 classpath conflicts, just make sure the asm jar that comes with
 Cobertura is used only by Cobertura, and only when instrumenting.
 </p>
+</div>
+</div>
+
+
+
+<h2>Using Cobertura with a Web Application</h2>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+I have automated tests that use HttpUnit/HtmlUnit/Empirix/Rational
+Robot, can I use Cobertura?
+</p>
+</div>
+
+<div class="answer">
+<p>
+Yes!  The process is a bit more involved, but the concept is the same.
+First instrument your compiled classes.  Then create your war file.
+Then deploy the war file into your application server (Tomcat, JBoss,
+WebLogic, WebSphere, etc).  Now run your tests.
+</p>
+
+<p>
+As your classes are accessed, they will create a "cobertura.ser" file
+on the disk.  You may need to dig around a bit to find it.  Cobertura
+puts this file in what it considers to be the current working
+directory.  Typically this is the directory
+<code>webapps/projectname</code>.  Note: <b>This file is not written
+to the disk until the application server exits</b>.  See below for
+how to work around this.
+</p>
+
+<p>
+Now that you know where the cobertura.ser file is, you have two options.
+You could use cobertura-merge to merge the new data file with the one
+that was created during instrumentation.  Or, when you deploy your
+application you can move the original cobertura.ser to the application
+directory, and then move it back when you're finished testing.  Then
+run cobertura-report.
+</p>
+</div>
+</div>
+
+
+
+<br/>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+I'm using JBoss.  When I stop the server, the coverage data file is
+not written.  Or the coverage data file is 0 bytes.  Or
+cobertura-report and cobertura-merge complain that the coverage data
+file is invalid (possibly throwing an EOFException).
+</p>
+</div>
+
+<div class="answer">
+<p>
+Cobertura only writes the coverage data file at shutdown.  It does
+this by adding a shutdown hook with
+<code>Runtime.getRuntime().addShutdownHook()"</code>.
+Apparently JBoss uses <code>System.halt()</code> when it shuts down.
+When <code>System.halt()</code> is used, the shutdown hook is not
+called.
+</p>
+
+<p>
+To fix this, set <code>-Djboss.shutdown.forceHalt=false</code>
+when starting JBoss.
+</p>
+</div>
+</div>
+
+
+
+<br/>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+Cobertura only writes the coverage data file when the
+application server shuts down.  We do not want to stop
+our application server after running our tests.
+</p>
+</div>
+
+<div class="answer">
+<p>
+It is possible to instruct Cobertura to write the data
+file.  One of your classes should call the static method
+<code>net.sourceforge.cobertura.coveragedata.ProjectData.saveGlobalProjectData()</code>.
+</p>
+
+<p>
+We are looking for a better alternative to this.  Feel
+free to send us your suggestions.  Possible changes in
+future versions of Cobertura:
+</p>
+
+<ul>
+
+<li>Add the ability to set a timer that saves the data
+file on a given interval.  See
+<a href="https://sourceforge.net/tracker/index.php?func=detail&aid=1255463&group_id=130558&atid=720017">patch
+#1255463</a> for details.</li>
+
+<li>After ASM 2.2 is released, possibly save the coverage
+data when exiting a method, as suggested by Eugene
+Kuleshov in an
+<a href="https://sourceforge.net/mailarchive/message.php?msg_id=13879807">email
+to the cobertura-devail mailing list</a>.</li>
+
+<li>Provide web application developers with an easy way
+for them to ask Cobertura to flush the coverage data to
+disk.</li>
+
+</ul>
 </div>
 </div>
 
