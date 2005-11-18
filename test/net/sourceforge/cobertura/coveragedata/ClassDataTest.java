@@ -246,7 +246,7 @@ public class ClassDataTest extends TestCase
 
 		assertFalse(a.isValidSourceLineNumber(line));
 		a.touch(line);
-		assertFalse(a.isValidSourceLineNumber(line));
+		assertTrue(a.isValidSourceLineNumber(line));
 
 		assertTrue(b.isValidSourceLineNumber(line));
 		assertEquals(0, b.getHitCount(line));
