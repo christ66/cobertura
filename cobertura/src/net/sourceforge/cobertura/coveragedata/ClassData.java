@@ -72,7 +72,7 @@ public class ClassData extends CoverageDataContainer
 		this.name = name;
 	}
 
-	public void addLine(int lineNumber, String methodName,
+	public LineData addLine(int lineNumber, String methodName,
 			String methodDescriptor)
 	{
 		LineData lineData = getLineData(lineNumber);
@@ -85,6 +85,7 @@ public class ClassData extends CoverageDataContainer
 		}
 		lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
 		methodNamesAndDescriptors.add(methodName + methodDescriptor);
+		return lineData;
 	}
 
 	/**
@@ -382,8 +383,9 @@ public class ClassData extends CoverageDataContainer
 	public void touch(int lineNumber)
 	{
 		LineData lineData = getLineData(lineNumber);
-		if (lineData != null)
-			lineData.touch();
+		if (lineData == null)
+			lineData = addLine(lineNumber, null, null);
+		lineData.touch();
 	}
 
 }
