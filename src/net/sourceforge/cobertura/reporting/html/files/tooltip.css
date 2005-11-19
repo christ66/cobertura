@@ -3,9 +3,9 @@ a.hastooltip {
 	color: #000000;
 	cursor: help;
 	font-style: normal;
-	position: relative; //This is the key
+	position: relative; /* This is the key */
 	text-decoration: none;
-	z-index: 24; //What does this do?
+	z-index: 24; /* What does this do? */
 }
 
 a.hastooltip:active {
