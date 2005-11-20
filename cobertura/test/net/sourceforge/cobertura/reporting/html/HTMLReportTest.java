@@ -32,21 +32,20 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.TestCase;
-import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.xml.JUnitXMLParserErrorHandler;
-import net.sourceforge.cobertura.reporting.xml.XMLReport;
 
 public class HTMLReportTest extends TestCase
 {
-
 	private final static File BASEDIR = new File((System.getProperty("basedir") != null)
 			? System.getProperty("basedir")
 			: ".");
 	private final static File PATH_TO_TEST_OUTPUT = new File(BASEDIR,"build/test/HTMLReportTest");
 	private final static File PATH_TO_SOURCES = new File(BASEDIR, "src");
 	private final static File PATH_TO_SOURCES_2 = new File(BASEDIR, "src-2");
+	
+	private boolean testSuccessful = false;
 
 	public void setUp()
 	{
@@ -69,9 +68,10 @@ public class HTMLReportTest extends TestCase
 	
 	public void tearDown()
 	{
-		// Do do not remove results so that if an error occur we will be able
-		// to localize the problem
-		// removeDir( PATH_TO_TEST_OUTPUT);
+		// If an error occurs do not remove generated files so we will be able to localize
+		// the problem
+		if( testSuccessful)
+			removeDir( PATH_TO_TEST_OUTPUT);
 	}
 	
 	private void validateXML(File pathToXML) throws Exception {
@@ -108,10 +108,6 @@ public class HTMLReportTest extends TestCase
 	
 	public void testHTMLReportValidity() throws Exception
 	{
-		// Adding line to the project data that hasn't been yet marked as source line 
-		ClassData cd = ProjectData.getGlobalProjectData().getOrCreateClassData(XMLReport.class.getName());
-		cd.touch(7777);
-		
 		// Serialize the current coverage data to disk
 		ProjectData.saveGlobalProjectData();
 		String dataFileName = CoverageDataFileHandler.getDefaultDataFile()
@@ -158,5 +154,8 @@ public class HTMLReportTest extends TestCase
 				previousPrefix = htmlFiles[i];
 			}
 		}
+		
+		// Mark that test was successful so report will be deleted
+		testSuccessful = true;
 	}
 }
