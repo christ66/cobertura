@@ -2,6 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2005 Grzegorz Lukasik
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -36,20 +37,26 @@ import org.xml.sax.SAXParseException;
  */
 public class JUnitXMLParserErrorHandler implements ErrorHandler
 {
-
+	private void createErrorMessage(SAXParseException exception) {
+		Assert.fail( "Line number: " + exception.getLineNumber() 
+				+ " column: " +	exception.getColumnNumber() 
+				+ "\n"
+				+ exception.toString());
+	}
+	
 	public void error(SAXParseException exception)
 	{
-		Assert.fail(exception.toString());
+		createErrorMessage( exception);
 	}
 
 	public void fatalError(SAXParseException exception)
 	{
-		Assert.fail(exception.toString());
+		createErrorMessage( exception);
 	}
 
 	public void warning(SAXParseException exception)
 	{
-		Assert.fail(exception.toString());
+		createErrorMessage( exception);
 	}
 
 }

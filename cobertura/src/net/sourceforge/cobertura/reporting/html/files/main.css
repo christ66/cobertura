@@ -23,18 +23,31 @@ body {
 
 div.footer {
 	font-size: 68%;
+	margin-top: 1.5em;
 }
 
 h1, h2, h3, h4, h5, h6 {
 	margin-bottom: 0.5em;
 }
 
+h5 {
+	margin-top: 0.5em;
+}
+
 .hidden {
 	display: none;
 }
 
+div.separator {
+	height: 10px;
+}
+
 table tr td, table tr th {
 	font-size: 68%;
+}
+
+td.value table tr td {
+    font-size: 11px;
 }
 
 table.report {
@@ -66,19 +79,20 @@ table.report td.value {
 table.percentGraph {
 	border: #808080 1px solid;
 	height: 12px;
+	empty-cells: show;
 }
 
 table.percentGraph td.covered {
     background: #00f000;
-	empty-cells: show;
+	height: 10px;
 }
 
 table.percentGraph td.uncovered {
     background: #e00000;
-	empty-cells: show;
+	height: 10px;
 }
 
 table.percentGraph td.NA {
     background: #eaeaea;
-	empty-cells: show;
+	height: 10px;
 }
