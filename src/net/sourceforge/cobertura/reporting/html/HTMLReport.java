@@ -97,18 +97,21 @@ public class HTMLReport
 		{
 			out = new PrintStream(new FileOutputStream(file));
 
-			out.println("<html>");
+			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+			out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+			
+			out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
 			out.println("<head>");
+			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
 			out.println("<title>Coverage Report</title>");
-			out
-					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\" />");
+			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\" />");
 			out.println("</head>");
 			out.println("<body>");
 			out.println("<h5>Packages</h5>");
 			out.println("<table width=\"100%\">");
 			out.println("<tr>");
 			out
-					.println("<td nowrap=\"nowrap\"><a href=\"frame-summary.html\" onClick='parent.sourceFileList.location.href=\"frame-sourcefiles.html\"' target=\"summary\">All</a></td>");
+					.println("<td nowrap=\"nowrap\"><a href=\"frame-summary.html\" onclick='parent.sourceFileList.location.href=\"frame-sourcefiles.html\"' target=\"summary\">All</a></td>");
 			out.println("</tr>");
 
 			Iterator iter = projectData.getPackages().iterator();
@@ -123,7 +126,7 @@ public class HTMLReport
 				out
 						.println("<td nowrap=\"nowrap\"><a href=\""
 								+ url1
-						+ "\" onClick='parent.sourceFileList.location.href=\""
+						+ "\" onclick='parent.sourceFileList.location.href=\""
 						+ url2 + "\"' target=\"summary\">"
 								+ generatePackageName(packageData)
 								+ "</a></td>");
@@ -182,12 +185,15 @@ public class HTMLReport
 		try
 		{
 			out = new PrintStream(new FileOutputStream(file));
+			
+			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+			out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 
 			out.println("<html>");
 			out.println("<head>");
+			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 			out.println("<title>Coverage Report Classes</title>");
-			out
-					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\" />");
+			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
 			out.println("</head>");
 			out.println("<body>");
 			out.println("<h5>");
@@ -195,32 +201,35 @@ public class HTMLReport
 					? "All Packages"
 					: generatePackageName(packageData));
 			out.println("</h5>");
+			out.println("<div class=\"separator\">&nbsp;</div>");
 			out.println("<h5>Classes</h5>");
-			out.println("<table width=\"100%\">");
-
-			for (Iterator iter = sortedSourceFiles.iterator(); iter
-					.hasNext();)
-			{
-				SourceFileData sourceFileData = (SourceFileData)iter.next();
-				out.println("<tr>");
-				String percentCovered;
-				if (sourceFileData.getNumberOfValidLines() > 0)
-					percentCovered = getPercentValue(sourceFileData
-							.getLineCoverageRate());
-				else
-					percentCovered = "N/A";
-				out
-						.println("<td nowrap=\"nowrap\"><a target=\"summary\" href=\""
-								+ sourceFileData.getNormalizedName()
-								+ ".html\">"
-								+ sourceFileData.getBaseName()
-								+ "</a> <i>(" + percentCovered + ")</i></td>");
-				out.println("</tr>");
+			if( !sortedSourceFiles.isEmpty()) {
+				out.println("<table width=\"100%\">");
+				out.println("<tbody>");
+	
+				for (Iterator iter = sortedSourceFiles.iterator(); iter
+						.hasNext();)
+				{
+					SourceFileData sourceFileData = (SourceFileData)iter.next();
+					out.println("<tr>");
+					String percentCovered;
+					if (sourceFileData.getNumberOfValidLines() > 0)
+						percentCovered = getPercentValue(sourceFileData
+								.getLineCoverageRate());
+					else
+						percentCovered = "N/A";
+					out
+							.println("<td nowrap=\"nowrap\"><a target=\"summary\" href=\""
+									+ sourceFileData.getNormalizedName()
+									+ ".html\">"
+									+ sourceFileData.getBaseName()
+									+ "</a> <i>(" + percentCovered + ")</i></td>");
+					out.println("</tr>");
+				}
+				out.println("</tbody>");
+				out.println("</table>");
 			}
-
-			out.println("</td>");
-			out.println("</tr>");
-			out.println("</table>");
+			
 			out.println("</body>");
 			out.println("</html>");
 		}
@@ -264,19 +273,18 @@ public class HTMLReport
 		{
 			out = new PrintStream(new FileOutputStream(file));
 
+			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+	        out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+
 			out.println("<html>");
 			out.println("<head>");
+			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 			out.println("<title>Coverage Report</title>");
-			out
-					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\" />");
-			out
-					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/sortabletable.css\" />");
-			out
-					.println("<script type=\"text/javascript\" src=\"js/popup.js\"></script>");
-			out
-					.println("<script type=\"text/javascript\" src=\"js/sortabletable.js\"></script>");
-			out
-					.println("<script type=\"text/javascript\" src=\"js/customsorttypes.js\"></script>");
+			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
+			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/sortabletable.css\"/>");
+			out.println("<script type=\"text/javascript\" src=\"js/popup.js\"></script>");
+			out.println("<script type=\"text/javascript\" src=\"js/sortabletable.js\"></script>");
+			out.println("<script type=\"text/javascript\" src=\"js/customsorttypes.js\"></script>");
 			out.println("</head>");
 			out.println("<body>");
 
@@ -285,7 +293,7 @@ public class HTMLReport
 					? "All Packages"
 					: generatePackageName(packageData));
 			out.println("</h5>");
-			out.println("<p>");
+			out.println("<div class=\"separator\">&nbsp;</div>");
 			out.println("<table class=\"report\" id=\"packageResults\">");
 			out.println(generateTableHeader("Package", true));
 			out.println("<tbody>");
@@ -322,7 +330,6 @@ public class HTMLReport
 					.println("    [\"String\", \"Number\", \"Percentage\", \"Percentage\", \"FormattedNumber\"]);");
 			out.println("packageTable.sort(0);");
 			out.println("</script>");
-			out.println("</p>");
 
 			// Get the list of source files in this package
 			Collection sourceFiles;
@@ -347,7 +354,7 @@ public class HTMLReport
 			// Output a line for each source file
 			if (sourceFiles.size() > 0)
 			{
-				out.println("<p>");
+				out.println("<div class=\"separator\">&nbsp;</div>");
 				out.println("<table class=\"report\" id=\"classResults\">");
 				out.println(generateTableHeader("Classes in this Package",
 						false));
@@ -371,7 +378,6 @@ public class HTMLReport
 						.println("    [\"String\", \"Percentage\", \"Percentage\", \"FormattedNumber\"]);");
 				out.println("classTable.sort(0);");
 				out.println("</script>");
-				out.println("</p>");
 			}
 
 			String date = DateFormat.getInstance().format(new Date());
@@ -431,11 +437,15 @@ public class HTMLReport
 		{
 			out = new PrintStream(new FileOutputStream(file));
 
+			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+	        out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+			
 			out.println("<html>");
 			out.println("<head>");
+			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 			out.println("<title>Coverage Report</title>");
 			out
-					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\" />");
+					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
 			out
 					.println("<script type=\"text/javascript\" src=\"js/popup.js\"></script>");
 			out.println("</head>");
@@ -450,16 +460,15 @@ public class HTMLReport
 			out.println("</h5>");
 
 			// Output the coverage summary for this class
-			out.println("<p>");
+			out.println("<div class=\"separator\">&nbsp;</div>");
 			out.println("<table class=\"report\">");
 			out.println(generateTableHeader("Classes in this File", false));
 			// TODO: Change this to actually show multiple classes.
 			out.println(generateTableRowForSourceFile(sourceFileData));
 			out.println("</table>");
-			out.println("</p>");
 
 			// Output this class's source code with syntax and coverage highlighting
-			out.println("<p>");
+			out.println("<div class=\"separator\">&nbsp;</div>");
 			out
 					.println("<table cellspacing=\"0\" cellpadding=\"0\" class=\"src\">");
 			BufferedReader br = null;
@@ -523,7 +532,6 @@ public class HTMLReport
 				}
 			}
 			out.println("</table>");
-			out.println("</p>");
 
 			out.println("<div class=\"footer\">");
 			out
@@ -579,7 +587,7 @@ public class HTMLReport
 		if (popupTooltips)
 		{
 			ret
-					.append("<a class=\"hastooltip\" href=\"help.html\" onClick=\"popupwindow('help.html'); return false;\">");
+					.append("<a class=\"hastooltip\" href=\"help.html\" onclick=\"popupwindow('help.html'); return false;\">");
 			ret.append(text);
 			ret.append("<span>" + description + "</span>");
 			ret.append("</a>");
@@ -587,7 +595,7 @@ public class HTMLReport
 		else
 		{
 			ret
-					.append("<a class=\"dfn\" href=\"help.html\" onClick=\"popupwindow('help.html'); return false;\">");
+					.append("<a class=\"dfn\" href=\"help.html\" onclick=\"popupwindow('help.html'); return false;\">");
 			ret.append(text);
 			ret.append("</a>");
 		}
@@ -689,7 +697,7 @@ public class HTMLReport
 
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><a href=\"" + url1
-				+ "\" onClick='parent.sourceFileList.location.href=\"" + url2
+				+ "\" onclick='parent.sourceFileList.location.href=\"" + url2
 				+ "\"'>" + generatePackageName(packageData) + "</a></td>");
 		ret.append("<td class=\"value\">" + packageData.getNumberOfChildren()
 				+ "</td>");
