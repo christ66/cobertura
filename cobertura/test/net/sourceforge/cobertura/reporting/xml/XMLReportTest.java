@@ -29,8 +29,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.TestCase;
+import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.reporting.ComplexityCalculator;
+import net.sourceforge.cobertura.util.FileFinder;
 
 public class XMLReportTest extends TestCase
 {
@@ -53,27 +56,14 @@ public class XMLReportTest extends TestCase
 
 	public void tearDown()
 	{
-		tmpDir = new File(pathToTestOutput);
-		File files[] = tmpDir.listFiles();
-		for (int i = 0; i < files.length; i++)
-			files[i].delete();
-		tmpDir.delete();
+//		tmpDir = new File(pathToTestOutput);
+//		File files[] = tmpDir.listFiles();
+//		for (int i = 0; i < files.length; i++)
+//			files[i].delete();
+//		tmpDir.delete();
 	}
-
-	public void testXMLReportValidity() throws Exception
-	{
-		String[] args;
-
-		// Serialize the current coverage data to disk
-		ProjectData.saveGlobalProjectData();
-		String dataFileName = CoverageDataFileHandler.getDefaultDataFile()
-				.getAbsolutePath();
-
-		// Then we need to generate the XML report
-		args = new String[] { "--format", "xml", "--datafile", dataFileName, "--destination",
-				pathToTestOutput, pathToSourceCode };
-		net.sourceforge.cobertura.reporting.Main.main(args);
-
+	
+	private void validateReport(String pathToXMLReport) throws Exception {
 		// Create a validating XML document parser
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setValidating(true);
@@ -94,6 +84,46 @@ public class XMLReportTest extends TestCase
 			if (inputStream != null)
 				inputStream.close();
 		}
+	}
+
+	public void testXMLReportValidity() throws Exception
+	{
+		String[] args;
+
+		// Serialize the current coverage data to disk
+		ProjectData.saveGlobalProjectData();
+		String dataFileName = CoverageDataFileHandler.getDefaultDataFile()
+				.getAbsolutePath();
+
+		// Then we need to generate the XML report
+		args = new String[] { "--format", "xml", "--datafile", dataFileName, "--destination",
+				pathToTestOutput, pathToSourceCode };
+		net.sourceforge.cobertura.reporting.Main.main(args);
+		
+		validateReport( pathToXMLReport);
+	}
+	
+	public void testXMLReportWithNonSourceLines() throws Exception {
+		ProjectData projectData = new ProjectData();
+		
+		// Adding line to the project data that hasn't been yet marked as source line 
+		ClassData cd = projectData.getOrCreateClassData(XMLReport.class.getName());
+		cd.touch(7777);
+		
+		File reportDir = File.createTempFile( "XMLReportTest", "");
+		reportDir.delete();
+		reportDir.mkdir();
+		
+		FileFinder fileFinder = new FileFinder();
+		ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+		
+		new XMLReport( projectData, reportDir, fileFinder, complexity);
+		
+		File coverageFile = new File(reportDir,"coverage.xml");
+		validateReport( coverageFile.getAbsolutePath());
+
+		coverageFile.delete();
+		reportDir.delete();
 	}
 
 }
