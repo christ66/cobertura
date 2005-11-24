@@ -56,11 +56,11 @@ public class XMLReportTest extends TestCase
 
 	public void tearDown()
 	{
-//		tmpDir = new File(pathToTestOutput);
-//		File files[] = tmpDir.listFiles();
-//		for (int i = 0; i < files.length; i++)
-//			files[i].delete();
-//		tmpDir.delete();
+		tmpDir = new File(pathToTestOutput);
+		File files[] = tmpDir.listFiles();
+		for (int i = 0; i < files.length; i++)
+			files[i].delete();
+		tmpDir.delete();
 	}
 	
 	private void validateReport(String pathToXMLReport) throws Exception {
