@@ -84,7 +84,11 @@ public class ClassData extends CoverageDataContainer
 			children.put(new Integer(lineNumber), lineData);
 		}
 		lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
-		methodNamesAndDescriptors.add(methodName + methodDescriptor);
+		
+		// methodName and methodDescriptor can be null when cobertura.ser with 
+		// no line information was loaded (or was not loaded at all).
+		if( methodName!=null || methodDescriptor!=null)
+			methodNamesAndDescriptors.add(methodName + methodDescriptor);
 		return lineData;
 	}
 
