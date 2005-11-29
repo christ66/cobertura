@@ -419,7 +419,7 @@ For example, you could add something like this to a
     String className = "net.sourceforge.cobertura.coveragedata.ProjectData";
     String methodName = "saveGlobalProjectData";
     Class saveClass = Class.forName(className);
-    Method saveMethod = saveClass.getDeclaredMethod(methodName, new Class[0]);
+    java.lang.reflect.Method saveMethod = saveClass.getDeclaredMethod(methodName, new Class[0]);
     saveMethod.invoke(null,new Object[0]);
 } catch (Throwable t) {
 }</pre>
