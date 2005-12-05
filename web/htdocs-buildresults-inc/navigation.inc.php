@@ -24,7 +24,24 @@ function cc_printNavigationProjects() {
 		println("No projects found");
 	} else {
 		foreach ($projects as $project)
-			println("<a class=\"link\" href=\"?project=${project}\">${project}</a><br/>");
+		{
+			$build = cc_getMostRecentBuild($project);
+			if (!$build) {
+				$class = "table-text";
+				$build_label = "";
+				$build_date = "none";
+			} else if ($label = cc_getLabelOfLogFile($build)) {
+				$class = "table-text-success";
+				$build_label = "(build." . $label . ")";
+				$build_date = cc_getDateOfLogFile($build);
+			} else {
+				$class = "table-text-error";
+				$build_label = "(FAILED!)";
+				$build_date = cc_getDateOfLogFile($build);
+			}
+			println("<a class=\"${class}\" href=\"?project=${project}\">${project}&nbsp;${build_label}</a><br />");
+			println("<span class='build-date'>Last build: " . $build_date . "</span><br />");
+		}
 	}
 	println("</p>");
 }
@@ -43,7 +60,7 @@ function cc_printNavigationBuilds($project, $build) {
 	} else {
 		println("Most Recent<br/>");
 		for ($i = 0; ($i < count($builds)) && ($i < 10); $i++) {
-			print("<a class=\"link\" href=\"?project=${project}&amp;build=" . $builds[$i] . "\">" . cc_getDateOfLogFile($builds[$i]) . "</a>");
+			print("<a class=\"link\" href=\"?project=${project}&amp;log=" . $builds[$i] . "\">" . cc_getDateOfLogFile($builds[$i]) . "</a>");
 			if ($label = cc_getLabelOfLogFile($builds[$i]))
 				print(" (<span class=\"table-text-success\">build.${label}</span>)");
 			else
@@ -54,7 +71,7 @@ function cc_printNavigationBuilds($project, $build) {
 			println("<br/>");
 			println("Older<br/>");
 			println("		<input type=\"hidden\" name=\"project\" value=\"${project}\"/>");
-			println("		<select name=\"build\" onchange=\"form.submit()\">");
+			println("		<select name=\"log\" onchange=\"form.submit()\">");
 			for ($i = 10; $i < count($builds); $i++) {
 				print("			<option value=\"" . $builds[$i] . "\"");
 				if (isset($build) && $build == $builds[$i])
@@ -102,7 +119,7 @@ function cc_getListOfBuilds($project) {
 	foreach ($files as $file) {
 		if (($file == "_cache") ||
 			($file == "status") ||
-			(cc_isValidLogFilename($file)))
+			(!cc_isValidLogFilename($file)))
 			continue;
 		$builds[] = $file;
 	}

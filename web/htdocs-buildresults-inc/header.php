@@ -1,15 +1,20 @@
 <?php
 	print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-	include("/home/groups/c/co/cobertura/htdocs-buildresults-inc/cc.inc.php");
+	include("${projecthome}/htdocs-buildresults-inc/cc.inc.php");
 	$project = $HTTP_GET_VARS['project'];
-	$build = $HTTP_GET_VARS['build'];
+	$log = $HTTP_GET_VARS['log'];
 	$file = $HTTP_GET_VARS['file'];
 
+	if (isset($log) && !endsWith(".xml", $log))
+		$log .= ".xml";
+
 	// TODO: Add better error checking
+	if (strpos($log, "/") || strpos($log, "\\"))
+		$log = null;
 	if (strpos($file, "/") || strpos($file, "\\"))
 		$file = null;
 
-	$title = cc_getPageTitle($project, $build, $file);
+	$title = cc_getPageTitle($project, $log, $file);
 ?>
 
 
@@ -21,21 +26,6 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<link rel="stylesheet" type="text/css" href="StyleSheets/buildresults.css"/>
 	<title>Build Results<?php if (isset($title)) { print(": $title"); } ?></title>
-
-<script type="text/javascript">
-	function expandable(loc) {
-		if (document.getElementById) {
-			var foc=loc.firstChild.innerHTML?
-				loc.firstChild:
-				loc.firstChild.nextSibling;
-			foc.innerHTML=foc.innerHTML == '+' ? '-' : '+';
-			foc=loc.nextSibling.style?
-				loc.nextSibling:
-				loc.nextSibling.nextSibling;
-			foc.style.display=foc.style.display=='block'?'none':'block';
-		}
-	}
-</script>
 </head>
 
 <body>
@@ -44,7 +34,7 @@
 
 <div id="navigation">
 
-<?php cc_printNavigation($project, $build, $file); ?>
+<?php cc_printNavigation($project, $log, $file); ?>
 
 <a href="http://sourceforge.net/"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=130558&amp;type=1" width="88" height="31" alt="SourceForge.net Logo" /></a>
 
@@ -54,5 +44,5 @@
 
 <div id="main">
 
-<?php print(cc_getBreadcrumbs($project, $build, $file)); ?>
+<?php print(cc_getBreadcrumbs($project, $log, $file)); ?>
 

@@ -1,5 +1,10 @@
-<?php include("/home/groups/c/co/cobertura/htdocs-buildresults-inc/header.php"); ?>
+<?php
+	$projecthome = "/home/groups/c/co/cobertura";
+	$buildlogs = "${projecthome}/buildlogs";
+	$additionalfiles = "${buildlogs}/files";
+	include("${projecthome}/htdocs-buildresults-inc/header.php");
+?>
 
-<?php print(cc_getBuildresults($project, $build, $file)); ?>
+<?php print(cc_getBuildresults($project, $log, $file)); ?>
 
-<?php include("/home/groups/c/co/cobertura/htdocs-buildresults-inc/footer.php"); ?>
+<?php include("${projecthome}/htdocs-buildresults-inc/footer.php"); ?>

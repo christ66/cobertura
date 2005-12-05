@@ -2,11 +2,6 @@
 
 
 
-$buildlogs = "/home/groups/c/co/cobertura/buildlogs";
-$additionalfiles = "/home/groups/c/co/cobertura/buildlogs/files";
-
-
-
 class cc_Modification
 {
 	var $type;
@@ -201,18 +196,18 @@ class cc_LogParser
 
 	function characterData($parser, $data) {
 		if (($this->stacksize >= 3) && ($this->stack[$this->stacksize - 1] == "MESSAGE") && ($this->stack[1] == "BUILD") && ($this->stack[0] == "CRUISECONTROL")) {
-			$this->nextcompilemessage->message = $data;
+			$this->nextcompilemessage->message .= $data;
 		} else if ($this->stacksize == 4) {
 			if (($this->stack[3] == "DATE") && ($this->stack[2] == "MODIFICATION") && ($this->stack[1] == "MODIFICATIONS") && ($this->stack[0] == "CRUISECONTROL")) {
-				$this->nextmodification->date = $data;
+				$this->nextmodification->date .= $data;
 			} else if (($this->stack[3] == "USER") && ($this->stack[2] == "MODIFICATION") && ($this->stack[1] == "MODIFICATIONS") && ($this->stack[0] == "CRUISECONTROL")) {
-				$this->nextmodification->user = $data;
+				$this->nextmodification->user .= $data;
 			} else if (($this->stack[3] == "COMMENT") && ($this->stack[2] == "MODIFICATION") && ($this->stack[1] == "MODIFICATIONS") && ($this->stack[0] == "CRUISECONTROL")) {
-				$this->nextmodification->comment = $data;
+				$this->nextmodification->comment .= $data;
 			} else if (($this->stack[3] == "SYSTEM-OUT") && ($this->stack[2] == "TESTCASE") && ($this->stack[1] == "TESTSUITE") && ($this->stack[0] == "CRUISECONTROL")) {
-				$this->nexttestcase->sysout = $data;
+				$this->nexttestcase->sysout .= $data;
 			} else if (($this->stack[3] == "SYSTEM-ERR") && ($this->stack[2] == "TESTCASE") && ($this->stack[1] == "TESTSUITE") && ($this->stack[0] == "CRUISECONTROL")) {
-				$this->nexttestcase->syserr = $data;
+				$this->nexttestcase->syserr .= $data;
 			} else if (($this->stack[3] == "ERROR") && ($this->stack[2] == "TESTCASE") && ($this->stack[1] == "TESTSUITE") && ($this->stack[0] == "CRUISECONTROL")) {
 				$this->nextproblem->text .= $data;
 			} else if (($this->stack[3] == "FAILURE") && ($this->stack[2] == "TESTCASE") && ($this->stack[1] == "TESTSUITE") && ($this->stack[0] == "CRUISECONTROL")) {
@@ -284,11 +279,11 @@ function cc_getDateOfLogFile($filename)
 	$year = substr($filename, 3, 4);
 	$month = substr($filename, 7, 2);
 	$day = substr($filename, 9, 2);
-	$hour = substr($filename, 11, 2) - 1;
+	$hour = substr($filename, 11, 2);
 	$minute = substr($filename, 13, 2);
 	$second = substr($filename, 15, 2);
 
-	$seconds_since_epoch = strtotime("${year}-${month}-${day} ${hour}:${minute}:${second} EST");
+	$seconds_since_epoch = strtotime("${year}-${month}-${day} ${hour}:${minute}:${second}");
 
 	return date("j M Y\, g:ia", $seconds_since_epoch);
 }
@@ -317,7 +312,7 @@ function cc_getLabelOfLogFile($filename)
  */
 function cc_isValidLogFilename($filename)
 {
-	if (getFileExtension($file) != "xml")
+	if (getFileExtension($filename) != "xml")
 		return false;
 
 	if (strncmp($filename, "log", 3) != 0)
@@ -361,12 +356,12 @@ function cc_printPageFooter()
 
 
 
-function cc_getPageTitle($project, $build, $file)
+function cc_getPageTitle($project, $log, $file)
 {
-	if (isset($file) && isset($build) && isset($project))
-		return "${project}, ${build}, ${file}";
-	else if (isset($build) && isset($project))
-		return "${project}, ${build}";
+	if (isset($file) && isset($log) && isset($project))
+		return "${project}, ${log}, ${file}";
+	else if (isset($log) && isset($project))
+		return "${project}, ${log}";
 	else if (isset($project))
 		return "${project}";
 	else
@@ -375,49 +370,49 @@ function cc_getPageTitle($project, $build, $file)
 
 
 
-function cc_getBuildresults($project, $build, $file)
+function cc_getBuildresults($project, $log, $file)
 {
 	if (!isset($project))
 		print("<blockquote><div class=\"bigger\"><p class=\"centered\"><i>choose a project from the menu on the left</i></p></div></blockquote>");
-	else if (!isset($build))
+	else if (!isset($log))
 		print("<blockquote><div class=\"bigger\"><p class=\"centered\"><i>choose a build from the menu on the left</i></p></div></blockquote>");
 	else
-		cc_showBuild($project, $build, $file);
+		cc_showBuild($project, $log, $file);
 }
 
 
 
-function cc_showBuild($project, $build, $file)
+function cc_showBuild($project, $log, $file)
 {
-//QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
-$buildlogs = "/home/groups/c/co/cobertura/buildlogs";
-$additionalfiles = "/home/groups/c/co/cobertura/buildlogs/files";
+	global $buildlogs;
+	global $additionalfiles;
+
 	$buildInfo = new cc_LogParser();
-	$buildInfo->parseFile("${buildlogs}/${project}/${build}");
+	$buildInfo->parseFile("${buildlogs}/${project}/${log}");
 ?>
 
 	<p>
 	<span class="header-title"><?php print($project); ?> - <?php
-		if ($buildnum = cc_getLabelOfLogFile($build)) {
+		if ($buildnum = cc_getLabelOfLogFile($log)) {
 			print("BUILD COMPLETE - build." . $buildnum);
 		} else {
 			print("<span class=\"header-title-error\">FAILED!</span>");
 		}
 	?></span><br/>
-	<span class="header-data"><span class="header-label">Date of build:</span> <?php print(cc_getDateOfLogFile($build)); ?></span><br/>
+	<span class="header-data"><span class="header-label">Date of build:</span> <?php print(cc_getDateOfLogFile($log)); ?></span><br/>
 	<span class="header-data"><span class="header-label">Time to build:</span> <?php print($buildInfo->compileTime); ?></span><br/>
 	<span class="header-data"><span class="header-label">Additional Files:</span></span><br/>
 <?php
 	println("<span class=\"header-data\">");
 
-	$builddate = substr($build, 3, 14);
+	$builddate = substr($log, 3, 14);
 	$additionalfiles = listFilesInDirectory("${buildlogs}/${project}/${builddate}");
 	if (!isset($additionalfiles)) {
 		print("&nbsp;&nbsp;<i>No additional files.</i>");
 	} else {
 		println("<ul>");
 		foreach ($additionalfiles as $additionalfile) {
-			println("<li><a class=\"link\" href=\"viewfile.php?project=${project}&build=${build}&file=${additionalfile}\">$additionalfile</a></li>");
+			println("<li><a class=\"link\" href=\"viewfile.php?project=${project}&log=${log}&file=${additionalfile}\">$additionalfile</a></li>");
 		}
 		println("</ul>");
 	}
@@ -428,6 +423,10 @@ $additionalfiles = "/home/groups/c/co/cobertura/buildlogs/files";
 
 	<table cellspacing="0" cellpadding="2">
 		<tr><td colspan="5" class="table-sectionheader">Modifications since last build: (<?php print(count($buildInfo->modifications)); ?>)</td></tr>
+<?php
+	if (count($buildInfo->modifications) > 0)
+	{
+?>
 		<tr>
 			<th align="left" class="table-title">User</th>
 			<th align="left" class="table-title">Type of Change</th>
@@ -436,6 +435,15 @@ $additionalfiles = "/home/groups/c/co/cobertura/buildlogs/files";
 			<th align="left" class="table-title">Commit Message</th>
 		</tr>
 <?php
+	}
+	else
+	{
+?>
+		<tr>
+			<th class="table-title">None</th>
+		</tr>
+<?php
+	}
 	$i = 0;
 	foreach ($buildInfo->modifications as $modification) {
 		if ($i & 1) print("\t\t\t\t<tr class=\"table-oddrow\">");
@@ -481,7 +489,11 @@ $additionalfiles = "/home/groups/c/co/cobertura/buildlogs/files";
 
 <br/>
 
-	<table cellspacing="0" cellpadding="2">
+<?php
+	if (count($buildInfo->testsuites) > 0)
+	{
+?>
+		<table cellspacing="0" cellpadding="2">
 		<tr><td colspan="5" class="table-sectionheader">Test Results:</td></tr>
 		<tr>
 			<th align="left" class="table-title">Name</th>
@@ -491,41 +503,42 @@ $additionalfiles = "/home/groups/c/co/cobertura/buildlogs/files";
 			<th align="left" class="table-title">Time (s)</th>
 		</tr>
 <?php
-	foreach ($buildInfo->testsuites as $testSuite) {
-		print("<tr>");
-		print("<td class=\"table-text\"><b>$testSuite->name</b></td>");
-		print("<td class=\"table-text\">$testSuite->tests</td>");
-		print("<td class=\"table-text\">$testSuite->errors</td>");
-		print("<td class=\"table-text\">$testSuite->failures</td>");
-		print("<td class=\"table-text\">$testSuite->time</td>");
-		println("</tr>");
-		$i = 0;
-		foreach ($testSuite->testcases as $testCase) {
-			if ($i & 1) print("\t\t\t\t<tr class=\"table-oddrow\">");
-			else print("\t\t\t\t<tr class=\"table-evenrow\">");
-			print("<td colspan=\"4\" class=\"table-text\">$testCase->name");
-			if ($testCase->errors)
-				print(" <span class=\"table-text-error\">(ERROR!)</span>");
-			else if ($testCase->failures)
-				print(" <span class=\"table-text-failure\">(FAILURE!)</span>");
-			else
-				print(" <span class=\"table-text-success\">(PASSED!)</span>");
-			print("</td>");
-			print("<td class=\"table-text\">$testCase->time</td>");
+		foreach ($buildInfo->testsuites as $testSuite)
+		{
+			print("<tr>");
+			print("<td class=\"table-text\"><b>$testSuite->name</b></td>");
+			print("<td class=\"table-text\">$testSuite->tests</td>");
+			print("<td class=\"table-text\">$testSuite->errors</td>");
+			print("<td class=\"table-text\">$testSuite->failures</td>");
+			print("<td class=\"table-text\">$testSuite->time</td>");
 			println("</tr>");
-			$i++;
+			$i = 0;
+			foreach ($testSuite->testcases as $testCase) {
+				if ($i & 1) print("\t\t\t\t<tr class=\"table-oddrow\">");
+				else print("\t\t\t\t<tr class=\"table-evenrow\">");
+				print("<td colspan=\"4\" class=\"table-text\">$testCase->name");
+				if ($testCase->errors)
+					print(" <span class=\"table-text-error\">(ERROR!)</span>");
+				else if ($testCase->failures)
+					print(" <span class=\"table-text-failure\">(FAILURE!)</span>");
+				else
+					print(" <span class=\"table-text-success\">(PASSED!)</span>");
+				print("</td>");
+				print("<td class=\"table-text\">$testCase->time</td>");
+				println("</tr>");
+				$i++;
+			}
+			print("<tr><td colspan=\"5\">&nbsp;</td></tr>");
 		}
-		print("<tr><td colspan=\"5\">&nbsp;</td></tr>");
-	}
 ?>
-	</table>
+		</table>
 <?php
-//QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ
+	}
 }
 
 
 
-function cc_getBreadcrumbs($project, $build, $file)
+function cc_getBreadcrumbs($project, $log, $file)
 {
 	$breadcrumbs = "";
 
@@ -537,7 +550,7 @@ function cc_getBreadcrumbs($project, $build, $file)
 	$breadcrumbs .= "<a class=\"link\" href=\"buildresults.html\">Home</a> &gt; ";
 
 	// Print the project name
-	if (!isset($build)) {
+	if (!isset($log)) {
 		$breadcrumbs .= $project;
 		return $breadcrumbs;
 	}
@@ -545,15 +558,15 @@ function cc_getBreadcrumbs($project, $build, $file)
 
 	// Print the build number
 	if (!isset($file)) {
-		$breadcrumbs .= "Build " . cc_getDateOfLogFile($build);
-		if ($label = cc_getLabelOfLogFile($build))
+		$breadcrumbs .= "Build " . cc_getDateOfLogFile($log);
+		if ($label = cc_getLabelOfLogFile($log))
 			$breadcrumbs .= " (<span class=\"table-text-success\">build.${label}</span>)";
 		else
 			$breadcrumbs .= " (<span class=\"table-text-error\">FAILED!</span>)";
 		return $breadcrumbs;
 	}
-	$breadcrumbs .= "<a class=\"link\" href=\"buildresults.html?project=${project}&build=${build}\">Build " . cc_getDateOfLogFile($build) . "</a>";
-	if ($label = cc_getLabelOfLogFile($build))
+	$breadcrumbs .= "<a class=\"link\" href=\"buildresults.html?project=${project}&log=${log}\">Build " . cc_getDateOfLogFile($log) . "</a>";
+	if ($label = cc_getLabelOfLogFile($log))
 		$breadcrumbs .= " (<span class=\"table-text-success\">build.${label}</span>)";
 	else
 		$breadcrumbs .= " (<span class=\"table-text-error\">FAILED!</span>)";

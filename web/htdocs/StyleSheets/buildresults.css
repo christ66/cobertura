@@ -21,6 +21,13 @@ div#navigation {
 	width: 234px;
 }
 
+.build-date {
+	margin-left: 15px;
+	margin-top: 1px;
+	margin-bottom:1px;
+	font-size: 0.6em;
+	padding: 0px;
+}
 
 
 
@@ -67,12 +74,3 @@ div#navigation {
 .table-link:hover { color:#0000FF }
 .table-link-error { font-family:arial,helvetica,sans-serif; font-size:8pt; color:#FF0000; text-decoration:underline; }
 .table-link-failure { font-family:arial,helvetica,sans-serif; font-size:8pt; color:#800080; text-decoration:underline; }
-
-.djte-table-platform { background-color:#DCECFF; border-bottom:1px solid #777777; border-top:1px solid #777777; border-left:1px solid #777777; border-right:1px solid #777777; }
-.djte-table-host { background-color:#FFE0E0; border-bottom:1px solid #777777; border-top:1px solid #777777; border-left:1px solid #777777; border-right:1px solid #777777; }
-.djte-table-suite { background-color:#E0FFE0; border-bottom:1px solid #777777; border-top:1px solid #777777; border-left:1px solid #777777; border-right:1px solid #777777; }
-.djte-table-test { background-color:#F4F4F4; border-bottom:1px solid #777777; border-top:1px solid #777777; border-left:1px solid #777777; border-right:1px solid #777777; }
-.djte-expandable-link { font-family:arial,helvetica,sans-serif; font-size:10pt; color:#000000; text-decoration:none; }
-.djte-expandable-link:hover { text-decoration:underline; }
-.djte-expandable-link-button { font-family:arial,helvetica,sans-serif; font-size:8pt; color:#000000; text-decoration:none; }
-.djte-expandable-content { display:none; }

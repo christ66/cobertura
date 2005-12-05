@@ -1,8 +1,18 @@
 <?php
 
+function endsWith($needle, $haystack)
+{
+	if (substr($haystack, strlen($haystack) - strlen($needle)) == $needle)
+		return true;
+	return false;
+}
+
 function getFileExtension($filename)
 {
-    return strchr($filename, ".");
+	$pos = strrpos($filename, ".");
+	if ($pos === false)
+		return "";
+	return substr($filename, $pos + 1);
 }
 
 function listFilesInDirectory($directory)
