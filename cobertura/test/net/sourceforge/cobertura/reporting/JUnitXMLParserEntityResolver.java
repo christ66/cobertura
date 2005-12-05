@@ -19,7 +19,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.reporting.xml;
+package net.sourceforge.cobertura.reporting;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,10 +34,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * This is a very simple XML EntityResolver.  If
  * you are parsing an XML document using a DocumentBuilder,
  * and you set the DocumentBuilder's EntityResolver to an
- * instance of this class, and the XML document sets its
- * DOCTYPE to http://cobertura.sourceforge.net/xml/coverage.dtd,
- * then instead of using the given URL, this class will
- * resolve the entity to the local version of the same file.
+ * instance of this class, then we never attempt to resolve
+ * XML documents on the Internet.  Instead we use a local
+ * copy of the DTD.
  * </p>
  *
  * <p>
@@ -49,27 +48,27 @@ import org.xml.sax.helpers.DefaultHandler;
 public class JUnitXMLParserEntityResolver extends DefaultHandler
 {
 
-	private final File localDTD;
+	private final File DTD_DIRECTORY;
 
-	public JUnitXMLParserEntityResolver(String basedir)
+	public JUnitXMLParserEntityResolver(File dtdDirectory)
 	{
-		localDTD = new File(basedir + "/etc", XMLReport.coverageDTD);
+		this.DTD_DIRECTORY = dtdDirectory;
 	}
 
 	public InputSource resolveEntity(String publicId, String systemId)
 			throws SAXException
 	{
-		// If the requested entity is our cobertura DTD, then use the local
-		// version instead of the remote version
+		System.out.println("systemId=" + systemId);
+		String systemIdBasename = systemId.substring(systemId.lastIndexOf('/'));
+		File localDtd = new File(this.DTD_DIRECTORY, systemIdBasename);
 		try
 		{
-			if (systemId.endsWith(XMLReport.coverageDTD))
-				return new InputSource(new FileInputStream(localDTD));
+			return new InputSource(new FileInputStream(localDtd));
 		}
 		catch (FileNotFoundException e)
 		{
 			System.out.println("Unable to open local DTD file "
-					+ localDTD.getAbsolutePath() + ", using " + systemId
+					+ localDtd.getAbsolutePath() + ", using " + systemId
 					+ " instead.");
 		}
 
