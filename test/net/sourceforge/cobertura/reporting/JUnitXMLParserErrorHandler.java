@@ -20,7 +20,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.reporting.xml;
+package net.sourceforge.cobertura.reporting;
 
 import junit.framework.Assert;
 
@@ -37,26 +37,28 @@ import org.xml.sax.SAXParseException;
  */
 public class JUnitXMLParserErrorHandler implements ErrorHandler
 {
-	private void createErrorMessage(SAXParseException exception) {
-		Assert.fail( "Line number: " + exception.getLineNumber() 
+	
+	private void createErrorMessage(SAXParseException exception)
+	{
+		Assert.fail("Line number: " + exception.getLineNumber() 
 				+ " column: " +	exception.getColumnNumber() 
 				+ "\n"
 				+ exception.toString());
 	}
-	
+
 	public void error(SAXParseException exception)
 	{
-		createErrorMessage( exception);
+		createErrorMessage(exception);
 	}
 
 	public void fatalError(SAXParseException exception)
 	{
-		createErrorMessage( exception);
+		createErrorMessage(exception);
 	}
 
 	public void warning(SAXParseException exception)
 	{
-		createErrorMessage( exception);
+		createErrorMessage(exception);
 	}
 
 }

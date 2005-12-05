@@ -34,7 +34,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import junit.framework.TestCase;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.reporting.xml.JUnitXMLParserErrorHandler;
+import net.sourceforge.cobertura.reporting.JUnitXMLParserEntityResolver;
+import net.sourceforge.cobertura.reporting.JUnitXMLParserErrorHandler;
 
 public class HTMLReportTest extends TestCase
 {
@@ -79,6 +80,8 @@ public class HTMLReportTest extends TestCase
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setValidating(true);
 		DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+		documentBuilder.setEntityResolver(new JUnitXMLParserEntityResolver(
+				new File(BASEDIR, "etc/dtds")));
 		documentBuilder.setErrorHandler(new JUnitXMLParserErrorHandler());
 
 		// Parse the XML report
@@ -124,7 +127,7 @@ public class HTMLReportTest extends TestCase
 		String htmlFiles[] = PATH_TO_TEST_OUTPUT.list(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".html");
-			};
+			}
 		});
 		Arrays.sort(htmlFiles);
 

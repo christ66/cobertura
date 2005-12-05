@@ -33,30 +33,32 @@ import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
+import net.sourceforge.cobertura.reporting.JUnitXMLParserEntityResolver;
+import net.sourceforge.cobertura.reporting.JUnitXMLParserErrorHandler;
 import net.sourceforge.cobertura.util.FileFinder;
 
 public class XMLReportTest extends TestCase
 {
 
-	private final static String basedir = (System.getProperty("basedir") != null)
+	private final static String BASEDIR = (System.getProperty("basedir") != null)
 			? System.getProperty("basedir")
 			: ".";
-	private final static String pathToTestOutput = basedir
+	private final static String PATH_TO_TEST_OUTPUT = BASEDIR
 			+ "/build/test/XMLReportTest";
-	private final static String pathToXMLReport = pathToTestOutput
+	private final static String PATH_TO_XML_REPORT = PATH_TO_TEST_OUTPUT
 			+ "/coverage.xml";
-	private final static String pathToSourceCode = basedir + "/src";
+	private final static String PATH_TO_SOURCE_CODE = BASEDIR + "/src";
 	private File tmpDir;
 
 	public void setUp()
 	{
-		tmpDir = new File(pathToTestOutput);
+		tmpDir = new File(PATH_TO_TEST_OUTPUT);
 		tmpDir.mkdirs();
 	}
 
 	public void tearDown()
 	{
-		tmpDir = new File(pathToTestOutput);
+		tmpDir = new File(PATH_TO_TEST_OUTPUT);
 		File files[] = tmpDir.listFiles();
 		for (int i = 0; i < files.length; i++)
 			files[i].delete();
@@ -69,7 +71,7 @@ public class XMLReportTest extends TestCase
 		factory.setValidating(true);
 		DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 		documentBuilder.setEntityResolver(new JUnitXMLParserEntityResolver(
-				basedir));
+				new File(BASEDIR, "/etc/dtds")));
 		documentBuilder.setErrorHandler(new JUnitXMLParserErrorHandler());
 
 		// Parse the XML report
@@ -97,10 +99,10 @@ public class XMLReportTest extends TestCase
 
 		// Then we need to generate the XML report
 		args = new String[] { "--format", "xml", "--datafile", dataFileName, "--destination",
-				pathToTestOutput, pathToSourceCode };
+				PATH_TO_TEST_OUTPUT, PATH_TO_SOURCE_CODE };
 		net.sourceforge.cobertura.reporting.Main.main(args);
 		
-		validateReport( pathToXMLReport);
+		validateReport(PATH_TO_XML_REPORT);
 	}
 	
 	public void testXMLReportWithNonSourceLines() throws Exception {
