@@ -18,7 +18,7 @@
 	  scripts.  This would result in an EOFException when running
 	  cobertura-report.
 	* Added support for classes compiled with AspectJ.
-	* Cobertura produces now valid XHTML 1.0 reports.
+	* Cobertura now produces valid XHTML 1.0 reports.
 
 version 1.6
 	* Can now use multiple filesets in the cobertura-instrument
