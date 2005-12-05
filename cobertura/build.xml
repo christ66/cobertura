@@ -268,10 +268,8 @@
 		<copy todir="${build.dist.dir}/package-bin/cobertura-${version}">
 			<fileset dir="${basedir}">
 				<include name="ChangeLog" />
-				<include name="cobertura-instrument.bat" />
-				<include name="cobertura-instrument.sh" />
-				<include name="cobertura-report.bat" />
-				<include name="cobertura-report.sh" />
+				<include name="cobertura-*.bat" />
+				<include name="cobertura-*.sh" />
 				<include name="COPYING" />
 				<include name="COPYRIGHT" />
 				<include name="README" />
@@ -296,10 +294,8 @@
 		<copy todir="${build.dist.dir}/package-src/cobertura-${version}">
 			<fileset dir="${basedir}">
 				<include name="ChangeLog" />
-				<include name="cobertura-instrument.bat" />
-				<include name="cobertura-instrument.sh" />
-				<include name="cobertura-report.bat" />
-				<include name="cobertura-report.sh" />
+				<include name="cobertura-*.bat" />
+				<include name="cobertura-*.sh" />
 				<include name="COPYING" />
 				<include name="COPYRIGHT" />
 				<include name="README" />
