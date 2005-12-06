@@ -51,6 +51,64 @@ decending order.
 <h1>News</h1>
 
 <div class="newsitem">
+<span class="date">6 December 2005</span>
+<div class="text">
+<p>
+We've just released Cobertura 1.7.  We fixed the problems with
+the merge task
+and fixed some bugs.  The full list of changes is below.
+</p>
+
+<ul>
+<li>
+log4j is no longer used by the Cobertura classes that are
+accessed by instrumented Java code.  This means you will
+not need to add log4j to your project's classpath in order
+to use Cobertura (but log4j is still required when
+instrumenting and reporting).
+</li>
+
+<li>
+Upgraded from asm 2.0 to asm 2.1.  No code changes were
+needed.
+</li>
+
+<li>
+Improved the merge task.  It should work correctly now
+(with help from  Björn Beskow).
+</li>
+
+<li>
+Fixed the ability to specify a data file in the merge
+task.
+</li>
+
+<li>
+Changed the command-line interface to the merge task and
+added a helper batch/shell script.
+</li>
+
+<li>
+Added better error checking to the merge task.
+</li>
+
+<li>
+Fixed a bug where an empty or incomplete coverage data
+file would be written when you test classes inside Tomcat,
+and you stop Tomcat using the shutdown.bat or shutdown.sh
+scripts.  This would result in an EOFException when
+running cobertura-report.
+</li>
+
+<li>
+Added support for classes compiled with AspectJ.
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="newsitem">
 <span class="date">22 August 2005</span>
 <div class="text">
 <p>
