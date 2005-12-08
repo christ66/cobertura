@@ -1,6 +1,9 @@
 version 1.8
 	* Ability to have multiple <ignore/> regular expressions
 	  in the instrument task (Alexei Yudichev).
+	* Ability to specify a minimum bracnh coverage rate and
+	  line coverage rate for each package when using
+	  cobertura-check.
 
 ﻿version 1.7
 	* log4j is no longer used by the Cobertura classes that are

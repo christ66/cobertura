@@ -87,6 +87,10 @@ public class CheckTask extends MatchingTask
 
 	private String lineRate = null;
 
+	private String packageBranchRate = null;
+
+	private String packageLineRate = null;
+
 	private String totalBranchRate = null;
 
 	private String totalLineRate = null;
@@ -115,6 +119,18 @@ public class CheckTask extends MatchingTask
 		{
 			getJava().createArg().setValue("--line");
 			getJava().createArg().setValue(lineRate);
+		}
+
+		if (packageBranchRate != null)
+		{
+			getJava().createArg().setValue("--packagebranch");
+			getJava().createArg().setValue(packageBranchRate);
+		}
+
+		if (packageLineRate != null)
+		{
+			getJava().createArg().setValue("--packageline");
+			getJava().createArg().setValue(packageLineRate);
 		}
 
 		if (totalBranchRate != null)
@@ -221,6 +237,16 @@ public class CheckTask extends MatchingTask
 	public void setLineRate(String lineRate)
 	{
 		this.lineRate = lineRate;
+	}
+
+	public void setPackageBranchRate(String packageBranchRate)
+	{
+		this.packageBranchRate = packageBranchRate;
+	}
+
+	public void setPackageLineRate(String packageLineRate)
+	{
+		this.packageLineRate = packageLineRate;
 	}
 
 	public void setTotalBranchRate(String totalBranchRate)
