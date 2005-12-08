@@ -29,7 +29,7 @@ in standard ant filesets.
 
 <p>
 You can tell Cobertura to ignore certain classes by passing in
-an "ignore" regular expression.  See the example below.
+"ignore" regular expressions.  See the example below.
 </p>
 
 <p>
@@ -165,6 +165,8 @@ Example with multiple source directories:
 <tr><td>failureproperty</td><td>No</td><td>If haltonfailure is false and any of the specified checks fails, then Cobertura will set the given property to "true"</td><td>None</td></tr>
 <tr><td>haltonfailure</td><td>No</td><td>If this property is true and any of the specified checks fails, then Cobertura will cause the ant build to fail.</td><td>True</td></tr>
 <tr><td>linerate</td><td>No</td><td>Specify the minimum acceptable line coverage rate needed by each class.  This should be an integer value between 0 and 100.</td><td>0</td></tr>
+<tr><td>packagebranchrate</td><td>No</td><td>Specify the minimum acceptable average branch coverage rate needed by each package.  This should be an integer value between 0 and 100.</td><td>0</td></tr>
+<tr><td>packagelinerate</td><td>No</td><td>Specify the minimum acceptable average line coverage rate needed by each package.  This should be an integer value between 0 and 100.</td><td>0</td></tr>
 <tr><td>totalbranchrate</td><td>No</td><td>Specify the minimum acceptable average branch coverage rate needed by the project as a whole.  This should be an integer value between 0 and 100.</td><td>0</td></tr>
 <tr><td>totallinerate</td><td>No</td><td>Specify the minimum acceptable average line coverage rate needed by the project as a whole.  This should be an integer value between 0 and 100.</td><td>0</td></tr>
 </table>
