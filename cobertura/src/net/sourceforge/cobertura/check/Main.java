@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import net.sourceforge.cobertura.check.PackageCoverage;
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
@@ -62,6 +63,13 @@ public class Main
 	 * needed for a class that matches the pattern.
 	 */
 	Map minimumCoverageRates = new HashMap();
+
+	/**
+	 * The keys of this map contain package names. The values of this 
+	 * map contain PackageCoverage objects that track the line and
+	 * branch coverage values for a package.
+	 */
+	Map packageCoverageMap = new HashMap();
 
 	double inRangeAndDivideByOneHundred(String coverageRateAsPercentage)
 	{
@@ -123,6 +131,8 @@ public class Main
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 		double branchCoverageRate = 0.0;
 		double lineCoverageRate = 0.0;
+		double packageBranchCoverageRate = 0.0;
+		double packageLineCoverageRate = 0.0;
 		double totalBranchCoverageRate = 0.0;
 		double totalLineCoverageRate = 0.0;
 
@@ -143,6 +153,14 @@ public class Main
 			else if (args[i].equals("--regex"))
 			{
 				setMinimumCoverageRate(args[++i]);
+			}
+			else if (args[i].equals("--packagebranch"))
+			{
+				packageBranchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
+			}
+			else if (args[i].equals("--packageline"))
+			{
+				packageLineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
 			}
 			else if (args[i].equals("--totalbranch"))
 			{
@@ -166,12 +184,16 @@ public class Main
 
 		// If they didn't specify any thresholds, then use some defaults
 		if ((branchCoverageRate == 0) && (lineCoverageRate == 0)
+				&& (packageLineCoverageRate == 0)
+				&& (packageBranchCoverageRate == 0)
 				&& (totalLineCoverageRate == 0)
 				&& (totalBranchCoverageRate == 0)
 				&& (this.minimumCoverageRates.size() == 0))
 		{
 			branchCoverageRate = 0.5;
 			lineCoverageRate = 0.5;
+			packageBranchCoverageRate = 0.5;
+			packageLineCoverageRate = 0.5;
 			totalBranchCoverageRate = 0.5;
 			totalLineCoverageRate = 0.5;
 		}
@@ -201,6 +223,23 @@ public class Main
 			{
 				totalLines += classData.getNumberOfValidLines();
 				totalLinesCovered += classData.getNumberOfCoveredLines();
+			}
+
+			PackageCoverage packageCoverage = getPackageCoverage(classData
+					.getPackageName());
+			if (packageBranchCoverageRate > 0.0)
+			{
+				packageCoverage.addBranchCount(classData
+						.getNumberOfValidBranches());
+				packageCoverage.addBranchCoverage(classData
+						.getNumberOfCoveredBranches());
+			}
+
+			if (packageLineCoverageRate > 0.0)
+			{
+				packageCoverage.addLineCount(classData.getNumberOfValidLines());
+				packageCoverage.addLineCoverage(classData
+						.getNumberOfCoveredLines());
 			}
 
 			logger.debug("Class " + classData.getName()
@@ -233,6 +272,9 @@ public class Main
 			}
 		}
 
+		exitStatus |= checkPackageCoverageLevels(packageBranchCoverageRate,
+				packageLineCoverageRate);
+
 		// Check the rates for the overal project
 		if ((totalBranches > 0)
 				&& (totalBranchCoverageRate > (totalBranchesCovered / totalBranches)))
@@ -257,6 +299,67 @@ public class Main
 		}
 
 		System.exit(exitStatus);
+	}
+
+	private PackageCoverage getPackageCoverage(String packageName)
+	{
+		PackageCoverage packageCoverage = (PackageCoverage)packageCoverageMap
+				.get(packageName);
+		if (packageCoverage == null)
+		{
+			packageCoverage = new PackageCoverage();
+			packageCoverageMap.put(packageName, packageCoverage);
+		}
+		return packageCoverage;
+	}
+
+	private int checkPackageCoverageLevels(double packageBranchCoverageRate,
+			double packageLineCoverageRate)
+	{
+		int exitStatus = 0;
+		Iterator iter = packageCoverageMap.entrySet().iterator();
+		while (iter.hasNext())
+		{
+			Map.Entry entry = (Map.Entry)iter.next();
+			String packageName = (String)entry.getKey();
+			PackageCoverage packageCoverage = (PackageCoverage)entry.getValue();
+
+			exitStatus |= checkPackageCoverage(packageBranchCoverageRate,
+					packageLineCoverageRate, packageName, packageCoverage);
+		}
+		return exitStatus;
+	}
+
+	private int checkPackageCoverage(double packageBranchCoverageRate,
+			double packageLineCoverageRate, String packageName,
+			PackageCoverage packageCoverage)
+	{
+		int exitStatus = 0;
+		double branchCoverage = packageCoverage.getBranchCoverage()
+				/ packageCoverage.getBranchCount();
+		if ((packageCoverage.getBranchCount() > 0)
+				&& (packageBranchCoverageRate > branchCoverage))
+		{
+			System.err.println("Package " + packageName
+					+ " failed check. Package branch coverage rate of "
+					+ percentage(branchCoverage) + "% is below "
+					+ percentage(packageBranchCoverageRate) + "%");
+			exitStatus |= 32;
+		}
+
+		double lineCoverage = packageCoverage.getLineCoverage()
+				/ packageCoverage.getLineCount();
+		if ((packageCoverage.getLineCount() > 0)
+				&& (packageLineCoverageRate > lineCoverage))
+		{
+			System.err.println("Package " + packageName
+					+ " failed check. Package line coverage rate of "
+					+ percentage(lineCoverage) + "% is below "
+					+ percentage(packageLineCoverageRate) + "%");
+			exitStatus |= 64;
+		}
+
+		return exitStatus;
 	}
 
 	private String percentage(double coverateRate)
