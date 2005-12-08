@@ -7,6 +7,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Joakim Erdfelt
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2005 Alexei Yudichev
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -60,6 +61,8 @@ package net.sourceforge.cobertura.ant;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 
@@ -73,7 +76,7 @@ public class InstrumentTask extends CommonMatchingTask
 
 	private File toDir = null;
 
-	Ignore ignoreRegex = null;
+	List ignoreRegexs = new ArrayList();
 
 	public InstrumentTask()
 	{
@@ -82,7 +85,8 @@ public class InstrumentTask extends CommonMatchingTask
 
 	public Ignore createIgnore()
 	{
-		ignoreRegex = new Ignore();
+		Ignore ignoreRegex = new Ignore();
+		ignoreRegexs.add(ignoreRegex);
 		return ignoreRegex;
 	}
 
@@ -97,8 +101,10 @@ public class InstrumentTask extends CommonMatchingTask
 
 			// ignoreRegex.setRegex() is never called, but that's ok
 			// because ant sets it somehow, I think
-			if (ignoreRegex != null)
+			for (int i = 0; i < ignoreRegexs.size(); i++) {
+				Ignore ignoreRegex = (Ignore)ignoreRegexs.get(i);
 				builder.addArg("--ignore", ignoreRegex.getRegex());
+			}
 
 			createArgumentsForFilesets(builder);
 
