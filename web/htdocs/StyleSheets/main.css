@@ -18,6 +18,7 @@ blockquote {
 
 body {
 	background-color: #aacccc;
+	border: 0px;
 	font-size: 105%;
 	margin: 10px;
 }
