@@ -1,3 +1,7 @@
+version 1.8
+	* Ability to have multiple <ignore/> regular expressions
+	  in the instrument task (Alexei Yudichev).
+
 ﻿version 1.7
 	* log4j is no longer used by the Cobertura classes that are
 	  accessed by instrumented Java code.  This means you will
