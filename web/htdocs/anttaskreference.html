@@ -28,6 +28,14 @@ in standard ant filesets.
 </p>
 
 <p>
+You can also pass in jar files to be instrumented using standard
+ant filesets.  Cobertura will extract each class from the jar and
+instrument it.  If 'todir' was not specified then the original
+jar will be overwritten with an instrumented version.  Otherwise
+a new jar will be written to the output directory.
+</p>
+
+<p>
 You can tell Cobertura to ignore certain classes by passing in
 "ignore" regular expressions.  See the example below.
 </p>
@@ -46,6 +54,9 @@ Example:
     &lt;fileset dir="${guiclasses.dir}"&gt;
         &lt;include name="**/*.class" /&gt;
         &lt;exclude name="**/*Test.class" /&gt;
+    &lt;/fileset&gt;
+    &lt;fileset dir="${jars.dir}"&gt;
+        &lt;include name="my-simple-plugin.jar" /&gt;
     &lt;/fileset&gt;
 &lt;/cobertura-instrument&gt;</code></pre>
 </div>
