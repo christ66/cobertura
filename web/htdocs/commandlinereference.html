@@ -26,7 +26,7 @@ Note: Classes may be specified individually, or as a directory tree containing m
 
 <table>
 <tr><th>Parameter</th><th>Required?</th><th>Description</th><th>Default Value</th></tr>
-<tr><td>--basedir</td><td>No</td><td>Specify the base directory containing the classes you want to instrument.</td><td>No default value.</td></tr>
+<tr><td>--basedir</td><td>No</td><td>Specify the base directory containing the classes you want to instrument.  This command line parameter should appear <i>before</i> any classes.  If you are instrumenting classes in different directories, you should specify multiple basedirs.</td><td>No default value.</td></tr>
 <tr><td>--datafile</td><td>No</td><td>Specify the name of the file to use for storing the metadata about your classes.  This is a single file containing serialized Java classes.  It contains information about the names of classes in your project, their method names, line numbers, etc.  It will be updated as your tests are run, and will be referenced by the Cobertura reporting command.</td><td>"cobertura.ser" in the current directory</td></tr>
 <tr><td>--destination</td><td>No</td><td>Specify the output directory for the instrumented classes.</td><td>If no destination directory is specified, then the uninstrumented classes will be overwritten with their instrumented counterparts.</td></tr>
 <tr><td>--ignore</td><td>No</td><td>Specify a regular expression to filter out certain lines of your source code.  This is useful for ignoring logging statements, for example.  You can have as many &lt;ignore/&gt; statements as you want.</td><td>No files are ignored.</td></tr>
