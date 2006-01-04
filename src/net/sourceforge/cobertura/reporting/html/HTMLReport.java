@@ -25,6 +25,7 @@ package net.sourceforge.cobertura.reporting.html;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
@@ -58,7 +60,7 @@ public class HTMLReport
 	private File destinationDir;
 
 	private FileFinder finder;
-	
+
 	private ComplexityCalculator complexity;
 
 	private ProjectData projectData;
@@ -66,7 +68,8 @@ public class HTMLReport
 	/**
 	 * Create a coverage report
 	 */
-	public HTMLReport(ProjectData projectData, File outputDir, FileFinder finder, ComplexityCalculator complexity)
+	public HTMLReport(ProjectData projectData, File outputDir,
+			FileFinder finder, ComplexityCalculator complexity)
 			throws Exception
 	{
 		this.destinationDir = outputDir;
@@ -97,14 +100,19 @@ public class HTMLReport
 		{
 			out = new PrintStream(new FileOutputStream(file));
 
-			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
-			out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-			
-			out.println("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
+			out
+					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+			out
+					.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+
+			out
+					.println("<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">");
 			out.println("<head>");
-			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
+			out
+					.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />");
 			out.println("<title>Coverage Report</title>");
-			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\" />");
+			out
+					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\" />");
 			out.println("</head>");
 			out.println("<body>");
 			out.println("<h5>Packages</h5>");
@@ -123,13 +131,10 @@ public class HTMLReport
 				String url2 = "frame-sourcefiles-" + packageData.getName()
 						+ ".html";
 				out.println("<tr>");
-				out
-						.println("<td nowrap=\"nowrap\"><a href=\""
-								+ url1
+				out.println("<td nowrap=\"nowrap\"><a href=\"" + url1
 						+ "\" onclick='parent.sourceFileList.location.href=\""
 						+ url2 + "\"' target=\"summary\">"
-								+ generatePackageName(packageData)
-								+ "</a></td>");
+						+ generatePackageName(packageData) + "</a></td>");
 				out.println("</tr>");
 			}
 			out.println("</table>");
@@ -185,28 +190,32 @@ public class HTMLReport
 		try
 		{
 			out = new PrintStream(new FileOutputStream(file));
-			
-			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
-			out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+
+			out
+					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+			out
+					.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 
 			out.println("<html>");
 			out.println("<head>");
-			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
+			out
+					.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 			out.println("<title>Coverage Report Classes</title>");
-			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
+			out
+					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
 			out.println("</head>");
 			out.println("<body>");
 			out.println("<h5>");
-			out.println(packageData == null
-					? "All Packages"
+			out.println(packageData == null ? "All Packages"
 					: generatePackageName(packageData));
 			out.println("</h5>");
 			out.println("<div class=\"separator\">&nbsp;</div>");
 			out.println("<h5>Classes</h5>");
-			if( !sortedSourceFiles.isEmpty()) {
+			if (!sortedSourceFiles.isEmpty())
+			{
 				out.println("<table width=\"100%\">");
 				out.println("<tbody>");
-	
+
 				for (Iterator iter = sortedSourceFiles.iterator(); iter
 						.hasNext();)
 				{
@@ -223,13 +232,15 @@ public class HTMLReport
 									+ sourceFileData.getNormalizedName()
 									+ ".html\">"
 									+ sourceFileData.getBaseName()
-									+ "</a> <i>(" + percentCovered + ")</i></td>");
+									+ "</a> <i>("
+									+ percentCovered
+									+ ")</i></td>");
 					out.println("</tr>");
 				}
 				out.println("</tbody>");
 				out.println("</table>");
 			}
-			
+
 			out.println("</body>");
 			out.println("</html>");
 		}
@@ -273,24 +284,31 @@ public class HTMLReport
 		{
 			out = new PrintStream(new FileOutputStream(file));
 
-			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
-	        out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+			out
+					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+			out
+					.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
 
 			out.println("<html>");
 			out.println("<head>");
-			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
+			out
+					.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 			out.println("<title>Coverage Report</title>");
-			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
-			out.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/sortabletable.css\"/>");
-			out.println("<script type=\"text/javascript\" src=\"js/popup.js\"></script>");
-			out.println("<script type=\"text/javascript\" src=\"js/sortabletable.js\"></script>");
-			out.println("<script type=\"text/javascript\" src=\"js/customsorttypes.js\"></script>");
+			out
+					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
+			out
+					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/sortabletable.css\"/>");
+			out
+					.println("<script type=\"text/javascript\" src=\"js/popup.js\"></script>");
+			out
+					.println("<script type=\"text/javascript\" src=\"js/sortabletable.js\"></script>");
+			out
+					.println("<script type=\"text/javascript\" src=\"js/customsorttypes.js\"></script>");
 			out.println("</head>");
 			out.println("<body>");
 
 			out.print("<h5>Coverage Report - ");
-			out.print(packageData == null
-					? "All Packages"
+			out.print(packageData == null ? "All Packages"
 					: generatePackageName(packageData));
 			out.println("</h5>");
 			out.println("<div class=\"separator\">&nbsp;</div>");
@@ -363,10 +381,8 @@ public class HTMLReport
 				iter = sourceFiles.iterator();
 				while (iter.hasNext())
 				{
-					SourceFileData sourceFileData = (SourceFileData)iter
-							.next();
-					out
-							.println(generateTableRowForSourceFile(sourceFileData));
+					SourceFileData sourceFileData = (SourceFileData)iter.next();
+					out.println(generateTableRowsForSourceFile(sourceFileData));
 				}
 
 				out.println("</tbody>");
@@ -380,12 +396,7 @@ public class HTMLReport
 				out.println("</script>");
 			}
 
-			String date = DateFormat.getInstance().format(new Date());
-			out.println("<div class=\"footer\">");
-			out
-					.println("Report generated by <a href=\"http://cobertura.sourceforge.net/\" target=\"_top\">Cobertura</a> "
-							+ Header.version() + " on " + date + ".");
-			out.println("</div>");
+			out.println(generateFooter());
 
 			out.println("</body>");
 			out.println("</html>");
@@ -437,12 +448,15 @@ public class HTMLReport
 		{
 			out = new PrintStream(new FileOutputStream(file));
 
-			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
-	        out.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-			
+			out
+					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
+			out
+					.println("           \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+
 			out.println("<html>");
 			out.println("<head>");
-			out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
+			out
+					.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>");
 			out.println("<title>Coverage Report</title>");
 			out
 					.println("<link title=\"Style\" type=\"text/css\" rel=\"stylesheet\" href=\"css/main.css\"/>");
@@ -463,80 +477,17 @@ public class HTMLReport
 			out.println("<div class=\"separator\">&nbsp;</div>");
 			out.println("<table class=\"report\">");
 			out.println(generateTableHeader("Classes in this File", false));
-			// TODO: Change this to actually show multiple classes.
-			out.println(generateTableRowForSourceFile(sourceFileData));
+			out.println(generateTableRowsForSourceFile(sourceFileData));
 			out.println("</table>");
+
+			// Output the coverage summary for methods in this class
+			// TODO
 
 			// Output this class's source code with syntax and coverage highlighting
 			out.println("<div class=\"separator\">&nbsp;</div>");
-			out
-					.println("<table cellspacing=\"0\" cellpadding=\"0\" class=\"src\">");
-			BufferedReader br = null;
-			try
-			{
-				// TODO: If file was not found, do not generate a table with source at all.
-				File sourceFile = finder.getFileForSource(sourceFileData.getName());
-				br = new BufferedReader(new FileReader(sourceFile));
-				String lineStr;
-				JavaToHtml javaToHtml = new JavaToHtml();
-				int lineNumber = 1;
-				while ((lineStr = br.readLine()) != null)
-				{
-					out.println("<tr>");
-					if (sourceFileData.isValidSourceLineNumber(lineNumber))
-					{
-						long numberOfHits = sourceFileData
-								.getHitCount(lineNumber);
-						out.println("  <td class=\"numLineCover\">&nbsp;"
-								+ lineNumber + "</td>");
-						if (numberOfHits > 0)
-						{
-							out
-									.println("  <td class=\"nbHitsCovered\">&nbsp;"
-									+ numberOfHits + "</td>");
-							out
-									.println("  <td class=\"src\"><pre class=\"src\">&nbsp;"
-											+ javaToHtml.process(lineStr)
-											+ "</pre></td>");
-						}
-						else
-						{
-							out
-									.println("  <td class=\"nbHitsUncovered\">&nbsp;"
-											+ numberOfHits + "</td>");
-							out
-									.println("  <td class=\"src\"><pre class=\"src\"><span class=\"srcUncovered\">&nbsp;"
-											+ javaToHtml.process(lineStr)
-											+ "</span></pre></td>");
-						}
-					}
-					else
-					{
-						out.println("  <td class=\"numLine\">&nbsp;"
-								+ lineNumber + "</td>");
-						out.println("  <td class=\"nbHits\">&nbsp;</td>");
-						out
-								.println("  <td class=\"src\"><pre class=\"src\">&nbsp;"
-										+ javaToHtml.process(lineStr)
-										+ "</pre></td>");
-					}
-					out.println("</tr>");
-					lineNumber++;
-				}
-			}
-			finally
-			{
-				if (br != null)
-				{
-					br.close();
-				}
-			}
-			out.println("</table>");
+			out.println(generateHtmlizedJavaSource(sourceFileData));
 
-			out.println("<div class=\"footer\">");
-			out
-					.println("Reports generated by <a href=\"http://cobertura.sourceforge.net/\" target=\"_top\">Cobertura</a>.");
-			out.println("</div>");
+			out.println(generateFooter());
 
 			out.println("</body>");
 			out.println("</html>");
@@ -548,6 +499,116 @@ public class HTMLReport
 				out.close();
 			}
 		}
+	}
+
+	private String generateHtmlizedJavaSource(SourceFileData sourceFileData)
+	{
+		File sourceFile = null;
+		try
+		{
+			sourceFile = finder.getFileForSource(sourceFileData.getName());
+		}
+		catch (IOException e)
+		{
+			return "<p>Unable to locate " + sourceFileData.getName()
+					+ ".  Have you specified the source directory?</p>";
+		}
+
+		BufferedReader br = null;
+		try
+		{
+			br = new BufferedReader(new FileReader(sourceFile));
+		}
+		catch (FileNotFoundException e)
+		{
+			if (br != null)
+			{
+				try
+				{
+					br.close();
+				}
+				catch (IOException e2)
+				{
+				}
+			}
+			return "<p>Unable to open " + sourceFile.getAbsolutePath() + "</p>";
+		}
+
+		StringBuffer ret = new StringBuffer();
+		ret
+				.append("<table cellspacing=\"0\" cellpadding=\"0\" class=\"src\">\n");
+		try
+		{
+			String lineStr;
+			JavaToHtml javaToHtml = new JavaToHtml();
+			int lineNumber = 1;
+			while ((lineStr = br.readLine()) != null)
+			{
+				ret.append("<tr>");
+				if (sourceFileData.isValidSourceLineNumber(lineNumber))
+				{
+					long numberOfHits = sourceFileData.getHitCount(lineNumber);
+					ret.append("  <td class=\"numLineCover\">&nbsp;"
+							+ lineNumber + "</td>");
+					if (numberOfHits > 0)
+					{
+						ret.append("  <td class=\"nbHitsCovered\">&nbsp;"
+								+ numberOfHits + "</td>");
+						ret
+								.append("  <td class=\"src\"><pre class=\"src\">&nbsp;"
+										+ javaToHtml.process(lineStr)
+										+ "</pre></td>");
+					}
+					else
+					{
+						ret.append("  <td class=\"nbHitsUncovered\">&nbsp;"
+								+ numberOfHits + "</td>");
+						ret
+								.append("  <td class=\"src\"><pre class=\"src\"><span class=\"srcUncovered\">&nbsp;"
+										+ javaToHtml.process(lineStr)
+										+ "</span></pre></td>");
+					}
+				}
+				else
+				{
+					ret.append("  <td class=\"numLine\">&nbsp;" + lineNumber
+							+ "</td>");
+					ret.append("  <td class=\"nbHits\">&nbsp;</td>\n");
+					ret.append("  <td class=\"src\"><pre class=\"src\">&nbsp;"
+							+ javaToHtml.process(lineStr) + "</pre></td>");
+				}
+				ret.append("</tr>\n");
+				lineNumber++;
+			}
+		}
+		catch (IOException e)
+		{
+			ret.append("<tr><td>Error reading from file "
+					+ sourceFile.getAbsolutePath() + ": "
+					+ e.getLocalizedMessage() + "</td></tr>\n");
+		}
+		finally
+		{
+			try
+			{
+				br.close();
+			}
+			catch (IOException e)
+			{
+			}
+		}
+
+		ret.append("</table>\n");
+
+		return ret.toString();
+	}
+
+	private static String generateFooter()
+	{
+		return "<div class=\"footer\">Report generated by "
+				+ "<a href=\"http://cobertura.sourceforge.net/\" target=\"_top\">Cobertura</a> "
+				+ Header.version() + " on "
+				+ DateFormat.getInstance().format(new Date()) + ".</div>";
 	}
 
 	private static String generateTableHeader(String title,
@@ -644,13 +705,11 @@ public class HTMLReport
 	private static String generateTableColumnsFromData(double lineCoverage,
 			double branchCoverage, double ccn)
 	{
-		String lineCoverageCell = (lineCoverage == -1)
-				? generateNAPercent()
+		String lineCoverageCell = (lineCoverage == -1) ? generateNAPercent()
 				: generatePercentResult(lineCoverage);
 
 		String branchCoverageCell = (branchCoverage == -1)
-				? generateNAPercent()
-				: generatePercentResult(branchCoverage);
+				? generateNAPercent() : generatePercentResult(branchCoverage);
 
 		// The "hidden" CSS class is used below to write the ccn without
 		// any formatting so that the table column can be sorted correctly
@@ -660,12 +719,13 @@ public class HTMLReport
 				+ ";</span>" + getDoubleValue(ccn) + "</td>";
 	}
 
-	private String generateTableRowForTotal() {
+	private String generateTableRowForTotal()
+	{
 		StringBuffer ret = new StringBuffer();
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-        double ccn = complexity.getCCNForProject(projectData);
-		
+		double ccn = complexity.getCCNForProject(projectData);
+
 		if (projectData.getNumberOfValidLines() > 0)
 			lineCoverage = projectData.getLineCoverageRate();
 		if (projectData.getNumberOfValidBranches() > 0)
@@ -673,8 +733,8 @@ public class HTMLReport
 
 		ret.append("  <tr>");
 		ret.append("<td class=\"text\"><b>All Packages</b></td>");
-		ret.append("<td class=\"value\">" + projectData.getNumberOfSourceFiles()
-				+ "</td>");
+		ret.append("<td class=\"value\">"
+				+ projectData.getNumberOfSourceFiles() + "</td>");
 		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
 				ccn));
 		ret.append("</tr>");
@@ -688,7 +748,7 @@ public class HTMLReport
 		String url2 = "frame-sourcefiles-" + packageData.getName() + ".html";
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-        double ccn = complexity.getCCNForPackage(packageData);
+		double ccn = complexity.getCCNForPackage(packageData);
 
 		if (packageData.getNumberOfValidLines() > 0)
 			lineCoverage = packageData.getLineCoverageRate();
@@ -707,25 +767,43 @@ public class HTMLReport
 		return ret.toString();
 	}
 
-	private String generateTableRowForSourceFile(SourceFileData sourceFileData)
+	private String generateTableRowsForSourceFile(SourceFileData sourceFileData)
+	{
+		StringBuffer ret = new StringBuffer();
+		String sourceFileName = sourceFileData.getNormalizedName();
+		// TODO: ccn should be calculated per-class, not per-file
+		double ccn = complexity.getCCNForSourceFile(sourceFileData);
+
+		Iterator iter = sourceFileData.getClasses().iterator();
+		while (iter.hasNext())
+		{
+			ClassData classData = (ClassData)iter.next();
+			ret
+					.append(generateTableRowForClass(classData, sourceFileName,
+							ccn));
+		}
+
+		return ret.toString();
+	}
+
+	private String generateTableRowForClass(ClassData classData,
+			String sourceFileName, double ccn)
 	{
 		StringBuffer ret = new StringBuffer();
 		double lineCoverage = -1;
 		double branchCoverage = -1;
-		double ccn = complexity.getCCNForSourceFile(sourceFileData);
 
-		if (sourceFileData.getNumberOfValidLines() > 0)
-			lineCoverage = sourceFileData.getLineCoverageRate();
-		if (sourceFileData.getNumberOfValidBranches() > 0)
-			branchCoverage = sourceFileData.getBranchCoverageRate();
+		if (classData.getNumberOfValidLines() > 0)
+			lineCoverage = classData.getLineCoverageRate();
+		if (classData.getNumberOfValidBranches() > 0)
+			branchCoverage = classData.getBranchCoverageRate();
 
 		ret.append("  <tr>");
-		ret.append("<td class=\"text\"><a href=\""
-				+ sourceFileData.getNormalizedName() + ".html\">"
-				+ sourceFileData.getBaseName() + "</a></td>");
+		ret.append("<td class=\"text\"><a href=\"" + sourceFileName
+				+ ".html\">" + classData.getBaseName() + "</a></td>");
 		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
 				ccn));
-		ret.append("</tr>");
+		ret.append("</tr>\n");
 		return ret.toString();
 	}
 
@@ -741,8 +819,8 @@ public class HTMLReport
 		sb.append("<table class=\"percentGraph\" cellpadding=\"0\" "
 				+ "cellspacing=\"0\" width=\"100\">");
 		sb.append("<tr>");
-		sb.append("<td class=\"covered\" width=\""
-				+ (int)(percentValue * 100) + "\"></td>");
+		sb.append("<td class=\"covered\" width=\"" + (int)(percentValue * 100)
+				+ "\"></td>");
 		sb.append("<td class=\"uncovered\" width=\"" + (int)(rest * 100)
 				+ "\"></td>");
 		sb.append("</tr>");
