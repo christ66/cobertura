@@ -12,7 +12,7 @@
 
 	<property file="build.properties" />
 
-	<path id="cobertura_classpath">
+	<path id="cobertura.classpath">
 		<fileset dir="${cobertura.dir}">
 			<include name="cobertura.jar" />
 		</fileset>
@@ -21,7 +21,7 @@
 		</fileset>
 	</path>
 
-	<taskdef classpathref="cobertura_classpath" resource="tasks.properties"/>
+	<taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
 
 	<target name="init">
 		<mkdir dir="${classes.dir}" />
@@ -34,7 +34,7 @@
 
 	<target name="compile" depends="init">
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="yes">
-			<classpath refid="cobertura_classpath" />
+			<classpath refid="cobertura.classpath" />
 		</javac>
 	</target>
 
@@ -82,7 +82,7 @@
 				Cobertura runtime, so Cobertura and its dependencies
 				must be on your classpath.
 			-->
-			<classpath refid="cobertura_classpath" />
+			<classpath refid="cobertura.classpath" />
 
 			<formatter type="xml" />
 			<test name="${testcase}" todir="${reports.xml.dir}" if="testcase" />

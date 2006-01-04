@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <project name="cobertura" default="coverage" basedir=".">
 
 	<description>
@@ -11,6 +13,13 @@
 	<property file="build.properties" />
 
 	<path id="base.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<path id="cobertura.classpath">
+		<pathelement location="cobertura.jar" />
 		<fileset dir="${lib.dir}">
 			<include name="**/*.jar" />
 		</fileset>
@@ -79,7 +88,6 @@
 				<exclude name="**/package.html" />
 			</fileset>
 			<manifest>
-				<attribute name="Class-Path" value="lib/asm/asm-${asm.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar lib/ncss/${ncss.version}/javancss.jar lib/ncss/${ncss.version}/ccl.jar lib/oro/jakarta-oro-${oro.version}.jar" />
 				<attribute name="Specification-Title" value="${description}"/>
 				<attribute name="Specification-Vendor" value="Cobertura"/>
 				<attribute name="Specification-Version" value="${version}"/>
@@ -104,7 +112,6 @@
 				<include name="tasks.properties" />
 			</fileset>
 			<manifest>
-				<attribute name="Class-Path" value="${ant.project.name}-main.jar" />
 				<attribute name="Specification-Title" value="${description}"/>
 				<attribute name="Specification-Vendor" value="Cobertura"/>
 				<attribute name="Specification-Version" value="${version}"/>
@@ -123,7 +130,6 @@
 				<include name="tasks.properties" />
 			</fileset>
 			<manifest>
-				<attribute name="Class-Path" value="lib/asm/asm-${asm.version}.jar lib/log4j/${log4j.version}/log4j-${log4j.version}.jar lib/ncss/${ncss.version}/javancss.jar lib/ncss/${ncss.version}/ccl.jar lib/oro/jakarta-oro-${oro.version}.jar" />
 				<attribute name="Specification-Title" value="${description}"/>
 				<attribute name="Specification-Vendor" value="Cobertura"/>
 				<attribute name="Specification-Version" value="${version}"/>
@@ -139,7 +145,7 @@
 		<delete file="${basedir}/cobertura.ser" />
 		<delete file="${build.dir}/cobertura.ser" />
 
-		<taskdef classpath="cobertura.jar" resource="tasks.properties"/>
+		<taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
 
 		<cobertura-instrument datafile="${build.dir}/cobertura.ser" todir="${build.instrumented.dir}">
 		    <fileset dir="${build.classes.dir}">
@@ -194,7 +200,7 @@
 	</target>
 
 	<target name="coverage-report">
-		<taskdef classpath="cobertura.jar" resource="tasks.properties"/>
+		<taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
 
 		<delete dir="${build.test.reports.dir}/coverage-html" />
 		<mkdir dir="${build.test.reports.dir}/coverage-html" />
