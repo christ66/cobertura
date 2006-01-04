@@ -229,6 +229,10 @@
 				<include name="**/*.java" />
 			</fileset>
 		</cobertura-report>
+
+		<cobertura-check datafile="${build.dir}/cobertura.ser"
+		                 totalbranchrate="50"
+		                 totallinerate="50" />
 	</target>
 
 	<target name="format">
