@@ -1,7 +1,11 @@
 version 1.8
+	* Removed the Class-Path line from cobertura.jar.  You may
+	  need to modify your Cobertura taskdef to include the jars
+	  in Cobertura's 'lib' directory.  See our Ant task web
+	  page for an example.
 	* Ability to have multiple <ignore/> regular expressions
 	  in the instrument task (Alexei Yudichev).
-	* Ability to specify a minimum bracnh coverage rate and
+	* Ability to specify a minimum branch coverage rate and
 	  line coverage rate for each package when using
 	  cobertura-check.
 
