@@ -134,7 +134,7 @@ public class FileFinder {
 	 * @param fileName source file to be mapped
 	 * @return existing file that maps to passed sourceFile 
 	 * @throws IOException if cannot map source file to existing file
-	 * @throws NullPointerException if sourceFile is null
+	 * @throws NullPointerException if fileName is null
 	 */
 	public File getFileForSource(String fileName) throws IOException {
 		// Correct file name
