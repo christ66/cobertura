@@ -7,11 +7,29 @@
 
 <p>
 Cobertura can be used either from the command line or via
-ant tasks.  You can even mix and match the command line and
-ant tasks.  This document describes how to use Cobertura
-via ant tasks.
+Ant tasks.  You can even mix and match the command line and
+Ant tasks.  This document describes how to use Cobertura
+via Ant tasks.
 </p>
 
+<p>
+You must first tell Ant about the Cobertura Ant tasks using
+a taskdef statement.  The best place to do this is near the
+top of your build.xml script, before any target statements.
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;property name="cobertura.dir" value="C:/javastuff/cobertura" /&gt;
+
+&lt;path id="cobertura.classpath"&gt;
+  &lt;fileset dir="${cobertura.dir}"&gt;
+    &lt;include name="cobertura.jar" /&gt;
+    &lt;include name="lib/**/*.jar" /&gt;
+  &lt;/fileset&gt;
+&lt;/path&gt;
+
+&lt;taskdef classpathref="cobertura.classpath" resource="tasks.properties" /&gt;</code></pre>
+</div>
 
 
 <h2>cobertura-instrument Task</h2>
