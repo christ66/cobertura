@@ -356,7 +356,8 @@ public class Main
 	}
 
 	// TODO: Don't attempt to instrument a file if the outputFile already
-	//       exists and is newer than the input file.
+	//       exists and is newer than the input file, and the output and
+	//       input file are in different locations?
 	private void addInstrumentation(File file)
 	{
 		if (isClass(file))
@@ -371,31 +372,17 @@ public class Main
 		}
 	}
 
-	private void addInstrumentation(String baseDir, String filename)
-	{
-		logger.debug("filename: " + filename);
-		File file = new File(baseDir, filename);
-
-    	if( isArchive(file)) {
-			addInstrumentationToArchive(file);
-    	} else {
-			addInstrumentation(file);
-		}
-	}
-
 	private void parseArguments(String[] args)
 	{
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 
 		// Parse our parameters
 		List filePaths = new ArrayList();
+		String baseDir = null;
 		for (int i = 0; i < args.length; i++)
 		{
 			if (args[i].equals("--basedir"))
-			{
-				filePaths.add(args[i]);
-				filePaths.add(args[++i]);
-			}
+				baseDir = args[++i];
 			else if (args[i].equals("--datafile"))
 				dataFile = new File(args[++i]);
 			else if (args[i].equals("--destination"))
@@ -415,7 +402,7 @@ public class Main
 				}
 			}
             else {
-				filePaths.add(args[i]);
+				filePaths.add(new File(baseDir, args[i]));
 			}
 		}
 
@@ -430,14 +417,14 @@ public class Main
 				+ (filePaths.size() == 1 ? "class" : "classes")
 				+ (destinationDirectory != null ? " to "
 						+ destinationDirectory.getAbsoluteFile() : ""));
-		String baseDir = null;
+
 		Iterator iter = filePaths.iterator();
         while (iter.hasNext()) {
-			String act = (String)iter.next();
-        	if( act.equals("--basedir")) {
-				baseDir = (String)iter.next();
-        	} else {
-				addInstrumentation(baseDir, act);
+			File file = (File)iter.next();
+	    	if (isArchive(file)) {
+				addInstrumentationToArchive(file);
+	    	} else {
+				addInstrumentation(file);
 			}
 		}
 
