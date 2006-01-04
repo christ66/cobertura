@@ -63,7 +63,9 @@ Example:
 </p>
 
 <div class="codeblock">
-<pre><code>&lt;cobertura-instrument todir="${instrumented.dir}"&gt;
+<pre><code>&lt;delete file="cobertura.ser" />/&gt;
+
+&lt;cobertura-instrument todir="${instrumented.dir}"&gt;
     &lt;ignore regex="org.apache.log4j.*" /&gt;
     &lt;fileset dir="${classes.dir}"&gt;
         &lt;include name="**/*.class" /&gt;
