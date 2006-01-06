@@ -153,7 +153,7 @@ public class Main
 					// class
 					if (cv.isInstrumented())
 					{
-						logger.debug("Putting instrumeted entry: "
+						logger.debug("Putting instrumented entry: "
 								+ entry.getName());
 						entryBytes = cw.toByteArray();
 					}
