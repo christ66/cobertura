@@ -55,7 +55,11 @@ a new jar will be written to the output directory.
 
 <p>
 You can tell Cobertura to ignore certain classes by passing in
-"ignore" regular expressions.  See the example below.
+"ignore" regular expressions.  The ignore pattern can be any
+valid perl 5 regular expression.  If a line of your code contains
+a call to any method in a class that matches the ignore regular
+expression, then that line will not be included in the coverage
+report.  See the example below.
 </p>
 
 <p>
