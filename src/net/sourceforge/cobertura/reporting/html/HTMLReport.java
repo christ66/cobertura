@@ -345,7 +345,7 @@ public class HTMLReport
 			out
 					.println("var packageTable = new SortableTable(document.getElementById(\"packageResults\"),");
 			out
-					.println("    [\"String\", \"Number\", \"Percentage\", \"Percentage\", \"FormattedNumber\"]);");
+					.println("    [\"String\", \"Number\", \"Percentage\", \"Number\", \"Percentage\", \"Number\", \"FormattedNumber\"]);");
 			out.println("packageTable.sort(0);");
 			out.println("</script>");
 
@@ -391,7 +391,7 @@ public class HTMLReport
 				out
 						.println("var classTable = new SortableTable(document.getElementById(\"classResults\"),");
 				out
-						.println("    [\"String\", \"Percentage\", \"Percentage\", \"FormattedNumber\"]);");
+						.println("    [\"String\", \"Percentage\", \"Number\", \"Percentage\", \"Number\", \"FormattedNumber\"]);");
 				out.println("classTable.sort(0);");
 				out.println("</script>");
 			}
@@ -622,16 +622,18 @@ public class HTMLReport
 		{
 			ret.append("  <td class=\"heading\"># Classes</td>");
 		}
-		ret.append("  <td class=\"heading\" width=\"20%\">"
+		ret.append("  <td class=\"heading\" width=\"18%\">"
 				+ generateHelpURL("Line Coverage",
 						"The percent of lines executed by this test run.")
 				+ "</td>");
-		ret.append("  <td class=\"heading\" width=\"20%\">"
+		ret.append("  <td class=\"heading\" width=\"8%\"># Lines</td>");
+		ret.append("  <td class=\"heading\" width=\"18%\">"
 				+ generateHelpURL("Branch Coverage",
 						"The percent of branches executed by this test run.")
 				+ "</td>");
+		ret.append("  <td class=\"heading\" width=\"8%\"># Branches</td>");
 		ret
-				.append("  <td class=\"heading\" width=\"10%\">"
+				.append("  <td class=\"heading\" width=\"3%\">"
 						+ generateHelpURL(
 								"Complexity",
 								"Average McCabe's cyclomatic code complexity for all methods.  This is basically a count of the number of different code paths in a method (incremented by 1 for each if statement, while loop, etc.)")
@@ -703,7 +705,7 @@ public class HTMLReport
 	 * @return A string containing the HTML for three table cells.
 	 */
 	private static String generateTableColumnsFromData(double lineCoverage,
-			double branchCoverage, double ccn)
+			int numLines, double branchCoverage, int numBranches, double ccn)
 	{
 		String lineCoverageCell = (lineCoverage == -1) ? generateNAPercent()
 				: generatePercentResult(lineCoverage);
@@ -714,7 +716,9 @@ public class HTMLReport
 		// The "hidden" CSS class is used below to write the ccn without
 		// any formatting so that the table column can be sorted correctly
 		return "<td class=\"value\">" + lineCoverageCell + "</td>"
+				+ "<td class=\"value\">" + numLines + "</td>"
 				+ "<td class=\"value\">" + branchCoverageCell + "</td>"
+				+ "<td class=\"value\">" + numBranches + "</td>"
 				+ "<td class=\"value\"><span class=\"hidden\">" + ccn
 				+ ";</span>" + getDoubleValue(ccn) + "</td>";
 	}
@@ -735,8 +739,9 @@ public class HTMLReport
 		ret.append("<td class=\"text\"><b>All Packages</b></td>");
 		ret.append("<td class=\"value\">"
 				+ projectData.getNumberOfSourceFiles() + "</td>");
-		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
-				ccn));
+		ret.append(generateTableColumnsFromData(lineCoverage, 
+				projectData.getNumberOfValidLines(), branchCoverage,
+				projectData.getNumberOfValidBranches(), ccn));
 		ret.append("</tr>");
 		return ret.toString();
 	}
@@ -761,8 +766,9 @@ public class HTMLReport
 				+ "\"'>" + generatePackageName(packageData) + "</a></td>");
 		ret.append("<td class=\"value\">" + packageData.getNumberOfChildren()
 				+ "</td>");
-		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
-				ccn));
+		ret.append(generateTableColumnsFromData(lineCoverage,
+				packageData.getNumberOfValidLines(), branchCoverage,
+				packageData.getNumberOfValidBranches(), ccn));
 		ret.append("</tr>");
 		return ret.toString();
 	}
@@ -799,10 +805,12 @@ public class HTMLReport
 			branchCoverage = classData.getBranchCoverageRate();
 
 		ret.append("  <tr>");
+		// TODO: URL should jump straight to the class (only for inner classes?)
 		ret.append("<td class=\"text\"><a href=\"" + sourceFileName
 				+ ".html\">" + classData.getBaseName() + "</a></td>");
-		ret.append(generateTableColumnsFromData(lineCoverage, branchCoverage,
-				ccn));
+		ret.append(generateTableColumnsFromData(lineCoverage,
+				classData.getNumberOfValidLines(), branchCoverage,
+				classData.getNumberOfValidBranches(), ccn));
 		ret.append("</tr>\n");
 		return ret.toString();
 	}
