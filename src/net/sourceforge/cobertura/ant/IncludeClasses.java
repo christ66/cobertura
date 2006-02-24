@@ -5,6 +5,7 @@
  * reserved.
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2006 John Lewis
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,7 +57,7 @@
 
 package net.sourceforge.cobertura.ant;
 
-public class Ignore
+public class IncludeClasses
 {
 
 	String regex;

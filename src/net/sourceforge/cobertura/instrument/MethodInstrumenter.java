@@ -1,7 +1,8 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
+ * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2006 John Lewis
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -22,12 +23,10 @@
 package net.sourceforge.cobertura.instrument;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.util.RegexUtil;
 
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.Perl5Matcher;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
@@ -39,8 +38,6 @@ import org.objectweb.asm.Opcodes;
  */
 public class MethodInstrumenter extends MethodAdapter implements Opcodes
 {
-
-	private final static Perl5Matcher pm = new Perl5Matcher();
 
 	private final String ownerClass;
 
@@ -126,15 +123,9 @@ public class MethodInstrumenter extends MethodAdapter implements Opcodes
 
 		// If any of the ignore patterns match this line
 		// then remove it from our data
-		Iterator iter = ignoreRegexs.iterator();
-		while (iter.hasNext())
+		if (RegexUtil.matches(ignoreRegexs, owner)) 
 		{
-			Pattern ignoreRegex = (Pattern)iter.next();
-			if ((ignoreRegexs != null) && (pm.matches(owner, ignoreRegex)))
-			{
-				classData.removeLine(currentLine);
-				return;
-			}
+			classData.removeLine(currentLine);
 		}
 	}
 

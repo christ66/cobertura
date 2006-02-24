@@ -8,6 +8,7 @@
  * Copyright (C) 2005 Joakim Erdfelt
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2005 Alexei Yudichev
+ * Copyright (C) 2006 John Lewis
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -62,12 +63,15 @@ package net.sourceforge.cobertura.ant;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
 
 public class InstrumentTask extends CommonMatchingTask
 {
@@ -77,6 +81,16 @@ public class InstrumentTask extends CommonMatchingTask
 	private File toDir = null;
 
 	List ignoreRegexs = new ArrayList();
+	
+	List includeClassesRegexs = new ArrayList();
+
+	List excludeClassesRegexs = new ArrayList();
+
+	private Integer forkedJVMDebugPort;
+	
+	private Path instrumentationClasspath = null;
+
+	private HashMap fileSetMap = new HashMap();
 
 	public InstrumentTask()
 	{
@@ -90,7 +104,41 @@ public class InstrumentTask extends CommonMatchingTask
 		return ignoreRegex;
 	}
 
-	public void execute() throws BuildException {
+	public IncludeClasses createIncludeClasses()
+	{
+		IncludeClasses includeClassesRegex = new IncludeClasses();
+		includeClassesRegexs.add(includeClassesRegex);
+		return includeClassesRegex;
+	}
+
+	public ExcludeClasses createExcludeClasses()
+	{
+		ExcludeClasses excludeClassesRegex = new ExcludeClasses();
+		excludeClassesRegexs.add(excludeClassesRegex);
+		return excludeClassesRegex;
+	}
+
+	public Path createInstrumentationClasspath()
+	{
+		if (instrumentationClasspath == null) {
+			instrumentationClasspath = new Path(getProject());
+		}
+		return instrumentationClasspath.createPath();
+	}
+
+	/*
+	 * TODO: Is the following method needed to use a classpath ref?  If so,
+	 *       test it and uncomment it.
+	 */
+	/*
+	public void setInstrumentationClasspathRef(Reference r)
+	{
+		createInstrumentationClasspath().setRefid(r);
+	}
+	*/
+
+	public void execute() throws BuildException
+	{
 		CommandLineBuilder builder = null;
 		try {
 			builder = new CommandLineBuilder();
@@ -99,13 +147,24 @@ public class InstrumentTask extends CommonMatchingTask
 			if (toDir != null)
 				builder.addArg("--destination", toDir.getAbsolutePath());
 
-			// ignoreRegex.setRegex() is never called, but that's ok
-			// because ant sets it somehow, I think
 			for (int i = 0; i < ignoreRegexs.size(); i++) {
 				Ignore ignoreRegex = (Ignore)ignoreRegexs.get(i);
 				builder.addArg("--ignore", ignoreRegex.getRegex());
 			}
 
+			for (int i = 0; i < includeClassesRegexs.size(); i++) {
+				IncludeClasses includeClassesRegex = (IncludeClasses)includeClassesRegexs.get(i);
+				builder.addArg("--includeClasses", includeClassesRegex.getRegex());
+			}
+
+			for (int i = 0; i < excludeClassesRegexs.size(); i++) {
+				ExcludeClasses excludeClassesRegex = (ExcludeClasses)excludeClassesRegexs.get(i);
+				builder.addArg("--excludeClasses", excludeClassesRegex.getRegex());
+			}
+
+			if (instrumentationClasspath != null) {
+				processInstrumentationClasspath();
+			}
 			createArgumentsForFilesets(builder);
 
 			builder.saveArgs();
@@ -117,12 +176,67 @@ public class InstrumentTask extends CommonMatchingTask
 		// Execute GPL licensed code in separate virtual machine
 		getJava().createArg().setValue("--commandsfile");
 		getJava().createArg().setValue(builder.getCommandLineFile());
+		if (forkedJVMDebugPort != null && forkedJVMDebugPort.intValue() > 0) {
+			getJava().createJvmarg().setValue("-Xdebug");
+			getJava().createJvmarg().setValue("-Xrunjdwp:transport=dt_socket,address=" + forkedJVMDebugPort + ",server=y,suspend=y");
+		}
 		if (getJava().executeJava() != 0) {
 			throw new BuildException(
 					"Error instrumenting classes. See messages above.");
 		}
 
 		builder.dispose();
+	}
+
+	private void processInstrumentationClasspath()
+	{
+		if (includeClassesRegexs.size() == 0)
+		{
+			throw new BuildException("'includeClasses' is required when 'fromClasspath' is used");
+		}
+
+		String[] sources = instrumentationClasspath.list();
+		for (int i = 0; i < sources.length; i++) {
+			File fileOrDir = new File(sources[i]);
+			if (fileOrDir.exists())
+			{
+				if (fileOrDir.isDirectory()) {
+					createFilesetForDirectory(fileOrDir);
+				} else {
+					addFileToFilesets(fileOrDir);
+				}
+			}
+		}
+	}
+
+	private void addFileToFilesets(File file)
+	{
+		File dir = file.getParentFile();
+		String filename = file.getName();
+		FileSet fileSet = getFileSet(dir);
+		fileSet.createInclude().setName(filename);
+	}
+
+	private FileSet getFileSet(File dir)
+	{
+		String key = dir.getAbsolutePath();
+		FileSet fileSet = (FileSet)fileSetMap.get(key);
+		if (fileSet == null)
+		{
+	        fileSet = new FileSet();
+	        fileSet.setProject(getProject());
+	        fileSet.setDir(dir);
+
+	        // Now add the new fileset to the map and to the fileSets list 
+	        fileSetMap.put(key, fileSet);
+	        addFileset(fileSet);
+		}
+		return fileSet;
+	}
+
+	private void createFilesetForDirectory(File dir)
+	{
+		getFileSet(dir);
 	}
 
 	public void setDataFile(String dataFile)
@@ -133,6 +247,11 @@ public class InstrumentTask extends CommonMatchingTask
 	public void setToDir(File toDir)
 	{
 		this.toDir = toDir;
+	}
+
+	public void setForkedJVMDebugPort(Integer forkedJVMDebugPort)
+	{
+		this.forkedJVMDebugPort = forkedJVMDebugPort;
 	}
 
 }
