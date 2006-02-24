@@ -5,6 +5,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Joakim Erdfelt
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2006 John Lewis
  * Contact information for the above is given in the COPYRIGHT file.
  *
  * Cobertura is free software; you can redistribute it and/or modify
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -46,9 +48,11 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.IOUtil;
+import net.sourceforge.cobertura.util.RegexUtil;
 
 import org.apache.log4j.Logger;
 import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -90,17 +94,11 @@ public class Main
 
 	private Collection ignoreRegexes = new Vector();
 
-	private ProjectData projectData = null;
+	private Collection includeClassesRegexes = new HashSet();
 
-	/**
-	 * @param file A file.
-	 * @return True if the specified file has "class" as its extension,
-	 * false otherwise.
-	 */
-	private static boolean isClass(File file)
-	{
-		return file.getName().endsWith(".class");
-	}
+	private Collection excludeClassesRegexes = new HashSet();
+
+	private ProjectData projectData = null;
 
 	/**
 	 * @param entry A zip entry.
@@ -110,18 +108,6 @@ public class Main
 	private static boolean isClass(ZipEntry entry)
 	{
 		return entry.getName().endsWith(".class");
-	}
-
-	/**
-	 * @return True if file has an extension that matches one of the
-	 *         standard java archives, false otherwise.
-	 */
-	private static boolean isArchive(File file)
-	{
-		String name = file.getName();
-		return name.endsWith(".jar") || name.endsWith(".zip")
-				|| name.endsWith(".war") || name.endsWith(".ear")
-				|| name.endsWith(".sar");
 	}
 
 	private void addInstrumentationToArchive(ZipInputStream archive,
@@ -140,7 +126,7 @@ public class Main
 						.createByteArrayFromInputStream(archive);
 
 				// Check if we have class file
-				if (isClass(entry))
+				if (isClass(entry) && shouldInstrument(entry.getName()))
 				{
 					// Instrument class
 					ClassReader cr = new ClassReader(entryBytes);
@@ -171,6 +157,29 @@ public class Main
 			}
 			output.flush();
 		}
+	}
+
+	private boolean shouldInstrument(String name)
+	{
+		boolean shouldInstrument = true;
+
+		if (includeClassesRegexes.size() > 0)
+		{
+			shouldInstrument = false;
+			// Remove .class extension if it exists
+			if (name.endsWith(".class")) {
+				name = name.substring(0, name.length() - 6);
+			}
+			name = name.replace('/', '.');
+			name = name.replace('\\', '.');
+			if (RegexUtil.matches(includeClassesRegexes, name)) {
+				shouldInstrument = true;
+			}
+			if (shouldInstrument && RegexUtil.matches(excludeClassesRegexes, name)) {
+				shouldInstrument = false;
+			}
+		}
+		return shouldInstrument;
 	}
 
 	private void addInstrumentationToArchive(File archive)
@@ -358,17 +367,22 @@ public class Main
 	// TODO: Don't attempt to instrument a file if the outputFile already
 	//       exists and is newer than the input file, and the output and
 	//       input file are in different locations?
-	private void addInstrumentation(File file)
+	private void addInstrumentation(FileInfo fileInfo)
 	{
-		if (isClass(file))
+		if (fileInfo.isClass() && shouldInstrument(fileInfo.pathname))
 		{
-			addInstrumentationToSingleClass(file);
+			addInstrumentationToSingleClass(fileInfo);
 		}
-		else if (file.isDirectory())
+		else if (fileInfo.isDirectory())
 		{
-			File[] contents = file.listFiles();
+			String[] contents = fileInfo.list();
 			for (int i = 0; i < contents.length; i++)
-				addInstrumentation(contents[i]);
+			{
+				File relativeFile = new File(fileInfo.pathname, contents[i]);
+				FileInfo relativeFileInfo = new FileInfo(fileInfo.baseDir, relativeFile.toString());
+				//recursion!
+				addInstrumentation(relativeFileInfo);
+			}
 		}
 	}
 
@@ -389,20 +403,20 @@ public class Main
 				destinationDirectory = new File(args[++i]);
 			else if (args[i].equals("--ignore"))
 			{
-				String regex = args[++i];
-				try
-				{
-					Perl5Compiler pc = new Perl5Compiler();
-					this.ignoreRegexes.add(pc.compile(regex));
-				}
-				catch (MalformedPatternException e)
-				{
-					logger.warn("The regular expression " + regex
-							+ " is invalid: " + e.getLocalizedMessage());
-				}
+				addRegex(ignoreRegexes, args[++i]);
 			}
-            else {
-				filePaths.add(new File(baseDir, args[i]));
+			else if (args[i].equals("--includeClasses"))
+			{
+				addRegex(includeClassesRegexes, args[++i]);
+			}
+			else if (args[i].equals("--excludeClasses"))
+			{
+				addRegex(excludeClassesRegexes, args[++i]);
+			}
+			else
+			{
+				FileInfo fileInfo = new FileInfo(baseDir, args[i]);
+				filePaths.add(fileInfo);
 			}
 		}
 
@@ -411,25 +425,40 @@ public class Main
 			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
 		if (projectData == null)
 			projectData = new ProjectData();
-
+		
 		// Instrument classes
 		System.out.println("Instrumenting "	+ filePaths.size() + " "
-				+ (filePaths.size() == 1 ? "class" : "classes")
+				+ (filePaths.size() == 1 ? "file" : "files")
 				+ (destinationDirectory != null ? " to "
 						+ destinationDirectory.getAbsoluteFile() : ""));
 
 		Iterator iter = filePaths.iterator();
-        while (iter.hasNext()) {
-			File file = (File)iter.next();
-	    	if (isArchive(file)) {
-				addInstrumentationToArchive(file);
-	    	} else {
-				addInstrumentation(file);
+		while (iter.hasNext())
+		{
+			FileInfo fileInfo = (FileInfo)iter.next();
+			if (fileInfo.isArchive()) {
+				addInstrumentationToArchive(fileInfo);
+			} else {
+				addInstrumentation(fileInfo);
 			}
 		}
 
 		// Save coverage data
 		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
+	}
+
+	private static void addRegex(Collection list, String regex) {
+		try
+		{
+			Perl5Compiler pc = new Perl5Compiler();
+			Pattern pattern = pc.compile(regex);
+			list.add(pattern);
+		}
+		catch (MalformedPatternException e)
+		{
+			logger.warn("The regular expression " + regex
+					+ " is invalid: " + e.getLocalizedMessage());
+		}
 	}
 
 	public static void main(String[] args)
