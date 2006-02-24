@@ -8,8 +8,10 @@ version 1.8
 	* Ability to specify a minimum branch coverage rate and
 	  line coverage rate for each package when using
 	  cobertura-check.
+	* Upgraded from asm 2.1 to asm 2.2.1.  No code changes were
+	  needed.
 
-﻿version 1.7
+﻿version 1.7 (2005-12-06)
 	* log4j is no longer used by the Cobertura classes that are
 	  accessed by instrumented Java code.  This means you will
 	  not need to add log4j to your project's classpath in order
@@ -31,7 +33,7 @@ version 1.8
 	* Added support for classes compiled with AspectJ.
 	* Cobertura now produces valid XHTML 1.0 reports.
 
-version 1.6
+version 1.6 (2005-08-22)
 	* Can now use multiple filesets in the cobertura-instrument
 	  task (Thanks to Grzegorz Lukasik).
 	* Can now use multiple filesets in the cobertura-report task
@@ -41,7 +43,7 @@ version 1.6
 	  the HTML report included anonymous classes when it should
 	  not have.
 
-version 1.5
+version 1.5 (2005-08-05)
 	* Shortened the header shown when running Cobertura (Thanks
 	  to Jarkko Viinamäki).
 	* Don't save the data file twice after instrumenting.
@@ -73,7 +75,7 @@ version 1.5
 	  the online documentation for usage information.
 	* The command line Windows batch scripts work better.
 
-version 1.4
+version 1.4 (2005-05-30)
 	* Fixed a bug that sometimes resulted in a
 	  StringIndexOutOfBoundsException when running cobertura-report
 	  (Thanks to Grzegorz Lukasik).
@@ -86,7 +88,7 @@ version 1.4
 	* Show "N/A" in the branch column of the HTML report for classes
 	  and packages that do not have any branches.
 
-version 1.3
+version 1.3 (2005-05-20)
 	* Increased speed of HTML reports by filtering the files read
 	  in to determine cyclomatic complexity numbers on.
 	* In the lower left pane of the HTML reports, classes are now
@@ -101,12 +103,12 @@ version 1.3
 	  data files from the ant tasks and the command line.
 	* More user-friendly error checking and reporting.
 
-version 1.2
+version 1.2 (2005-03-16)
 	* Fix a bug that caused the XML reports to be invalid XML
 	  (they were missing the </package> tag).
 	* Use Java 1.4 pattern matching and remove Jakarta ORO.
 
-version 1.1
+version 1.1 (2005-03-08)
 	* Fix a bug in the syntax highlighting code of the HTML report
 	  generation.  Previously, the highlighting for single quotes
 	  containing "\\" would not end correctly.
@@ -134,7 +136,7 @@ version 1.1
 	  This changes the structure of the XML report so that <classes> are
 	  enclosed inside <packages>.
 
-version 1.0
+version 1.0 (2005-02-12)
 	* Forked jcoverage 1.0.5 (although the version in the source says 1.0.4).
 	  All original code is copyright 2003 jcoverage ltd.  Kurt Guenther
 	  highlighted a bug in the branch coverage, was was fixed.
