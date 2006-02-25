@@ -11,7 +11,7 @@ version 1.8
 	* Upgraded from asm 2.1 to asm 2.2.1.  No code changes were
 	  needed.
 
-﻿version 1.7 (2005-12-06)
+version 1.7 (2005-12-06)
 	* log4j is no longer used by the Cobertura classes that are
 	  accessed by instrumented Java code.  This means you will
 	  not need to add log4j to your project's classpath in order
