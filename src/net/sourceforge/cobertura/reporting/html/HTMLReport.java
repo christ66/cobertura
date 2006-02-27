@@ -42,6 +42,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.coveragedata.CoverageData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
@@ -345,7 +346,7 @@ public class HTMLReport
 			out
 					.println("var packageTable = new SortableTable(document.getElementById(\"packageResults\"),");
 			out
-					.println("    [\"String\", \"Number\", \"Percentage\", \"Number\", \"Percentage\", \"Number\", \"FormattedNumber\"]);");
+					.println("    [\"String\", \"Number\", \"Percentage\", \"Percentage\", \"FormattedNumber\"]);");
 			out.println("packageTable.sort(0);");
 			out.println("</script>");
 
@@ -391,7 +392,7 @@ public class HTMLReport
 				out
 						.println("var classTable = new SortableTable(document.getElementById(\"classResults\"),");
 				out
-						.println("    [\"String\", \"Percentage\", \"Number\", \"Percentage\", \"Number\", \"FormattedNumber\"]);");
+						.println("    [\"String\", \"Percentage\", \"Percentage\", \"FormattedNumber\"]);");
 				out.println("classTable.sort(0);");
 				out.println("</script>");
 			}
@@ -622,18 +623,16 @@ public class HTMLReport
 		{
 			ret.append("  <td class=\"heading\"># Classes</td>");
 		}
-		ret.append("  <td class=\"heading\" width=\"18%\">"
+		ret.append("  <td class=\"heading\">"
 				+ generateHelpURL("Line Coverage",
 						"The percent of lines executed by this test run.")
 				+ "</td>");
-		ret.append("  <td class=\"heading\" width=\"8%\"># Lines</td>");
-		ret.append("  <td class=\"heading\" width=\"18%\">"
+		ret.append("  <td class=\"heading\">"
 				+ generateHelpURL("Branch Coverage",
 						"The percent of branches executed by this test run.")
 				+ "</td>");
-		ret.append("  <td class=\"heading\" width=\"8%\"># Branches</td>");
 		ret
-				.append("  <td class=\"heading\" width=\"3%\">"
+				.append("  <td class=\"heading\">"
 						+ generateHelpURL(
 								"Complexity",
 								"Average McCabe's cyclomatic code complexity for all methods.  This is basically a count of the number of different code paths in a method (incremented by 1 for each if statement, while loop, etc.)")
@@ -665,83 +664,16 @@ public class HTMLReport
 		return ret.toString();
 	}
 
-	private static String generateNAPercent()
-	{
-		StringBuffer sb = new StringBuffer();
-		sb
-				.append("<table cellpadding=\"0\" cellspacing=\"0\" align=\"right\">");
-		sb.append("<tr>");
-		sb
-				.append("<td>"
-						+ generateHelpURL(
-								"N/A",
-								"Line coverage and branch coverage will appear as \"Not Applicable\" when Cobertura can not find line number information in the .class file.  This happens for stub and skeleton classes, interfaces, or when the class was not compiled with \"debug=true.\"")
-						+ "&nbsp;</td>");
-		sb.append("<td>");
-		sb
-				.append("<table class=\"percentGraph\" cellpadding=\"0\" cellspacing=\"0\" width=\"100\">");
-		sb.append("<tr><td class=\"NA\" width=\"100\"></td></tr>");
-		sb.append("</table>");
-		sb.append("</td>");
-		sb.append("</tr>");
-		sb.append("</table>");
-		return sb.toString();
-	}
-
-	/**
-	 * Return a string containing three HTML table cells.  The first
-	 * cell contains a graph showing the line coverage, the second
-	 * cell contains a graph showing the branch coverage, and the
-	 * third cell contains the code complexity.
-	 *
-	 * @param lineCoverage A number between 0 and 1, inclusive.  Or,
-	 *        if this class or package has no lines, then use "-1"
-	 *        and this method will display "N/A" in the table cell.
-	 * @param branchCoverage A number between 0 and 1, inclusive.  Or,
-	 *        if this class or package has no branches, then use "-1"
-	 *        and this method will display "N/A" in the table cell.
-	 * @param ccn The code complexity to display.  This should be greater
-	 *        than 1.
-	 * @return A string containing the HTML for three table cells.
-	 */
-	private static String generateTableColumnsFromData(double lineCoverage,
-			int numLines, double branchCoverage, int numBranches, double ccn)
-	{
-		String lineCoverageCell = (lineCoverage == -1) ? generateNAPercent()
-				: generatePercentResult(lineCoverage);
-
-		String branchCoverageCell = (branchCoverage == -1)
-				? generateNAPercent() : generatePercentResult(branchCoverage);
-
-		// The "hidden" CSS class is used below to write the ccn without
-		// any formatting so that the table column can be sorted correctly
-		return "<td class=\"value\">" + lineCoverageCell + "</td>"
-				+ "<td class=\"value\">" + numLines + "</td>"
-				+ "<td class=\"value\">" + branchCoverageCell + "</td>"
-				+ "<td class=\"value\">" + numBranches + "</td>"
-				+ "<td class=\"value\"><span class=\"hidden\">" + ccn
-				+ ";</span>" + getDoubleValue(ccn) + "</td>";
-	}
-
 	private String generateTableRowForTotal()
 	{
 		StringBuffer ret = new StringBuffer();
-		double lineCoverage = -1;
-		double branchCoverage = -1;
 		double ccn = complexity.getCCNForProject(projectData);
 
-		if (projectData.getNumberOfValidLines() > 0)
-			lineCoverage = projectData.getLineCoverageRate();
-		if (projectData.getNumberOfValidBranches() > 0)
-			branchCoverage = projectData.getBranchCoverageRate();
-
 		ret.append("  <tr>");
-		ret.append("<td class=\"text\"><b>All Packages</b></td>");
+		ret.append("<td><b>All Packages</b></td>");
 		ret.append("<td class=\"value\">"
 				+ projectData.getNumberOfSourceFiles() + "</td>");
-		ret.append(generateTableColumnsFromData(lineCoverage, 
-				projectData.getNumberOfValidLines(), branchCoverage,
-				projectData.getNumberOfValidBranches(), ccn));
+		ret.append(generateTableColumnsFromData(projectData, ccn));
 		ret.append("</tr>");
 		return ret.toString();
 	}
@@ -751,24 +683,15 @@ public class HTMLReport
 		StringBuffer ret = new StringBuffer();
 		String url1 = "frame-summary-" + packageData.getName() + ".html";
 		String url2 = "frame-sourcefiles-" + packageData.getName() + ".html";
-		double lineCoverage = -1;
-		double branchCoverage = -1;
 		double ccn = complexity.getCCNForPackage(packageData);
 
-		if (packageData.getNumberOfValidLines() > 0)
-			lineCoverage = packageData.getLineCoverageRate();
-		if (packageData.getNumberOfValidBranches() > 0)
-			branchCoverage = packageData.getBranchCoverageRate();
-
 		ret.append("  <tr>");
-		ret.append("<td class=\"text\"><a href=\"" + url1
+		ret.append("<td><a href=\"" + url1
 				+ "\" onclick='parent.sourceFileList.location.href=\"" + url2
 				+ "\"'>" + generatePackageName(packageData) + "</a></td>");
 		ret.append("<td class=\"value\">" + packageData.getNumberOfChildren()
 				+ "</td>");
-		ret.append(generateTableColumnsFromData(lineCoverage,
-				packageData.getNumberOfValidLines(), branchCoverage,
-				packageData.getNumberOfValidBranches(), ccn));
+		ret.append(generateTableColumnsFromData(packageData, ccn));
 		ret.append("</tr>");
 		return ret.toString();
 	}
@@ -796,46 +719,82 @@ public class HTMLReport
 			String sourceFileName, double ccn)
 	{
 		StringBuffer ret = new StringBuffer();
-		double lineCoverage = -1;
-		double branchCoverage = -1;
-
-		if (classData.getNumberOfValidLines() > 0)
-			lineCoverage = classData.getLineCoverageRate();
-		if (classData.getNumberOfValidBranches() > 0)
-			branchCoverage = classData.getBranchCoverageRate();
 
 		ret.append("  <tr>");
 		// TODO: URL should jump straight to the class (only for inner classes?)
-		ret.append("<td class=\"text\"><a href=\"" + sourceFileName
+		ret.append("<td><a href=\"" + sourceFileName
 				+ ".html\">" + classData.getBaseName() + "</a></td>");
-		ret.append(generateTableColumnsFromData(lineCoverage,
-				classData.getNumberOfValidLines(), branchCoverage,
-				classData.getNumberOfValidBranches(), ccn));
+		ret.append(generateTableColumnsFromData(classData, ccn));
 		ret.append("</tr>\n");
 		return ret.toString();
 	}
 
-	private static String generatePercentResult(double percentValue)
+	/**
+	 * Return a string containing three HTML table cells.  The first
+	 * cell contains a graph showing the line coverage, the second
+	 * cell contains a graph showing the branch coverage, and the
+	 * third cell contains the code complexity.
+	 *
+	 * @param ccn The code complexity to display.  This should be greater
+	 *        than 1.
+	 * @return A string containing the HTML for three table cells.
+	 */
+	private static String generateTableColumnsFromData(CoverageData coverageData,
+			double ccn)
 	{
-		double rest = 1d - percentValue;
+		int numLinesCovered = coverageData.getNumberOfCoveredLines();
+		int numLinesValid = coverageData.getNumberOfValidLines();
+		int numBranchesCovered = coverageData.getNumberOfCoveredBranches();
+		int numBranchesValid = coverageData.getNumberOfValidBranches();
+
+		// The "hidden" CSS class is used below to write the ccn without
+		// any formatting so that the table column can be sorted correctly
+		return "<td>" + generatePercentResult(numLinesCovered, numLinesValid)
+				+"</td><td>"
+				+ generatePercentResult(numBranchesCovered, numBranchesValid)
+				+ "</td><td class=\"value\"><span class=\"hidden\">"
+				+ ccn + ";</span>" + getDoubleValue(ccn) + "</td>";
+	}
+
+	/**
+	 * This is crazy complicated, and took me a while to figure out,
+	 * but it works.  It creates a dandy little percentage meter, from
+	 * 0 to 100.
+	 * @param dividend The number of covered lines or branches.
+	 * @param divisor  The number of valid lines or branches.
+	 * @return A percentage meter.
+	 */
+	private static String generatePercentResult(int dividend, int divisor)
+	{
 		StringBuffer sb = new StringBuffer();
-		sb.append("<table cellpadding=\"0\" cellspacing=\"0\" "
-				+ "align=\"right\">");
-		sb.append("<tr>");
-		sb.append("<td>" + getPercentValue(percentValue) + "&nbsp;</td>");
-		sb.append("<td>");
-		sb.append("<table class=\"percentGraph\" cellpadding=\"0\" "
-				+ "cellspacing=\"0\" width=\"100\">");
-		sb.append("<tr>");
-		sb.append("<td class=\"covered\" width=\"" + (int)(percentValue * 100)
-				+ "\"></td>");
-		sb.append("<td class=\"uncovered\" width=\"" + (int)(rest * 100)
-				+ "\"></td>");
-		sb.append("</tr>");
-		sb.append("</table>");
-		sb.append("</td>");
-		sb.append("</tr>");
-		sb.append("</table>");
+
+		sb.append("<table cellpadding=\"0px\" cellspacing=\"0px\" class=\"percentgraph\"><tr class=\"percentgraph\"><td align=\"right\" class=\"percentgraph\" width=\"40\">");
+		if (divisor > 0)
+			sb.append(getPercentValue((double)dividend / divisor));
+		else
+			sb.append(generateHelpURL(
+					"N/A",
+					"Line coverage and branch coverage will appear as \"Not Applicable\" when Cobertura can not find line number information in the .class file.  This happens for stub and skeleton classes, interfaces, or when the class was not compiled with \"debug=true.\""));
+		sb.append("</td><td class=\"percentgraph\"><div class=\"percentgraph\">");
+		if (divisor > 0)
+		{
+			sb.append("<div class=\"greenbar\" style=\"width:"
+					+ (dividend * 100 / divisor) + "px\">");
+			sb.append("<span class=\"text\">");
+			sb.append(dividend);
+			sb.append("/");
+			sb.append(divisor);
+		}
+		else
+		{
+			sb.append("<div class=\"na\" style=\"width:100px\">");
+			sb.append("<span class=\"text\">");
+			sb.append(generateHelpURL(
+					"N/A",
+					"Line coverage and branch coverage will appear as \"Not Applicable\" when Cobertura can not find line number information in the .class file.  This happens for stub and skeleton classes, interfaces, or when the class was not compiled with \"debug=true.\""));
+		}
+		sb.append("</span></div></div></td></tr></table>");
+
 		return sb.toString();
 	}
 
