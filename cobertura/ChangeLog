@@ -10,6 +10,8 @@ version 1.8
 	  cobertura-check.
 	* Upgraded from asm 2.1 to asm 2.2.1.  No code changes were
 	  needed.
+	* Show the number of lines and branches covered and the
+	  total number of lines and branches in the HTML report.
 
 version 1.7 (2005-12-06)
 	* log4j is no longer used by the Cobertura classes that are
