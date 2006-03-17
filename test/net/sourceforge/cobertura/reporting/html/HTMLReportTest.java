@@ -23,30 +23,39 @@
 package net.sourceforge.cobertura.reporting.html;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.util.Arrays;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import junit.framework.TestCase;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.reporting.JUnitXMLParserEntityResolver;
-import net.sourceforge.cobertura.reporting.JUnitXMLParserErrorHandler;
+import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
 
 public class HTMLReportTest extends TestCase
 {
-	private final static File BASEDIR = new File((System.getProperty("basedir") != null)
-			? System.getProperty("basedir")
-			: ".");
-	private final static File PATH_TO_TEST_OUTPUT = new File(BASEDIR,"build/test/HTMLReportTest");
+
+	private final static File BASEDIR = new File((System.getProperty("basedir") != null) ? System
+			.getProperty("basedir") : ".");
+	private final static File PATH_TO_TEST_OUTPUT = new File(BASEDIR, "build/test/HTMLReportTest");
 	private final static File PATH_TO_SOURCES = new File(BASEDIR, "src");
 	private final static File PATH_TO_SOURCES_2 = new File(BASEDIR, "src-2");
-	
+
 	private boolean testSuccessful = false;
+
+	private static void removeDir(File dir)
+	{
+		File files[] = dir.listFiles();
+		if (files == null)
+			return;
+
+		for (int i = 0; i < files.length; i++)
+		{
+			if (files[i].isDirectory())
+				removeDir(files[i]);
+			files[i].delete();
+		}
+		dir.delete();
+	}
 
 	public void setUp()
 	{
@@ -54,111 +63,83 @@ public class HTMLReportTest extends TestCase
 		PATH_TO_TEST_OUTPUT.mkdirs();
 	}
 
-	private void removeDir(File dir) {
-		File files[] = dir.listFiles();
-		if( files==null)
-			return;
-		
-		for (int i = 0; i < files.length; i++) {
-			if( files[i].isDirectory())
-				removeDir(files[i]);
-			files[i].delete();
-		}
-		dir.delete();
-	}
-	
 	public void tearDown()
 	{
 		// If an error occurs do not remove generated files so we will be able to localize
 		// the problem
-		if( testSuccessful)
-			removeDir( PATH_TO_TEST_OUTPUT);
-	}
-	
-	private void validateXML(File pathToXML) throws Exception {
-		// Create a validating XML document parser
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setValidating(true);
-		DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-		documentBuilder.setEntityResolver(new JUnitXMLParserEntityResolver(
-				new File(BASEDIR, "etc/dtds")));
-		documentBuilder.setErrorHandler(new JUnitXMLParserErrorHandler());
-
-		// Parse the XML report
-		InputStream inputStream = null;
-		try
-		{
-			inputStream = new FileInputStream(pathToXML);
-			documentBuilder.parse(inputStream);
-		} catch( Throwable th) {
-			th.printStackTrace();
-			fail( "Cannot validate [" + pathToXML.getName() + "] file\n" + th.getMessage());
-		}
-		finally
-		{
-			if (inputStream != null)
-				inputStream.close();
-		}
+		if (testSuccessful)
+			removeDir(PATH_TO_TEST_OUTPUT);
 	}
 
-	private boolean containsFile( String[] files, String fileName) {
-		for( int i=0; i<files.length; i++) {
-			if( files[i].equals(fileName))
+	private static boolean containsFile(String[] files, String fileName)
+	{
+		for (int i = 0; i < files.length; i++)
+		{
+			if (files[i].equals(fileName))
 				return true;
 		}
 		return false;
 	}
-	
+
 	public void testHTMLReportValidity() throws Exception
 	{
 		// Serialize the current coverage data to disk
 		ProjectData.saveGlobalProjectData();
-		String dataFileName = CoverageDataFileHandler.getDefaultDataFile()
-				.getAbsolutePath();
+		String dataFileName = CoverageDataFileHandler.getDefaultDataFile().getAbsolutePath();
 
 		// Then we need to generate the HTML report
-		String[] 
-		args = new String[] { "--format", "html", "--datafile", dataFileName, "--destination",
-				PATH_TO_TEST_OUTPUT.getAbsolutePath(), 
+		String[] args = new String[] { "--format", "html", "--datafile", dataFileName,
+				"--destination", PATH_TO_TEST_OUTPUT.getAbsolutePath(),
 				PATH_TO_SOURCES.getAbsolutePath(), PATH_TO_SOURCES_2.getAbsolutePath() };
 		net.sourceforge.cobertura.reporting.Main.main(args);
-		
+
 		// Get all files from report directory
-		String htmlFiles[] = PATH_TO_TEST_OUTPUT.list(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
+		String htmlFiles[] = PATH_TO_TEST_OUTPUT.list(new FilenameFilter()
+		{
+
+			public boolean accept(File dir, String name)
+			{
 				return name.endsWith(".html");
 			}
 		});
 		Arrays.sort(htmlFiles);
 
-		assertTrue( htmlFiles.length>=5);
-		
+		assertTrue(htmlFiles.length >= 5);
+
 		// Assert that all required files are there
 		String[] requiredFiles = { "index.html", "help.html", "frame-packages.html",
 				"frame-summary.html", "frame-sourcefiles.html" };
-		
-		for( int i=0; i<requiredFiles.length; i++) {
-			if( !containsFile( htmlFiles, requiredFiles[i])) {
-				fail( "File " + requiredFiles[i] + " not found among report files");
+
+		for (int i = 0; i < requiredFiles.length; i++)
+		{
+			if (!containsFile(htmlFiles, requiredFiles[i]))
+			{
+				fail("File " + requiredFiles[i] + " not found among report files");
 			}
 		}
-			
+
 		// Validate selected files
 		String previousPrefix = "NONE";
-		for( int i=0; i<htmlFiles.length; i++) {
+		for (int i = 0; i < htmlFiles.length; i++)
+		{
 			// Validate file if has prefix different than previous one, or is required file
-			if( containsFile( requiredFiles, htmlFiles[i]) || !htmlFiles[i].startsWith(previousPrefix)) {
-				System.out.println( "Validating " + htmlFiles[i]);
-				validateXML( new File( PATH_TO_TEST_OUTPUT, htmlFiles[i]));
+			if (containsFile(requiredFiles, htmlFiles[i])
+					|| !htmlFiles[i].startsWith(previousPrefix))
+			{
+				JUnitXMLHelper.validate(new File(PATH_TO_TEST_OUTPUT, htmlFiles[i]));
 			}
-			if( htmlFiles[i].length()>7) {
-				previousPrefix = htmlFiles[i].substring(0,7);
-			} else {
+			if (htmlFiles[i].length() > 7)
+			{
+				previousPrefix = htmlFiles[i].substring(0, 7);
+			}
+			else
+			{
 				previousPrefix = htmlFiles[i];
 			}
 		}
-		
+
 		// Mark that test was successful so report will be deleted
 		testSuccessful = true;
 	}
+
 }
