@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package de.kclee.clemens.cclutil;
+package net.sourceforge.cobertura.javancss;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -91,8 +91,8 @@ public class FileUtil
 	private static String concatPath(String sPath_, String sFile_)
 	{
 		Util.panicIf(sPath_ == null);
-		System.out.println("ccl.util.FileUtil.concatPath(..).sPath_: --->" + sPath_ + "<---");
-		System.out.println("ccl.util.FileUtil.concatPath(..).sFile_: " + sFile_);
+		//System.out.println("ccl.util.FileUtil.concatPath(..).sPath_: --->" + sPath_ + "<---");
+		//System.out.println("ccl.util.FileUtil.concatPath(..).sFile_: " + sFile_);
 
 		String sRetVal = sPath_;
 

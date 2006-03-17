@@ -1,4 +1,4 @@
-package de.kclee.clemens.javancss;
+package net.sourceforge.cobertura.javancss;
 
 import java.util.Vector;
 
