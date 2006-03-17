@@ -11,7 +11,7 @@ public final class ASCII_UCodeESC_CharStream
 
 	public static final boolean staticFlag = false;
 
-	static final int hexval(char c) throws java.io.IOException
+	private static final int hexval(char c) throws java.io.IOException
 	{
 		switch (c)
 		{
@@ -59,10 +59,10 @@ public final class ASCII_UCodeESC_CharStream
 		throw new java.io.IOException(); // Should never come here
 	}
 
-	public int bufpos = -1;
-	int bufsize;
-	int available;
-	int tokenBegin;
+	private int bufpos = -1;
+	private int bufsize;
+	private int available;
+	private int tokenBegin;
 	private int bufline[];
 	private int bufcolumn[];
 
@@ -80,7 +80,7 @@ public final class ASCII_UCodeESC_CharStream
 	private int nextCharInd = -1;
 	private int inBuf = 0;
 
-	private final void ExpandBuff(boolean wrapAround)
+	private final void expandBuff(boolean wrapAround)
 	{
 		char[] newbuffer = new char[bufsize + 2048];
 		int newbufline[] = new int[bufsize + 2048];
@@ -127,7 +127,7 @@ public final class ASCII_UCodeESC_CharStream
 		tokenBegin = 0;
 	}
 
-	private final void FillBuff() throws java.io.IOException
+	private final void fillBuff() throws java.io.IOException
 	{
 		int i;
 		if (maxNextCharInd == 4096)
@@ -159,15 +159,15 @@ public final class ASCII_UCodeESC_CharStream
 		}
 	}
 
-	private final char ReadByte() throws java.io.IOException
+	private final char readByte() throws java.io.IOException
 	{
 		if (++nextCharInd >= maxNextCharInd)
-			FillBuff();
+			fillBuff();
 
 		return nextCharBuf[nextCharInd];
 	}
 
-	public final char BeginToken() throws java.io.IOException
+	public final char beginToken() throws java.io.IOException
 	{
 		if (inBuf > 0)
 		{
@@ -181,7 +181,7 @@ public final class ASCII_UCodeESC_CharStream
 		return readChar();
 	}
 
-	private final void AdjustBuffSize()
+	private final void adjustBuffSize()
 	{
 		if (available == bufsize)
 		{
@@ -191,17 +191,17 @@ public final class ASCII_UCodeESC_CharStream
 				available = tokenBegin;
 			}
 			else
-				ExpandBuff(false);
+				expandBuff(false);
 		}
 		else if (available > tokenBegin)
 			available = bufsize;
 		else if ((tokenBegin - available) < 2048)
-			ExpandBuff(true);
+			expandBuff(true);
 		else
 			available = tokenBegin;
 	}
 
-	private final void UpdateLineColumn(char c)
+	private final void updateLineColumn(char c)
 	{
 		column++;
 
@@ -252,24 +252,24 @@ public final class ASCII_UCodeESC_CharStream
 		char c;
 
 		if (++bufpos == available)
-			AdjustBuffSize();
+			adjustBuffSize();
 
-		if (((buffer[bufpos] = c = (char)((char)0xff & ReadByte())) == '\\'))
+		if (((buffer[bufpos] = c = (char)((char)0xff & readByte())) == '\\'))
 		{
-			UpdateLineColumn(c);
+			updateLineColumn(c);
 
 			int backSlashCnt = 1;
 
 			for (;;) // Read all the backslashes
 			{
 				if (++bufpos == available)
-					AdjustBuffSize();
+					adjustBuffSize();
 
 				try
 				{
-					if ((buffer[bufpos] = c = (char)((char)0xff & ReadByte())) != '\\')
+					if ((buffer[bufpos] = c = (char)((char)0xff & readByte())) != '\\')
 					{
-						UpdateLineColumn(c);
+						updateLineColumn(c);
 						// found a non-backslash char.
 						if ((c == 'u') && ((backSlashCnt & 1) == 1))
 						{
@@ -291,19 +291,19 @@ public final class ASCII_UCodeESC_CharStream
 					return '\\';
 				}
 
-				UpdateLineColumn(c);
+				updateLineColumn(c);
 				backSlashCnt++;
 			}
 
 			// Here, we have seen an odd number of backslash's followed by a 'u'
 			try
 			{
-				while ((c = (char)((char)0xff & ReadByte())) == 'u')
+				while ((c = (char)((char)0xff & readByte())) == 'u')
 					++column;
 
 				buffer[bufpos] = c = (char)(hexval(c) << 12
-						| hexval((char)((char)0xff & ReadByte())) << 8
-						| hexval((char)((char)0xff & ReadByte())) << 4 | hexval((char)((char)0xff & ReadByte())));
+						| hexval((char)((char)0xff & readByte())) << 8
+						| hexval((char)((char)0xff & readByte())) << 4 | hexval((char)((char)0xff & readByte())));
 
 				column += 4;
 			}
@@ -320,28 +320,8 @@ public final class ASCII_UCodeESC_CharStream
 			return '\\';
 		}
 
-		UpdateLineColumn(c);
+		updateLineColumn(c);
 		return (c);
-	}
-
-	/**
-	 * @deprecated 
-	 * @see #getEndColumn
-	 */
-
-	public final int getColumn()
-	{
-		return bufcolumn[bufpos];
-	}
-
-	/**
-	 * @deprecated 
-	 * @see #getEndLine
-	 */
-
-	public final int getLine()
-	{
-		return bufline[bufpos];
 	}
 
 	public final int getEndColumn()
@@ -372,7 +352,7 @@ public final class ASCII_UCodeESC_CharStream
 			bufpos += bufsize;
 	}
 
-	public ASCII_UCodeESC_CharStream(java.io.Reader dstream, int startline, int startcolumn,
+	private ASCII_UCodeESC_CharStream(java.io.Reader dstream, int startline, int startcolumn,
 			int buffersize)
 	{
 		inputStream = dstream;
@@ -386,46 +366,12 @@ public final class ASCII_UCodeESC_CharStream
 		nextCharBuf = new char[4096];
 	}
 
-	public ASCII_UCodeESC_CharStream(java.io.Reader dstream, int startline, int startcolumn)
-	{
-		this(dstream, startline, startcolumn, 4096);
-	}
-
-	public void ReInit(java.io.Reader dstream, int startline, int startcolumn, int buffersize)
-	{
-		inputStream = dstream;
-		line = startline;
-		column = startcolumn - 1;
-
-		if (buffer == null || buffersize != buffer.length)
-		{
-			available = bufsize = buffersize;
-			buffer = new char[buffersize];
-			bufline = new int[buffersize];
-			bufcolumn = new int[buffersize];
-			nextCharBuf = new char[4096];
-		}
-		prevCharIsLF = prevCharIsCR = false;
-		tokenBegin = inBuf = maxNextCharInd = 0;
-		nextCharInd = bufpos = -1;
-	}
-
-	public void ReInit(java.io.Reader dstream, int startline, int startcolumn)
-	{
-		ReInit(dstream, startline, startcolumn, 4096);
-	}
-
 	public ASCII_UCodeESC_CharStream(java.io.InputStream dstream, int startline, int startcolumn)
 	{
 		this(new java.io.InputStreamReader(dstream), startline, startcolumn, 4096);
 	}
 
-	public void ReInit(java.io.InputStream dstream, int startline, int startcolumn)
-	{
-		ReInit(new java.io.InputStreamReader(dstream), startline, startcolumn, 4096);
-	}
-
-	public final String GetImage()
+	public final String getImage()
 	{
 		if (bufpos >= tokenBegin)
 			return new String(buffer, tokenBegin, bufpos - tokenBegin + 1);
@@ -433,7 +379,7 @@ public final class ASCII_UCodeESC_CharStream
 				+ new String(buffer, 0, bufpos + 1);
 	}
 
-	public final char[] GetSuffix(int len)
+	public final char[] getSuffix(int len)
 	{
 		char[] ret = new char[len];
 
@@ -446,61 +392,6 @@ public final class ASCII_UCodeESC_CharStream
 		}
 
 		return ret;
-	}
-
-	public void Done()
-	{
-		nextCharBuf = null;
-		buffer = null;
-		bufline = null;
-		bufcolumn = null;
-	}
-
-	/**
-	 * Method to adjust line and column numbers for the start of a token.<BR>
-	 */
-	public void adjustBeginLineColumn(int newLine, int newCol)
-	{
-		int start = tokenBegin;
-		int len;
-
-		if (bufpos >= tokenBegin)
-		{
-			len = bufpos - tokenBegin + inBuf + 1;
-		}
-		else
-		{
-			len = bufsize - tokenBegin + bufpos + 1 + inBuf;
-		}
-
-		int i = 0, j = 0, k = 0;
-		int nextColDiff = 0, columnDiff = 0;
-
-		while (i < len && bufline[j = start % bufsize] == bufline[k = ++start % bufsize])
-		{
-			bufline[j] = newLine;
-			nextColDiff = columnDiff + bufcolumn[k] - bufcolumn[j];
-			bufcolumn[j] = newCol + columnDiff;
-			columnDiff = nextColDiff;
-			i++;
-		}
-
-		if (i < len)
-		{
-			bufline[j] = newLine++;
-			bufcolumn[j] = newCol + columnDiff;
-
-			while (i++ < len)
-			{
-				if (bufline[j = start % bufsize] != bufline[++start % bufsize])
-					bufline[j] = newLine++;
-				else
-					bufline[j] = newLine;
-			}
-		}
-
-		line = bufline[j];
-		column = bufcolumn[j];
 	}
 
 }

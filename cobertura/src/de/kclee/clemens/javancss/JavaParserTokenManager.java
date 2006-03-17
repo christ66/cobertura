@@ -922,17 +922,18 @@ public class JavaParserTokenManager implements JavaParserConstants
 		} while (start++ != end);
 	}
 
-	static final long[] jjbitVec0 = { 0xfffffffffffffffeL, 0xffffffffffffffffL,
+	private static final long[] jjbitVec0 = { 0xfffffffffffffffeL, 0xffffffffffffffffL,
 			0xffffffffffffffffL, 0xffffffffffffffffL };
-	static final long[] jjbitVec2 = { 0x0L, 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL };
-	static final long[] jjbitVec3 = { 0x1ff00000fffffffeL, 0xffffffffffffc000L, 0xffffffffL,
-			0x600000000000000L };
-	static final long[] jjbitVec4 = { 0x0L, 0x0L, 0x0L, 0xff7fffffff7fffffL };
-	static final long[] jjbitVec5 = { 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL,
+	private static final long[] jjbitVec2 = { 0x0L, 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL };
+	private static final long[] jjbitVec3 = { 0x1ff00000fffffffeL, 0xffffffffffffc000L,
+			0xffffffffL, 0x600000000000000L };
+	private static final long[] jjbitVec4 = { 0x0L, 0x0L, 0x0L, 0xff7fffffff7fffffL };
+	private static final long[] jjbitVec5 = { 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL,
 			0xffffffffffffffffL };
-	static final long[] jjbitVec6 = { 0xffffffffffffffffL, 0xffffffffffffffffL, 0xffffL, 0x0L };
-	static final long[] jjbitVec7 = { 0xffffffffffffffffL, 0xffffffffffffffffL, 0x0L, 0x0L };
-	static final long[] jjbitVec8 = { 0x3fffffffffffL, 0x0L, 0x0L, 0x0L };
+	private static final long[] jjbitVec6 = { 0xffffffffffffffffL, 0xffffffffffffffffL, 0xffffL,
+			0x0L };
+	private static final long[] jjbitVec7 = { 0xffffffffffffffffL, 0xffffffffffffffffL, 0x0L, 0x0L };
+	private static final long[] jjbitVec8 = { 0x3fffffffffffL, 0x0L, 0x0L, 0x0L };
 
 	private final int jjMoveNfa_0(int startState, int curPos)
 	{
@@ -1392,17 +1393,6 @@ public class JavaParserTokenManager implements JavaParserConstants
 					}
 				} while (i != startsAt);
 			}
-			else if (curChar < 128)
-			{
-				MatchLoop: do
-				{
-					switch (jjstateSet[--i])
-					{
-						default:
-							break;
-					}
-				} while (i != startsAt);
-			}
 			else
 			{
 				MatchLoop: do
@@ -1555,9 +1545,9 @@ public class JavaParserTokenManager implements JavaParserConstants
 		}
 	}
 
-	static final int[] jjnextStates = { 30, 31, 36, 37, 40, 41, 8, 19, 20, 22, 10, 12, 45, 47, 2,
-			4, 5, 8, 19, 20, 24, 22, 32, 33, 8, 40, 41, 8, 6, 7, 13, 14, 16, 21, 23, 25, 34, 35,
-			38, 39, 42, 43, 0, 1, 3, };
+	private static final int[] jjnextStates = { 30, 31, 36, 37, 40, 41, 8, 19, 20, 22, 10, 12, 45,
+			47, 2, 4, 5, 8, 19, 20, 24, 22, 32, 33, 8, 40, 41, 8, 6, 7, 13, 14, 16, 21, 23, 25, 34,
+			35, 38, 39, 42, 43, 0, 1, 3, };
 
 	private static final boolean jjCanMove_0(int hiByte, int i1, int i2, long l1, long l2)
 	{
@@ -1593,7 +1583,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 		}
 	}
 
-	public static final String[] jjstrLiteralImages = { "", null, null, null, null, null, null,
+	private static final String[] jjstrLiteralImages = { "", null, null, null, null, null, null,
 			null, null, null, null, null, null, "\141\142\163\164\162\141\143\164",
 			"\141\163\163\145\162\164", "\142\157\157\154\145\141\156", "\142\162\145\141\153",
 			"\142\171\164\145", "\143\141\163\145", "\143\141\164\143\150", "\143\150\141\162",
@@ -1619,25 +1609,21 @@ public class JavaParserTokenManager implements JavaParserConstants
 			"\55\55", "\53", "\55", "\52", "\57", "\46", "\174", "\136", "\45", "\74\74", "\76\76",
 			"\76\76\76", "\53\75", "\55\75", "\52\75", "\57\75", "\46\75", "\174\75", "\136\75",
 			"\45\75", "\74\74\75", "\76\76\75", "\76\76\76\75", };
-	public static final String[] lexStateNames = { "DEFAULT", "IN_SINGLE_LINE_COMMENT",
-			"IN_MULTI_LINE_COMMENT", };
-	public static final int[] jjnewLexState = { -1, -1, -1, -1, -1, -1, -1, 2, 1, 0, -1, 0, -1, -1,
+	private static final int[] jjnewLexState = { -1, -1, -1, -1, -1, -1, -1, 2, 1, 0, -1, 0, -1,
 			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, };
-	static final long[] jjtoToken = { 0xffffffffffffe001L, 0x3fffffffffff3a3L, };
-	static final long[] jjtoSkip = { 0xf7eL, 0x0L, };
-	static final long[] jjtoSpecial = { 0xf00L, 0x0L, };
-	static final long[] jjtoMore = { 0x1080L, 0x0L, };
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, };
+	private static final long[] jjtoToken = { 0xffffffffffffe001L, 0x3fffffffffff3a3L, };
+	private static final long[] jjtoSkip = { 0xf7eL, 0x0L, };
+	private static final long[] jjtoSpecial = { 0xf00L, 0x0L, };
 	private ASCII_UCodeESC_CharStream input_stream;
 	private final int[] jjrounds = new int[48];
 	private final int[] jjstateSet = new int[96];
-	StringBuffer image;
-	int jjimageLen;
-	int lengthOfMatch;
-	protected char curChar;
+	private StringBuffer image;
+	private int jjimageLen;
+	private char curChar;
 
 	public JavaParserTokenManager(ASCII_UCodeESC_CharStream stream)
 	{
@@ -1647,40 +1633,12 @@ public class JavaParserTokenManager implements JavaParserConstants
 		input_stream = stream;
 	}
 
-	public JavaParserTokenManager(ASCII_UCodeESC_CharStream stream, int lexState)
-	{
-		this(stream);
-		SwitchTo(lexState);
-	}
-
-	public void ReInit(ASCII_UCodeESC_CharStream stream)
-	{
-		jjmatchedPos = jjnewStateCnt = 0;
-		curLexState = defaultLexState;
-		input_stream = stream;
-		ReInitRounds();
-	}
-
 	private final void ReInitRounds()
 	{
 		int i;
 		jjround = 0x80000001;
 		for (i = 48; i-- > 0;)
 			jjrounds[i] = 0x80000000;
-	}
-
-	public void ReInit(ASCII_UCodeESC_CharStream stream, int lexState)
-	{
-		ReInit(stream);
-		SwitchTo(lexState);
-	}
-
-	public void SwitchTo(int lexState)
-	{
-		if (lexState >= 3 || lexState < 0)
-			throw new TokenMgrError("Error: Ignoring invalid lexical state : " + lexState
-					+ ". State unchanged.", TokenMgrError.INVALID_LEXICAL_STATE);
-		curLexState = lexState;
 	}
 
 	private final Token jjFillToken()
@@ -1696,7 +1654,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 		else
 		{
 			String im = jjstrLiteralImages[jjmatchedKind];
-			t.image = (im == null) ? input_stream.GetImage() : im;
+			t.image = (im == null) ? input_stream.getImage() : im;
 			t.beginLine = input_stream.getBeginLine();
 			t.beginColumn = input_stream.getBeginColumn();
 			t.endLine = input_stream.getEndLine();
@@ -1705,12 +1663,11 @@ public class JavaParserTokenManager implements JavaParserConstants
 		return t;
 	}
 
-	int curLexState = 0;
-	int defaultLexState = 0;
-	int jjnewStateCnt;
-	int jjround;
-	int jjmatchedPos;
-	int jjmatchedKind;
+	private int curLexState = 0;
+	private int jjnewStateCnt;
+	private int jjround;
+	private int jjmatchedPos;
+	private int jjmatchedKind;
 
 	public final Token getNextToken()
 	{
@@ -1722,7 +1679,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 		{
 			try
 			{
-				curChar = input_stream.BeginToken();
+				curChar = input_stream.beginToken();
 			}
 			catch (java.io.IOException e)
 			{
@@ -1743,7 +1700,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 						{
 							input_stream.backup(0);
 							while (curChar <= 32 && (0x104003600L & (1L << curChar)) != 0L)
-								curChar = input_stream.BeginToken();
+								curChar = input_stream.beginToken();
 						}
 						catch (java.io.IOException e1)
 						{
@@ -1832,7 +1789,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 				catch (java.io.IOException e1)
 				{
 					EOFSeen = true;
-					error_after = curPos <= 1 ? "" : input_stream.GetImage();
+					error_after = curPos <= 1 ? "" : input_stream.getImage();
 					if (curChar == '\n' || curChar == '\r')
 					{
 						error_line++;
@@ -1844,7 +1801,7 @@ public class JavaParserTokenManager implements JavaParserConstants
 				if (!EOFSeen)
 				{
 					input_stream.backup(1);
-					error_after = curPos <= 1 ? "" : input_stream.GetImage();
+					error_after = curPos <= 1 ? "" : input_stream.getImage();
 				}
 				throw new TokenMgrError(EOFSeen, error_line, error_column, error_after, curChar,
 						TokenMgrError.LEXICAL_ERROR);
@@ -1852,53 +1809,51 @@ public class JavaParserTokenManager implements JavaParserConstants
 		}
 	}
 
-	final void SkipLexicalActions()
+	private final void SkipLexicalActions()
 	{
 		switch (jjmatchedKind)
 		{
 			case 8:
 				if (image == null)
-					image = new StringBuffer(new String(input_stream.GetSuffix(jjimageLen
-							+ (lengthOfMatch = jjmatchedPos + 1))));
+					image = new StringBuffer(new String(input_stream.getSuffix(jjimageLen
+							+ jjmatchedPos + 1)));
 				else
-					image.append(input_stream.GetSuffix(jjimageLen
-							+ (lengthOfMatch = jjmatchedPos + 1)));
+					image.append(input_stream.getSuffix(jjimageLen + jjmatchedPos + 1));
 				break;
 			case 10:
 				if (image == null)
-					image = new StringBuffer(new String(input_stream.GetSuffix(jjimageLen
-							+ (lengthOfMatch = jjmatchedPos + 1))));
+					image = new StringBuffer(new String(input_stream.getSuffix(jjimageLen
+							+ jjmatchedPos + 1)));
 				else
-					image.append(input_stream.GetSuffix(jjimageLen
-							+ (lengthOfMatch = jjmatchedPos + 1)));
+					image.append(input_stream.getSuffix(jjimageLen + jjmatchedPos + 1));
 				break;
 			case 11:
 				if (image == null)
-					image = new StringBuffer(new String(input_stream.GetSuffix(jjimageLen
-							+ (lengthOfMatch = jjmatchedPos + 1))));
+					image = new StringBuffer(new String(input_stream.getSuffix(jjimageLen
+							+ jjmatchedPos + 1)));
 				else
-					image.append(input_stream.GetSuffix(jjimageLen
-							+ (lengthOfMatch = jjmatchedPos + 1)));
+					image.append(input_stream.getSuffix(jjimageLen + jjmatchedPos + 1));
 				break;
 			default:
 				break;
 		}
 	}
 
-	final void MoreLexicalActions()
+	private final void MoreLexicalActions()
 	{
-		jjimageLen += (lengthOfMatch = jjmatchedPos + 1);
+		jjimageLen += jjmatchedPos + 1;
 		switch (jjmatchedKind)
 		{
 			case 7:
 				if (image == null)
-					image = new StringBuffer(new String(input_stream.GetSuffix(jjimageLen)));
+					image = new StringBuffer(new String(input_stream.getSuffix(jjimageLen)));
 				else
-					image.append(input_stream.GetSuffix(jjimageLen));
+					image.append(input_stream.getSuffix(jjimageLen));
 				jjimageLen = 0;
 				break;
 			default:
 				break;
 		}
 	}
+
 }

@@ -21,19 +21,21 @@
 
 package net.sourceforge.cobertura.reporting.html;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 
-public class SourceFileDataBaseNameComparator implements Comparator
+public class SourceFileDataBaseNameComparator implements Comparator, Serializable
 {
+
+	private static final long serialVersionUID = 0L;
 
 	public int compare(Object arg0, Object arg1)
 	{
 		SourceFileData sourceFileData0 = (SourceFileData)arg0;
 		SourceFileData sourceFileData1 = (SourceFileData)arg1;
-		int comparison = sourceFileData0.getBaseName().compareTo(
-				sourceFileData1.getBaseName());
+		int comparison = sourceFileData0.getBaseName().compareTo(sourceFileData1.getBaseName());
 		if (comparison != 0)
 			return comparison;
 		return sourceFileData0.getName().compareTo(sourceFileData1.getName());
