@@ -28,10 +28,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
-import javancss.Javancss;
-import javancss.JavancssConstants;
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
@@ -39,6 +36,8 @@ import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.util.FileFinder;
 
 import org.apache.log4j.Logger;
+
+import de.kclee.clemens.javancss.Javancss;
 
 /**
  * Allows complexity computing for source files, packages and a whole project. Average
@@ -91,20 +90,18 @@ public class ComplexityCalculator {
 	private Complexity getAccumlatedCCNForSingleFile(File file) {
 		Javancss javancss = new Javancss(file.getAbsolutePath());
 
-		List functionMetrics = javancss.getFunctionMetrics();
-		if (functionMetrics.size() <= 0)
+		List methodComplexities = javancss.getMethodComplexities();
+		if (methodComplexities.size() <= 0)
 			return ZERO_COMPLEXITY;
 
 		int ccnAccumulator = 0;
-		Iterator iter = functionMetrics.iterator();
+		Iterator iter = methodComplexities.iterator();
 		while (iter.hasNext())
 		{
-			Vector functionMetric = (Vector)iter.next();
-			ccnAccumulator += ((Integer)functionMetric
-					.elementAt(JavancssConstants.FCT_CCN)).intValue();
+			ccnAccumulator += ((Integer)iter.next()).intValue();
 		}
 		
-		return new Complexity( ccnAccumulator, functionMetrics.size());
+		return new Complexity( ccnAccumulator, methodComplexities.size());
 	}
 
 
