@@ -1,16 +1,34 @@
+/*
+ * Cobertura - http://cobertura.sourceforge.net/
+ *
+ * Copyright (C) 2006 Mark Doliner
+ * Copyright (C) 2006 John Lewis
+ *
+ * Cobertura is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License,
+ * or (at your option) any later version.
+ *
+ * Cobertura is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cobertura; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA
+ */
+
 package net.sourceforge.cobertura.reporting;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 
 public class JUnitXMLHelper
 {
@@ -18,31 +36,18 @@ public class JUnitXMLHelper
 	private final static String BASEDIR = (System.getProperty("basedir") != null) ? System
 			.getProperty("basedir") : ".";
 
-	public static void validate(File file) throws FileNotFoundException, IOException,
-			ParserConfigurationException, SAXException
+	public static Document readXmlFile(File file, boolean validate) throws FileNotFoundException,
+			IOException, JDOMException
 	{
-		System.out.println("Validating " + file.getAbsolutePath());
+		System.out.println("Reading " + file.getAbsolutePath());
 
-		// Create a validating XML document parser
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setValidating(true);
-		DocumentBuilder documentBuilder = factory.newDocumentBuilder();
-		documentBuilder.setEntityResolver(new JUnitXMLParserEntityResolver(new File(BASEDIR,
-				"etc/dtds")));
-		documentBuilder.setErrorHandler(new JUnitXMLParserErrorHandler());
-
-		// Parse the XML report
-		InputStream inputStream = null;
-		try
-		{
-			inputStream = new FileInputStream(file);
-			documentBuilder.parse(inputStream);
-		}
-		finally
-		{
-			if (inputStream != null)
-				inputStream.close();
-		}
+		// First create an XML document parser
+		SAXBuilder saxBuilder = new SAXBuilder();
+		saxBuilder.setValidation(validate);
+		saxBuilder.setEntityResolver(new JUnitXMLParserEntityResolver(
+				new File(BASEDIR, "/etc/dtds")));
+		saxBuilder.setErrorHandler(new JUnitXMLParserErrorHandler());
+		return saxBuilder.build(file);
 	}
 
 }

@@ -69,7 +69,7 @@ public class XMLReportTest extends TestCase
 				PATH_TO_TEST_OUTPUT, PATH_TO_SOURCE_CODE };
 		net.sourceforge.cobertura.reporting.Main.main(args);
 
-		JUnitXMLHelper.validate(new File(PATH_TO_XML_REPORT));
+		JUnitXMLHelper.readXmlFile(new File(PATH_TO_XML_REPORT), true);
 	}
 
 	public void testXMLReportWithNonSourceLines() throws Exception
@@ -90,7 +90,7 @@ public class XMLReportTest extends TestCase
 		new XMLReport(projectData, reportDir, fileFinder, complexity);
 
 		File coverageFile = new File(reportDir, "coverage.xml");
-		JUnitXMLHelper.validate(coverageFile);
+		JUnitXMLHelper.readXmlFile(coverageFile, true);
 
 		coverageFile.delete();
 		reportDir.delete();
