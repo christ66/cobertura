@@ -19,7 +19,7 @@
  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  Boston, MA 02111-1307, USA.  */
 
-package de.kclee.clemens.javancss;
+package net.sourceforge.cobertura.javancss;
 
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -28,8 +28,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import de.kclee.clemens.cclutil.FileUtil;
-import de.kclee.clemens.cclutil.Util;
 
 /**
  * @author   Chr. Clemens Lee, recursive feature by P��k� Hannu,
@@ -47,7 +45,7 @@ public class Javancss
 
 	public Javancss(String sJavaSourceFile_)
 	{
-		System.out.println("Javancss.<init>(String).sJavaSourceFile_: " + sJavaSourceFile_);
+		//System.out.println("Javancss.<init>(String).sJavaSourceFile_: " + sJavaSourceFile_);
 		_sErrorMessage = null;
 		_vJavaSourceFiles = new Vector();
 		_vJavaSourceFiles.addElement(sJavaSourceFile_);
@@ -184,7 +182,7 @@ public class Javancss
 			_pJavaParser = new JavaParser(disSource_);
 			// execute the parser
 			_pJavaParser.compilationUnit();
-			System.out.println("Javancss._measureSource(DataInputStream).SUCCESSFULLY_PARSED");
+			//System.out.println("Javancss._measureSource(DataInputStream).SUCCESSFULLY_PARSED");
 			// add new data to global vector
 			_vMethodComplexities.addAll(_pJavaParser.getMethodComplexities());
 		}

@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package de.kclee.clemens.cclutil;
+package net.sourceforge.cobertura.javancss;
 
 import java.util.Vector;
 
