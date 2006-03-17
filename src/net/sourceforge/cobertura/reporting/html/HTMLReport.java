@@ -522,16 +522,6 @@ public class HTMLReport
 		}
 		catch (FileNotFoundException e)
 		{
-			if (br != null)
-			{
-				try
-				{
-					br.close();
-				}
-				catch (IOException e2)
-				{
-				}
-			}
 			return "<p>Unable to open " + sourceFile.getAbsolutePath() + "</p>";
 		}
 

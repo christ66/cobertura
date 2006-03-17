@@ -39,7 +39,7 @@ public class JavaParser implements JavaParserConstants
 	/*
 	 * Program structuring syntax follows.
 	 */
-	final public void CompilationUnit() throws ParseException
+	final public void compilationUnit() throws ParseException
 	{
 		_sPackage = "";
 
@@ -151,7 +151,7 @@ public class JavaParser implements JavaParserConstants
 		jj_consume_token(SEMICOLON);
 		getToken(0);
 		getToken(0);
-		_sPackage = (new String(_sName)) + ".";
+		_sPackage = _sName + ".";
 	}
 
 	final private void ImportDeclaration() throws ParseException
@@ -304,7 +304,7 @@ public class JavaParser implements JavaParserConstants
 		{
 			_sClass += ".";
 		}
-		_sClass += new String(getToken(2).image);
+		_sClass += getToken(2).image;
 		jj_consume_token(CLASS);
 		Identifier();
 		switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk)
@@ -642,7 +642,7 @@ public class JavaParser implements JavaParserConstants
 		{
 			_sClass += ".";
 		}
-		_sClass += new String(getToken(2).image);
+		_sClass += getToken(2).image;
 		jj_consume_token(INTERFACE);
 		Identifier();
 		switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk)
@@ -1135,7 +1135,7 @@ public class JavaParser implements JavaParserConstants
 
 	final private void MethodDeclarator() throws ParseException
 	{
-		_sFunction = "." + new String(getToken(1).image);
+		_sFunction = "." + getToken(1).image;
 		Identifier();
 		FormalParameters();
 		_sFunction += _sParameter;
@@ -1452,7 +1452,7 @@ public class JavaParser implements JavaParserConstants
 			case LONG:
 			case SHORT:
 				PrimitiveType();
-				_sName = (new String(getToken(0).image));
+				_sName = getToken(0).image;
 				break;
 			case ASSERT:
 			case IDENTIFIER:
@@ -1543,7 +1543,7 @@ public class JavaParser implements JavaParserConstants
 	final private void Name() throws ParseException
 	{
 		Identifier();
-		_sName = new String(getToken(0).image);
+		_sName = getToken(0).image;
 		label_25: while (true)
 		{
 			if (jj_2_15(2))
@@ -1555,7 +1555,7 @@ public class JavaParser implements JavaParserConstants
 			}
 			jj_consume_token(DOT);
 			Identifier();
-			_sName += "." + (new String(getToken(0).image));
+			_sName += "." + getToken(0).image;
 		}
 	}
 
@@ -2597,13 +2597,13 @@ public class JavaParser implements JavaParserConstants
 								_cyc++;
 								break;
 							case BREAK:
-								BreakStatement();
+								breakStatement();
 								break;
 							case CONTINUE:
-								ContinueStatement();
+								continueStatement();
 								break;
 							case RETURN:
-								ReturnStatement();
+								returnStatement();
 								break;
 							case THROW:
 								ThrowStatement();
@@ -3121,7 +3121,7 @@ public class JavaParser implements JavaParserConstants
 			case LPAREN:
 			case INCR:
 			case DECR:
-				ForUpdate();
+				forUpdate();
 				break;
 			default:
 				jj_la1[120] = jj_gen;
@@ -3192,12 +3192,12 @@ public class JavaParser implements JavaParserConstants
 		}
 	}
 
-	final private void ForUpdate() throws ParseException
+	final private void forUpdate() throws ParseException
 	{
 		StatementExpressionList();
 	}
 
-	final public void BreakStatement() throws ParseException
+	final public void breakStatement() throws ParseException
 	{
 		jj_consume_token(BREAK);
 		switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk)
@@ -3212,7 +3212,7 @@ public class JavaParser implements JavaParserConstants
 		jj_consume_token(SEMICOLON);
 	}
 
-	final private void ContinueStatement() throws ParseException
+	final private void continueStatement() throws ParseException
 	{
 		jj_consume_token(CONTINUE);
 		switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk)
@@ -3227,7 +3227,7 @@ public class JavaParser implements JavaParserConstants
 		jj_consume_token(SEMICOLON);
 	}
 
-	final private void ReturnStatement() throws ParseException
+	final private void returnStatement() throws ParseException
 	{
 		jj_consume_token(RETURN);
 		switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk)

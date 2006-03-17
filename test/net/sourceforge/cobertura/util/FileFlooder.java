@@ -34,31 +34,54 @@ import org.apache.log4j.Logger;
  * 
  * @author Jeremy Thomerson
  */
-public class FileFlooder {
-    
-    private static final Logger LOGGER = Logger.getLogger(FileFlooder.class);
-    
-    public static void flood(String directory, String fileName, String fileExt, int numOfFiles, int linesPerFile) {
-        File dir = new File(directory);
-        if (dir.exists() && dir.isDirectory()) {
-            for (int i = 1; i <= numOfFiles; i++) {
-                try {
-                    File file = new File(directory + "/" + fileName + i + "." + fileExt);
-                    LOGGER.info("Writing file: " + file.getAbsolutePath());
-                    FileWriter writer = new FileWriter(file);
-                    for (int l = 1; l <= linesPerFile; l++) {
-                        writer.write("This is a test file. blah.... blah.... blah....\n");
-                    }
-                } catch(IOException ioe) {
-                    LOGGER.error("Error while writing file.", ioe);
-                }
-            }
-        }
-    }
-    
-    public static void main(String[] args) {
-        FileFlooder.flood(".", "file", "txt", 100, 1000);
-        System.out.println("done");
-    }
+public class FileFlooder
+{
+
+	private static final Logger LOGGER = Logger.getLogger(FileFlooder.class);
+
+	public static void flood(String directory, String fileName, String fileExt, int numOfFiles,
+			int linesPerFile)
+	{
+		File dir = new File(directory);
+		if (dir.exists() && dir.isDirectory())
+		{
+			for (int i = 1; i <= numOfFiles; i++)
+			{
+				FileWriter writer = null;
+				try
+				{
+					File file = new File(directory + "/" + fileName + i + "." + fileExt);
+					LOGGER.info("Writing file: " + file.getAbsolutePath());
+					writer = new FileWriter(file);
+					for (int l = 1; l <= linesPerFile; l++)
+					{
+						writer.write("This is a test file. blah.... blah.... blah....\n");
+					}
+				}
+				catch (IOException ioe)
+				{
+					LOGGER.error("Error while writing file.", ioe);
+				}
+				finally
+				{
+					if (writer != null)
+						try
+						{
+							writer.close();
+						}
+						catch (IOException e)
+						{
+							//Nothing we can do here
+						}
+				}
+			}
+		}
+	}
+
+	public static void main(String[] args)
+	{
+		FileFlooder.flood(".", "file", "txt", 100, 1000);
+		System.out.println("done");
+	}
 
 }

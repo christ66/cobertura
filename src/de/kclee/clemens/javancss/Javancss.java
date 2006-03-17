@@ -183,7 +183,7 @@ public class Javancss
 			// create a parser object
 			_pJavaParser = new JavaParser(disSource_);
 			// execute the parser
-			_pJavaParser.CompilationUnit();
+			_pJavaParser.compilationUnit();
 			System.out.println("Javancss._measureSource(DataInputStream).SUCCESSFULLY_PARSED");
 			// add new data to global vector
 			_vMethodComplexities.addAll(_pJavaParser.getMethodComplexities());
