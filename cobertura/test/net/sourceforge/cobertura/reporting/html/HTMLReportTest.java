@@ -126,7 +126,7 @@ public class HTMLReportTest extends TestCase
 			if (containsFile(requiredFiles, htmlFiles[i])
 					|| !htmlFiles[i].startsWith(previousPrefix))
 			{
-				JUnitXMLHelper.validate(new File(PATH_TO_TEST_OUTPUT, htmlFiles[i]));
+				JUnitXMLHelper.readXmlFile(new File(PATH_TO_TEST_OUTPUT, htmlFiles[i]), true);
 			}
 			if (htmlFiles[i].length() > 7)
 			{
