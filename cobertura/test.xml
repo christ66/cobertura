@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="cobertura-test" basedir=".">
+
+
+	<!-- import the main build.xml file so we can use everything defined in it -->
+	<import file="${basedir}/build.xml" />
+
+	<!-- Directory for functional tests to work in -->
+	<property name="test.work.dir" value="${build.test.dir}/work" />
+
+	<!--
+		This is meant to create a work area for each test.  The test name is given as
+		an attribute.
+	-->
+	<macrodef name="init">
+		<attribute name="test" />
+		<sequential>
+			<property name="this.test.work.dir" location="${test.work.dir}/@{test}" />
+			<property name="this.test.classes" location="${this.test.work.dir}/classes" />
+			<property name="this.test.jars" location="${this.test.work.dir}/jars" />
+			<property name="this.test.wars" location="${this.test.work.dir}/wars" />
+			<property name="this.test.extract" location="${this.test.work.dir}/extract" />
+			<property name="datafile" location="${this.test.work.dir}/cobertura.ser" />
+			<property name="instrumented.dir" location="${this.test.work.dir}/instrumented" />
+
+			<!-- <cobertura-taskdef /> -->
+			<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+		</sequential>
+	</macrodef>
+
+	<!--
+		Call JUnit to run the test.first.Test class.
+		Then call cobertura-report to generate a cobertura.xml file
+
+		The instrumented dir is put on the classpath first, followed by jars in the
+		instrumented dir, followed by test.classpath which is usually used in the instrumentation
+		and contains non-instrumented files.
+	-->
+	<macrodef name="run-test">
+		<attribute name="test" />
+		<sequential>
+
+			<junit dir="${this.test.work.dir}" fork="true" forkmode="once">
+				<sysproperty key="net.sourceforge.cobertura.datafile" file="${datafile}" />
+				<formatter type="plain" usefile="false" />
+				<!--<jvmarg value="-Xdebug" />
+    			<jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y" />-->
+
+				<classpath location="${instrumented.dir}" />
+				<classpath>
+					<fileset dir="${instrumented.dir}">
+						<include name="**/*.jar" />
+					</fileset>
+				</classpath>
+				<classpath refid="test.classpath" />
+				<classpath location="cobertura.jar" />
+
+				<test name="test.first.Test" />
+			</junit>
+
+			<delete dir="${this.test.work.dir}/coverage-xml" />
+			<mkdir dir="${this.test.work.dir}/coverage-xml" />
+			<cobertura-report datafile="${this.test.work.dir}/cobertura.ser" destdir="${this.test.work.dir}/coverage-xml" format="xml">
+				<fileset dir="${test.src.dir}">
+					<include name="**/*.java" />
+				</fileset>
+			</cobertura-report>
+
+		</sequential>
+	</macrodef>
+
+	<!--
+		Call cobertura-instrument to instrument a classpath or fileset.  Only classes in the
+		test packages are instrumented.  The "B" classes and the Test classes are excluded.  So,
+		at the momement, the only classes instrumented are the "A" classes.
+	-->
+	<macrodef name="instrument">
+		<attribute name="todir" />
+		<attribute name="datafile" />
+		<element name="all-elements" implicit="true" />
+		<sequential>
+			<delete file="@{datafile}" />
+
+			<mkdir dir="@{todir}" />
+			<cobertura-instrument datafile="@{datafile}" todir="@{todir}" forkedJvmDebugPort="0">
+				<includeClasses regex="test.*" />
+				<excludeClasses regex="test.*.B" />
+				<excludeClasses regex=".*Test*" />
+				<all-elements />
+			</cobertura-instrument>
+		</sequential>
+	</macrodef>
+
+	<!--
+		Creates a directory of classes, instruments them, calls JUnit, and generates
+		a coverage XML report.
+	-->
+	<target name="test-class-dir">
+		<init test="class-dir" />
+
+		<copy todir="${this.test.classes}">
+			<fileset dir="${build.test.classes.dir}">
+				<include name="test/**/*.class" />
+			</fileset>
+		</copy>
+
+		<path id="test.classpath">
+			<path location="${this.test.classes}" />
+		</path>
+
+		<instrument datafile="${datafile}" todir="${instrumented.dir}">
+			<instrumentationClasspath refid="test.classpath" />
+		</instrument>
+
+		<run-test test="class-dir" />
+	</target>
+
+	<!--
+		Creates a war with a WEB-INF/classes directory and a WEB-INF/lib directory.  Some
+		classes in the test package are put in each location.  The cobertura.jar file
+		is also put in the lib dir to make sure it is not instrumented.  If it is,
+		extra stuff will end up in the coverage report, and tests will fail.
+
+		The war is instrumented, then extracted so a classpath can be setup that includes
+		the WEB-INF/class dir and the jars in WEB-INF/lib.
+
+		Then JUnit is called and a coverage XML report is created.
+	-->
+	<target name="test-war">
+		<init test="war" />
+
+		<delete dir="${this.test.classes}" />
+
+		<!-- first make a jar with a class from each package -->
+		<copy todir="${this.test.classes}">
+			<fileset dir="${build.test.classes.dir}">
+				<include name="test/first/A.class" />
+				<include name="test/second/B.class" />
+			</fileset>
+		</copy>
+
+		<delete dir="${this.test.jars}" />
+		<mkdir dir="${this.test.jars}" />
+		<zip destfile="${this.test.jars}/app.jar" basedir="${this.test.classes}" />
+		<!-- TODO:
+		<signjar
+			jar="${this.test.jars}/app.jar"
+			alias="cobertura"
+			storepass="secret" />
+		-->
+
+		<!-- See note above for expanation of this copy -->
+		<copy file="cobertura.jar" todir="${this.test.jars}" />
+
+		<!-- Now for the classes that will go in WEB-INF/classes -->
+		<delete dir="${this.test.classes}" />
+		<copy todir="${this.test.classes}">
+			<fileset dir="${build.test.classes.dir}">
+				<include name="test/second/A.class" />
+				<include name="test/first/B.class" />
+				<include name="test/first/Test.class" />
+			</fileset>
+		</copy>
+
+		<delete dir="${this.test.wars}" />
+		<mkdir dir="${this.test.wars}" />
+		<touch file="${this.test.wars}/myapp.xml" />
+		<!-- required by war task - but can be empty -->
+		<war destfile="${this.test.wars}/app.war" webxml="${this.test.wars}/myapp.xml">
+			<lib dir="${this.test.jars}">
+			</lib>
+			<classes dir="${this.test.classes}" />
+		</war>
+
+		<!-- Now instrument the war file -->
+		<instrument datafile="${datafile}" todir="${instrumented.dir}">
+			<fileset dir="${this.test.wars}">
+				<include name="*.war" />
+			</fileset>
+		</instrument>
+
+		<!-- Now unwar and set the classpath to the unwarred stuff -->
+		<delete dir="${this.test.extract}" />
+		<mkdir dir="${this.test.extract}" />
+		<unwar src="${instrumented.dir}/app.war" dest="${this.test.extract}" />
+
+		<path id="test.classpath">
+			<path location="${this.test.extract}/WEB-INF/classes" />
+			<fileset dir="${this.test.extract}/WEB-INF/lib">
+				<include name="*.jar" />
+			</fileset>
+		</path>
+
+		<run-test test="war" />
+	</target>
+
+</project>
