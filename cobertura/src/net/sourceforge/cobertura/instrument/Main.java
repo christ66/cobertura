@@ -367,21 +367,22 @@ public class Main
 	// TODO: Don't attempt to instrument a file if the outputFile already
 	//       exists and is newer than the input file, and the output and
 	//       input file are in different locations?
-	private void addInstrumentation(FileInfo fileInfo)
+	private void addInstrumentation(CoberturaFile coberturaFile)
 	{
-		if (fileInfo.isClass() && shouldInstrument(fileInfo.pathname))
+		if (coberturaFile.isClass() && shouldInstrument(coberturaFile.pathname))
 		{
-			addInstrumentationToSingleClass(fileInfo);
+			addInstrumentationToSingleClass(coberturaFile);
 		}
-		else if (fileInfo.isDirectory())
+		else if (coberturaFile.isDirectory())
 		{
-			String[] contents = fileInfo.list();
+			String[] contents = coberturaFile.list();
 			for (int i = 0; i < contents.length; i++)
 			{
-				File relativeFile = new File(fileInfo.pathname, contents[i]);
-				FileInfo relativeFileInfo = new FileInfo(fileInfo.baseDir, relativeFile.toString());
+				File relativeFile = new File(coberturaFile.pathname, contents[i]);
+				CoberturaFile relativeCoberturaFile = new CoberturaFile(coberturaFile.baseDir,
+						relativeFile.toString());
 				//recursion!
-				addInstrumentation(relativeFileInfo);
+				addInstrumentation(relativeCoberturaFile);
 			}
 		}
 	}
@@ -415,8 +416,8 @@ public class Main
 			}
 			else
 			{
-				FileInfo fileInfo = new FileInfo(baseDir, args[i]);
-				filePaths.add(fileInfo);
+				CoberturaFile coberturaFile = new CoberturaFile(baseDir, args[i]);
+				filePaths.add(coberturaFile);
 			}
 		}
 
@@ -435,11 +436,14 @@ public class Main
 		Iterator iter = filePaths.iterator();
 		while (iter.hasNext())
 		{
-			FileInfo fileInfo = (FileInfo)iter.next();
-			if (fileInfo.isArchive()) {
-				addInstrumentationToArchive(fileInfo);
-			} else {
-				addInstrumentation(fileInfo);
+			CoberturaFile coberturaFile = (CoberturaFile)iter.next();
+			if (coberturaFile.isArchive())
+			{
+				addInstrumentationToArchive(coberturaFile);
+			}
+			else
+			{
+				addInstrumentation(coberturaFile);
 			}
 		}
 

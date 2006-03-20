@@ -23,7 +23,7 @@ package net.sourceforge.cobertura.instrument;
 
 import java.io.File;
 
-class FileInfo extends File
+class CoberturaFile extends File
 {
 
 	private static final long serialVersionUID = 0L;
@@ -31,7 +31,7 @@ class FileInfo extends File
 	String baseDir;
 	String pathname;
 
-	FileInfo(String baseDir, String pathname)
+	CoberturaFile(String baseDir, String pathname)
 	{
 		super(baseDir, pathname);
 		this.baseDir = baseDir;
