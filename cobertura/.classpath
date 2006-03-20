@@ -7,10 +7,10 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/asm-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.8.jar"/>
-	<classpathentry kind="lib" path="lib/junit-3.8.2.jar"/>
+	<classpathentry kind="lib" path="lib/jdom-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/junit-3.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.9.jar"/>
 	<classpathentry kind="lib" path="lib/xalan-2.6.0.jar"/>
 	<classpathentry kind="lib" path="C:/apache-ant-1.6.5/lib/ant.jar"/>
-	<classpathentry kind="lib" path="lib/jdom-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
