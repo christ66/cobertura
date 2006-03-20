@@ -2,6 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2006 John Lewis
  *
  * Note: This file is dual licensed under the GPL and the Apache
  * Source License (so that it can be used from both the main
@@ -93,6 +94,11 @@ public abstract class IOUtil
 	{
 		logger.debug("Moving " + sourceFile.getAbsolutePath() + " to "
 				+ destinationFile.getAbsolutePath());
+
+		if (destinationFile.exists())
+		{
+			destinationFile.delete();
+		}
 
 		// Move file using File method if possible
 		boolean succesfulMove = sourceFile.renameTo(destinationFile);
