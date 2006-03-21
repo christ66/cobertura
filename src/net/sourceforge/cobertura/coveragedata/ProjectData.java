@@ -227,9 +227,13 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		{
 		}
 
+		// Get a file lock
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
-		FileLocker lock = new FileLocker(dataFile);
-		if (lock.lock())
+		FileLocker fileLocker = new FileLocker(dataFile);
+
+		// Read the old data, merge our current data into it, then
+		// write a new ser file.
+		if (fileLocker.lock())
 		{
 			ProjectData datafileProjectData = loadCoverageDataFromDatafile(dataFile);
 			if (datafileProjectData == null)
@@ -242,7 +246,9 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 			}
 			CoverageDataFileHandler.saveCoverageData(datafileProjectData, dataFile);
 		}
-		lock.release();
+
+		// Release the file lock
+		fileLocker.release();
 	}
 
 	private static ProjectData loadCoverageDataFromDatafile(File dataFile)
