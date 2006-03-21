@@ -3,6 +3,10 @@
  *
  * Copyright (C) 2006 John Lewis
  *
+ * Note: This file is dual licensed under the GPL and the Apache
+ * Source License (so that it can be used from both the main
+ * Cobertura classes and the ant tasks).
+ *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License,
@@ -23,19 +27,35 @@ package net.sourceforge.cobertura.instrument;
 
 import java.io.File;
 
+/**
+ * This represents a regular File, but unlike java.io.File, the baseDir and 
+ * relative pathname used to create it are saved for later use.
+ * 
+ * @author John Lewis
+ */
 class CoberturaFile extends File
 {
 
 	private static final long serialVersionUID = 0L;
 
-	String baseDir;
-	String pathname;
+	private String baseDir;
+	private String pathname;
 
 	CoberturaFile(String baseDir, String pathname)
 	{
 		super(baseDir, pathname);
 		this.baseDir = baseDir;
 		this.pathname = pathname;
+	}
+
+	public String getBaseDir()
+	{
+		return baseDir;
+	}
+
+	public String getPathname()
+	{
+		return pathname;
 	}
 
 	/**
