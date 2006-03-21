@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.log4j.Logger;
-
 /**
  * Helper class with useful I/O operations.
  * 
@@ -43,8 +41,6 @@ import org.apache.log4j.Logger;
  */
 public abstract class IOUtil
 {
-
-	private static final Logger logger = Logger.getLogger(IOUtil.class);
 
 	/**
 	 * Copies bytes from input stream into the output stream.  Stops
@@ -92,9 +88,6 @@ public abstract class IOUtil
 	public static void moveFile(File sourceFile, File destinationFile)
 			throws IOException
 	{
-		logger.debug("Moving " + sourceFile.getAbsolutePath() + " to "
-				+ destinationFile.getAbsolutePath());
-
 		if (destinationFile.exists())
 		{
 			destinationFile.delete();
@@ -106,7 +99,6 @@ public abstract class IOUtil
 			return;
 
 		// Copy file from source to destination
-		logger.debug("Using copy and delete method");
 		InputStream in = null;
 		OutputStream out = null;
 		try
@@ -117,30 +109,62 @@ public abstract class IOUtil
 		}
 		finally
 		{
-			if (in != null)
-			{
-				try
-				{
-					in.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
-			if (out != null)
-			{
-				try
-				{
-					out.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
+			in = closeInputStream(in);
+			out = closeOutputStream(out);
 		}
 
 		// Remove source file
 		sourceFile.delete();
+	}
+
+	/**
+	 * Closes an input stream.
+	 * 
+	 * @param in The stream to close.
+	 * @return null unless an exception was thrown while closing, else
+	 *         returns the stream
+	 */
+	public static InputStream closeInputStream(InputStream in)
+	{
+		if (in != null)
+		{
+			try
+			{
+				in.close();
+				in = null;
+			}
+			catch (IOException e)
+			{
+				System.err.println("Cobertura: Error closing input stream.");
+				e.printStackTrace();
+			}
+		}
+		return in;
+	}
+
+	/**
+	 * Closes an output stream.
+	 * 
+	 * @param out The stream to close.
+	 * @return null unless an exception was thrown while closing, else
+	 *         returns the stream.
+	 */
+	public static OutputStream closeOutputStream(OutputStream out)
+	{
+		if (out != null)
+		{
+			try
+			{
+				out.close();
+				out = null;
+			}
+			catch (IOException e)
+			{
+				System.err.println("Cobertura: Error closing output stream.");
+				e.printStackTrace();
+			}
+		}
+		return out;
 	}
 
 }

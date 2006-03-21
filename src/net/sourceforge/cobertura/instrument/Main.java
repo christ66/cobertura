@@ -26,6 +26,7 @@
 
 package net.sourceforge.cobertura.instrument;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,7 +36,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -45,15 +45,13 @@ import java.util.zip.ZipOutputStream;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.util.ArchiveUtil;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.IOUtil;
 import net.sourceforge.cobertura.util.RegexUtil;
 
 import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.Perl5Compiler;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
@@ -94,9 +92,7 @@ public class Main
 
 	private Collection ignoreRegexes = new Vector();
 
-	private Collection includeClassesRegexes = new HashSet();
-
-	private Collection excludeClassesRegexes = new HashSet();
+	private ClassPattern classPattern = new ClassPattern();
 
 	private ProjectData projectData = null;
 
@@ -110,23 +106,74 @@ public class Main
 		return entry.getName().endsWith(".class");
 	}
 
-	private void addInstrumentationToArchive(ZipInputStream archive,
+	private boolean addInstrumentationToArchive(CoberturaFile file, InputStream archive,
+			OutputStream output) throws Exception
+	{
+		ZipInputStream zis = null;
+		ZipOutputStream zos = null;
+
+		try
+		{
+			zis = new ZipInputStream(archive);
+			zos = new ZipOutputStream(output);
+			return addInstrumentationToArchive(file, zis, zos);
+		}
+		finally
+		{
+			zis = (ZipInputStream)IOUtil.closeInputStream(zis);
+			zos = (ZipOutputStream)IOUtil.closeOutputStream(zos);
+		}
+	}
+
+	private boolean addInstrumentationToArchive(CoberturaFile file, ZipInputStream archive,
 			ZipOutputStream output) throws Exception
 	{
+		/*
+		 * "modified" is returned and indicates that something was instrumented.
+		 * If nothing is instrumented, the original entry will be used by the
+		 * caller of this method.
+		 */
+		boolean modified = false;
 		ZipEntry entry;
 		while ((entry = archive.getNextEntry()) != null)
 		{
 			try
 			{
+				String entryName = entry.getName();
+
+				/*
+				 * If this is a signature file then don't copy it,
+				 * but don't set modified to true.  If the only
+				 * thing we do is strip the signature, just use
+				 * the original entry.
+				 */
+				if (ArchiveUtil.isSignatureFile(entry.getName()))
+				{
+					continue;
+				}
 				ZipEntry outputEntry = new ZipEntry(entry.getName());
+				outputEntry.setComment(entry.getComment());
+				outputEntry.setExtra(entry.getExtra());
+				outputEntry.setTime(entry.getTime());
 				output.putNextEntry(outputEntry);
 
 				// Read current entry
 				byte[] entryBytes = IOUtil
 						.createByteArrayFromInputStream(archive);
 
-				// Check if we have class file
-				if (isClass(entry) && shouldInstrument(entry.getName()))
+				// Instrument embedded archives if a classPattern has been specified
+				if ((classPattern.isSpecified()) && ArchiveUtil.isArchive(entryName))
+				{
+					Archive archiveObj = new Archive(file, entryBytes);
+					addInstrumentationToArchive(archiveObj);
+					if (archiveObj.isModified())
+					{
+						modified = true;
+						entryBytes = archiveObj.getBytes();
+						outputEntry.setTime(System.currentTimeMillis());
+					}
+				}
+				else if (isClass(entry) && classPattern.matches(entryName))
 				{
 					// Instrument class
 					ClassReader cr = new ClassReader(entryBytes);
@@ -142,6 +189,8 @@ public class Main
 						logger.debug("Putting instrumented entry: "
 								+ entry.getName());
 						entryBytes = cw.toByteArray();
+						modified = true;
+						outputEntry.setTime(System.currentTimeMillis());
 					}
 				}
 
@@ -157,38 +206,41 @@ public class Main
 			}
 			output.flush();
 		}
+		return modified;
 	}
 
-	private boolean shouldInstrument(String name)
+	private void addInstrumentationToArchive(Archive archive) throws Exception
 	{
-		boolean shouldInstrument = true;
-
-		if (includeClassesRegexes.size() > 0)
+		InputStream in = null;
+		ByteArrayOutputStream out = null;
+		try
 		{
-			shouldInstrument = false;
-			// Remove .class extension if it exists
-			if (name.endsWith(".class")) {
-				name = name.substring(0, name.length() - 6);
-			}
-			name = name.replace('/', '.');
-			name = name.replace('\\', '.');
-			if (RegexUtil.matches(includeClassesRegexes, name)) {
-				shouldInstrument = true;
-			}
-			if (shouldInstrument && RegexUtil.matches(excludeClassesRegexes, name)) {
-				shouldInstrument = false;
+			in = archive.getInputStream();
+			out = new ByteArrayOutputStream();
+			boolean modified = addInstrumentationToArchive(archive.getCoberturaFile(), in, out);
+
+			if (modified)
+			{
+				out.flush();
+				byte[] bytes = out.toByteArray();
+				archive.setModifiedBytes(bytes);
 			}
 		}
-		return shouldInstrument;
+		finally
+		{
+			in = IOUtil.closeInputStream(in);
+			out = (ByteArrayOutputStream)IOUtil.closeOutputStream(out);
+		}
 	}
 
-	private void addInstrumentationToArchive(File archive)
+	private void addInstrumentationToArchive(CoberturaFile archive)
 	{
 		logger.debug("Instrumenting archive " + archive.getAbsolutePath());
 
 		File outputFile = null;
 		ZipInputStream input = null;
 		ZipOutputStream output = null;
+		boolean modified = false;
 		try
 		{
 			// Open archive
@@ -210,8 +262,7 @@ public class Main
 				if (destinationDirectory != null)
 				{
 					// if so, create output file in it
-					outputFile = new File(destinationDirectory, archive
-							.getName());
+					outputFile = new File(destinationDirectory, archive.getPathname());
 				}
 				else
 				{
@@ -232,7 +283,7 @@ public class Main
 			// Instrument classes in archive
 			try
 			{
-				addInstrumentationToArchive(input, output);
+				modified = addInstrumentationToArchive(archive, input, output);
 			}
 			catch (Exception e)
 			{
@@ -243,34 +294,18 @@ public class Main
 		}
 		finally
 		{
-			if (input != null)
-			{
-				try
-				{
-					input.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
-			if (output != null)
-			{
-				try
-				{
-					output.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
+			input = (ZipInputStream)IOUtil.closeInputStream(input);
+			output = (ZipOutputStream)IOUtil.closeOutputStream(output);
 		}
 
 		// If destination folder was not set, overwrite orginal archive with
 		// instrumented one
-		if (destinationDirectory == null)
+		if (modified && (destinationDirectory == null))
 		{
 			try
 			{
+				logger.debug("Moving " + outputFile.getAbsolutePath() + " to "
+						+ archive.getAbsolutePath());
 				IOUtil.moveFile(outputFile, archive);
 			}
 			catch (IOException e)
@@ -279,6 +314,10 @@ public class Main
 						+ archive.getAbsolutePath(), e);
 				return;
 			}
+		}
+		if ((destinationDirectory != null) && (!modified))
+		{
+			outputFile.delete();
 		}
 	}
 
@@ -305,16 +344,7 @@ public class Main
 		}
 		finally
 		{
-			if (inputStream != null)
-			{
-				try
-				{
-					inputStream.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
+			inputStream = IOUtil.closeInputStream(inputStream);
 		}
 
 		OutputStream outputStream = null;
@@ -351,16 +381,7 @@ public class Main
 		}
 		finally
 		{
-			if (outputStream != null)
-			{
-				try
-				{
-					outputStream.close();
-				}
-				catch (IOException e)
-				{
-				}
-			}
+			outputStream = IOUtil.closeOutputStream(outputStream);
 		}
 	}
 
@@ -369,7 +390,7 @@ public class Main
 	//       input file are in different locations?
 	private void addInstrumentation(CoberturaFile coberturaFile)
 	{
-		if (coberturaFile.isClass() && shouldInstrument(coberturaFile.getPathname()))
+		if (coberturaFile.isClass() && classPattern.matches(coberturaFile.getPathname()))
 		{
 			addInstrumentationToSingleClass(coberturaFile);
 		}
@@ -404,15 +425,15 @@ public class Main
 				destinationDirectory = new File(args[++i]);
 			else if (args[i].equals("--ignore"))
 			{
-				addRegex(ignoreRegexes, args[++i]);
+				RegexUtil.addRegex(ignoreRegexes, args[++i]);
 			}
 			else if (args[i].equals("--includeClasses"))
 			{
-				addRegex(includeClassesRegexes, args[++i]);
+				classPattern.addIncludeClassesRegex(args[++i]);
 			}
 			else if (args[i].equals("--excludeClasses"))
 			{
-				addRegex(excludeClassesRegexes, args[++i]);
+				classPattern.addExcludeClassesRegex(args[++i]);
 			}
 			else
 			{
@@ -449,20 +470,6 @@ public class Main
 
 		// Save coverage data
 		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
-	}
-
-	private static void addRegex(Collection list, String regex) {
-		try
-		{
-			Perl5Compiler pc = new Perl5Compiler();
-			Pattern pattern = pc.compile(regex);
-			list.add(pattern);
-		}
-		catch (MalformedPatternException e)
-		{
-			logger.warn("The regular expression " + regex
-					+ " is invalid: " + e.getLocalizedMessage());
-		}
 	}
 
 	public static void main(String[] args)

@@ -27,6 +27,8 @@ package net.sourceforge.cobertura.instrument;
 
 import java.io.File;
 
+import net.sourceforge.cobertura.util.ArchiveUtil;
+
 /**
  * This represents a regular File, but unlike java.io.File, the baseDir and 
  * relative pathname used to create it are saved for later use.
@@ -68,8 +70,7 @@ class CoberturaFile extends File
 		{
 			return false;
 		}
-		return pathname.endsWith(".jar") || pathname.endsWith(".zip") || pathname.endsWith(".war")
-				|| pathname.endsWith(".ear") || pathname.endsWith(".sar");
+		return ArchiveUtil.isArchive(pathname);
 	}
 
 	/**
