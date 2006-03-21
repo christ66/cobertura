@@ -54,7 +54,10 @@ import org.jdom.xpath.XPath;
 public class FunctionalTest extends TestCase
 {
 
-	private static final File TEST_WORK_DIR = new File("build/test/work");
+	private final static String BASEDIR = (System.getProperty("basedir") != null) ? System
+			.getProperty("basedir") : ".";
+
+	private static final File TEST_WORK_DIR = new File(BASEDIR + "/build/test/work");
 
 	public static void testClassDir() throws Exception
 	{
@@ -220,7 +223,7 @@ public class FunctionalTest extends TestCase
 		transferCoberturaDataFileProperty(task);
 
 		task.createArg().setValue("-f");
-		task.createArg().setValue("test.xml");
+		task.createArg().setValue(BASEDIR + "/test.xml");
 		task.createArg().setValue(target);
 
 		task.setFailonerror(true);
