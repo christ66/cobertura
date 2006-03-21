@@ -1,6 +1,7 @@
 /* Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2006 John Lewis
+ * Copyright (C) 2006 Mark Doliner
  *
  * Note: This file is dual licensed under the GPL and the Apache
  * Source License 1.1 (so that it can be used from both the main
@@ -26,10 +27,9 @@ package net.sourceforge.cobertura.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * This class controls access to any file so that multiple JVMs will
@@ -38,19 +38,31 @@ import java.nio.channels.FileLock;
  * A file called "filename.lock" is created and Java's FileLock class
  * is used to lock the file.
  *
- * @author John Lewis
+ * The java.nio classes were introduced in Java 1.4, so this class
+ * does a no-op when used with Java 1.3.  The class maintains
+ * compatability with Java 1.3 by accessing the java.nio classes
+ * using reflection.
  *
+ * @author John Lewis
+ * @author Mark Doliner
  */
 public class FileLocker
 {
 
 	/**
+	 * An object of type FileLock, created using reflection.
+	 */
+	private Object lock = null;
+
+	/**
+	 * An object of type FileChannel, created using reflection.
+	 */
+	private Object lockChannel = null;
+
+	/**
 	 * A file called "filename.lock" that resides in the same directory
 	 * as "filename"
 	 */
-	private FileLock lock;
-
-	private FileChannel lockChannel;
 	private File lockFile;
 
 	public FileLocker(File file)
@@ -73,9 +85,16 @@ public class FileLocker
 	 */
 	public boolean lock()
 	{
+		if (System.getProperty("java.version").startsWith("1.3"))
+		{
+			return true;
+		}
+
 		try
 		{
-			lockChannel = new RandomAccessFile(lockFile, "rw").getChannel();
+			Class aClass = Class.forName("java.io.RandomAccessFile");
+			Method method = aClass.getDeclaredMethod("getChannel", (Class[])null);
+			lockChannel = method.invoke(new RandomAccessFile(lockFile, "rw"), (Object[])null);
 		}
 		catch (FileNotFoundException e)
 		{
@@ -83,16 +102,36 @@ public class FileLocker
 					+ ": " + e.getLocalizedMessage());
 			return false;
 		}
+		catch (InvocationTargetException e)
+		{
+			System.err.println("Unable to get lock channel for " + lockFile.getAbsolutePath()
+					+ ": " + e.getLocalizedMessage());
+			return false;
+		}
+		catch (Throwable t)
+		{
+			System.err.println("Unable to execute RandomAccessFile.getChannel() using reflection: "
+					+ t.getLocalizedMessage());
+			t.printStackTrace();
+		}
 
 		try
 		{
-			lock = lockChannel.lock();
+			Class aClass = Class.forName("java.nio.channels.FileChannel");
+			Method method = aClass.getDeclaredMethod("lock", (Class[])null);
+			lock = method.invoke(lockChannel, (Object[])null);
 		}
-		catch (IOException e)
+		catch (InvocationTargetException e)
 		{
 			System.err.println("Unable to get lock on " + lockFile.getAbsolutePath() + ": "
 					+ e.getLocalizedMessage());
 			return false;
+		}
+		catch (Throwable t)
+		{
+			System.err.println("Unable to execute FileChannel.lock() using reflection: "
+					+ t.getLocalizedMessage());
+			t.printStackTrace();
 		}
 
 		return true;
@@ -103,47 +142,49 @@ public class FileLocker
 	 */
 	public void release()
 	{
-		lock = releaseFileLock(lock);
-		lockChannel = closeChannel(lockChannel);
+		if (lock != null)
+			lock = releaseFileLock(lock);
+		if (lockChannel != null)
+			lockChannel = closeChannel(lockChannel);
 		lockFile.delete();
 	}
 
-	private static FileLock releaseFileLock(FileLock lock)
+	private static Object releaseFileLock(Object lock)
 	{
-		if (lock != null)
+		try
 		{
-			try
+			Class aClass = Class.forName("java.nio.channels.FileLock");
+			Method method = aClass.getDeclaredMethod("isValid", (Class[])null);
+			if (((Boolean)method.invoke(lock, (Object[])null)).booleanValue())
 			{
-				if (lock.isValid())
-				{
-					lock.release();
-				}
+				method = aClass.getDeclaredMethod("release", (Class[])null);
+				method.invoke(lock, (Object[])null);
 				lock = null;
 			}
-			catch (Throwable t)
-			{
-				System.err.println("Unable to release locked file: " + t.getLocalizedMessage());
-			}
+		}
+		catch (Throwable t)
+		{
+			System.err.println("Unable to release locked file: " + t.getLocalizedMessage());
 		}
 		return lock;
 	}
 
-	private static FileChannel closeChannel(FileChannel channel)
+	private static Object closeChannel(Object channel)
 	{
-		if (channel != null)
+		try
 		{
-			try
+			Class aClass = Class.forName("java.nio.channels.spi.AbstractInterruptibleChannel");
+			Method method = aClass.getDeclaredMethod("isOpen", (Class[])null);
+			if (((Boolean)method.invoke(channel, (Object[])null)).booleanValue())
 			{
-				if (channel.isOpen())
-				{
-					channel.close();
-				}
+				method = aClass.getDeclaredMethod("close", (Class[])null);
+				method.invoke(channel, (Object[])null);
 				channel = null;
 			}
-			catch (Throwable t)
-			{
-				System.err.println("Unable to close file channel: " + t.getLocalizedMessage());
-			}
+		}
+		catch (Throwable t)
+		{
+			System.err.println("Unable to close file channel: " + t.getLocalizedMessage());
 		}
 		return channel;
 	}
