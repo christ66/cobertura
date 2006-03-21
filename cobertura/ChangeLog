@@ -12,11 +12,15 @@ version 1.8
 	  total number of lines and branches in the HTML report.
 	* Upgraded from asm 2.1 to asm 2.2.1.  No code changes were
 	  needed.
-	* Copied portsions of classes from JavaNCSS into Cobertura
+	* Copied portions of classes from JavaNCSS into Cobertura
 	  so that we don't need to include the entire JavaNCSS and
 	  CCL jars.
 	* Reorganized libs into a flatter directory structure--you
-	  man need to update your ant scripts!
+	  may need to update your ant scripts!
+	* Lock the data file before trying to write to it.  This
+	  allows multiple JVMs (or multiple class loaders within
+	  a single JVM) to write to the same coverage data file
+	  with no problems (John Lewis).
 
 version 1.7 (2005-12-06)
 	* log4j is no longer used by the Cobertura classes that are
