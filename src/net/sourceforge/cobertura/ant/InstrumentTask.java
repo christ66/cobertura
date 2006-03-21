@@ -195,7 +195,7 @@ public class InstrumentTask extends CommonMatchingTask
 	{
 		if (includeClassesRegexs.size() == 0)
 		{
-			throw new BuildException("'includeClasses' is required when 'fromClasspath' is used");
+			throw new BuildException("'includeClasses' is required when 'instrumentationClasspath' is used");
 		}
 
 		String[] sources = instrumentationClasspath.list();
@@ -239,7 +239,8 @@ public class InstrumentTask extends CommonMatchingTask
 
 	private void createFilesetForDirectory(File dir)
 	{
-		getFileSet(dir);
+		FileSet fileSet = getFileSet(dir);
+		fileSet.createInclude().setName("**/*.class");
 	}
 
 	public void setDataFile(String dataFile)
