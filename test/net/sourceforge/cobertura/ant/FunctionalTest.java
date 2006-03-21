@@ -37,7 +37,6 @@ import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Environment.Variable;
 import org.apache.tools.ant.types.Path.PathElement;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -220,7 +219,7 @@ public class FunctionalTest extends TestCase
 		task.setClassname("org.apache.tools.ant.launch.Launcher");
 		task.setFork(true);
 
-		transferCoberturaDataFileProperty(task);
+		InstrumentTask.transferCoberturaDataFileProperty(task);
 
 		task.createArg().setValue("-f");
 		task.createArg().setValue(BASEDIR + "/test.xml");
@@ -264,24 +263,6 @@ public class FunctionalTest extends TestCase
 						+ Util.getText(outputFile) + "----------------------------------------");
 				outputFile.delete();
 			}
-		}
-	}
-
-	/**
-	 * Used to transfer the net.sourceforge.cobertura.datafile property to a JVM
-	 * that is about to be forked.
-	 * 
-	 * @param task The Java task that will do the forking.
-	 */
-	private static void transferCoberturaDataFileProperty(Java task)
-	{
-		String coberturaProperty = System.getProperty("net.sourceforge.cobertura.datafile");
-		if (coberturaProperty != null)
-		{
-			Variable sysproperty = new Variable();
-			sysproperty.setKey("net.sourceforge.cobertura.datafile");
-			sysproperty.setValue(coberturaProperty);
-			task.addSysproperty(sysproperty);
 		}
 	}
 

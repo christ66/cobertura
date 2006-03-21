@@ -70,8 +70,10 @@ import net.sourceforge.cobertura.util.CommandLineBuilder;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Environment.Variable;
 
 public class InstrumentTask extends CommonMatchingTask
 {
@@ -180,6 +182,7 @@ public class InstrumentTask extends CommonMatchingTask
 			getJava().createJvmarg().setValue("-Xdebug");
 			getJava().createJvmarg().setValue("-Xrunjdwp:transport=dt_socket,address=" + forkedJVMDebugPort + ",server=y,suspend=y");
 		}
+		transferCoberturaDataFileProperty(getJava());
 		if (getJava().executeJava() != 0) {
 			throw new BuildException(
 					"Error instrumenting classes. See messages above.");
@@ -252,6 +255,37 @@ public class InstrumentTask extends CommonMatchingTask
 	public void setForkedJVMDebugPort(Integer forkedJVMDebugPort)
 	{
 		this.forkedJVMDebugPort = forkedJVMDebugPort;
+	}
+
+	/**
+	 * Used to transfer the net.sourceforge.cobertura.datafile property to a JVM
+	 * that is about to be forked.
+	 * 
+	 * This is confusing, but it's required by our functional test.
+	 * What happens is, we have a JUnit test that runs ant to
+	 * instrument some classes.  When the instrumentation is running,
+	 * we want to get the coverage info that is created by exercising
+	 * our instrumentation classes.
+	 *
+	 * So we pass in two different coverage files:
+	 * 1. The coverage data file command line parameter.  This tells
+	 *    the instrument task where to write the new coverage data.
+	 * 2. The coverage data system property.  This tells the
+	 *    instrumentation inside the instrumented classes where to
+	 *    keep track of the line hit counts, etc.
+	 *
+	 * @param task The Java task that will do the forking.
+	 */
+	static void transferCoberturaDataFileProperty(Java task)
+	{
+		String coberturaProperty = System.getProperty("net.sourceforge.cobertura.datafile");
+		if (coberturaProperty != null)
+		{
+			Variable sysproperty = new Variable();
+			sysproperty.setKey("net.sourceforge.cobertura.datafile");
+			sysproperty.setValue(coberturaProperty);
+			task.addSysproperty(sysproperty);
+		}
 	}
 
 }
