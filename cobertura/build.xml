@@ -25,6 +25,24 @@
 		</fileset>
 	</path>
 
+	<macrodef name="cobertura-taskdef">
+		<sequential>
+			<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+			<!--
+				This is probably a bug in Eclipse, but the Eclipse ant
+				editor seems to lock the classpath of the last taskdef,
+				so we do a taskdef of one of the core ant tasks so that
+				cobertura.jar does not become locked.
+			-->
+			<taskdef name="not-used" classname="org.apache.tools.ant.taskdefs.Delete">
+				<classpath>
+					<pathelement path="${java.class.path}" />
+				</classpath>
+			</taskdef>
+		</sequential>
+	</macrodef>
+
 	<target name="init">
 		<!-- Insert our version number in a file. -->
 		<filter token="version" value="${version}" />
@@ -145,7 +163,7 @@
 		<delete file="${basedir}/cobertura.ser" />
 		<delete file="${build.dir}/cobertura.ser" />
 
-		<taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
+		<cobertura-taskdef />
 
 		<cobertura-instrument datafile="${build.dir}/cobertura.ser" todir="${build.instrumented.dir}">
 		    <fileset dir="${build.classes.dir}">
@@ -166,12 +184,17 @@
 		sysproperty is only used if we're testing instrumented code.
 	-->
 	<target name="test" depends="compile">
-		<delete dir="${build.test.reports.dir}/junit-xml" />
+		<delete dir="${build.test.reports.dir}/junit-xml" failonerror="false" />
+		<delete dir="${test.work.dir}" failonerror="false" />
 		<mkdir dir="${build.test.reports.dir}/junit-xml" />
 
 		<junit fork="true" forkmode="once" failureProperty="test.failed" printsummary="true" timeout="300000">
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="${build.dir}/cobertura.ser" />
 			<sysproperty key="basedir" value="${basedir}"/>
+			<!--
+			<jvmarg value="-Xdebug" />
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y" />
+			-->
 			<classpath location="${build.test.classes.dir}" />
 			<classpath location="${build.instrumented.dir}" />
 			<classpath location="${build.classes.dir}" />
@@ -179,15 +202,17 @@
 			<classpath location="${etc.dir}" />
 			<classpath refid="base.path" />
 			<formatter type="xml" />
+			<!-- <formatter type="plain" usefile="false" /> -->
 			<test name="${testcase}" todir="${build.test.reports.dir}/junit-xml" if="testcase" />
 			<batchtest todir="${build.test.reports.dir}/junit-xml" unless="testcase">
 				<fileset dir="${build.test.classes.dir}">
 					<include name="**/*Test.class" />
+					<exclude name="test/first/Test.class" />
 				</fileset>
 			</batchtest>
 		</junit>
 
-		<delete dir="${build.test.reports.dir}/junit-html" />
+		<delete dir="${build.test.reports.dir}/junit-html" failonerror="false" />
 		<mkdir dir="${build.test.reports.dir}/junit-html" />
 
 		<junitreport todir="${build.test.reports.dir}/junit-html">
@@ -201,7 +226,7 @@
 	</target>
 
 	<target name="coverage-report">
-		<taskdef classpathref="cobertura.classpath" resource="tasks.properties"/>
+		<cobertura-taskdef />
 
 		<delete dir="${build.test.reports.dir}/coverage-html" />
 		<mkdir dir="${build.test.reports.dir}/coverage-html" />

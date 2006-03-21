@@ -4,6 +4,10 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2006 John Lewis
  *
+ * Note: This file is dual licensed under the GPL and the Apache
+ * Source License (so that it can be used from both the main
+ * Cobertura classes and the ant tasks).
+ *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License,
@@ -25,7 +29,10 @@ package net.sourceforge.cobertura.util;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
 
 /**
@@ -35,6 +42,8 @@ import org.apache.oro.text.regex.Perl5Matcher;
  */
 public abstract class RegexUtil
 {
+
+	private static final Logger logger = Logger.getLogger(RegexUtil.class);
 
 	private final static Perl5Matcher pm = new Perl5Matcher();
 
@@ -61,6 +70,21 @@ public abstract class RegexUtil
 		}
 
 		return false;
+	}
+
+	public static void addRegex(Collection list, String regex)
+	{
+		try
+		{
+			Perl5Compiler pc = new Perl5Compiler();
+			Pattern pattern = pc.compile(regex);
+			list.add(pattern);
+		}
+		catch (MalformedPatternException e)
+		{
+			logger.warn("The regular expression " + regex + " is invalid: "
+					+ e.getLocalizedMessage());
+		}
 	}
 
 }
