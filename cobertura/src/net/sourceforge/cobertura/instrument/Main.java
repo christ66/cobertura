@@ -369,7 +369,7 @@ public class Main
 	//       input file are in different locations?
 	private void addInstrumentation(CoberturaFile coberturaFile)
 	{
-		if (coberturaFile.isClass() && shouldInstrument(coberturaFile.pathname))
+		if (coberturaFile.isClass() && shouldInstrument(coberturaFile.getPathname()))
 		{
 			addInstrumentationToSingleClass(coberturaFile);
 		}
@@ -378,8 +378,8 @@ public class Main
 			String[] contents = coberturaFile.list();
 			for (int i = 0; i < contents.length; i++)
 			{
-				File relativeFile = new File(coberturaFile.pathname, contents[i]);
-				CoberturaFile relativeCoberturaFile = new CoberturaFile(coberturaFile.baseDir,
+				File relativeFile = new File(coberturaFile.getPathname(), contents[i]);
+				CoberturaFile relativeCoberturaFile = new CoberturaFile(coberturaFile.getBaseDir(),
 						relativeFile.toString());
 				//recursion!
 				addInstrumentation(relativeCoberturaFile);
