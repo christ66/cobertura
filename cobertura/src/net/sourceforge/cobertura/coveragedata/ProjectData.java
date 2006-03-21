@@ -5,6 +5,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2005 Björn Beskow
+ * Copyright (C) 2006 John Lewis
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -32,8 +33,9 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class ProjectData extends CoverageDataContainer
-		implements HasBeenInstrumented
+import net.sourceforge.cobertura.util.FileLocker;
+
+public class ProjectData extends CoverageDataContainer implements HasBeenInstrumented
 {
 
 	private static final long serialVersionUID = 6;
@@ -60,7 +62,8 @@ public class ProjectData extends CoverageDataContainer
 			this.children.put(packageName, packageData);
 		}
 		packageData.addClassData(classData);
-		this.sourceFiles.put(classData.getSourceFileName(), packageData.getChild(classData.getSourceFileName()));
+		this.sourceFiles.put(classData.getSourceFileName(), packageData.getChild(classData
+				.getSourceFileName()));
 		this.classes.put(classData.getName(), classData);
 	}
 
@@ -133,14 +136,14 @@ public class ProjectData extends CoverageDataContainer
 		super.merge(coverageData);
 
 		ProjectData projectData = (ProjectData)coverageData;
- 		for (Iterator iter = projectData.sourceFiles.keySet().iterator(); iter.hasNext();)
- 		{
- 			Object key = iter.next();
- 			if (!this.sourceFiles.containsKey(key))
- 			{
- 				this.sourceFiles.put(key, projectData.sourceFiles.get(key));
- 			}
- 		}
+		for (Iterator iter = projectData.sourceFiles.keySet().iterator(); iter.hasNext();)
+		{
+			Object key = iter.next();
+			if (!this.sourceFiles.containsKey(key))
+			{
+				this.sourceFiles.put(key, projectData.sourceFiles.get(key));
+			}
+		}
 		for (Iterator iter = projectData.classes.keySet().iterator(); iter.hasNext();)
 		{
 			Object key = iter.next();
@@ -151,47 +154,46 @@ public class ProjectData extends CoverageDataContainer
 		}
 	}
 
+	/**
+	 * Get a reference to a ProjectData object in order to increase the
+	 * coverage count for a specific line.
+	 *
+	 * This method is only called by code that has been instrumented.  It
+	 * is not called by any of the Cobertura code or ant tasks.
+	 */
 	public static ProjectData getGlobalProjectData()
 	{
 		if (globalProjectData != null)
 			return globalProjectData;
 
-		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
+		initialize();
+		globalProjectData = new ProjectData();
+		return globalProjectData;
+	}
 
-		// Read projectData from the serialized file.
-		if (dataFile.isFile())
-		{
-			//System.out.println("Cobertura: Loading global project data from " + dataFile.getAbsolutePath());
-			globalProjectData = CoverageDataFileHandler
-					.loadCoverageData(dataFile);
-		}
-
-		if (globalProjectData == null)
-		{
-			// We could not read from the serialized file, so create a new object.
-			System.out.println("Cobertura: Coverage data file "
-							+ dataFile.getAbsolutePath()
-							+ " either does not exist or is not readable.  Creating a new data file.");
-			globalProjectData = new ProjectData();
-		}
-
+	// TODO: Is it possible to do this as a static initializer?
+	private static void initialize()
+	{
 		// Hack for Tomcat - by saving project data right now we force loading
 		// of classes involved in this process (like ObjectOutputStream)
 		// so that it won't be necessary to load them on JVM shutdown
-		if( System.getProperty("catalina.home")!=null) {
+		if (System.getProperty("catalina.home") != null)
+		{
 			saveGlobalProjectData();
-			
-			// Additionaly force loading of other classes that might be not loaded
-			// becouse saved project data was empty
+
+			// Force the class loader to load some classes that are
+			// required by our JVM shutdown hook.
+			// TODO: Use ClassLoader.loadClass("whatever"); instead
 			ClassData.class.toString();
 			CoverageData.class.toString();
 			CoverageDataContainer.class.toString();
+			FileLocker.class.toString();
 			HasBeenInstrumented.class.toString();
 			LineData.class.toString();
 			PackageData.class.toString();
 			SourceFileData.class.toString();
 		}
-		
+
 		// Add a hook to save the data when the JVM exits
 		saveTimer = new SaveTimer();
 		Runtime.getRuntime().addShutdownHook(new Thread(saveTimer));
@@ -199,18 +201,68 @@ public class ProjectData extends CoverageDataContainer
 		// Possibly also save the coverage data every x seconds?
 		//Timer timer = new Timer(true);
 		//timer.schedule(saveTimer, 100);
-
-		return globalProjectData;
 	}
 
 	public static void saveGlobalProjectData()
 	{
-		ProjectData projectData = getGlobalProjectData();
-		synchronized (projectData)
+		ProjectData projectDataToSave = globalProjectData;
+
+		/*
+		 * The next statement is not necessary at the moment, because this method is only called
+		 * either at the very beginning or at the very end of a test.  If the code is changed
+		 * to save more frequently, then this will become important.
+		 */
+		globalProjectData = new ProjectData();
+
+		/*
+		 * Now sleep a bit in case there is a thread still holding a reference to the "old"
+		 * globalProjectData (now referenced with projectDataToSave).  
+		 * We want it to finish its updates.  I assume 2 seconds is plenty of time.
+		 */
+		try
 		{
-			CoverageDataFileHandler.saveCoverageData(projectData,
-					CoverageDataFileHandler.getDefaultDataFile());
+			Thread.sleep(1000);
 		}
+		catch (InterruptedException e)
+		{
+		}
+
+		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
+		FileLocker lock = new FileLocker(dataFile);
+		if (lock.lock())
+		{
+			ProjectData datafileProjectData = loadCoverageDataFromDatafile(dataFile);
+			if (datafileProjectData == null)
+			{
+				datafileProjectData = projectDataToSave;
+			}
+			else
+			{
+				datafileProjectData.merge(projectDataToSave);
+			}
+			CoverageDataFileHandler.saveCoverageData(datafileProjectData, dataFile);
+		}
+		lock.release();
+	}
+
+	private static ProjectData loadCoverageDataFromDatafile(File dataFile)
+	{
+		ProjectData projectData = null;
+
+		// Read projectData from the serialized file.
+		if (dataFile.isFile())
+		{
+			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
+		}
+
+		if (projectData == null)
+		{
+			// We could not read from the serialized file, so use a new object.
+			System.out.println("Cobertura: Coverage data file " + dataFile.getAbsolutePath()
+					+ " either does not exist or is not readable.  Creating a new data file.");
+		}
+
+		return projectData;
 	}
 
 }
