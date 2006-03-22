@@ -23,18 +23,16 @@ modifications to Cobertura.
 </ul>
 </div>
 
-<h1>CVS</h1>
+<h1>Subversion</h1>
 
 <p>
 If you're interested in developing Cobertura and contributing patches,
-we suggest using CVS directly.  To check out the Cobertura source
-code using CVS:
+we suggest using Subversion directly.  To check out the Cobertura
+source code using Subversion:
 </p>
 
 <div class="codeblock">
-cvs -d :pserver:anonymous@cvs.sourceforge.net:/cvsroot/cobertura login<br/>
-(Just hit enter for the password)<br/>
-cvs -z3 -d :pserver:anonymous@cvs.sourceforge.net:/cvsroot/cobertura checkout -P cobertura
+svn co https://svn.sourceforge.net/svnroot/cobertura/trunk/cobertura
 </div>
 
 <p>
@@ -43,12 +41,14 @@ command to create a patch:
 </p>
 
 <div class="codeblock">
-cvs -z3 diff -udp > MyChanges.diff
+svn diff &gt; MyChanges.diff
 </div>
 
 <p>
-If you're new to CVS, you can find unending amounts of information
-about using and installing it by searching with Google.
+If you're new to Subversion, you can find unending amounts of
+information about using and installing it by searching with Google.
+The <a href="http://svnbook.red-bean.com/">online Subversion
+book</a> is quite popular.
 </p>
 
 
