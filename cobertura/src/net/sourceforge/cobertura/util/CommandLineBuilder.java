@@ -148,7 +148,7 @@ public class CommandLineBuilder {
 	/**
 	 * Gets absolute path to the file with saved arguments. Notice, that however
 	 * this method can be used as soon as an instance of this class is created,
-	 * arguments should be readed from the file after a call to
+	 * arguments should be read from the file after a call to
 	 * {@link #saveArgs} method.
 	 * 
 	 * @return absolute path to the file with arguments
@@ -169,11 +169,12 @@ public class CommandLineBuilder {
 	/**
 	 * Loads arguments from file if <code>--commandsfile</code> option is used. Checks
 	 * if passed array contains <code>--commandsfile</code> String, and if
-	 * so arguments from file specified in the very next array cell are readed. If
+	 * so arguments from file specified in the very next array cell are read. If
 	 * there are more then one <code>--commandsfile</code> the result is unspecified. 
 	 *
-	 * @return arguments readed from commandsfile, or <code>args</code> if commandsfile option
-	 * was not specified, or file cannot be readed
+	 * @return The list of arguments read from commandsfile, or
+	 *         <code>args</code> if commandsfile option was not specified
+	 *         or the file cannot be read.
 	 * @throws NullPointerException if args is null, or any argument is null
 	 * @throws IllegalArgumentException if --commandsfile is specified as last option
 	 * @throws IOException if I/O related error with temporary command line file occur
