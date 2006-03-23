@@ -153,13 +153,13 @@ public class CommandLineBuilderTest extends TestCase {
 		
 		try {
 			args = new String[]{ "Hello", "--commandsfile" };
-			result = CommandLineBuilder.preprocessCommandLineArguments( args);
+			CommandLineBuilder.preprocessCommandLineArguments( args);
 			fail( "IllegalArgumentException expected");
 		} catch( IllegalArgumentException ex) {}
 
 		try {
 			args = new String[]{ "Hello", "--commandsfile", "hello.cmd" };
-			result = CommandLineBuilder.preprocessCommandLineArguments( args);
+			CommandLineBuilder.preprocessCommandLineArguments( args);
 			fail( "IO Exception expected");
 		} catch( IOException ex) {}
 	}
