@@ -1,5 +1,5 @@
 This directory contains a simple example of using Cobertura to
-instrument an application.
+instrument an application and generate coverage reports.
 
 To run the example:
   ant
