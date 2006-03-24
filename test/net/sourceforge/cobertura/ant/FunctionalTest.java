@@ -53,27 +53,26 @@ import org.jdom.xpath.XPath;
 public class FunctionalTest extends TestCase
 {
 
-	private final static String BASEDIR = (System.getProperty("basedir") != null) ? System
-			.getProperty("basedir") : ".";
+	private final static File BASEDIR = new File((System.getProperty("basedir") != null) ? System
+			.getProperty("basedir") : ".", "examples/functionaltest1");
 
-	private static final File TEST_WORK_DIR = new File(BASEDIR + "/build/test/work");
-
-	public static void testClassDir() throws Exception
+	public static void testInstrumentUsingIncludesAndExcludes() throws Exception
 	{
-		runTestAntScript("class-dir", "test-class-dir");
-		verify("class-dir");
+		runTestAntScript("includes-and-excludes", "test-includes-and-excludes");
+		verify("includes-and-excludes");
 	}
 
-	public static void testWar() throws Exception
+	public static void testInstrumentUsingClassPath() throws Exception
 	{
-		runTestAntScript("war", "test-war");
-		verify("war");
+		runTestAntScript("classpath", "test-classpath");
+		verify("classpath");
 	}
 
+	// TODO: Also verify that the HTML reports are XHTML 1.0
 	private static void verify(String testName) throws Exception
 	{
 		// Get a list of all classes listed in the XML report
-		List classesList = getClassElements("class-dir");
+		List classesList = getClassElements();
 		assertTrue("Test " + testName + ": Did not find any classes listed in the XML report.",
 				classesList.size() > 0);
 
@@ -110,12 +109,11 @@ public class FunctionalTest extends TestCase
 	/**
 	 * Use XPath to get all &lt;class&gt; elements in the
 	 * cobertura.xml file under the given directory.
-	 * @param dirName The directory to look in.
 	 * @return A list of JDOM Elements.
 	 */
-	private static List getClassElements(String dirName) throws IOException, JDOMException
+	private static List getClassElements() throws IOException, JDOMException
 	{
-		File xmlFile = new File(TEST_WORK_DIR, dirName + "/coverage-xml/coverage.xml");
+		File xmlFile = new File(BASEDIR, "coverage/xml/coverage.xml");
 		Document document = JUnitXMLHelper.readXmlFile(xmlFile, true);
 		XPath xpath = XPath.newInstance("/coverage/packages/package/classes/class");
 		List classesList = xpath.selectNodes(document);
@@ -222,7 +220,7 @@ public class FunctionalTest extends TestCase
 		InstrumentTask.transferCoberturaDataFileProperty(task);
 
 		task.createArg().setValue("-f");
-		task.createArg().setValue(BASEDIR + "/test.xml");
+		task.createArg().setValue(BASEDIR + "/build.xml");
 		task.createArg().setValue(target);
 
 		task.setFailonerror(true);
@@ -239,19 +237,6 @@ public class FunctionalTest extends TestCase
 		try
 		{
 			task.execute();
-		}
-		catch (Throwable t)
-		{
-			t.printStackTrace();
-			if (outputFile.exists())
-			{
-				// Put the contents of the output file in the exception
-				System.out.println("\n\n\nOutput from Ant for " + testName
-						+ " test:\n----------------------------------------\n"
-						+ Util.getText(outputFile) + "----------------------------------------");
-				outputFile.delete();
-				throw new RuntimeException(Util.getText(outputFile));
-			}
 		}
 		finally
 		{
