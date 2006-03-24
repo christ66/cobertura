@@ -161,7 +161,7 @@
 
 	<target name="instrument" depends="jar">
 		<delete file="${basedir}/cobertura.ser" />
-		<delete file="${build.dir}/cobertura.ser" />
+		<delete file="${build.dir}/cobertura.ser" /> <!-- TODO: Is this needed? -->
 
 		<cobertura-taskdef />
 
@@ -201,8 +201,12 @@
 			<classpath location="${build.otherclasses.dir}" />
 			<classpath location="${etc.dir}" />
 			<classpath refid="base.path" />
+			<classpath>
+				<fileset dir="${java.home}/../">
+					<include name="lib/tools.jar"/>
+				</fileset>
+			</classpath>
 			<formatter type="xml" />
-			<!-- <formatter type="plain" usefile="false" /> -->
 			<test name="${testcase}" todir="${build.test.reports.dir}/junit-xml" if="testcase" />
 			<batchtest todir="${build.test.reports.dir}/junit-xml" unless="testcase">
 				<fileset dir="${build.test.classes.dir}">
@@ -261,6 +265,7 @@
 		                 totallinerate="50" />
 	</target>
 
+	<!--
 	<target name="format">
 		<property name="dir.jalopy" value="${lib.dir}/jalopy" />
 		<taskdef name="jalopy" classname="de.hunsicker.jalopy.plugin.ant.AntPlugin">
@@ -283,6 +288,7 @@
 			</fileset>
 		</jalopy>
 	</target>
+	-->
 
 	<target name="javadoc">
 		<delete dir="${build.api.dir}" />
@@ -404,6 +410,7 @@
 			<fileset dir="${basedir}">
 				<include name="cobertura.jar" />
 				<include name="cobertura.ser" />
+				<include name="cobertura.ser.lock" />
 				<include name="cobertura-*-bin.*" />
 				<include name="cobertura-*-src.*" />
 				<include name="cobertura-*-eclipse-plugin.zip" />
