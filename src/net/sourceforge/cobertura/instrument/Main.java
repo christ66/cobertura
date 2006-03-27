@@ -180,7 +180,7 @@ public class Main
 					ClassWriter cw = new ClassWriter(true);
 					ClassInstrumenter cv = new ClassInstrumenter(projectData,
 							cw, ignoreRegexes);
-					cr.accept(cv, CustomAttribute.getExtraAttributes(), false);
+					cr.accept(cv, false);
 
 					// If class was instrumented, get bytes that define the
 					// class
@@ -334,7 +334,7 @@ public class Main
 			ClassReader cr = new ClassReader(inputStream);
 			cw = new ClassWriter(true);
 			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes);
-			cr.accept(cv, CustomAttribute.getExtraAttributes(), false);
+			cr.accept(cv, false);
 		}
 		catch (Throwable t)
 		{
