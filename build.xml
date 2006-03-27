@@ -184,9 +184,9 @@
 		sysproperty is only used if we're testing instrumented code.
 	-->
 	<target name="test" depends="compile">
-		<delete dir="${build.test.reports.dir}/junit-xml" failonerror="false" />
+		<delete dir="${build.reports.dir}/junit-xml" failonerror="false" />
 		<delete dir="${test.work.dir}" failonerror="false" />
-		<mkdir dir="${build.test.reports.dir}/junit-xml" />
+		<mkdir dir="${build.reports.dir}/junit-xml" />
 
 		<junit fork="true" forkmode="once" failureProperty="test.failed" printsummary="true" timeout="300000">
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="${build.dir}/cobertura.ser" />
@@ -207,8 +207,8 @@
 				</fileset>
 			</classpath>
 			<formatter type="xml" />
-			<test name="${testcase}" todir="${build.test.reports.dir}/junit-xml" if="testcase" />
-			<batchtest todir="${build.test.reports.dir}/junit-xml" unless="testcase">
+			<test name="${testcase}" todir="${build.reports.dir}/junit-xml" if="testcase" />
+			<batchtest todir="${build.reports.dir}/junit-xml" unless="testcase">
 				<fileset dir="${build.test.classes.dir}">
 					<include name="**/*Test.class" />
 					<exclude name="test/first/Test.class" />
@@ -216,14 +216,14 @@
 			</batchtest>
 		</junit>
 
-		<delete dir="${build.test.reports.dir}/junit-html" failonerror="false" />
-		<mkdir dir="${build.test.reports.dir}/junit-html" />
+		<delete dir="${build.reports.dir}/junit-html" failonerror="false" />
+		<mkdir dir="${build.reports.dir}/junit-html" />
 
-		<junitreport todir="${build.test.reports.dir}/junit-html">
-			<fileset dir="${build.test.reports.dir}/junit-xml">
+		<junitreport todir="${build.reports.dir}/junit-html">
+			<fileset dir="${build.reports.dir}/junit-xml">
 				<include name="TEST-*.xml" />
 			</fileset>
-			<report format="frames" todir="${build.test.reports.dir}/junit-html" />
+			<report format="frames" todir="${build.reports.dir}/junit-html" />
 		</junitreport>
 
 		<fail message="Tests failed." if="test.failed" />
@@ -232,10 +232,10 @@
 	<target name="coverage-report">
 		<cobertura-taskdef />
 
-		<delete dir="${build.test.reports.dir}/coverage-html" />
-		<mkdir dir="${build.test.reports.dir}/coverage-html" />
+		<delete dir="${build.reports.dir}/coverage-html" />
+		<mkdir dir="${build.reports.dir}/coverage-html" />
 		<cobertura-report datafile="${build.dir}/cobertura.ser"
-		                  destdir="${build.test.reports.dir}/coverage-html"
+		                  destdir="${build.reports.dir}/coverage-html"
 		                  format="html"
 		                  >
 			<fileset dir="${src.dir}">
@@ -246,10 +246,10 @@
 			</fileset>
 	    </cobertura-report>
 
-		<delete dir="${build.test.reports.dir}/coverage-xml" />
-		<mkdir dir="${build.test.reports.dir}/coverage-xml" />
+		<delete dir="${build.reports.dir}/coverage-xml" />
+		<mkdir dir="${build.reports.dir}/coverage-xml" />
 		<cobertura-report datafile="${build.dir}/cobertura.ser"
-		                  destdir="${build.test.reports.dir}/coverage-xml"
+		                  destdir="${build.reports.dir}/coverage-xml"
 		                  format="xml"
 					      >
 			<fileset dir="${src.dir}">
