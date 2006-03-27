@@ -36,6 +36,17 @@ public class JUnitXMLHelper
 	private final static String BASEDIR = (System.getProperty("basedir") != null) ? System
 			.getProperty("basedir") : ".";
 
+	/**
+	 * This reads the given file into an XML Document.
+	 * @param file A valid file on the file system.
+	 * @param validate Whether to validate the XML or not.
+	 * @return An XML document representing the given XML file.
+	 * @throws FileNotFoundException If the file does not exist.
+	 * @throws IOException If the file could not be open/read.
+	 * @throws JDOMException If the file is not well-formed XML, or
+	 *         if validation is enabled and the document is not
+	 *         valid.
+	 */
 	public static Document readXmlFile(File file, boolean validate) throws FileNotFoundException,
 			IOException, JDOMException
 	{
