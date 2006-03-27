@@ -48,14 +48,14 @@
 		<!--
 			Remove the coverage data file and any old instrumentation.
 		-->
-		<delete file="${coverage.dir}/basic_coverage.ser"/>
+		<delete file="${reports.dir}/basic_coverage.ser"/>
 		<delete dir="${instrumented.dir}" />
 
 		<!--
 			Instrument the application classes, writing the
 			instrumented classes into ${build.instrumented.dir}.
 		-->
-		<cobertura-instrument datafile="${coverage.dir}/basic_coverage.ser" todir="${instrumented.dir}">
+		<cobertura-instrument datafile="${reports.dir}/basic_coverage.ser" todir="${instrumented.dir}">
 			<!--
 				The following line causes instrument to ignore any
 				source line containing a reference to log4j, for the
@@ -79,7 +79,7 @@
 			<!--
 				Specify the name of the coverage data file to use.
 			-->
-			<sysproperty key="net.sourceforge.cobertura.datafile" file="${coverage.dir}/basic_coverage.ser" />
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${reports.dir}/basic_coverage.ser" />
 
 			<!--
 				Note the classpath order: instrumented classes are before the
@@ -113,15 +113,14 @@
 	</target>
 
 	<target name="coverage-report">
-		<cobertura-report datafile="${coverage.dir}/basic_coverage.ser" srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
-		<cobertura-report datafile="${coverage.dir}/basic_coverage.ser" srcdir="${src.dir}" destdir="${coverage.html.dir}" />
+		<cobertura-report datafile="${reports.dir}/basic_coverage.ser" srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
+		<cobertura-report datafile="${reports.dir}/basic_coverage.ser" srcdir="${src.dir}" destdir="${coverage.html.dir}" />
 	</target>
 
 	<target name="clean" description="Remove all files created by the build/test process.">
 		<delete dir="${classes.dir}" />
 		<delete dir="${instrumented.dir}" />
 		<delete dir="${reports.dir}" />
-		<delete dir="${coverage.dir}" />
 		<delete file="cobertura.log" />
 	</target>
 

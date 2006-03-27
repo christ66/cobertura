@@ -127,7 +127,6 @@
 		<delete dir="${classes.dir}" />
 		<delete dir="${instrumented.dir}" />
 		<delete dir="${reports.dir}" />
-		<delete dir="${coverage.dir}" />
 		<delete file="cobertura.log" />
 		<delete file="cobertura.ser" />
 	</target>
