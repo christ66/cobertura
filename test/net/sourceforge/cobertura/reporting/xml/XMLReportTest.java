@@ -25,7 +25,6 @@ import java.io.File;
 
 import junit.framework.TestCase;
 import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.JUnitXMLHelper;
@@ -37,8 +36,6 @@ public class XMLReportTest extends TestCase
 	private final static String BASEDIR = (System.getProperty("basedir") != null) ? System
 			.getProperty("basedir") : ".";
 	private final static String PATH_TO_TEST_OUTPUT = BASEDIR + "/build/test/XMLReportTest";
-	private final static String PATH_TO_XML_REPORT = PATH_TO_TEST_OUTPUT + "/coverage.xml";
-	private final static String PATH_TO_SOURCE_CODE = BASEDIR + "/src";
 	private File tmpDir;
 
 	public void setUp()
@@ -54,22 +51,6 @@ public class XMLReportTest extends TestCase
 		for (int i = 0; i < files.length; i++)
 			files[i].delete();
 		tmpDir.delete();
-	}
-
-	public void testXMLReportValidity() throws Exception
-	{
-		String[] args;
-
-		// Serialize the current coverage data to disk
-		ProjectData.saveGlobalProjectData();
-		String dataFileName = CoverageDataFileHandler.getDefaultDataFile().getAbsolutePath();
-
-		// Then we need to generate the XML report
-		args = new String[] { "--format", "xml", "--datafile", dataFileName, "--destination",
-				PATH_TO_TEST_OUTPUT, PATH_TO_SOURCE_CODE };
-		net.sourceforge.cobertura.reporting.Main.main(args);
-
-		JUnitXMLHelper.readXmlFile(new File(PATH_TO_XML_REPORT), true);
 	}
 
 	public void testXMLReportWithNonSourceLines() throws Exception

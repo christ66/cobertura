@@ -27,7 +27,9 @@
 package net.sourceforge.cobertura.ant;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -74,8 +76,13 @@ public class FunctionalTest extends TestCase
 		verify("war");
 	}
 
-	// TODO: Also verify that the HTML reports are XHTML 1.0
 	private static void verify(String testName) throws Exception
+	{
+		verifyXml(testName);
+		verifyHtml(testName);
+	}
+
+	private static void verifyXml(String testName) throws Exception
 	{
 		// Get a list of all classes listed in the XML report
 		List classesList = getClassElements();
@@ -208,6 +215,67 @@ public class FunctionalTest extends TestCase
 		}
 	}
 
+	private static void verifyHtml(String testName) throws Exception
+	{
+		File htmlReportDir = new File(BASEDIR, "reports/cobertura-html");
+
+		// Get all files from report directory
+		String htmlFiles[] = htmlReportDir.list(new FilenameFilter()
+		{
+
+			public boolean accept(File dir, String name)
+			{
+				return name.endsWith(".html");
+			}
+		});
+		Arrays.sort(htmlFiles);
+
+		assertTrue(htmlFiles.length >= 5);
+
+		// Assert that all required files are there
+		String[] requiredFiles = { "index.html", "help.html", "frame-packages.html",
+				"frame-summary.html", "frame-sourcefiles.html" };
+
+		for (int i = 0; i < requiredFiles.length; i++)
+		{
+			if (!containsFile(htmlFiles, requiredFiles[i]))
+			{
+				fail("Test " + testName + ": File " + requiredFiles[i]
+						+ " not found among report files");
+			}
+		}
+
+		// Validate selected files
+		String previousPrefix = "NONE";
+		for (int i = 0; i < htmlFiles.length; i++)
+		{
+			// Validate file if has prefix different than previous one, or is required file
+			if (containsFile(requiredFiles, htmlFiles[i])
+					|| !htmlFiles[i].startsWith(previousPrefix))
+			{
+				JUnitXMLHelper.readXmlFile(new File(htmlReportDir, htmlFiles[i]), true);
+			}
+			if (htmlFiles[i].length() > 7)
+			{
+				previousPrefix = htmlFiles[i].substring(0, 7);
+			}
+			else
+			{
+				previousPrefix = htmlFiles[i];
+			}
+		}
+	}
+
+	private static boolean containsFile(String[] files, String fileName)
+	{
+		for (int i = 0; i < files.length; i++)
+		{
+			if (files[i].equals(fileName))
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Use the ant 'java' task to run the test.xml
 	 * file and the specified target.
@@ -223,7 +291,7 @@ public class FunctionalTest extends TestCase
 		task.setClassname("org.apache.tools.ant.launch.Launcher");
 		task.setFork(true);
 
-		InstrumentTask.transferCoberturaDataFileProperty(task);
+		AntUtil.transferCoberturaDataFileProperty(task);
 
 		task.createArg().setValue("-f");
 		task.createArg().setValue(BASEDIR + "/build.xml");

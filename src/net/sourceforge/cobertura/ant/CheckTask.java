@@ -152,6 +152,7 @@ public class CheckTask extends MatchingTask
 			getJava().createArg().setValue(iter.next().toString());
 		}
 
+		AntUtil.transferCoberturaDataFileProperty(getJava());
 		int returnCode = getJava().executeJava();
 
 		// Check the return code and print a message
