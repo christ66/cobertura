@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="cobertura.examples.functionaltest1" basedir="." default="all">
+<project name="cobertura.examples.functionaltest1" basedir="." default="help">
 
 	<description>
     Cobertura - http://cobertura.sourceforge.net/
@@ -14,6 +14,12 @@
 	<property file="build.properties" />
 
 	<taskdef resource="tasks.properties" />
+
+	<target name="help">
+		<echo>This example is only used for testing, and is not meant</echo>
+		<echo>to be run from the command line.  It requires certain </echo>
+		<echo>classes to be on the class path to work correctly.</echo>
+	</target>
 
 	<target name="init">
 		<mkdir dir="${classes.dir}" />
