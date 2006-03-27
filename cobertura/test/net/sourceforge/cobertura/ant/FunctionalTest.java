@@ -68,6 +68,12 @@ public class FunctionalTest extends TestCase
 		verify("classpath");
 	}
 
+	public static void testInstrumentUsingWar() throws Exception
+	{
+		runTestAntScript("classpath", "test-war");
+		verify("war");
+	}
+
 	// TODO: Also verify that the HTML reports are XHTML 1.0
 	private static void verify(String testName) throws Exception
 	{
@@ -113,7 +119,7 @@ public class FunctionalTest extends TestCase
 	 */
 	private static List getClassElements() throws IOException, JDOMException
 	{
-		File xmlFile = new File(BASEDIR, "coverage/xml/coverage.xml");
+		File xmlFile = new File(BASEDIR, "reports/cobertura-xml/coverage.xml");
 		Document document = JUnitXMLHelper.readXmlFile(xmlFile, true);
 		XPath xpath = XPath.newInstance("/coverage/packages/package/classes/class");
 		List classesList = xpath.selectNodes(document);
