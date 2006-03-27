@@ -316,11 +316,15 @@
 				<include name="COPYRIGHT" />
 				<include name="README" />
 				<include name="lib/**" />
-				<!-- xerces and xalan are currently only used by the JUnit tests -->
-				<exclude name="lib/xerces/**" />
-				<exclude name="lib/xalan/**" />
-				<include name="cobertura.jar" />
 
+				<!-- Exclude jars that are only used by the JUnit tests -->
+				<exclude name="lib/jaxen*" />
+				<exclude name="lib/jdom*" />
+				<exclude name="lib/junit*" />
+				<exclude name="lib/xerces/**" />
+				<exclude name="lib/xalan*" />
+
+				<include name="cobertura.jar" />
 				<include name="examples/basic/README" />
 				<include name="examples/basic/build.properties" />
 				<include name="examples/basic/*.xml" />
