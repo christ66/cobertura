@@ -162,7 +162,7 @@ public class SourceFileData extends CoverageDataContainer
 		int lastSlash = this.name.lastIndexOf('/');
 		if (lastSlash == -1)
 		{
-			return this.name;
+			return null;
 		}
 		return StringUtil.replaceAll(this.name.substring(0, lastSlash), "/",
 				".");
@@ -196,6 +196,11 @@ public class SourceFileData extends CoverageDataContainer
 	public void setContainsInstrumentationInfo()
 	{
 		this.containsInstrumentationInfo = true;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
 	}
 
 }

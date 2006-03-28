@@ -469,7 +469,7 @@ public class HTMLReport
 			String classPackageName = sourceFileData.getPackageName();
 			if ((classPackageName != null) && classPackageName.length() > 0)
 			{
-				out.print(sourceFileData.getPackageName() + ".");
+				out.print(classPackageName + ".");
 			}
 			out.print(sourceFileData.getBaseName());
 			out.println("</h5>");
