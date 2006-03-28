@@ -9,6 +9,6 @@ instrument the application, the instrumented application will then be
 tested, and a Cobertura report produced in HTML and XML.
 
 The Cobertura reports can be found in:
-  coverage/html/index.html
-  coverage/xml/coverage.xml
+  reports/cobertura-html/index.html
+  reports/cobertura-xml/coverage.xml
 
