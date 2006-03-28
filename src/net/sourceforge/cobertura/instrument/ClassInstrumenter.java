@@ -123,6 +123,21 @@ class ClassInstrumenter extends ClassAdapter
 	public void visitSource(String source, String debug)
 	{
 		super.visitSource(source, debug);
+
+		/*
+		 * TODO: Make this less ugly.  We really should not have set the
+		 *       source file prior to this method being called.
+		 */
+		PackageData packageData = (PackageData)projectData.getChild(classData
+				.getPackageName());
+		SourceFileData sourceFileData = (SourceFileData)packageData
+				.getChild(classData.getSourceFileName());
+		String packageName = sourceFileData.getPackageName();
+		if (packageName != null)
+			sourceFileData.setName(packageName.replace('.', '/') + '/' + source);
+		else
+			sourceFileData.setName(source);
+
 		classData.setSourceFileName(source);
 	}
 
