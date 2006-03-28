@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 public class SimpleTest extends TestCase
 {
 
-	final Simple simple = new Simple()
+	final def simple = new Simple()
 
 	public SimpleTest(String nm)
 	{
@@ -48,7 +48,7 @@ public class SimpleTest extends TestCase
 
 	public void testSum()
 	{
-		Collection c = new LinkedList()
+		def c = new LinkedList()
 		c.add(new Integer(3))
 		c.add(new Integer(5))
 		c.add(new Integer(8))

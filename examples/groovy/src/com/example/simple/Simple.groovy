@@ -36,7 +36,7 @@ public class Simple
 			logger.debug("x: " + x)
 		}
 
-		int result = x * x
+		def result = x * x
 
 		if (logger.isDebugEnabled())
 		{
@@ -79,7 +79,7 @@ public class Simple
 
 	public int sum(Collection c)
 	{
-		int result = 0;
+		def result = 0;
 
 		for (i in c)
 		{
