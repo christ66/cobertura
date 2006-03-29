@@ -72,6 +72,9 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		return (ClassData)this.classes.get(name);
 	}
 
+	/**
+	 * This is called by instrumented bytecode.
+	 */
 	public ClassData getOrCreateClassData(String name)
 	{
 		ClassData classData = (ClassData)this.classes.get(name);
