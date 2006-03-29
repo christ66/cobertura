@@ -64,6 +64,9 @@ public class ClassData extends CoverageDataContainer
 
 	private String sourceFileName = null;
 
+	/**
+	 * @param name In the format "net.sourceforge.cobertura.coveragedata.ClassData"
+	 */
 	public ClassData(String name)
 	{
 		if (name == null)
