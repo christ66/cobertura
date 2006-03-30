@@ -169,8 +169,8 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		if (globalProjectData != null)
 			return globalProjectData;
 
-		initialize();
 		globalProjectData = new ProjectData();
+		initialize();
 		return globalProjectData;
 	}
 
