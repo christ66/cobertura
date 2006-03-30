@@ -24,9 +24,7 @@ package net.sourceforge.cobertura.instrument;
 import java.util.Collection;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
-import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.coveragedata.SourceFileData;
 
 import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassAdapter;
@@ -89,13 +87,8 @@ class ClassInstrumenter extends ClassAdapter
 			String superName, String[] interfaces)
 	{
 		this.myName = name.replace('/', '.');
-		classData = this.projectData.getOrCreateClassData(this.myName);
-
-		PackageData packageData = (PackageData)projectData.getChild(classData
-				.getPackageName());
-		SourceFileData sourceFileData = (SourceFileData)packageData
-				.getChild(classData.getSourceFileName());
-		sourceFileData.setContainsInstrumentationInfo();
+		this.classData = this.projectData.getOrCreateClassData(this.myName);
+		this.classData.setContainsInstrumentationInfo();
 
 		// Do not attempt to instrument interfaces or classes that
 		// have already been instrumented
@@ -120,24 +113,12 @@ class ClassInstrumenter extends ClassAdapter
 		}
 	}
 
+	/**
+	 * @param source In the format "ClassInstrumenter.java"
+	 */
 	public void visitSource(String source, String debug)
 	{
 		super.visitSource(source, debug);
-
-		/*
-		 * TODO: Make this less ugly.  We really should not have set the
-		 *       source file prior to this method being called.
-		 */
-		PackageData packageData = (PackageData)projectData.getChild(classData
-				.getPackageName());
-		SourceFileData sourceFileData = (SourceFileData)packageData
-				.getChild(classData.getSourceFileName());
-		String packageName = sourceFileData.getPackageName();
-		if (packageName != null)
-			sourceFileData.setName(packageName.replace('.', '/') + '/' + source);
-		else
-			sourceFileData.setName(source);
-
 		classData.setSourceFileName(source);
 	}
 

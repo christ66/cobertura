@@ -44,9 +44,6 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	private static SaveTimer saveTimer = null;
 
-	/** This collection is used for quicker access to the list of source files. */
-	private Map sourceFiles = new HashMap();
-
 	/** This collection is used for quicker access to the list of classes. */
 	private Map classes = new HashMap();
 
@@ -62,8 +59,6 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 			this.children.put(packageName, packageData);
 		}
 		packageData.addClassData(classData);
-		this.sourceFiles.put(classData.getSourceFileName(), packageData.getChild(classData
-				.getSourceFileName()));
 		this.classes.put(classData.getName(), classData);
 	}
 
@@ -98,7 +93,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	public int getNumberOfSourceFiles()
 	{
-		return this.sourceFiles.size();
+		return getSourceFiles().size();
 	}
 
 	public SortedSet getPackages()
@@ -108,7 +103,14 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	public Collection getSourceFiles()
 	{
-		return this.sourceFiles.values();
+		SortedSet sourceFileDatas = new TreeSet();
+		Iterator iter = this.children.values().iterator();
+		while (iter.hasNext())
+		{
+			PackageData packageData = (PackageData)iter.next();
+			sourceFileDatas.addAll(packageData.getSourceFiles());
+		}
+		return sourceFileDatas;
 	}
 
 	/**
@@ -139,14 +141,6 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		super.merge(coverageData);
 
 		ProjectData projectData = (ProjectData)coverageData;
-		for (Iterator iter = projectData.sourceFiles.keySet().iterator(); iter.hasNext();)
-		{
-			Object key = iter.next();
-			if (!this.sourceFiles.containsKey(key))
-			{
-				this.sourceFiles.put(key, projectData.sourceFiles.get(key));
-			}
-		}
 		for (Iterator iter = projectData.classes.keySet().iterator(); iter.hasNext();)
 		{
 			Object key = iter.next();

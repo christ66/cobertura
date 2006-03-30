@@ -79,18 +79,18 @@ public class MergeTest extends TestCase {
 		PackageData first = (PackageData) packages.next();
 		assertEquals( "", first.getName());
 		assertEquals( 2, first.getNumberOfChildren());
-		assertNotNull( first.getChild("Fourth.java"));
-		assertNotNull( first.getChild("Seventh.java"));
+		assertNotNull( first.getChild("Fourth"));
+		assertNotNull( first.getChild("Seventh"));
 		
 		PackageData beautiful = (PackageData) packages.next();
 		assertEquals( "beautiful", beautiful.getName());
 		assertEquals( 1, beautiful.getNumberOfChildren());
-		assertNotNull( beautiful.getChild("beautiful/Fourth.java"));
+		assertNotNull( beautiful.getChild("Fourth"));
 		
 		PackageData test = (PackageData) packages.next();
 		assertEquals( "test", test.getName());
 		assertEquals( 1, test.getNumberOfChildren());
-		assertNotNull( test.getChild("test/First.java"));
+		assertNotNull( test.getChild("First"));
 		assertNull( test.getChild("test/me/First.java"));
 		assertNull( test.getChild("Fourth.java"));
 		
@@ -98,7 +98,7 @@ public class MergeTest extends TestCase {
 		assertEquals( "test.me", testMe.getName());
 		assertEquals( 1, testMe.getNumberOfChildren());
 		assertNull( testMe.getChild("test/First.java"));
-		assertNotNull( testMe.getChild("test/me/Fourth.java"));
+		assertNotNull( testMe.getChild("Fourth"));
 		assertNull( testMe.getChild("Fourth.java"));
 		
 		assertFalse( packages.hasNext());

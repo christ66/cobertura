@@ -23,8 +23,11 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class PackageData extends CoverageDataContainer
@@ -45,17 +48,14 @@ public class PackageData extends CoverageDataContainer
     
 	public void addClassData(ClassData classData)
 	{
-		String sourceFileName = classData.getSourceFileName();
-		SourceFileData sourceFileData = (SourceFileData)children.get(sourceFileName);
-		if (sourceFileData == null)
-		{
-			sourceFileData = new SourceFileData(sourceFileName);
-			// Each key is a source file name, stored as an String object.
-			// Each value is information about the source file, stored as
-			// a SourceFileData object.
-			this.children.put(sourceFileName, sourceFileData);
-		}
-		sourceFileData.addClassData(classData);
+		if (children.containsKey(classData.getBaseName()))
+			throw new IllegalArgumentException("Package " + this.name
+					+ " already contains a class with the name "
+					+ classData.getBaseName());
+
+		// Each key is a class basename, stored as an String object.
+		// Each value is information about the class, stored as a ClassData object.
+		children.put(classData.getBaseName(), classData);
 	}
 
 	/**
@@ -91,13 +91,7 @@ public class PackageData extends CoverageDataContainer
 
 	public SortedSet getClasses()
 	{
-		SortedSet classes = new TreeSet();
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext()) {
-			SourceFileData sourceFileData = (SourceFileData)iter.next();
-			classes.addAll(sourceFileData.getClasses());
-		}
-		return classes;
+		return new TreeSet(this.children.values());
 	}
 
 	public String getName()
@@ -110,9 +104,22 @@ public class PackageData extends CoverageDataContainer
 		return this.name.replace('.', '/');
 	}
 
-	public SortedSet getSourceFiles()
+	public Collection getSourceFiles()
 	{
-		return new TreeSet(this.children.values());
+		SortedMap sourceFileDatas = new TreeMap();
+		Iterator iter = this.children.values().iterator();
+		while (iter.hasNext()) {
+			ClassData classData = (ClassData)iter.next();
+			String sourceFileName = classData.getSourceFileName();
+			SourceFileData sourceFileData = (SourceFileData)sourceFileDatas.get(sourceFileName);
+			if (sourceFileData == null)
+			{
+				sourceFileData = new SourceFileData(sourceFileName);
+				sourceFileDatas.put(sourceFileName, sourceFileData);
+			}
+			sourceFileData.addClassData(classData);
+		}
+		return sourceFileDatas.values();
 	}
 
 	public int hashCode()
