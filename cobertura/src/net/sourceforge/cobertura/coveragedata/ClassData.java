@@ -58,6 +58,8 @@ public class ClassData extends CoverageDataContainer
 	 */
 	private Map branches = new HashMap();
 
+	private boolean containsInstrumentationInfo = false;
+
 	private Set methodNamesAndDescriptors = new HashSet();
 
 	private String name = null;
@@ -103,6 +105,11 @@ public class ClassData extends CoverageDataContainer
 		if (!o.getClass().equals(ClassData.class))
 			return Integer.MAX_VALUE;
 		return this.name.compareTo(((ClassData)o).name);
+	}
+
+	public boolean containsInstrumentationInfo()
+	{
+		return this.containsInstrumentationInfo;
 	}
 
 	/**
@@ -365,6 +372,7 @@ public class ClassData extends CoverageDataContainer
 			}
 		}
 
+		this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
 		this.methodNamesAndDescriptors.addAll(classData
 				.getMethodNamesAndDescriptors());
 		if (classData.sourceFileName != null)
@@ -376,6 +384,11 @@ public class ClassData extends CoverageDataContainer
 		Integer lineObject = new Integer(lineNumber);
 		children.remove(lineObject);
 		branches.remove(lineObject);
+	}
+
+	public void setContainsInstrumentationInfo()
+	{
+		this.containsInstrumentationInfo = true;
 	}
 
 	public void setSourceFileName(String sourceFileName)

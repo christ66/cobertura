@@ -37,9 +37,9 @@ public class SourceFileData extends CoverageDataContainer
 
 	private String name;
 
-	private boolean containsInstrumentationInfo = false;
-
-	// TODO: If the source file name must end in .java, then check for that.
+	/**
+	 * @param name In the format, "net/sourceforge/cobertura/coveragedata/SourceFileData.java"
+	 */
 	public SourceFileData(String name)
 	{
 		if (name == null)
@@ -77,7 +77,16 @@ public class SourceFileData extends CoverageDataContainer
 
 	public boolean containsInstrumentationInfo()
 	{
-		return this.containsInstrumentationInfo;
+		// Return false if any of our child ClassData's does not
+		// contain instrumentation info
+		Iterator iter = this.children.values().iterator();
+		while (iter.hasNext())
+		{
+			ClassData classData = (ClassData)iter.next();
+			if (!classData.containsInstrumentationInfo())
+				return false;
+		}
+		return true;
 	}
 
 	/**
@@ -94,8 +103,7 @@ public class SourceFileData extends CoverageDataContainer
 
 		SourceFileData sourceFileData = (SourceFileData)obj;
 		return super.equals(obj)
-				&& this.name.equals(sourceFileData.name)
-				&& this.containsInstrumentationInfo == sourceFileData.containsInstrumentationInfo;
+				&& this.name.equals(sourceFileData.name);
 	}
 
 	public String getBaseName()
@@ -141,6 +149,11 @@ public class SourceFileData extends CoverageDataContainer
 		return this.name;
 	}
 
+	/**
+	 * @return The name of this source file without the file extension
+	 *         in the format
+	 *         "net.sourceforge.cobertura.coveragedata.SourceFileData"
+	 */
 	public String getNormalizedName()
 	{
 		String fullNameWithoutExtension;
@@ -157,6 +170,10 @@ public class SourceFileData extends CoverageDataContainer
 		return StringUtil.replaceAll(fullNameWithoutExtension, "/", ".");
 	}
 
+	/**
+	 * @return The name of the package that this source file is in.
+	 *         In the format "net.sourceforge.cobertura.coveragedata"
+	 */
 	public String getPackageName()
 	{
 		int lastSlash = this.name.lastIndexOf('/');
@@ -183,24 +200,6 @@ public class SourceFileData extends CoverageDataContainer
 				return true;
 		}
 		return false;
-	}
-
-	public void merge(CoverageData coverageData)
-	{
-		super.merge(coverageData);
-
-		SourceFileData sourceFileData = (SourceFileData)coverageData;
-		this.containsInstrumentationInfo |= sourceFileData.containsInstrumentationInfo;
-	}
-
-	public void setContainsInstrumentationInfo()
-	{
-		this.containsInstrumentationInfo = true;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
 	}
 
 }
