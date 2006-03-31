@@ -53,8 +53,7 @@ only changes you need to make are to your classpath:
 </p>
 
 <ul>
-<li>Include cobertura.jar (which will include log4j and a few other
-jars)</li>
+<li>Include cobertura.jar</li>
 <li>Add the directory containing the instrumented
 classes BEFORE the directory containing the uninstrumented classes.
 The order is very important.</li>
@@ -84,16 +83,20 @@ Example:
 <h2>Reporting</h2>
 
 <p>
-<code>cobertura-report.bat [--datafile <i>file</i>] [--destination <i>dir</i>] [--format (html|xml)] [--source <i>dir</i>]</code>
+<code>cobertura-report.bat [--datafile <i>file</i>] [--destination <i>dir</i>] [--format (html|xml)] <i>source code directory</i> [<i>...</i>] [--basedir <i>dir</i> <i>file underneath basedir</i> <i>...</i>]</code>
 </p>
 
 <table>
 <tr><th>Parameter</th><th>Required?</th><th>Description</th><th>Default Value</th></tr>
+<tr><td>--basedir</td><td>No</td><td>Specify a directory containing source code.  All files listed after this are assumed to be underneath this directory.  This should only be used if you want to include only a few specific files underneath a source tree and exclude all other files.</td><td>No default value.</td></tr>
 <tr><td>--datafile</td><td>No</td><td>Specify the name of the file containing metadata about your classes.</td><td>"cobertura.ser" in the current directory</td></tr>
 <tr><td>--destination</td><td>Yes</td><td>Specify the output directory for the report.</td><td>No default value.</td></tr>
 <tr><td>--format</td><td>No</td><td>The type of report you want to generate.</td><td>html</td></tr>
-<tr><td>--source</td><td>Yes</td><td>Specify the directory containing the source code of your project.  This is used to calculate the cyclomatic code complexity of each class.  The HTML reports are also made of annotated versions of each source file, showing which lines of code were excercised.</td><td>No default value.</td></tr>
 </table>
+
+<p>
+The source code directories are used to calculate the cyclomatic code complexity of each class.  The HTML reports are also made of annotated versions of each source file, showing which lines of code were excercised.
+</p>
 
 <p>
 Example:
@@ -101,7 +104,7 @@ Example:
 
 <div class="codeblock">
 <p>
-<code>cobertura-report.bat --format html --datafile C:\MyProject\build\cobertura.ser --destination C:\MyProject\reports\coverage --source C:\MyProject\src</code>
+<code>cobertura-report.bat --format html --datafile C:\MyProject\build\cobertura.ser --destination C:\MyProject\reports\coverage C:\MyProject\src</code>
 </p>
 </div>
 
