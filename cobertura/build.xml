@@ -354,10 +354,10 @@
 				<include name="src-2/**" />
 				<include name="test/**" />
 
-				<include name="examples/basic/README" />
-				<include name="examples/basic/build.properties" />
-				<include name="examples/basic/*.xml" />
-				<include name="examples/basic/src/**" />
+				<include name="examples/*/README" />
+				<include name="examples/*/build.properties" />
+				<include name="examples/*/*.xml" />
+				<include name="examples/*/src/**" />
 			</fileset>
 		</copy>
 
