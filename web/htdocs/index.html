@@ -64,6 +64,96 @@ Cobertura with Appfuse</a></li>
 <h1>News</h1>
 
 <div class="newsitem">
+<span class="date">10 April 2006</span>
+<div class="text">
+<p>
+After 4 long months we've release Cobertura 1.8!  Lots of good
+changes in this release: show the total number of lines and
+branches in the HTML report, allow multiple JVMs to cleanly
+write to the same data file, and more robust instrumentation
+of archives (and even archives inside of archives!)  See below
+for the full list of changes.
+</p>
+
+<ul>
+<li>
+Ability to have multiple <ignore/> regular expressions
+in the instrument task (Alexei Yudichev).
+</li>
+
+<li>
+Ability to specify a minimum branch coverage rate and
+line coverage rate for each package when using
+cobertura-check.
+</li>
+
+<li>
+Show the number of lines and branches covered and the
+total number of lines and branches in the HTML report.
+</li>
+
+<li>
+Support for instrumenting classes written in Groovy.
+</li>
+
+<li>
+Lock the data file before trying to write to it.  This
+allows multiple JVMs (or multiple class loaders within
+a single JVM) to write to the same coverage data file
+with no problems (John Lewis).
+</li>
+
+<li>
+Ability to instrument classes on a given classpath
+instead of specifying filesets (John Lewis).
+</li>
+
+<li>
+Ability to specify which classes will be instrumented
+using regular expressions (John Lewis).
+</li>
+
+<li>
+Archives within archives will be instrumented if you
+specify an includeClassname regular expression (John
+Lewis).
+</li>
+
+<li>
+If instrumenting an archive, remove any signatures
+and checksums, since they will no longer be valid (John
+Lewis).
+</li>
+
+<li>
+Removed the Class-Path line from cobertura.jar.  You may
+need to modify your Cobertura taskdef to include the jars
+in Cobertura's 'lib' directory.  See our Ant task web
+page for an example.
+</li>
+
+<li>
+Reorganized libs into a flatter directory structure--you
+may need to update your ant scripts.
+</li>
+
+<li>
+Upgraded from asm 2.1 to asm 2.2.1.  No code changes were
+needed.
+</li>
+
+<li>
+Copied portions of classes from JavaNCSS into Cobertura
+so that we don't need to include the entire JavaNCSS and
+CCL jars.
+</li>
+</ul>
+
+</div>
+</div>
+
+
+<div class="newsitem">
 <span class="date">17 March 2006</span>
 <div class="text">
 <p>
