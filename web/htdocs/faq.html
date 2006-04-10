@@ -78,8 +78,35 @@ Cobertura is currently developed by
 
 <p>
 With help from other supporters of open source
-development.  See the COPYRIGHT file distributed
-with Cobertura for the full list of contributors.
+development.  See the
+<a href="http://svn.sourceforge.net/viewcvs.cgi/*checkout*/cobertura/trunk/cobertura/COPYRIGHT">COPYRIGHT
+file distributed with Cobertura</a> for the
+full list of contributors.
+</p>
+</div>
+</div>
+
+
+
+<br/>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+Can I help?
+</p>
+</div>
+
+<div class="answer">
+<p>
+Yes!  Just <a href="download.html">check out the most recent code
+from our Subversion repository</a> and start hacking.  Please try to
+follow the same naming, coding and formatting conventions as the rest
+of Cobertura.  Patches can be submitted to our
+<a href="https://sourceforge.net/tracker/?group_id=130558&amp;atid=720017">patch 
+tracker</a>.
 </p>
 </div>
 </div>
@@ -140,6 +167,68 @@ get running.
 <div class="faq">
 <div class="question">
 <p>
+Why did you feel a need to fork jcoverage?
+</p>
+</div>
+
+<div class="answer">
+<p>
+We felt it would be beneficial for the Java community if there were a
+Java coverage tool with a more open development process than jcoverage
+and Clover.
+</p>
+
+<p>
+The GPL release of jcoverage had not been updated in about a year and
+a half.  This in and of itself is ok, but the last release of
+jcoverage (1.0.5) has a bug which causes jcoverage to fail in Windows
+when used on a large number of classes (generally about two or three
+hundred).  The bug is caused by the jcoverage ant tasks using a
+command line that is too large for Windows.  A jcoverage user
+submitted a patch to the jcoverage bug tracker to fix the problem,
+but it was never officially released as a part of jcoverage/gpl.
+</p>
+
+<p>
+Also, the version of BCEL distributed with jcoverage 1.0.5 causes
+problems when used with Java classes compiled with a 1.5 JDK.
+</p>
+</div>
+
+
+
+<br/>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+What about <a href="http://emma.sourceforge.net/">Emma</a>?
+</p>
+</div>
+
+<div class="answer">
+<p>
+We haven't used it very much, but it looks like it does a pretty good
+job.  Judging from the sample on the Emma web page, we think
+the Cobertura HTML reports are a bit easier to digest.  It looks like
+Emma has some nice usability features, such as the ability to
+instrument all classes in a jar file with one command.  A little
+friendly competition never hurt anyone.
+</p>
+</div>
+</div>
+
+
+
+<br/>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
 What do I need to use Cobertura?
 </p>
 </div>
@@ -164,81 +253,17 @@ the dependencies you'll need (ASM, log4j, etc.)
 <div class="faq">
 <div class="question">
 <p>
-Why did you feel a need to fork jcoverage?
+What is code complexity and why should I care about it?
 </p>
 </div>
 
 <div class="answer">
 <p>
-We felt it would be beneficial for the Java community if there were a
-Java coverage tool with a more open development process than jcoverage
-and Clover.
-</p>
-
-<p>
-The GPL release of jcoverage had not been updated in about a year and
-a half.  This in and of itself is ok, but the last release of
-jcoverage (1.0.5) has a bug which causes jcoverage to fail in Windows
-when used on a large number of classes (generally about two or three
-hundred).  The bug is caused by the jcoverage ant tasks using a
-command line that is too large for Windows.  You can see the
-<a href="http://bugzilla.jcoverage.com/show_bug.cgi?id=16">original
-bug report</a> and a
-<a href="http://bugzilla.jcoverage.com/attachment.cgi?id=3&amp;action=view">patch
-from someone in the community</a> in the jcoverage bugzilla.
-</p>
-
-<p>
-Also, the version of BCEL distributed with jcoverage 1.0.5 causes
-problems when used with Java classes compiled with a 1.5 JDK.
-</p>
-</div>
-
-
-
-<br/>
-
-
-
-<div class="faq">
-<div class="question">
-<p>
-What about <a href="http://emma.sourceforge.net/">Emma</a>?
-</p>
-</div>
-
-<div class="answer">
-<p>
-I've never actually used it, but it looks like it does a pretty good
-job.  Judging from the sample on the Emma web page, we think
-the Cobertura HTML reports are a bit easier to digest.  It looks like
-Emma has some nice usability features, such as the ability to
-instrument all classes in a jar file with one command.  A little
-friendly competition never hurt anyone.
-</p>
-</div>
-</div>
-
-
-
-<br/>
-
-
-
-<div class="faq">
-<div class="question">
-<p>
-Can I help?
-</p>
-</div>
-
-<div class="answer">
-<p>
-Yes!  Just check out a copy of CVS and start hacking.  Please try to
-follow the same naming and coding conventions as the rest of
-Cobertura.  Patches can be submitted to our
-<a href="https://sourceforge.net/tracker/?group_id=130558&amp;atid=720017">patch 
-tracker</a>.
+McCabe's cyclomatic code complexity algorithm is used to determine
+how "complex" a given piece of code is.  As code becomes more
+complex, it becomes more error prone.  If a class has a high
+complexity number, then that class is a good target for additional
+test coverage.
 </p>
 </div>
 </div>
@@ -280,6 +305,13 @@ of the data file when running your tests.  You should pass the
 sysproperty to the JUnit task.
 </p>
 
+<p>
+Another common problem is that the cobertura.ser file is
+deleted, but the previously instrumented classes are not
+also deleted.  Any time you delete your coverage data file
+you should also deleted all instrumented classes.
+</p>
+
 </div>
 </div>
 
@@ -299,7 +331,7 @@ Why is Cobertura causing me to have classpath conflicts with ASM?
 <div class="answer">
 <p>
 Cobertura uses ASM to modify your bytecode.  There are a few other
-popular programs that use ASM: Groovy and Hibernate, to name two.
+popular programs that use ASM; Groovy and Hibernate, to name two.
 You could have problems if Cobertura uses a different version of
 asm and you add both versions to your classpath.
 </p>
@@ -309,6 +341,29 @@ Cobertura only uses ASM when instrumenting.  Cobertura <i>does not
 need ASM in your classpath when running tests</i>.  If you're seeing
 classpath conflicts, just make sure the asm jar that comes with
 Cobertura is used only by Cobertura, and only when instrumenting.
+</p>
+</div>
+</div>
+
+
+
+<br/>
+
+
+
+<div class="faq">
+<div class="question">
+<p>
+Is it possible to graphically show my test coverage over time?
+</p>
+</div>
+
+<div class="answer">
+<p>
+Yes, using <a href="http://qalab.sourceforge.net/index.html">QALab</a>.
+From their website, QALab "allows developers, architects and project
+managers alike to be presented with a trend of the QA statistics of
+their project."
 </p>
 </div>
 </div>
