@@ -51,7 +51,6 @@
 
 	<target name="compile" depends="init">
 		<mkdir dir="${build.classes.dir}" />
-
 		<javac fork="true" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true">
 			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
@@ -65,8 +64,16 @@
 			<classpath refid="base.path" />
 		</javac>
 
-		<mkdir dir="${build.test.classes.dir}" />
+		<!-- Copy jar resources (css, images, log4j property file, etc.) -->
+		<copy todir="${build.classes.dir}">
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
 
+	<target name="compile-tests" depends="init,compile">
+		<mkdir dir="${build.test.classes.dir}" />
 		<javac fork="true" srcdir="${test.src.dir}" destdir="${build.test.classes.dir}" debug="true">
 			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
@@ -74,13 +81,6 @@
 			<classpath refid="base.path" />
 			<classpath location="${build.otherclasses.dir}" />
 		</javac>
-
-		<!-- Copy jar resources (css, images, log4j property file, etc.) -->
-		<copy todir="${build.classes.dir}">
-			<fileset dir="${src.dir}">
-				<exclude name="**/*.java" />
-			</fileset>
-		</copy>
 
 		<copy todir="${build.test.classes.dir}">
 			<fileset dir="${test.src.dir}">
@@ -183,7 +183,7 @@
 		non-instrumented code.  The net.sourceforge.cobertura.datafile
 		sysproperty is only used if we're testing instrumented code.
 	-->
-	<target name="test" depends="compile">
+	<target name="test" depends="compile-tests">
 		<delete dir="${build.reports.dir}/junit-xml" failonerror="false" />
 		<delete dir="${test.work.dir}" failonerror="false" />
 		<mkdir dir="${build.reports.dir}/junit-xml" />
@@ -422,7 +422,7 @@
 		</delete>
 	</target>
 
-	<target name="coverage" depends="compile,instrument,test,coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
-	<target name="release" depends="clean,compile,test,jar,javadoc,dist" description="Full build cycle, producing a distribution." />
+	<target name="coverage" depends="compile,compile-tests,instrument,test,coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
+	<target name="release" depends="clean,compile,compile-tests,test,jar,javadoc,dist" description="Full build cycle, producing a distribution." />
 
 </project>
