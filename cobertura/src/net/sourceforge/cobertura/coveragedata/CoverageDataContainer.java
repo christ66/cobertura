@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Collections;
 
 /**
  * <p>
@@ -50,7 +51,7 @@ public abstract class CoverageDataContainer
 	 * an Integer object.  Each value is information about the child,
 	 * stored as an object that implements the CoverageData interface.
 	 */
-	Map children = new HashMap();
+	Map children = Collections.synchronizedMap(new HashMap());
 
 	/**
 	 * Determine if this CoverageDataContainer is equal to

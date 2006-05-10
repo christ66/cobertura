@@ -48,7 +48,7 @@ public class SourceFileData extends CoverageDataContainer
 		this.name = name;
 	}
 
-	public void addClassData(ClassData classData)
+	public synchronized void addClassData(ClassData classData)
 	{
 		if (children.containsKey(classData.getBaseName()))
 			throw new IllegalArgumentException("Source file " + this.name
