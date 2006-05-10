@@ -2,7 +2,11 @@ version 1.9:
 	* Assume Java source files are saved as UTF-8 instead of
 	  the computer's default encoding.
 	* Write all HTML and XML reports in UTF-8 instead of the
-	  computer's default encoding.
+	  computer's default encoding (Naoki Iwami).
+	* Fix a bug where the Cobertura ant tasks would not work
+	  correctly in Microsoft Windows when Cobertura was
+	  installed on a different drive than the drive from which
+	  you're running ant (Srivathsan).
 
 version 1.8 (2006-04-10)
 	* Ability to have multiple <ignore/> regular expressions
