@@ -27,6 +27,7 @@ package net.sourceforge.cobertura.coveragedata;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	private static SaveTimer saveTimer = null;
 
 	/** This collection is used for quicker access to the list of classes. */
-	private Map classes = new HashMap();
+	private Map classes = Collections.synchronizedMap(new HashMap());
 
 	public void addClassData(ClassData classData)
 	{
@@ -70,7 +71,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	/**
 	 * This is called by instrumented bytecode.
 	 */
-	public ClassData getOrCreateClassData(String name)
+	public synchronized ClassData getOrCreateClassData(String name)
 	{
 		ClassData classData = (ClassData)this.classes.get(name);
 		if (classData == null)
