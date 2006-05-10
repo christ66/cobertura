@@ -4,6 +4,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2005 Jeremy Thomerson
+ * Copyright (C) 2006 Naoki Iwami
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -25,11 +26,13 @@ package net.sourceforge.cobertura.reporting.html;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -99,7 +102,7 @@ public class HTMLReport
 
 		try
 		{
-			out = new PrintStream(new FileOutputStream(file));
+			out = new PrintStream(new FileOutputStream(file), false, "UTF-8");
 
 			out
 					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
@@ -190,7 +193,7 @@ public class HTMLReport
 		PrintStream out = null;
 		try
 		{
-			out = new PrintStream(new FileOutputStream(file));
+			out = new PrintStream(new FileOutputStream(file), false, "UTF-8");
 
 			out
 					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
@@ -283,7 +286,7 @@ public class HTMLReport
 
 		try
 		{
-			out = new PrintStream(new FileOutputStream(file));
+			out = new PrintStream(new FileOutputStream(file), false, "UTF-8");
 
 			out
 					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
@@ -447,7 +450,7 @@ public class HTMLReport
 
 		try
 		{
-			out = new PrintStream(new FileOutputStream(file));
+			out = new PrintStream(new FileOutputStream(file), false, "UTF-8");
 
 			out
 					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
@@ -518,7 +521,12 @@ public class HTMLReport
 		BufferedReader br = null;
 		try
 		{
-			br = new BufferedReader(new FileReader(sourceFile));
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), "UTF-8"));
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			return "<p>Unable to open " + sourceFile.getAbsolutePath()
+					+ ": The encoding 'UTF-8' is not supported by your JVM.</p>";
 		}
 		catch (FileNotFoundException e)
 		{

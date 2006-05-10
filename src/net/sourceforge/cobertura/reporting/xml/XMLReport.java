@@ -24,8 +24,9 @@
 package net.sourceforge.cobertura.reporting.xml;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Date;
@@ -63,8 +64,8 @@ public class XMLReport
 		this.complexity = complexity;
 		this.finder = finder;
 
-		pw = new PrintWriter(new FileWriter(new File(destinationDir,
-				"coverage.xml")));
+		File file = new File(destinationDir, "coverage.xml");
+		pw = new PrintWriter(new PrintStream(new FileOutputStream(file), false, "UTF-8"));
 
 		try
 		{
