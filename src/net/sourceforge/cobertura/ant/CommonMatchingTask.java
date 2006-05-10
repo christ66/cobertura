@@ -58,6 +58,7 @@
 
 package net.sourceforge.cobertura.ant;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -125,7 +126,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 						.getURLs();
 				for (int i = 0; i < earls.length; i++)
 				{
-					String classpath = earls[i].getFile();
+					String classpath = (new File(earls[i].getFile())).getAbsolutePath();
 					createClasspath().setPath(
 							StringUtil.replaceAll(classpath, "%20", " "));
 				}
