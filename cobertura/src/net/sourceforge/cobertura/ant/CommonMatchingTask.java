@@ -7,6 +7,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Joakim Erdfelt
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2006 Srivathsan Varadarajan
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

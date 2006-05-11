@@ -6,7 +6,7 @@ version 1.9:
 	* Fix a bug where the Cobertura ant tasks would not work
 	  correctly in Microsoft Windows when Cobertura was
 	  installed on a different drive than the drive from which
-	  you're running ant (Srivathsan).
+	  you're running ant (Srivathsan Varadarajan).
 
 version 1.8 (2006-04-10)
 	* Ability to have multiple <ignore/> regular expressions
