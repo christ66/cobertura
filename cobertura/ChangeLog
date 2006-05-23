@@ -7,6 +7,8 @@ version 1.9:
 	  correctly in Microsoft Windows when Cobertura was
 	  installed on a different drive than the drive from which
 	  you're running ant (Srivathsan Varadarajan).
+	* Added a "maxmemory" attribute to the instrument, merge
+	  and report ant tasks (Matt Cordes).
 
 version 1.8 (2006-04-10)
 	* Ability to have multiple <ignore/> regular expressions
