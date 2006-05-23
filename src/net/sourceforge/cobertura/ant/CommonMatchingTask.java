@@ -8,6 +8,7 @@
  * Copyright (C) 2005 Joakim Erdfelt
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2006 Srivathsan Varadarajan
+ * Copyright (C) 2006 Matt Cordes
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -86,6 +87,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 	final List fileSets = new LinkedList();
 
 	private Java java = null;
+	private String maxMemory = null;
 
 	public CommonMatchingTask(String className)
 	{
@@ -106,6 +108,8 @@ public abstract class CommonMatchingTask extends MatchingTask
 			java.setClassname(getClassName());
 			java.setFork(true);
 			java.setDir(getProject().getBaseDir());
+			if (maxMemory != null)
+				java.setJvmargs("-Xmx" + maxMemory);
 
 			/**
 			 * We replace %20 with a space character because, for some
@@ -204,5 +208,14 @@ public abstract class CommonMatchingTask extends MatchingTask
 	public void addFileset(FileSet fileSet)
 	{
 		fileSets.add(fileSet);
+	}
+
+	/**
+	 * @param maxMemory Assumed to be something along the lines of
+	 *        100M or 50K or 1G.
+	 */
+	public void setMaxMemory(String maxMemory)
+	{
+		this.maxMemory = maxMemory != null ? maxMemory.trim() : null;
 	}
 }

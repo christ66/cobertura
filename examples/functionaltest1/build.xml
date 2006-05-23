@@ -126,7 +126,8 @@
 		<cobertura-report datafile="${basedir}/cobertura.ser" srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
 
 		<mkdir dir="${coverage.html.dir}" />
-		<cobertura-report datafile="${basedir}/cobertura.ser" destdir="${coverage.html.dir}">
+		<!-- maxmemory is only specified to test the attribute -->
+		<cobertura-report datafile="${basedir}/cobertura.ser" destdir="${coverage.html.dir}" maxmemory="512M">
 			<fileset dir="${src.dir}">
 				<include name="**/*.java" />
 			</fileset>
