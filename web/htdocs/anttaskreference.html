@@ -37,6 +37,7 @@ top of your build.xml script, before any target statements.
 <table>
 <tr><th>Parameter</th><th>Required?</th><th>Description</th><th>Default Value</th></tr>
 <tr><td>datafile</td><td>No</td><td>Specify the name of the file to use for storing the metadata about your classes.  This is a single file containing serialized Java classes.  It contains information about the names of classes in your project, their method names, line numbers, etc.  It will be updated as your tests are run, and will be referenced by the Cobertura reporting command.</td><td>"cobertura.ser" in the current directory</td></tr>
+<tr><td>maxmemory</td><td>No</td><td>Specify the maximum amount of memory used by the JVM.  This is not normally needed, but you may need to specify a larger value if you see out of memory exceptions while this ant task is running.  This could happen when you have a very large number of classes.</td><td>The default value for your system</td></tr>
 <tr><td>todir</td><td>No</td><td>Specify the output directory for the instrumented classes.  Note: If you do not specify a todir attribute, be careful to make sure to delete any instrumented class files whenever you delete your cobertura.ser file.</td><td>If no destination directory is specified, then the uninstrumented classes will be overwritten with their instrumented counterparts.</td></tr>
 </table>
 
@@ -189,6 +190,7 @@ starts/stops.
 <tr><td>format</td><td>No</td><td>The type of report you want to generate.</td><td>html</td></tr>
 <tr><td>datafile</td><td>No</td><td>Specify the name of the file containing metadata about your classes.</td><td>"cobertura.ser" in the current directory</td></tr>
 <tr><td>destdir</td><td>Yes</td><td>Specify the output directory for the report.</td><td>No default value.</td></tr>
+<tr><td>maxmemory</td><td>No</td><td>Specify the maximum amount of memory used by the JVM.  This is not normally needed, but you may need to specify a larger value if you see out of memory exceptions while this ant task is running.  This could happen when you have a very large number of classes.</td><td>The default value for your system</td></tr>
 <tr><td>srcdir</td><td>Yes</td><td>Specify the directory containing the source code of your project.  This is used to calculate the cyclomatic code complexity of each class.  The HTML reports are also made of annotated versions of each source file, showing which lines of code were excercised.</td><td>No default value.</td></tr>
 </table>
 
@@ -269,6 +271,7 @@ Example:
 <table>
 <tr><th>Parameter</th><th>Required?</th><th>Description</th><th>Default Value</th></tr>
 <tr><td>datafile</td><td>No</td><td>Specify the name of the file containing metadata about your classes.  This is the "destination" file into which the contents of the other data files will be merged.</td><td>"cobertura.ser" in the current directory</td></tr>
+<tr><td>maxmemory</td><td>No</td><td>Specify the maximum amount of memory used by the JVM.  This is not normally needed, but you may need to specify a larger value if you see out of memory exceptions while this ant task is running.  This could happen when you have a very large number of classes.</td><td>The default value for your system</td></tr>
 </table>
 
 <p>
