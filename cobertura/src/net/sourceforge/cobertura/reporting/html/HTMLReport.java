@@ -46,6 +46,7 @@ import java.util.Vector;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.CoverageData;
+import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
@@ -504,6 +505,34 @@ public class HTMLReport
 			}
 		}
 	}
+   
+   private String generateBranchInfo(LineData lineData, String content) {
+      boolean hasBranch = (lineData != null) ? lineData.hasBranch() : false;
+      if (hasBranch) 
+      {
+         StringBuffer ret = new StringBuffer();
+         ret.append("<a title=\"Line ").append(lineData.getLineNumber()).append(": Branch coverage ")
+            .append(getPercentValue(lineData.getBranchCoverageRate())).append(" (").append(lineData.getNumberOfCoveredBranches())
+            .append("/").append(lineData.getNumberOfValidBranches()).append(")");
+         if (lineData.getBranchSize() > 1)
+         {
+            ret.append(" [particular branches: ");
+            for (int i = 0; i < lineData.getBranchSize(); i++)
+            {
+               if (i > 0)
+                  ret.append(", ");
+               ret.append(getPercentValue(lineData.getBranchCoverageRate(i)));
+            }
+            ret.append("]");
+         }
+         ret.append(".\">").append(content).append("</a>");
+         return ret.toString();
+      }
+      else
+      {
+         return content;
+      }
+   }
 
 	private String generateHtmlizedJavaSource(SourceFileData sourceFileData)
 	{
@@ -546,26 +575,28 @@ public class HTMLReport
 				ret.append("<tr>");
 				if (sourceFileData.isValidSourceLineNumber(lineNumber))
 				{
-					long numberOfHits = sourceFileData.getHitCount(lineNumber);
-					ret.append("  <td class=\"numLineCover\">&nbsp;"
-							+ lineNumber + "</td>");
-					if (numberOfHits > 0)
-					{
-						ret.append("  <td class=\"nbHitsCovered\">&nbsp;"
-								+ numberOfHits + "</td>");
-						ret
-								.append("  <td class=\"src\"><pre class=\"src\">&nbsp;"
-										+ javaToHtml.process(lineStr)
-										+ "</pre></td>");
+               LineData lineData = sourceFileData.getLineCoverage(lineNumber);
+               ret.append("  <td class=\"numLineCover\">&nbsp;"
+                     + lineNumber + "</td>");
+               if ((lineData != null) && (lineData.isCovered()))
+               {
+                  ret.append("  <td class=\"nbHitsCovered\">" 
+                        + generateBranchInfo(lineData, "&nbsp;" + ((lineData != null) ? lineData.getHits() : 0)) 
+                        + "</td>");
+                  ret
+                        .append("  <td class=\"src\"><pre class=\"src\">&nbsp;"
+                              + generateBranchInfo(lineData, javaToHtml.process(lineStr))
+                              + "</pre></td>");
 					}
 					else
 					{
-						ret.append("  <td class=\"nbHitsUncovered\">&nbsp;"
-								+ numberOfHits + "</td>");
-						ret
-								.append("  <td class=\"src\"><pre class=\"src\"><span class=\"srcUncovered\">&nbsp;"
-										+ javaToHtml.process(lineStr)
-										+ "</span></pre></td>");
+                  ret.append("  <td class=\"nbHitsUncovered\">"
+                        + generateBranchInfo(lineData, "&nbsp;" + ((lineData != null) ? lineData.getHits() : 0))
+                        + "</td>");
+                  ret
+                        .append("  <td class=\"src\"><pre class=\"src\"><span class=\"srcUncovered\">&nbsp;"
+                              + generateBranchInfo(lineData, javaToHtml.process(lineStr))
+                              + "</span></pre></td>");
 					}
 				}
 				else

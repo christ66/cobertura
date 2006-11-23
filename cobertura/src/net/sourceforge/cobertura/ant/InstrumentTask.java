@@ -9,6 +9,7 @@
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2005 Alexei Yudichev
  * Copyright (C) 2006 John Lewis
+ * Copyright (C) 2006 Jiri Mares 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -81,6 +82,8 @@ public class InstrumentTask extends CommonMatchingTask
 	private File toDir = null;
 
 	List ignoreRegexs = new ArrayList();
+
+   List ignoreBranchesRegexs = new ArrayList();
 	
 	List includeClassesRegexs = new ArrayList();
 
@@ -103,6 +106,13 @@ public class InstrumentTask extends CommonMatchingTask
 		ignoreRegexs.add(ignoreRegex);
 		return ignoreRegex;
 	}
+
+   public IgnoreBranches createIgnoreBranches()
+   {
+      IgnoreBranches ignoreBranchesRegex = new IgnoreBranches();
+      ignoreBranchesRegexs.add(ignoreBranchesRegex);
+      return ignoreBranchesRegex;
+   }
 
 	public IncludeClasses createIncludeClasses()
 	{
@@ -151,6 +161,11 @@ public class InstrumentTask extends CommonMatchingTask
 				Ignore ignoreRegex = (Ignore)ignoreRegexs.get(i);
 				builder.addArg("--ignore", ignoreRegex.getRegex());
 			}
+
+         for (int i = 0; i < ignoreBranchesRegexs.size(); i++) {
+            IgnoreBranches ignoreBranchesRegex = (IgnoreBranches)ignoreBranchesRegexs.get(i);
+            builder.addArg("--ignoreBranches", ignoreBranchesRegex.getRegex());
+         }
 
 			for (int i = 0; i < includeClassesRegexs.size(); i++) {
 				IncludeClasses includeClassesRegex = (IncludeClasses)includeClassesRegexs.get(i);

@@ -4,6 +4,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Jeremy Thomerson
+ * Copyright (C) 2006 Jiri Mares
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -278,7 +279,7 @@ public class XMLReport
 	{
 		int lineNumber = lineData.getLineNumber();
 		long hitCount = lineData.getHits();
-		boolean isBranch = lineData.isBranch();
+		boolean isBranch = lineData.hasBranch();
 
 		println("<line number=\"" + lineNumber + "\" hits=\"" + hitCount
 				+ "\" branch=\"" + isBranch + "\"/>");
