@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2006 Jiri Mares
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -55,29 +56,33 @@ public class ClassDataTest extends TestCase
 	public void testBranch()
 	{
 		// Setting an invalid line as a branch should not make the line valid
-		assertFalse(a.isBranch(2));
-		a.markLineAsBranch(2);
-		assertFalse(a.isBranch(2));
+		assertFalse(a.hasBranch(2));
+		a.addLineJump(2, 0);
+		assertFalse(a.hasBranch(2));
 
-		assertFalse(b.isBranch(2));
-		b.markLineAsBranch(2);
-		assertTrue(b.isBranch(2));
+		assertFalse(b.hasBranch(2));
+		b.addLineJump(2, 0);
+		assertTrue(b.hasBranch(2));
 
-		assertFalse(b.isBranch(4));
-		b.markLineAsBranch(4);
-		assertTrue(b.isBranch(4));
+		assertTrue(b.hasBranch(2));
+		b.addLineJump(2, 1);
+		assertTrue(b.hasBranch(2));
+
+		assertFalse(b.hasBranch(4));
+		b.addLineSwitch(4, 0, 1, 9);
+		assertTrue(b.hasBranch(4));
 
 		Collection branches = b.getBranches();
 		assertEquals(2, branches.size());
-		assertEquals(b.getNumberOfValidBranches(), branches.size());
+		assertEquals(14, b.getNumberOfValidBranches());
+		assertTrue(branches.contains(new Integer(2)));
+		assertTrue(branches.contains(new Integer(4)));
 		//assertTrue(branches.contains(new LineData(2, "test", "(I)B")));
 		//assertTrue(branches.contains(new LineData(4, "test", "(I)B")));
 	}
 
 	public void testBranchCoverage()
 	{
-		assertEquals(0, a.getNumberOfCoveredBranches());
-		assertEquals(0, b.getNumberOfCoveredBranches());
 		assertEquals(0, a.getNumberOfValidBranches());
 		assertEquals(0, b.getNumberOfValidBranches());
 		assertEquals(1.00d, a.getBranchCoverageRate(), 0d);
@@ -86,23 +91,35 @@ public class ClassDataTest extends TestCase
 		assertEquals(1.00d, a.getBranchCoverageRate("test(I)B"), 0d);
 		assertEquals(1.00d, b.getBranchCoverageRate("test(I)B"), 0d);
 
-		c.markLineAsBranch(1);
-		c.markLineAsBranch(2);
-		c.markLineAsBranch(3);
-		c.markLineAsBranch(4);
+		c.addLineJump(1, 0);
+		c.addLineJump(2, 0);
+		c.addLineSwitch(3, 0, 1, 3);
+		c.addLineSwitch(4, 0, 1, 3);
 
+		assertEquals(12, c.getNumberOfValidBranches());
 		assertEquals(0, c.getNumberOfCoveredBranches());
-		assertEquals(4, c.getNumberOfValidBranches());
 		assertEquals(0.00d, c.getBranchCoverageRate(), 0d);
 		assertEquals(0.00d, c.getBranchCoverageRate("test(I)B"), 0d);
 
-		c.touch(1);
-		c.touch(2);
+		c.touchJump(1, 0, true);
+		c.touchJump(1, 0, false);
+		c.touchJump(2, 0, true);
+		c.touchJump(2, 0, false);
 
-		assertEquals(2, c.getNumberOfCoveredBranches());
-		assertEquals(4, c.getNumberOfValidBranches());
-		assertEquals(0.50d, c.getBranchCoverageRate(), 0d);
-		assertEquals(0.50d, c.getBranchCoverageRate("test(I)B"), 0d);
+		assertEquals(12, c.getNumberOfValidBranches());
+		assertEquals(4, c.getNumberOfCoveredBranches());
+		assertEquals(0.33d, c.getBranchCoverageRate(), 0.01d);
+		assertEquals(0.33d, c.getBranchCoverageRate("test(I)B"), 0.01d);
+
+		c.touchSwitch(3, 0, 0);
+		c.touchSwitch(3, 0, 1);
+		c.touchSwitch(4, 0, 2);
+		c.touchSwitch(4, 0, -1);
+		
+		assertEquals(12, c.getNumberOfValidBranches());
+		assertEquals(8, c.getNumberOfCoveredBranches());
+		assertEquals(0.66d, c.getBranchCoverageRate(), 0.01d);
+		assertEquals(0.66d, c.getBranchCoverageRate("test(I)B"), 0.01d);
 	}
 
 	public void testConstructor()
@@ -155,27 +172,6 @@ public class ClassDataTest extends TestCase
 		assertTrue(b.equals(c));
 	}
 
-	public void testGetHitCount()
-	{
-		assertEquals(0, a.getHitCount(45));
-		assertEquals(0, b.getHitCount(45));
-		assertEquals(0, c.getHitCount(-45));
-
-		assertEquals(1, b.getHitCount(1));
-		assertEquals(1, b.getHitCount(2));
-		assertEquals(0, b.getHitCount(3));
-
-		assertEquals(0, c.getHitCount(1));
-		assertEquals(0, c.getHitCount(2));
-
-		assertEquals(0, b.getHitCount(3));
-		b.touch(3);
-		assertEquals(1, b.getHitCount(3));
-		for (int i = 0; i < 234; i++)
-			b.touch(3);
-		assertEquals(235, b.getHitCount(3));
-	}
-
 	public void testLineCoverage()
 	{
 		assertEquals(0, a.getNumberOfCoveredLines());
@@ -200,24 +196,31 @@ public class ClassDataTest extends TestCase
 	public void testRemoveLine()
 	{
 		assertEquals(0, a.getNumberOfValidBranches());
+		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(0, a.getNumberOfValidLines());
 		a.removeLine(3);
 		assertEquals(0, a.getNumberOfValidBranches());
+		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(0, a.getNumberOfValidLines());
 
 		assertEquals(0, b.getNumberOfValidBranches());
+		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(5, b.getNumberOfValidLines());
 		b.removeLine(3);
 		assertEquals(0, b.getNumberOfValidBranches());
+		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(4, b.getNumberOfValidLines());
 
-		c.markLineAsBranch(2);
-		c.markLineAsBranch(3);
-		c.markLineAsBranch(4);
-		assertEquals(3, c.getNumberOfValidBranches());
+		c.addLineJump(2, 0);
+		c.addLineSwitch(3, 0, 1, 2);
+		c.addLineJump(3, 0);
+		c.addLineJump(4, 0);
+		assertEquals(9, c.getNumberOfValidBranches());
+		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(5, c.getNumberOfValidLines());
 		c.removeLine(3);
-		assertEquals(2, c.getNumberOfValidBranches());
+		assertEquals(4, c.getNumberOfValidBranches());
+		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(4, c.getNumberOfValidLines());
 	}
 
@@ -249,12 +252,12 @@ public class ClassDataTest extends TestCase
 		assertTrue(a.isValidSourceLineNumber(line));
 
 		assertTrue(b.isValidSourceLineNumber(line));
-		assertEquals(0, b.getHitCount(line));
+		assertEquals(0, b.getLineCoverage(line).getHits());
 		b.touch(line);
 		assertTrue(b.isValidSourceLineNumber(line));
-		assertEquals(1, b.getHitCount(line));
+		assertEquals(1, b.getLineCoverage(line).getHits());
 		b.touch(line);
-		assertEquals(2, b.getHitCount(line));
+		assertEquals(2, b.getLineCoverage(line).getHits());
 		assertTrue(b.isValidSourceLineNumber(line));
 	}
 

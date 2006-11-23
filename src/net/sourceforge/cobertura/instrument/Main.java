@@ -6,6 +6,7 @@
  * Copyright (C) 2005 Joakim Erdfelt
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2006 John Lewis
+ * Copyright (C) 2006 Jiri Mares 
  * Contact information for the above is given in the COPYRIGHT file.
  *
  * Cobertura is free software; you can redistribute it and/or modify
@@ -91,6 +92,8 @@ public class Main
 	private File destinationDirectory = null;
 
 	private Collection ignoreRegexes = new Vector();
+
+   private Collection ignoreBranchesRegexes = new Vector();
 
 	private ClassPattern classPattern = new ClassPattern();
 
@@ -179,7 +182,7 @@ public class Main
 					ClassReader cr = new ClassReader(entryBytes);
 					ClassWriter cw = new ClassWriter(true);
 					ClassInstrumenter cv = new ClassInstrumenter(projectData,
-							cw, ignoreRegexes);
+							cw, ignoreRegexes, ignoreBranchesRegexes);
 					cr.accept(cv, false);
 
 					// If class was instrumented, get bytes that define the
@@ -333,7 +336,7 @@ public class Main
 			inputStream = new FileInputStream(file);
 			ClassReader cr = new ClassReader(inputStream);
 			cw = new ClassWriter(true);
-			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes);
+			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes, ignoreBranchesRegexes);
 			cr.accept(cv, false);
 		}
 		catch (Throwable t)
@@ -427,6 +430,10 @@ public class Main
 			{
 				RegexUtil.addRegex(ignoreRegexes, args[++i]);
 			}
+         else if (args[i].equals("--ignoreBranches"))
+         {
+            RegexUtil.addRegex(ignoreBranchesRegexes, args[++i]);
+         }
 			else if (args[i].equals("--includeClasses"))
 			{
 				classPattern.addIncludeClassesRegex(args[++i]);

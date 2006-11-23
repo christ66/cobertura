@@ -2,6 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2006 Jiri Mares
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -91,21 +92,26 @@ public class PackageDataTest extends TestCase
 		assertEquals(0, packageData.getNumberOfValidBranches());
 		assertEquals(1.00d, packageData.getBranchCoverageRate(), 0d);
 
-		classData.markLineAsBranch(1);
-		classData.markLineAsBranch(2);
-		classData.markLineAsBranch(3);
-		classData.markLineAsBranch(4);
+		classData.addLineJump(1, 0);
+      classData.addLineSwitch(1, 1, new int[] {1,5});
+		classData.addLineJump(2, 0);
+		classData.addLineSwitch(3, 0, 1, 3);
 
 		assertEquals(0, packageData.getNumberOfCoveredBranches());
-		assertEquals(4, packageData.getNumberOfValidBranches());
+		assertEquals(12, packageData.getNumberOfValidBranches());
 		assertEquals(0.00d, packageData.getBranchCoverageRate(), 0d);
 
 		classData.touch(1);
+      classData.touchJump(1, 0, true);
+      classData.touch(1);
+      classData.touchJump(1, 0, false);
+      classData.touchSwitch(1, 1, 0);
 		classData.touch(2);
-
-		assertEquals(2, packageData.getNumberOfCoveredBranches());
-		assertEquals(4, packageData.getNumberOfValidBranches());
-		assertEquals(0.50d, packageData.getBranchCoverageRate(), 0d);
+      classData.touchJump(2, 0, false);
+      
+		assertEquals(4, packageData.getNumberOfCoveredBranches());
+		assertEquals(12, packageData.getNumberOfValidBranches());
+		assertEquals(0.33d, packageData.getBranchCoverageRate(), 0.01d);
 	}
 
 	public void testConstructor()

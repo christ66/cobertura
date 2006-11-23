@@ -4,6 +4,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Jeremy Thomerson
+ * Copyright (C) 2006 Jiri Mares
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -37,16 +38,16 @@ public class SourceFileData extends CoverageDataContainer
 
 	private String name;
 
-	/**
-	 * @param name In the format, "net/sourceforge/cobertura/coveragedata/SourceFileData.java"
-	 */
-	public SourceFileData(String name)
-	{
-		if (name == null)
-			throw new IllegalArgumentException(
-					"Source file name must be specified.");
-		this.name = name;
-	}
+   /**
+    * @param name In the format, "net/sourceforge/cobertura/coveragedata/SourceFileData.java"
+    */
+   public SourceFileData(String name)
+   {
+      if (name == null)
+         throw new IllegalArgumentException(
+               "Source file name must be specified.");
+      this.name = name;
+   }
 
 	public synchronized void addClassData(ClassData classData)
 	{
@@ -132,17 +133,17 @@ public class SourceFileData extends CoverageDataContainer
 		return new TreeSet(this.children.values());
 	}
 
-	public long getHitCount(int lineNumber)
-	{
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
-		{
-			ClassData classData = (ClassData)iter.next();
-			if (classData.isValidSourceLineNumber(lineNumber))
-				return classData.getHitCount(lineNumber);
-		}
-		return 0;
-	}
+   public LineData getLineCoverage(int lineNumber)
+   {
+      Iterator iter = this.children.values().iterator();
+      while (iter.hasNext())
+      {
+         ClassData classData = (ClassData)iter.next();
+         if (classData.isValidSourceLineNumber(lineNumber))
+            return classData.getLineCoverage(lineNumber);
+      }
+      return null;
+   }
 
 	public String getName()
 	{

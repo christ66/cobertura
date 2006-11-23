@@ -1,8 +1,9 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2005 Mark Doliner <thekingant@users.sourceforge.net>
- *
+ * Copyright (C) 2005 Mark Doliner 
+ * Copyright (C) 2006 Jiri Mares 
+ * 
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License,
@@ -42,6 +43,8 @@ class ClassInstrumenter extends ClassAdapter
 
 	private Collection ignoreRegexs;
 
+   private Collection ignoreBranchesRegexs;
+
 	private ProjectData projectData;
 
 	private ClassData classData;
@@ -61,11 +64,12 @@ class ClassInstrumenter extends ClassAdapter
 	}
 
 	public ClassInstrumenter(ProjectData projectData, final ClassVisitor cv,
-			final Collection ignoreRegexs)
+			final Collection ignoreRegexs, final Collection ignoreBranchesRegexes)
 	{
 		super(cv);
 		this.projectData = projectData;
 		this.ignoreRegexs = ignoreRegexs;
+      this.ignoreBranchesRegexs = ignoreBranchesRegexs;
 	}
 
 	private boolean arrayContains(Object[] array, Object key)
@@ -132,8 +136,9 @@ class ClassInstrumenter extends ClassAdapter
 		if (!instrument)
 			return mv;
 
-		return mv == null ? null : new MethodInstrumenter(classData, mv,
-				this.myName, name, desc, ignoreRegexs);
+      return mv == null ? null : new FirstPassMethodInstrumenter(classData, mv,
+            this.myName, access, name, desc, signature, exceptions, ignoreRegexs, 
+            ignoreBranchesRegexs);
 	}
 
 	public void visitEnd()

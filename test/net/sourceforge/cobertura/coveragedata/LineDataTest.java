@@ -2,6 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2006 Jiri Mares
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -71,46 +72,71 @@ public class LineDataTest extends TestCase
 	{
 		assertEquals(1, a.getBranchCoverageRate(), 0);
 		assertEquals(0, a.getLineCoverageRate(), 0);
-		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(0, a.getNumberOfCoveredLines());
+		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(0, a.getNumberOfValidBranches());
 		assertEquals(1, a.getNumberOfValidLines());
 
-		a.setBranch(true);
+		a.addJump(0);
+		a.addJump(1);
 		assertEquals(0, a.getBranchCoverageRate(), 0);
 		assertEquals(0, a.getLineCoverageRate(), 0);
-		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(0, a.getNumberOfCoveredLines());
-		assertEquals(1, a.getNumberOfValidBranches());
+		assertEquals(0, a.getNumberOfCoveredBranches());
+		assertEquals(4, a.getNumberOfValidBranches());
 		assertEquals(1, a.getNumberOfValidLines());
 
 		for (int i = 0; i < 5; i++)
 		{
 			a.touch();
-			assertEquals(1, a.getBranchCoverageRate(), 0);
+			assertEquals(0, a.getBranchCoverageRate(), 0);
 			assertEquals(1, a.getLineCoverageRate(), 0);
-			assertEquals(1, a.getNumberOfCoveredBranches());
 			assertEquals(1, a.getNumberOfCoveredLines());
-			assertEquals(1, a.getNumberOfValidBranches());
+			assertEquals(0, a.getNumberOfCoveredBranches());
+			assertEquals(4, a.getNumberOfValidBranches());
 			assertEquals(1, a.getNumberOfValidLines());
 		}
 
-		a.setBranch(false);
+		a.touchJump(0, true);
+		assertEquals(0.25, a.getBranchCoverageRate(), 0);
+		assertEquals(1, a.getLineCoverageRate(), 0);
+		assertEquals(1, a.getNumberOfCoveredLines());
+		assertEquals(1, a.getNumberOfCoveredBranches());
+		assertEquals(4, a.getNumberOfValidBranches());
+		assertEquals(1, a.getNumberOfValidLines());
+
+		a.touchJump(1, false);
+		assertEquals(0.5, a.getBranchCoverageRate(), 0);
+		assertEquals(1, a.getLineCoverageRate(), 0);
+		assertEquals(1, a.getNumberOfCoveredLines());
+		assertEquals(2, a.getNumberOfCoveredBranches());
+		assertEquals(4, a.getNumberOfValidBranches());
+		assertEquals(1, a.getNumberOfValidLines());
+
+		a.touchJump(1, true);
+		assertEquals(0.75, a.getBranchCoverageRate(), 0);
+		assertEquals(1, a.getLineCoverageRate(), 0);
+		assertEquals(1, a.getNumberOfCoveredLines());
+		assertEquals(3, a.getNumberOfCoveredBranches());
+		assertEquals(4, a.getNumberOfValidBranches());
+		assertEquals(1, a.getNumberOfValidLines());
+
+		a.touchJump(0, false);
 		assertEquals(1, a.getBranchCoverageRate(), 0);
 		assertEquals(1, a.getLineCoverageRate(), 0);
-		assertEquals(0, a.getNumberOfCoveredBranches());
 		assertEquals(1, a.getNumberOfCoveredLines());
-		assertEquals(0, a.getNumberOfValidBranches());
+		assertEquals(4, a.getNumberOfCoveredBranches());
+		assertEquals(4, a.getNumberOfValidBranches());
 		assertEquals(1, a.getNumberOfValidLines());
 	}
 
 	public void testSetConditional()
 	{
-		assertFalse(c.isBranch());
-		c.setBranch(true);
-		assertTrue(c.isBranch());
-		c.setBranch(false);
-		assertFalse(c.isBranch());
+		assertFalse(c.hasBranch());
+		c.addJump(0);
+		assertTrue(c.hasBranch());
+		c.addJump(1);
+		assertTrue(c.hasBranch());
 	}
 
 	public void testSetMethodNameAndDescriptor()

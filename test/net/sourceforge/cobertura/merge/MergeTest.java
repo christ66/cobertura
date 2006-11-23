@@ -2,6 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2006 Jiri Mares
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -212,23 +213,24 @@ public class MergeTest extends TestCase {
 	
 	public void testMergeBranches() {
 		firstClass.addLine( 1, "helloWorld","()V");
-		firstClass.markLineAsBranch(1);
+		firstClass.addLineJump(1, 0);
 		firstClass.addLine( 2, "helloWorld","()V");
-		firstClass.markLineAsBranch(2);
+		firstClass.addLineJump(2, 0);
+		firstClass.addLineJump(2, 1);
 		firstClass.addLine( 3, "helloWorld","()V");
 		firstClass.addLine( 4, "helloWorld","()V");
-		firstClass.markLineAsBranch(4);
+		firstClass.addLineSwitch(4, 0, 0, 2);
 		firstClass.addLine( 5, "helloWorld","()V");
 		firstClass.addLine( 8, "helloWorld","()V");
 		greenProject.addClassData( firstClass);
 		
 		firstClassB.addLine( 1, "helloWorld","()V");
-		firstClassB.markLineAsBranch(1);
+		firstClassB.addLineJump(1, 0);
 		firstClassB.addLine( 2, "helloWorld","()V");
 		firstClassB.addLine( 3, "helloWorld","()V");
-		firstClassB.markLineAsBranch(3);
+		firstClassB.addLineSwitch(3, 0, 2, 4);
 		firstClassB.addLine( 6, "helloWorld","()V");
-		firstClassB.markLineAsBranch(6);
+		firstClassB.addLineJump(6, 0);
 		firstClassB.addLine( 7, "helloWorld","()V");
 		firstClassB.addLine( 8, "helloWorld","()V");
 		redProject.addClassData( firstClassB);
@@ -240,21 +242,21 @@ public class MergeTest extends TestCase {
 		Iterator lines = cd.getLines().iterator();
 		
 		LineData line1 = (LineData) lines.next();
-		assertTrue( line1.isBranch());
+		assertTrue( line1.hasBranch());
 		LineData line2 = (LineData) lines.next();
-		assertTrue( line2.isBranch());
+		assertTrue( line2.hasBranch());
 		LineData line3 = (LineData) lines.next();
-		assertTrue( line3.isBranch());
+		assertTrue( line3.hasBranch());
 		LineData line4 = (LineData) lines.next();
-		assertTrue( line4.isBranch());
+		assertTrue( line4.hasBranch());
 		LineData line5 = (LineData) lines.next();
-		assertFalse( line5.isBranch());
+		assertFalse( line5.hasBranch());
 		LineData line6 = (LineData) lines.next();
-		assertTrue( line6.isBranch());
+		assertTrue( line6.hasBranch());
 		LineData line7 = (LineData) lines.next();
-		assertFalse( line7.isBranch());
+		assertFalse( line7.hasBranch());
 		LineData line8 = (LineData) lines.next();
-		assertFalse( line8.isBranch());
+		assertFalse( line8.hasBranch());
 		assertFalse( lines.hasNext());
 	}
 	
