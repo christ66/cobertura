@@ -75,7 +75,7 @@ public class CoverageDataFileHandlerTest extends TestCase
 
 	public void testSaveAndRestore()
 	{
-		File dataFile = new File(tmpDir, CoverageDataFileHandler.FILE_NAME);
+		File dataFile = new File(tmpDir, "cobertura.ser");
 		CoverageDataFileHandler.saveCoverageData(a, dataFile);
 
 		ProjectData b;
