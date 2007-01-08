@@ -22,6 +22,8 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import net.sourceforge.cobertura.util.ConfigurationUtil;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,20 +39,22 @@ import java.io.OutputStream;
  */
 public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 {
+    private static File defaultFile = null;
 
-	/**
-	 * Default file name used to write instrumentation information.
-	 */
-	public static final String FILE_NAME = "cobertura.ser";
+    public static File getDefaultDataFile()
+    {
+        // return cached defaultFile
+        if(defaultFile != null) 
+        {
+            return defaultFile;
+        }
 
-	public static File getDefaultDataFile()
-	{
-		String systemProperty = System
-				.getProperty("net.sourceforge.cobertura.datafile");
-		if (systemProperty != null)
-			return new File(systemProperty);
-		return new File(FILE_NAME);
-	}
+        // load and cache datafile configuration
+        ConfigurationUtil config = new ConfigurationUtil();
+        defaultFile = new File(config.getDatafile());
+        
+        return defaultFile;
+    }
 
 	public static ProjectData loadCoverageData(File dataFile)
 	{
@@ -132,6 +136,11 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		//System.out.println("Cobertura: Saving coverage data to " + dataFile.getAbsolutePath());
 		try
 		{
+            File dataDir = dataFile.getParentFile();
+            if( (dataDir != null) && !dataDir.exists() )
+            {
+                dataDir.mkdirs();
+            }
 			os = new FileOutputStream(dataFile);
 			saveCoverageData(projectData, os);
 		}
@@ -163,7 +172,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 			OutputStream dataFile)
 	{
 		ObjectOutputStream objects = null;
-
+        
 		try
 		{
 			objects = new ObjectOutputStream(dataFile);
