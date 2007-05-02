@@ -83,7 +83,7 @@ public class InstrumentTask extends CommonMatchingTask
 
 	List ignoreRegexs = new ArrayList();
 
-   List ignoreBranchesRegexs = new ArrayList();
+	List ignoreBranchesRegexs = new ArrayList();
 	
 	List includeClassesRegexs = new ArrayList();
 
@@ -107,12 +107,12 @@ public class InstrumentTask extends CommonMatchingTask
 		return ignoreRegex;
 	}
 
-   public IgnoreBranches createIgnoreBranches()
-   {
-      IgnoreBranches ignoreBranchesRegex = new IgnoreBranches();
-      ignoreBranchesRegexs.add(ignoreBranchesRegex);
-      return ignoreBranchesRegex;
-   }
+	public IgnoreBranches createIgnoreBranches()
+	{
+		IgnoreBranches ignoreBranchesRegex = new IgnoreBranches();
+		ignoreBranchesRegexs.add(ignoreBranchesRegex);
+		return ignoreBranchesRegex;
+	}
 
 	public IncludeClasses createIncludeClasses()
 	{
@@ -162,10 +162,10 @@ public class InstrumentTask extends CommonMatchingTask
 				builder.addArg("--ignore", ignoreRegex.getRegex());
 			}
 
-         for (int i = 0; i < ignoreBranchesRegexs.size(); i++) {
-            IgnoreBranches ignoreBranchesRegex = (IgnoreBranches)ignoreBranchesRegexs.get(i);
-            builder.addArg("--ignoreBranches", ignoreBranchesRegex.getRegex());
-         }
+			for (int i = 0; i < ignoreBranchesRegexs.size(); i++) {
+				IgnoreBranches ignoreBranchesRegex = (IgnoreBranches)ignoreBranchesRegexs.get(i);
+				builder.addArg("--ignoreBranches", ignoreBranchesRegex.getRegex());
+			}
 
 			for (int i = 0; i < includeClassesRegexs.size(); i++) {
 				IncludeClasses includeClassesRegex = (IncludeClasses)includeClassesRegexs.get(i);

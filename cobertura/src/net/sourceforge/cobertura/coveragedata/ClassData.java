@@ -49,418 +49,421 @@ import java.util.TreeSet;
  */
 
 public class ClassData extends CoverageDataContainer
-      implements Comparable, HasBeenInstrumented 
+	implements Comparable, HasBeenInstrumented 
 {
 
-   private static final long serialVersionUID = 5;
+	private static final long serialVersionUID = 5;
 
-   /**
-    * Each key is a line number in this class, stored as an Integer object.
-    * Each value is information about the line, stored as a LineData object.
-    */
-   private Map branches = new HashMap();
+	/**
+	 * Each key is a line number in this class, stored as an Integer object.
+	 * Each value is information about the line, stored as a LineData object.
+	 */
+	private Map branches = new HashMap();
 
-   private boolean containsInstrumentationInfo = false;
+	private boolean containsInstrumentationInfo = false;
 
-   private Set methodNamesAndDescriptors = new HashSet();
+	private Set methodNamesAndDescriptors = new HashSet();
 
-   private String name = null;
+	private String name = null;
 
-   private String sourceFileName = null;
+	private String sourceFileName = null;
 
-   /**
-    * @param name In the format "net.sourceforge.cobertura.coveragedata.ClassData"
-    */
-   public ClassData(String name)
-   {
-      if (name == null)
-         throw new IllegalArgumentException(
-               "Class name must be specified.");
-      this.name = name;
-   }
+	/**
+	 * @param name In the format "net.sourceforge.cobertura.coveragedata.ClassData"
+	 */
+	public ClassData(String name)
+	{
+		if (name == null)
+			throw new IllegalArgumentException(
+				"Class name must be specified.");
+		this.name = name;
+	}
 
-   public LineData addLine(int lineNumber, String methodName,
-         String methodDescriptor)
-   {
-      LineData lineData = getLineData(lineNumber);
-      if (lineData == null)
-      {
-         lineData = new LineData(lineNumber);
-         // Each key is a line number in this class, stored as an Integer object.
-         // Each value is information about the line, stored as a LineData object.
-         children.put(new Integer(lineNumber), lineData);
-      }
-      lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
+	public LineData addLine(int lineNumber, String methodName,
+			String methodDescriptor)
+	{
+		LineData lineData = getLineData(lineNumber);
+		if (lineData == null)
+		{
+			lineData = new LineData(lineNumber);
+			// Each key is a line number in this class, stored as an Integer object.
+			// Each value is information about the line, stored as a LineData object.
+			children.put(new Integer(lineNumber), lineData);
+		}
+		lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
       
-      // methodName and methodDescriptor can be null when cobertura.ser with 
-      // no line information was loaded (or was not loaded at all).
-      if( methodName!=null && methodDescriptor!=null)
-         methodNamesAndDescriptors.add(methodName + methodDescriptor);
-      return lineData;
-   }
+		// methodName and methodDescriptor can be null when cobertura.ser with 
+		// no line information was loaded (or was not loaded at all).
+		if( methodName!=null && methodDescriptor!=null)
+			methodNamesAndDescriptors.add(methodName + methodDescriptor);
+		return lineData;
+	}
 
-   /**
-    * This is required because we implement Comparable.
-    */
-   public int compareTo(Object o)
-   {
-      if (!o.getClass().equals(ClassData.class))
-         return Integer.MAX_VALUE;
-      return this.name.compareTo(((ClassData)o).name);
-   }
+	/**
+	 * This is required because we implement Comparable.
+	 */
+	public int compareTo(Object o)
+	{
+		if (!o.getClass().equals(ClassData.class))
+			return Integer.MAX_VALUE;
+		return this.name.compareTo(((ClassData)o).name);
+	}
 
-   public boolean containsInstrumentationInfo()
-   {
-      return this.containsInstrumentationInfo;
-   }
+	public boolean containsInstrumentationInfo()
+	{
+		return this.containsInstrumentationInfo;
+	}
 
-   /**
-    * Returns true if the given object is an instance of the
-    * ClassData class, and it contains the same data as this
-    * class.
-    */
-   public boolean equals(Object obj)
-   {
-      if (this == obj)
-         return true;
-      if ((obj == null) || !(obj.getClass().equals(this.getClass())))
-         return false;
+	/**
+	 * Returns true if the given object is an instance of the
+	 * ClassData class, and it contains the same data as this
+	 * class.
+	 */
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
+			return false;
 
-      ClassData classData = (ClassData)obj;
-      return super.equals(obj)
-            && this.branches.equals(classData.branches)
-            && this.methodNamesAndDescriptors
-                  .equals(classData.methodNamesAndDescriptors)
-            && this.name.equals(classData.name)
-            && this.sourceFileName.equals(classData.sourceFileName);
-   }
+		ClassData classData = (ClassData)obj;
+		return super.equals(obj)
+			&& this.branches.equals(classData.branches)
+			&& this.methodNamesAndDescriptors
+				.equals(classData.methodNamesAndDescriptors)
+			&& this.name.equals(classData.name)
+			&& this.sourceFileName.equals(classData.sourceFileName);
+	}
 
-   public String getBaseName()
-   {
-      int lastDot = this.name.lastIndexOf('.');
-      if (lastDot == -1)
-      {
-         return this.name;
-      }
-      return this.name.substring(lastDot + 1);
-   }
+	public String getBaseName()
+	{
+		int lastDot = this.name.lastIndexOf('.');
+		if (lastDot == -1)
+		{
+			return this.name;
+		}
+		return this.name.substring(lastDot + 1);
+	}
 
-   /**
-    * @return The branch coverage rate for a particular method.
-    */
-   public double getBranchCoverageRate(String methodNameAndDescriptor) {
-      int total = 0;
-      int covered = 0;
+	/**
+	 * @return The branch coverage rate for a particular method.
+	 */
+	public double getBranchCoverageRate(String methodNameAndDescriptor)
+	{
+		int total = 0;
+		int covered = 0;
 
-      for (Iterator iter = branches.values().iterator(); iter.hasNext();) {
-         LineData next = (LineData) iter.next();
-         if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor())) {
-            total += next.getNumberOfValidBranches();
-            covered += next.getNumberOfCoveredBranches();
-         }
-      }
-      if (total == 0) return 1.0;
-      return (double) covered / total;
-   }
+		for (Iterator iter = branches.values().iterator(); iter.hasNext();) {
+			LineData next = (LineData) iter.next();
+			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor())) {
+				total += next.getNumberOfValidBranches();
+				covered += next.getNumberOfCoveredBranches();
+			}
+		}
+		if (total == 0) return 1.0;
+		return (double) covered / total;
+	}
 
-   public Collection getBranches() 
-   {
-      return Collections.unmodifiableCollection(branches.keySet());
-   }
+	public Collection getBranches() 
+	{
+		return Collections.unmodifiableCollection(branches.keySet());
+	}
 
-   /**
-    * @param lineNumber The source code line number.
-    * @return The coverage of the line
-    */
-   public LineData getLineCoverage(int lineNumber) 
-   {
-      Integer lineObject = new Integer(lineNumber);
-      if (!children.containsKey(lineObject)) 
-      {
-         return null;
-      }
+	/**
+	 * @param lineNumber The source code line number.
+	 * @return The coverage of the line
+	 */
+	public LineData getLineCoverage(int lineNumber) 
+	{
+		Integer lineObject = new Integer(lineNumber);
+		if (!children.containsKey(lineObject)) 
+		{
+			return null;
+		}
 
-      return (LineData) children.get(lineObject);
-   }
+		return (LineData) children.get(lineObject);
+	}
 
-   /**
-    * @return The line coverage rate for particular method
-    */
-   public double getLineCoverageRate(String methodNameAndDescriptor) 
-   {
-      int total = 0;
-      int hits = 0;
+	/**
+	 * @return The line coverage rate for particular method
+	 */
+	public double getLineCoverageRate(String methodNameAndDescriptor) 
+	{
+		int total = 0;
+		int hits = 0;
 
-      Iterator iter = children.values().iterator();
-      while (iter.hasNext()) 
-      {
-         LineData next = (LineData) iter.next();
-         if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor())) 
-         {
-            total++;
-            if (next.getHits() > 0) {
-               hits++;
-            }
-         }
-      }
-      if (total == 0) return 1d;
-      return (double) hits / total;
-   }
+		Iterator iter = children.values().iterator();
+		while (iter.hasNext()) 
+		{
+			LineData next = (LineData) iter.next();
+			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor())) 
+			{
+				total++;
+				if (next.getHits() > 0) {
+					hits++;
+				}
+			}
+		}
+		if (total == 0) return 1d;
+		return (double) hits / total;
+	}
 
-   private LineData getLineData(int lineNumber)
-   {
-      return (LineData)children.get(new Integer(lineNumber));
-   }
+	private LineData getLineData(int lineNumber)
+	{
+		return (LineData)children.get(new Integer(lineNumber));
+	}
 
-   public SortedSet getLines()
-   {
-      return new TreeSet(this.children.values());
-   }
+	public SortedSet getLines()
+	{
+		return new TreeSet(this.children.values());
+	}
 
-   public Collection getLines(String methodNameAndDescriptor)
-   {
-      Collection lines = new HashSet();
-      Iterator iter = children.values().iterator();
-      while (iter.hasNext())
-      {
-         LineData next = (LineData)iter.next();
-         if (methodNameAndDescriptor.equals(next.getMethodName()
-               + next.getMethodDescriptor()))
-         {
-            lines.add(next);
-         }
-      }
-      return lines;
-   }
+	public Collection getLines(String methodNameAndDescriptor)
+	{
+		Collection lines = new HashSet();
+		Iterator iter = children.values().iterator();
+		while (iter.hasNext())
+		{
+			LineData next = (LineData)iter.next();
+			if (methodNameAndDescriptor.equals(next.getMethodName()
+					+ next.getMethodDescriptor()))
+			{
+				lines.add(next);
+			}
+		}
+		return lines;
+	}
 
-   /**
-    * @return The method name and descriptor of each method found in the
-    *         class represented by this instrumentation.
-    */
-   public Set getMethodNamesAndDescriptors() 
-   {
-      return methodNamesAndDescriptors;
-   }
+	/**
+	 * @return The method name and descriptor of each method found in the
+	 *         class represented by this instrumentation.
+	 */
+	public Set getMethodNamesAndDescriptors() 
+	{
+		return methodNamesAndDescriptors;
+	}
 
-   public String getName() 
-   {
-      return name;
-   }
+	public String getName() 
+	{
+		return name;
+	}
 
-   /**
-    * @return The number of branches in this class.
-    */
-   public int getNumberOfValidBranches() 
-   {
-      int number = 0;
-      for (Iterator i = branches.values().iterator(); 
-            i.hasNext(); 
-            number += ((LineData) i.next()).getNumberOfValidBranches())
-         ;
-      return number;
-   }
+	/**
+	 * @return The number of branches in this class.
+	 */
+	public int getNumberOfValidBranches() 
+	{
+		int number = 0;
+		for (Iterator i = branches.values().iterator(); 
+			i.hasNext(); 
+			number += ((LineData) i.next()).getNumberOfValidBranches())
+			;
+		return number;
+	}
 
-   /**
-    * @see net.sourceforge.cobertura.coveragedata.CoverageData#getNumberOfCoveredBranches()
-    */
-   public int getNumberOfCoveredBranches() 
-   {
-      int number = 0;
-      for (Iterator i = branches.values().iterator(); 
-            i.hasNext(); 
-            number += ((LineData) i.next()).getNumberOfCoveredBranches())
-         ;
-      return number;
-   }
+	/**
+	 * @see net.sourceforge.cobertura.coveragedata.CoverageData#getNumberOfCoveredBranches()
+	 */
+	public int getNumberOfCoveredBranches() 
+	{
+		int number = 0;
+		for (Iterator i = branches.values().iterator(); 
+			i.hasNext(); 
+			number += ((LineData) i.next()).getNumberOfCoveredBranches())
+			;
+		return number;
+	}
 
-   public String getPackageName()
-   {
-      int lastDot = this.name.lastIndexOf('.');
-      if (lastDot == -1)
-      {
-         return "";
-      }
-      return this.name.substring(0, lastDot);
-   }
+	public String getPackageName()
+	{
+		int lastDot = this.name.lastIndexOf('.');
+		if (lastDot == -1)
+		{
+			return "";
+		}
+		return this.name.substring(0, lastDot);
+	}
 
-   /**
-    * Return the name of the file containing this class.  If this
-    * class' sourceFileName has not been set (for whatever reason)
-    * then this method will attempt to infer the name of the source
-    * file using the class name.
-    *
-    * @return The name of the source file, for example
-    *         net/sourceforge/cobertura/coveragedata/ClassData.java
-    */
-   public String getSourceFileName()
-   {
-      String baseName;
-      if (sourceFileName != null)
-         baseName = sourceFileName;
-      else
-      {
-         baseName = getBaseName();
-         int firstDollarSign = baseName.indexOf('$');
-         if (firstDollarSign == -1 || firstDollarSign == 0)
-            baseName += ".java";
-         else
-            baseName = baseName.substring(0, firstDollarSign)
-                  + ".java";
-      }
+	 /**
+	 * Return the name of the file containing this class.  If this
+	 * class' sourceFileName has not been set (for whatever reason)
+	 * then this method will attempt to infer the name of the source
+	 * file using the class name.
+	 *
+	 * @return The name of the source file, for example
+	 *         net/sourceforge/cobertura/coveragedata/ClassData.java
+	 */
+	public String getSourceFileName()
+	{
+		String baseName;
+		if (sourceFileName != null)
+			baseName = sourceFileName;
+		else
+		{
+			baseName = getBaseName();
+			int firstDollarSign = baseName.indexOf('$');
+			if (firstDollarSign == -1 || firstDollarSign == 0)
+				baseName += ".java";
+			else
+				baseName = baseName.substring(0, firstDollarSign)
+					+ ".java";
+		}
 
-      String packageName = getPackageName();
-      if (packageName.equals(""))
-         return baseName;
-      return packageName.replace('.', '/') + '/' + baseName;
-   }
+		String packageName = getPackageName();
+		if (packageName.equals(""))
+			return baseName;
+		return packageName.replace('.', '/') + '/' + baseName;
+	}
 
-   public int hashCode()
-   {
-      return this.name.hashCode();
-   }
+	public int hashCode()
+	{
+		return this.name.hashCode();
+	}
 
-   /**
-    * @return True if the line contains at least one condition jump (branch)
-    */
-   public boolean hasBranch(int lineNumber) 
-   {
-      return branches.containsKey(new Integer(lineNumber));
-   }
+	/**
+	 * @return True if the line contains at least one condition jump (branch)
+	 */
+	public boolean hasBranch(int lineNumber) 
+	{
+		return branches.containsKey(new Integer(lineNumber));
+	}
 
-   /**
-    * Determine if a given line number is a valid line of code.
-    *
-    * @return True if the line contains executable code.  False
-    *         if the line is empty, or a comment, etc.
-    */
-   public boolean isValidSourceLineNumber(int lineNumber) 
-   {
-      return children.containsKey(new Integer(lineNumber));
-   }
+	/**
+	 * Determine if a given line number is a valid line of code.
+	 *
+	 * @return True if the line contains executable code.  False
+	 *         if the line is empty, or a comment, etc.
+	 */
+	public boolean isValidSourceLineNumber(int lineNumber) 
+	{
+		return children.containsKey(new Integer(lineNumber));
+	}
 
-   public void addLineJump(int lineNumber, int branchNumber) 
-   {
-      LineData lineData = getLineData(lineNumber);
-      if (lineData != null) 
-      {
-         lineData.addJump(branchNumber);
-         this.branches.put(new Integer(lineNumber), lineData);
-      }
-   }
+	public void addLineJump(int lineNumber, int branchNumber) 
+	{
+		LineData lineData = getLineData(lineNumber);
+		if (lineData != null) 
+		{
+			lineData.addJump(branchNumber);
+			this.branches.put(new Integer(lineNumber), lineData);
+		}
+	}
 
-   public void addLineSwitch(int lineNumber, int switchNumber, int[] keys) 
-   {
-      LineData lineData = getLineData(lineNumber);
-      if (lineData != null) 
-      {
-         lineData.addSwitch(switchNumber, keys);
-         this.branches.put(new Integer(lineNumber), lineData);
-      }
-   }
+	public void addLineSwitch(int lineNumber, int switchNumber, int[] keys) 
+	{
+		LineData lineData = getLineData(lineNumber);
+		if (lineData != null) 
+		{
+			lineData.addSwitch(switchNumber, keys);
+			this.branches.put(new Integer(lineNumber), lineData);
+		}
+	}
 
-   public void addLineSwitch(int lineNumber, int switchNumber, int min, int max) 
-   {
-      LineData lineData = getLineData(lineNumber);
-      if (lineData != null) 
-      {
-         lineData.addSwitch(switchNumber, min, max);
-         this.branches.put(new Integer(lineNumber), lineData);
-      }
-   }
+	public void addLineSwitch(int lineNumber, int switchNumber, int min, int max) 
+	{
+		LineData lineData = getLineData(lineNumber);
+		if (lineData != null) 
+		{
+			lineData.addSwitch(switchNumber, min, max);
+			this.branches.put(new Integer(lineNumber), lineData);
+		}
+	}
 
-   /**
-    * Merge some existing instrumentation with this instrumentation.
-    *
-    * @param coverageData Some existing coverage data.
-    */
-   public void merge(CoverageData coverageData)
-   {
-      ClassData classData = (ClassData)coverageData;
+	/**
+	 * Merge some existing instrumentation with this instrumentation.
+	 *
+	 * @param coverageData Some existing coverage data.
+	 */
+	public void merge(CoverageData coverageData)
+	{
+		ClassData classData = (ClassData)coverageData;
 
-      // If objects contain data for different classes then don't merge
-      if (!this.getName().equals(classData.getName()))
-         return;
+		// If objects contain data for different classes then don't merge
+		if (!this.getName().equals(classData.getName()))
+			return;
 
-      super.merge(coverageData);
+		super.merge(coverageData);
 
-      // We can't just call this.branches.putAll(classData.branches);
-      // Why not?  If we did a putAll, then the LineData objects from
-      // the coverageData class would overwrite the LineData objects
-      // that are already in "this.branches"  And we don't need to
-      // update the LineData objects that are already in this.branches
-      // because they are shared between this.branches and this.children,
-      // so the object hit counts will be moved when we called
-      // super.merge() above.
-      for (Iterator iter = classData.branches.keySet().iterator(); iter.hasNext();)
-      {
-         Object key = iter.next();
-         if (!this.branches.containsKey(key))
-         {
-            this.branches.put(key, classData.branches.get(key));
-         }
-      }
+		// We can't just call this.branches.putAll(classData.branches);
+		// Why not?  If we did a putAll, then the LineData objects from
+		// the coverageData class would overwrite the LineData objects
+		// that are already in "this.branches"  And we don't need to
+		// update the LineData objects that are already in this.branches
+		// because they are shared between this.branches and this.children,
+		// so the object hit counts will be moved when we called
+		// super.merge() above.
+		for (Iterator iter = classData.branches.keySet().iterator(); iter.hasNext();)
+		{
+			Object key = iter.next();
+			if (!this.branches.containsKey(key))
+			{
+				this.branches.put(key, classData.branches.get(key));
+			}
+		}
 
-      this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
-      this.methodNamesAndDescriptors.addAll(classData
-            .getMethodNamesAndDescriptors());
-      if (classData.sourceFileName != null)
-         this.sourceFileName = classData.sourceFileName;
-   }
+		this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
+		this.methodNamesAndDescriptors.addAll(classData
+				.getMethodNamesAndDescriptors());
+		if (classData.sourceFileName != null)
+			this.sourceFileName = classData.sourceFileName;
+		}
 
-   public void removeLine(int lineNumber)
-   {
-      Integer lineObject = new Integer(lineNumber);
-      children.remove(lineObject);
-      branches.remove(lineObject);
-   }
+	public void removeLine(int lineNumber)
+	{
+		Integer lineObject = new Integer(lineNumber);
+		children.remove(lineObject);
+		branches.remove(lineObject);
+	}
 
-   public void setContainsInstrumentationInfo()
-   {
-      this.containsInstrumentationInfo = true;
-   }
+	public void setContainsInstrumentationInfo()
+	{
+		this.containsInstrumentationInfo = true;
+	}
 
-   public void setSourceFileName(String sourceFileName)
-   {
-      this.sourceFileName = sourceFileName;
-   }
+	public void setSourceFileName(String sourceFileName)
+	{
+		this.sourceFileName = sourceFileName;
+	}
 
-   /**
-    * Increment the number of hits for a particular line of code.
-    *
-    * @param lineNumber the line of code to increment the number of hits.
-    */
-   public void touch(int lineNumber)
-   {
-      LineData lineData = getLineData(lineNumber);
-      if (lineData == null)
-         lineData = addLine(lineNumber, null, null);
-      lineData.touch();
-   }
+	/**
+	 * Increment the number of hits for a particular line of code.
+	 *
+	 * @param lineNumber the line of code to increment the number of hits.
+	 */
+	public void touch(int lineNumber)
+	{
+		LineData lineData = getLineData(lineNumber);
+		if (lineData == null)
+			lineData = addLine(lineNumber, null, null);
+		lineData.touch();
+	}
 
-   /**
-    * Increments the number of hits for particular hit counter of particular branch on particular line number.
-    * 
-    * @param lineNumber The line of code where the branch is
-    * @param branchNumber  The branch on the line to change the hit counter
-    * @param branch The hit counter (true or false)
-    */
-   public void touchJump(int lineNumber, int branchNumber, boolean branch) {
-      LineData lineData = getLineData(lineNumber);
-      if (lineData == null) lineData = addLine(lineNumber, null, null);
-      lineData.touchJump(branchNumber, branch);
-   }
+	/**
+	 * Increments the number of hits for particular hit counter of particular branch on particular line number.
+	 * 
+	 * @param lineNumber The line of code where the branch is
+	 * @param branchNumber  The branch on the line to change the hit counter
+	 * @param branch The hit counter (true or false)
+	 */
+	public void touchJump(int lineNumber, int branchNumber, boolean branch) {
+		LineData lineData = getLineData(lineNumber);
+		if (lineData == null)
+			lineData = addLine(lineNumber, null, null);
+		lineData.touchJump(branchNumber, branch);
+	}
 
-   /**
-    * Increments the number of hits for particular hit counter of particular switch branch on particular line number.
-    * 
-    * @param lineNumber The line of code where the branch is
-    * @param switchNumber  The switch on the line to change the hit counter
-    * @param branch The hit counter 
-    */
-   public void touchSwitch(int lineNumber, int switchNumber, int branch) {
-      LineData lineData = getLineData(lineNumber);
-      if (lineData == null) lineData = addLine(lineNumber, null, null);
-      lineData.touchSwitch(switchNumber, branch);
-   }
+	/**
+	 * Increments the number of hits for particular hit counter of particular switch branch on particular line number.
+	 * 
+	 * @param lineNumber The line of code where the branch is
+	 * @param switchNumber  The switch on the line to change the hit counter
+	 * @param branch The hit counter 
+	 */
+	public void touchSwitch(int lineNumber, int switchNumber, int branch) {
+		LineData lineData = getLineData(lineNumber);
+		if (lineData == null)
+			lineData = addLine(lineNumber, null, null);
+		lineData.touchSwitch(switchNumber, branch);
+	}
 
 }

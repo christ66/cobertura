@@ -39,22 +39,22 @@ import java.io.OutputStream;
  */
 public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 {
-    private static File defaultFile = null;
+	private static File defaultFile = null;
 
-    public static File getDefaultDataFile()
-    {
-        // return cached defaultFile
-        if(defaultFile != null) 
-        {
-            return defaultFile;
-        }
+	public static File getDefaultDataFile()
+	{
+		// return cached defaultFile
+		if (defaultFile != null) 
+		{
+			return defaultFile;
+		}
 
-        // load and cache datafile configuration
-        ConfigurationUtil config = new ConfigurationUtil();
-        defaultFile = new File(config.getDatafile());
+		// load and cache datafile configuration
+		ConfigurationUtil config = new ConfigurationUtil();
+		defaultFile = new File(config.getDatafile());
         
-        return defaultFile;
-    }
+		return defaultFile;
+	}
 
 	public static ProjectData loadCoverageData(File dataFile)
 	{
@@ -136,11 +136,11 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		//System.out.println("Cobertura: Saving coverage data to " + dataFile.getAbsolutePath());
 		try
 		{
-            File dataDir = dataFile.getParentFile();
-            if( (dataDir != null) && !dataDir.exists() )
-            {
-                dataDir.mkdirs();
-            }
+			File dataDir = dataFile.getParentFile();
+			if( (dataDir != null) && !dataDir.exists() )
+			{
+				dataDir.mkdirs();
+			}
 			os = new FileOutputStream(dataFile);
 			saveCoverageData(projectData, os);
 		}
