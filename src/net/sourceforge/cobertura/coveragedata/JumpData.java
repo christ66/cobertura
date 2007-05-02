@@ -68,7 +68,7 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 		}
 	}
 
-	public int getBrachNumber()
+	public int getBranchNumber()
 	{
 		return this.branchNumber;
 	}

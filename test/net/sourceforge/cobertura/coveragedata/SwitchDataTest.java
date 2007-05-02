@@ -50,7 +50,7 @@ public class SwitchDataTest extends TestCase
 		assertEquals(a.hashCode(), aPrime.hashCode());
 	}
 
-	public void testGetBranchNumber()
+	public void testGetSwitchNumber()
 	{
 		assertEquals(0, a.getSwitchNumber());
 		assertEquals(1, b.getSwitchNumber());

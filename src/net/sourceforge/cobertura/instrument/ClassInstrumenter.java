@@ -43,7 +43,7 @@ class ClassInstrumenter extends ClassAdapter
 
 	private Collection ignoreRegexs;
 
-   private Collection ignoreBranchesRegexs;
+	private Collection ignoreBranchesRegexs;
 
 	private ProjectData projectData;
 
@@ -69,7 +69,7 @@ class ClassInstrumenter extends ClassAdapter
 		super(cv);
 		this.projectData = projectData;
 		this.ignoreRegexs = ignoreRegexs;
-      this.ignoreBranchesRegexs = ignoreBranchesRegexs;
+		this.ignoreBranchesRegexs = ignoreBranchesRegexs;
 	}
 
 	private boolean arrayContains(Object[] array, Object key)
@@ -136,9 +136,9 @@ class ClassInstrumenter extends ClassAdapter
 		if (!instrument)
 			return mv;
 
-      return mv == null ? null : new FirstPassMethodInstrumenter(classData, mv,
-            this.myName, access, name, desc, signature, exceptions, ignoreRegexs, 
-            ignoreBranchesRegexs);
+		return mv == null ? null : new FirstPassMethodInstrumenter(classData, mv,
+				this.myName, access, name, desc, signature, exceptions, ignoreRegexs, 
+				ignoreBranchesRegexs);
 	}
 
 	public void visitEnd()
