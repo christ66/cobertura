@@ -41,13 +41,13 @@ public class SourceFileData extends CoverageDataContainer
    /**
     * @param name In the format, "net/sourceforge/cobertura/coveragedata/SourceFileData.java"
     */
-   public SourceFileData(String name)
-   {
-      if (name == null)
-         throw new IllegalArgumentException(
-               "Source file name must be specified.");
-      this.name = name;
-   }
+	public SourceFileData(String name)
+	{
+		if (name == null)
+			throw new IllegalArgumentException(
+				"Source file name must be specified.");
+		this.name = name;
+	}
 
 	public synchronized void addClassData(ClassData classData)
 	{
@@ -133,17 +133,17 @@ public class SourceFileData extends CoverageDataContainer
 		return new TreeSet(this.children.values());
 	}
 
-   public LineData getLineCoverage(int lineNumber)
-   {
-      Iterator iter = this.children.values().iterator();
-      while (iter.hasNext())
-      {
-         ClassData classData = (ClassData)iter.next();
-         if (classData.isValidSourceLineNumber(lineNumber))
-            return classData.getLineCoverage(lineNumber);
-      }
-      return null;
-   }
+	public LineData getLineCoverage(int lineNumber)
+	{
+		Iterator iter = this.children.values().iterator();
+		while (iter.hasNext())
+		{
+			ClassData classData = (ClassData)iter.next();
+			if (classData.isValidSourceLineNumber(lineNumber))
+				return classData.getLineCoverage(lineNumber);
+		}
+		return null;
+	}
 
 	public String getName()
 	{

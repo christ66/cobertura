@@ -93,7 +93,7 @@ public class Main
 
 	private Collection ignoreRegexes = new Vector();
 
-   private Collection ignoreBranchesRegexes = new Vector();
+	private Collection ignoreBranchesRegexes = new Vector();
 
 	private ClassPattern classPattern = new ClassPattern();
 
@@ -430,10 +430,10 @@ public class Main
 			{
 				RegexUtil.addRegex(ignoreRegexes, args[++i]);
 			}
-         else if (args[i].equals("--ignoreBranches"))
-         {
-            RegexUtil.addRegex(ignoreBranchesRegexes, args[++i]);
-         }
+			else if (args[i].equals("--ignoreBranches"))
+			{
+				RegexUtil.addRegex(ignoreBranchesRegexes, args[++i]);
+			}
 			else if (args[i].equals("--includeClasses"))
 			{
 				classPattern.addIncludeClassesRegex(args[++i]);

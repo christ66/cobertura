@@ -38,63 +38,63 @@ import org.objectweb.asm.tree.MethodNode;
 public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcodes
 {
 
-   private final String ownerClass;
+	private final String ownerClass;
 
 	private String myName;
 
 	private String myDescriptor;
 
-   private int myAccess;
+	private int myAccess;
    
 	private Collection ignoreRegexs;
    
-   private Collection ignoreBranchesRegexs;
+	private Collection ignoreBranchesRegexs;
 
 	private ClassData classData;
 
-   private int currentLine;
+	private int currentLine;
    
-   private int currentJump;
+	private int currentJump;
    
-   private int currentSwitch;
+	private int currentSwitch;
 	
 	private Map jumpTargetLabels;
 
 	private Map switchTargetLabels;
    
-   private Map lineLabels;
+	private Map lineLabels;
    
-   private MethodVisitor writerMethodVisitor;
+	private MethodVisitor writerMethodVisitor;
    
-   private MethodNode methodNode;
+	private MethodNode methodNode;
 
 	public FirstPassMethodInstrumenter(ClassData classData, final MethodVisitor mv,
 			final String owner, final int access, final String name, final String desc, 
-         final String signature, final String[] exceptions, final Collection ignoreRegexs,
-         final Collection ignoreBranchesRegexs)
+			final String signature, final String[] exceptions, final Collection ignoreRegexs,
+			final Collection ignoreBranchesRegexs)
 	{
 		super(new MethodNode(access, name, desc, signature, exceptions));
-      writerMethodVisitor = mv;
-      this.ownerClass = owner;
-      this.methodNode = (MethodNode) this.mv;
+		writerMethodVisitor = mv;
+		this.ownerClass = owner;
+		this.methodNode = (MethodNode) this.mv;
 		this.classData = classData;
-      this.myAccess = access;
+		this.myAccess = access;
 		this.myName = name;
 		this.myDescriptor = desc;
 		this.ignoreRegexs = ignoreRegexs;
-      this.ignoreBranchesRegexs = ignoreBranchesRegexs;
-      this.jumpTargetLabels = new HashMap();
+		this.ignoreBranchesRegexs = ignoreBranchesRegexs;
+		this.jumpTargetLabels = new HashMap();
 		this.switchTargetLabels = new HashMap();
-      this.lineLabels = new HashMap();
-      this.currentLine = 0;
+		this.lineLabels = new HashMap();
+		this.currentLine = 0;
 	}
 
-   public void visitEnd() {
-      super.visitEnd();
+	public void visitEnd() {
+		super.visitEnd();
 
-      SecondPassMethodInstrumenter secondPass = new SecondPassMethodInstrumenter(this);
-      methodNode.accept(secondPass);
-   }
+		SecondPassMethodInstrumenter secondPass = new SecondPassMethodInstrumenter(this);
+		methodNode.accept(secondPass);
+	}
 
 	public void visitJumpInsn(int opcode, Label label)
 	{
@@ -107,7 +107,7 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 				&& (!this.myName.equals("<clinit>")))
 		{
 			classData.addLineJump(currentLine, currentJump);
-         jumpTargetLabels.put(label, new JumpHolder(currentLine, currentJump++));
+			jumpTargetLabels.put(label, new JumpHolder(currentLine, currentJump++));
 		}
 		
 		super.visitJumpInsn(opcode, label);
@@ -121,12 +121,12 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		currentJump = 0;
 		currentSwitch = 0;
       
-      lineLabels.put(start, new Integer(line));
+		lineLabels.put(start, new Integer(line));
 
-      //removed because the MethodNode doesn't reproduce visitLineNumber where they are but at the end of the file :-(( 
-      //therefore we don't need them
-      //We can directly instrument the visit line number here, but it is better to leave all instrumentation in the second pass
-      //therefore we just collects what label is the line ...
+		//removed because the MethodNode doesn't reproduce visitLineNumber where they are but at the end of the file :-(( 
+		//therefore we don't need them
+		//We can directly instrument the visit line number here, but it is better to leave all instrumentation in the second pass
+		//therefore we just collects what label is the line ...
 		//super.visitLineNumber(line, start);
 	}
 
@@ -169,54 +169,54 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		}
 	}
 
-   protected void removeLine(int lineNumber) 
-   {
-      classData.removeLine(lineNumber);
-   }
+	protected void removeLine(int lineNumber) 
+	{
+		classData.removeLine(lineNumber);
+	}
    
-   protected MethodVisitor getWriterMethodVisitor() 
-   {
-      return writerMethodVisitor;
-   }
+	protected MethodVisitor getWriterMethodVisitor() 
+	{
+		return writerMethodVisitor;
+	}
 
-   protected Collection getIgnoreRegexs() 
-   {
-      return ignoreRegexs;
-   }
+	protected Collection getIgnoreRegexs() 
+	{
+		return ignoreRegexs;
+	}
 
-   protected Map getJumpTargetLabels() 
-   {
-      return jumpTargetLabels;
-   }
+	protected Map getJumpTargetLabels() 
+	{
+		return jumpTargetLabels;
+	}
 
-   protected Map getSwitchTargetLabels() 
-   {
-      return switchTargetLabels;
-   }
+	protected Map getSwitchTargetLabels() 
+	{
+		return switchTargetLabels;
+	}
 
-   protected int getMyAccess() 
-   {
-      return myAccess;
-   }
+	protected int getMyAccess() 
+	{
+		return myAccess;
+	}
 
-   protected String getMyDescriptor() 
-   {
-      return myDescriptor;
-   }
+	protected String getMyDescriptor() 
+	{
+		return myDescriptor;
+	}
 
-   protected String getMyName() 
-   {
-      return myName;
-   }
+	protected String getMyName() 
+	{
+		return myName;
+	}
 
-   protected String getOwnerClass() 
-   {
-      return ownerClass;
-   }
+	protected String getOwnerClass() 
+	{
+		return ownerClass;
+	}
 
-   protected Map getLineLabels() 
-   {
-      return lineLabels;
-   }
+	protected Map getLineLabels() 
+	{
+		return lineLabels;
+	}
 
 }
