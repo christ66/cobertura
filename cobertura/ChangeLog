@@ -1,4 +1,9 @@
 version 1.9:
+	* Much improved branch coverage.  Information on whether
+	  the true as well as the false of an if statement is
+	  collected.  Also, information on the branches of a
+	  switch statement (including the default) is collected.
+	  (Jiri Mares)
 	* Assume Java source files are saved as UTF-8 instead of
 	  the computer's default encoding.
 	* Write all HTML and XML reports in UTF-8 instead of the
@@ -9,6 +14,15 @@ version 1.9:
 	  you're running ant (Srivathsan Varadarajan).
 	* Added a "maxmemory" attribute to the instrument, merge
 	  and report ant tasks (Matt Cordes).
+	* (Needed for Maven support) Adding cobertura.properties 
+	  file for use in limited environments.  When working in 
+	  limited environments. (ones that cannot set a System 
+	  Property, or will not propogate a System Property) the 
+	  ability to specify the datafile location is impossible.
+	  To correct this, utilize a cobertura.properties file 
+	  located in the classpath to properly set the 
+	  net.sourceforge.cobertura.datafile property.  
+	  (Joakim Erdfelt)
 
 version 1.8 (2006-04-10)
 	* Ability to have multiple <ignore/> regular expressions
