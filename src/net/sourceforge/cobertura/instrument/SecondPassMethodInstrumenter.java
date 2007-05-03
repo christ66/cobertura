@@ -34,7 +34,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 {
 	private int currentLine;
    
-   private int currentJump;
+	private int currentJump;
 	
 	private boolean methodStarted;
 	
@@ -46,13 +46,13 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 	
 	private JumpHolder lastJump;
    
-   private FirstPassMethodInstrumenter firstPass;
+	private FirstPassMethodInstrumenter firstPass;
 
 	public SecondPassMethodInstrumenter(FirstPassMethodInstrumenter firstPass)
 	{
 		super(firstPass.getWriterMethodVisitor(), firstPass.getMyAccess(), firstPass.getMyDescriptor(), 2);
-      this.firstPass = firstPass;
-      this.currentLine = 0;
+		this.firstPass = firstPass;
+		this.currentLine = 0;
 	}
 
 	public void visitJumpInsn(int opcode, Label label)
@@ -68,7 +68,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 		if ((opcode != GOTO) && (opcode != JSR) && (currentLine != 0)
 				&& (!this.firstPass.getMyName().equals("<clinit>")))
 		{
-         lastJump = new JumpHolder(currentLine, currentJump++); 
+			lastJump = new JumpHolder(currentLine, currentJump++); 
 			mv.visitIntInsn(SIPUSH, currentLine);
 			mv.visitVarInsn(ISTORE, myVariableIndex);
 			mv.visitIntInsn(SIPUSH, lastJump.getJumpNumber());
@@ -82,7 +82,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 	{
 		// Record initial information about this line of code
 		currentLine = line;
-      currentJump = 0;
+		currentJump = 0;
 
 		instrumentGetClassData();
 
@@ -153,12 +153,12 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 			myVariableIndex = getFirstStackVariable();
 			mv.visitInsn(ICONST_0);
 			mv.visitVarInsn(ISTORE, myVariableIndex);
-         mv.visitIntInsn(SIPUSH, -1); 
+			mv.visitIntInsn(SIPUSH, -1); 
 			mv.visitVarInsn(ISTORE, myVariableIndex + 1);
 			startLabel = label;
 		}
-      //to have the last label for visitLocalVariable
-      endLabel = label;
+		//to have the last label for visitLocalVariable
+		endLabel = label;
 		
 		super.visitLabel(label);
 		
@@ -167,37 +167,37 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 		{ //this label is the true branch label
 			if (lastJump != null) 
 			{ //this is also label after jump - we have to check the branch number whether this is the true or false branch
-            Label newLabelX = instrumentIsLastJump();
-            instrumentGetClassData();
-            instrumentPutLineAndBranchNumbers();
+				Label newLabelX = instrumentIsLastJump();
+				instrumentGetClassData();
+				instrumentPutLineAndBranchNumbers();
 				mv.visitInsn(ICONST_0);
-            instrumentInvokeTouchJump();
+				instrumentInvokeTouchJump();
 				Label newLabelY = new Label();
 				mv.visitJumpInsn(GOTO, newLabelY);
 				mv.visitLabel(newLabelX);
-            mv.visitVarInsn(ILOAD, myVariableIndex + 1);
-            mv.visitJumpInsn(IFLT, newLabelY);
-            instrumentGetClassData();
-            instrumentPutLineAndBranchNumbers();
+				mv.visitVarInsn(ILOAD, myVariableIndex + 1);
+				mv.visitJumpInsn(IFLT, newLabelY);
+				instrumentGetClassData();
+				instrumentPutLineAndBranchNumbers();
 				mv.visitInsn(ICONST_1);
-            instrumentInvokeTouchJump();
+				instrumentInvokeTouchJump();
 				mv.visitLabel(newLabelY);
 			}
 			else
 			{ //just hit te true branch
-            //just check whether the jump has been invoked or the label has been touched other way 
-            mv.visitVarInsn(ILOAD, myVariableIndex + 1);
-            Label newLabelX = new Label();
-            mv.visitJumpInsn(IFLT, newLabelX);
-            instrumentJumpHit(true);
-            mv.visitLabel(newLabelX);
+				//just check whether the jump has been invoked or the label has been touched other way 
+				mv.visitVarInsn(ILOAD, myVariableIndex + 1);
+				Label newLabelX = new Label();
+				mv.visitJumpInsn(IFLT, newLabelX);
+				instrumentJumpHit(true);
+				mv.visitLabel(newLabelX);
 			}
 		} 
 		else if (lastJump != null) 
 		{ //this is "only" after jump label, hit the false branch only if the lastJump is same as stored stack lineNumber and jumpNumber
-         Label newLabelX = instrumentIsLastJump();
-         instrumentJumpHit(false); 
-         mv.visitLabel(newLabelX);
+			Label newLabelX = instrumentIsLastJump();
+			instrumentJumpHit(false); 
+			mv.visitLabel(newLabelX);
 		}
 		lastJump = null;
 		
@@ -207,11 +207,11 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 			instrumentSwitchHit(sh.getLineNumber(), sh.getSwitchNumber(), sh.getBranch());
 		}
 		
-      //we have to manually invoke the visitLineNumber because of not correct MedthodNode's handling
-      Integer line = (Integer) firstPass.getLineLabels().get(label);
-      if (line != null) {
-         visitLineNumber(line.intValue(), label);
-      }
+		//we have to manually invoke the visitLineNumber because of not correct MedthodNode's handling
+		Integer line = (Integer) firstPass.getLineLabels().get(label);
+		if (line != null) {
+			visitLineNumber(line.intValue(), label);
+		}
 	}
 
 	public void visitLdcInsn(Object cst)
@@ -284,24 +284,24 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 		}
 	}
 
-   private void instrumentGetClassData()
-   {
-      // Get an instance of ProjectData:
-      // ProjectData.getGlobalProjectData()
-      mv.visitMethodInsn(INVOKESTATIC,
-            "net/sourceforge/cobertura/coveragedata/ProjectData",
-            "getGlobalProjectData",
-            "()Lnet/sourceforge/cobertura/coveragedata/ProjectData;");
+	private void instrumentGetClassData()
+	{
+		// Get an instance of ProjectData:
+		// ProjectData.getGlobalProjectData()
+		mv.visitMethodInsn(INVOKESTATIC,
+				"net/sourceforge/cobertura/coveragedata/ProjectData",
+				"getGlobalProjectData",
+				"()Lnet/sourceforge/cobertura/coveragedata/ProjectData;");
 
-      // Get the ClassData object for this class:
-      // projectData.getClassData("name.of.this.class")
-      mv.visitLdcInsn(firstPass.getOwnerClass());
-      mv
-            .visitMethodInsn(INVOKEVIRTUAL,
-                  "net/sourceforge/cobertura/coveragedata/ProjectData",
-                  "getOrCreateClassData",
-                  "(Ljava/lang/String;)Lnet/sourceforge/cobertura/coveragedata/ClassData;");
-   }
+		// Get the ClassData object for this class:
+		// projectData.getClassData("name.of.this.class")
+		mv.visitLdcInsn(firstPass.getOwnerClass());
+		mv
+			.visitMethodInsn(INVOKEVIRTUAL,
+					"net/sourceforge/cobertura/coveragedata/ProjectData",
+					"getOrCreateClassData",
+					"(Ljava/lang/String;)Lnet/sourceforge/cobertura/coveragedata/ClassData;");
+	}
 	
 	private void instrumentSwitchHit(int lineNumber, int switchNumber, int branch)
 	{
@@ -327,8 +327,8 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 	private void instrumentInvokeTouchJump()
 	{
 		mv.visitMethodInsn(INVOKEVIRTUAL, "net/sourceforge/cobertura/coveragedata/ClassData", "touchJump", "(IIZ)V");
-      mv.visitIntInsn(SIPUSH, -1); //is important to reset current branch, because we have to know that the branch info on stack has already been used and can't be used
-      mv.visitVarInsn(ISTORE, myVariableIndex + 1);
+		mv.visitIntInsn(SIPUSH, -1); //is important to reset current branch, because we have to know that the branch info on stack has already been used and can't be used
+		mv.visitVarInsn(ISTORE, myVariableIndex + 1);
 	}
 
 	private void instrumentInvokeTouchSwitch()
@@ -342,16 +342,16 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 		mv.visitVarInsn(ILOAD, myVariableIndex + 1);
 	}
 
-   private Label instrumentIsLastJump() {
-      mv.visitVarInsn(ILOAD, myVariableIndex);
-      mv.visitIntInsn(SIPUSH, lastJump.getLineNumber());
-      Label newLabelX = new Label();
-      mv.visitJumpInsn(IF_ICMPNE, newLabelX);
-      mv.visitVarInsn(ILOAD, myVariableIndex + 1);
-      mv.visitIntInsn(SIPUSH, lastJump.getJumpNumber());
-      mv.visitJumpInsn(IF_ICMPNE, newLabelX);
-      return newLabelX;
-   }
+	private Label instrumentIsLastJump() {
+		mv.visitVarInsn(ILOAD, myVariableIndex);
+		mv.visitIntInsn(SIPUSH, lastJump.getLineNumber());
+		Label newLabelX = new Label();
+		mv.visitJumpInsn(IF_ICMPNE, newLabelX);
+		mv.visitVarInsn(ILOAD, myVariableIndex + 1);
+		mv.visitIntInsn(SIPUSH, lastJump.getJumpNumber());
+		mv.visitJumpInsn(IF_ICMPNE, newLabelX);
+		return newLabelX;
+	}
 
 	public void visitMaxs(int maxStack, int maxLocals)
 	{

@@ -155,7 +155,8 @@ public class ClassData extends CoverageDataContainer
 
 		for (Iterator iter = branches.values().iterator(); iter.hasNext();) {
 			LineData next = (LineData) iter.next();
-			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor())) {
+			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor()))
+			{
 				total += next.getNumberOfValidBranches();
 				covered += next.getNumberOfCoveredBranches();
 			}
