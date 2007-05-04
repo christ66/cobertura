@@ -14,13 +14,12 @@ version 1.9:
 	  you're running ant (Srivathsan Varadarajan).
 	* Added a "maxmemory" attribute to the instrument, merge
 	  and report ant tasks (Matt Cordes).
-	* (Needed for Maven support) Adding cobertura.properties 
-	  file for use in limited environments.  When working in 
-	  limited environments. (ones that cannot set a System 
-	  Property, or will not propogate a System Property) the 
-	  ability to specify the datafile location is impossible.
-	  To correct this, utilize a cobertura.properties file 
-	  located in the classpath to properly set the 
+	* Improve support for Maven and similar environments where
+	  control over system properties is difficult such as
+	  app servers, IoC containers, IDEs, etc.  Setting the
+	  datafile location is difficult in these environments.
+	  To correct this, a cobertura.properties file 
+	  located in the classpath is used to properly set the 
 	  net.sourceforge.cobertura.datafile property.  
 	  (Joakim Erdfelt)
 
