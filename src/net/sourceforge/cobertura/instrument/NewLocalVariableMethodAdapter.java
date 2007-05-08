@@ -39,27 +39,27 @@ public class NewLocalVariableMethodAdapter extends MethodAdapter implements Opco
 	public NewLocalVariableMethodAdapter(MethodVisitor mv, int access, String desc, int addedStackWords)
 	{
 		super(mv);
-        Type[] args = Type.getArgumentTypes(desc);
-        firstStackVariable = ((ACC_STATIC & access) != 0) ? 0 : 1;
-        for (int i = 0; i < args.length; i++) {
-            firstStackVariable += args[i].getSize();
-        }
-        this.addedStackWords = addedStackWords;
+		Type[] args = Type.getArgumentTypes(desc);
+		firstStackVariable = ((ACC_STATIC & access) != 0) ? 0 : 1;
+		for (int i = 0; i < args.length; i++) {
+			firstStackVariable += args[i].getSize();
+		}
+		this.addedStackWords = addedStackWords;
 	}
 	
-    public void visitVarInsn(int opcode, int var) 
-    {
-        mv.visitVarInsn(opcode, (var >= firstStackVariable) ? var + addedStackWords : var);
-    }
+	public void visitVarInsn(int opcode, int var) 
+	{
+		mv.visitVarInsn(opcode, (var >= firstStackVariable) ? var + addedStackWords : var);
+	}
 
-    public void visitIincInsn(int var, int increment) {
-        mv.visitIincInsn((var >= firstStackVariable) ? var + addedStackWords : var, increment);
-    }
+	public void visitIincInsn(int var, int increment) {
+		mv.visitIincInsn((var >= firstStackVariable) ? var + addedStackWords : var, increment);
+	}
 
-    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index)
-    {
-        mv.visitLocalVariable(name, desc, signature, start, end, (index >= firstStackVariable) ? index + addedStackWords : index);
-    }
+	public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index)
+	{
+		mv.visitLocalVariable(name, desc, signature, start, end, (index >= firstStackVariable) ? index + addedStackWords : index);
+	}
 
 	public int getAddedStackWords()
 	{
