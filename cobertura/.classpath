@@ -5,6 +5,7 @@
 	<classpathentry kind="src" path="examples/basic/src"/>
 	<classpathentry kind="src" path="src-2"/>
 	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" path="examples/functionalconditiontest/src"/>
 	<classpathentry kind="lib" path="etc">
 		<accessrules>
 			<accessrule kind="accessible" pattern="task.properties"/>
