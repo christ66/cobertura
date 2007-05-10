@@ -90,7 +90,7 @@ public class FunctionalTest extends TestCase
 				classesList.size() > 0);
 
 		// text.xml only instruments the two "A" classes, so make
-		// sure hose are the only classes listed in the XML report.
+		// sure those are the only classes listed in the XML report.
 		boolean firstPackageFound = false;
 		boolean secondPackageFound = false;
 		for (Iterator iter = classesList.iterator(); iter.hasNext();)
