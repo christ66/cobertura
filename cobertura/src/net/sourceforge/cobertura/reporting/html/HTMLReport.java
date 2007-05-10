@@ -54,6 +54,7 @@ import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
+import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.log4j.Logger;
 
@@ -512,16 +513,15 @@ public class HTMLReport
 		{
 			StringBuffer ret = new StringBuffer();
 			ret.append("<a title=\"Line ").append(lineData.getLineNumber()).append(": Branch coverage ")
-			   .append(getPercentValue(lineData.getBranchCoverageRate())).append(" (").append(lineData.getNumberOfCoveredBranches())
-			   .append("/").append(lineData.getNumberOfValidBranches()).append(")");
-			if (lineData.getBranchSize() > 1)
+			   .append(lineData.getConditionCoverage());
+			if (lineData.getConditionSize() > 1)
 			{
 				ret.append(" [particular branches: ");
-				for (int i = 0; i < lineData.getBranchSize(); i++)
+				for (int i = 0; i < lineData.getConditionSize(); i++)
 				{
 					if (i > 0)
 						ret.append(", ");
-					ret.append(getPercentValue(lineData.getBranchCoverageRate(i)));
+					ret.append(lineData.getConditionCoverage(i));
 				}
 				ret.append("]");
 			}
@@ -836,9 +836,7 @@ public class HTMLReport
 
 	private static String getPercentValue(double value)
 	{
-		NumberFormat formatter;
-		formatter = NumberFormat.getPercentInstance();
-		return formatter.format(value);
+		return StringUtil.getPercentValue(value);
 	}
 
 }

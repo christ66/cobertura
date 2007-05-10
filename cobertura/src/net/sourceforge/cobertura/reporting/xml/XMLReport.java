@@ -36,10 +36,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
+import net.sourceforge.cobertura.coveragedata.JumpData;
 import net.sourceforge.cobertura.coveragedata.LineData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
+import net.sourceforge.cobertura.coveragedata.SwitchData;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
@@ -52,7 +54,7 @@ public class XMLReport
 
 	private static final Logger logger = Logger.getLogger(XMLReport.class);
 
-	protected final static String coverageDTD = "coverage-02.dtd";
+	protected final static String coverageDTD = "coverage-03.dtd";
 
 	private final PrintWriter pw;
 	private final FileFinder finder;
@@ -279,10 +281,59 @@ public class XMLReport
 	{
 		int lineNumber = lineData.getLineNumber();
 		long hitCount = lineData.getHits();
-		boolean isBranch = lineData.hasBranch();
+		boolean hasBranch = lineData.hasBranch();
+		String conditionCoverage = lineData.getConditionCoverage();
 
-		println("<line number=\"" + lineNumber + "\" hits=\"" + hitCount
-				+ "\" branch=\"" + isBranch + "\"/>");
+		String lineInfo = "<line number=\"" + lineNumber + "\" hits=\"" + hitCount
+				+ "\" branch=\"" + hasBranch + "\"";
+		if (hasBranch)
+		{
+			println(lineInfo + " condition-coverage=\"" + conditionCoverage + "\">");
+			dumpConditions(lineData);
+			println("</line>");
+		} else
+		{
+			println(lineInfo + "/>");
+		}
+	}
+
+	private void dumpConditions(LineData lineData)
+	{
+		increaseIndentation();
+		println("<conditions>");
+
+		for (int i = 0; i < lineData.getConditionSize(); i++)
+		{
+			Object conditionData = lineData.getConditionData(i);
+			String coverage = lineData.getConditionCoverage(i);
+			dumpCondition(conditionData, coverage);
+		}
+
+		println("</conditions>");
+		decreaseIndentation();
+	}
+
+	private void dumpCondition(Object conditionData, String coverage)
+	{
+		increaseIndentation();
+		StringBuffer buffer = new StringBuffer("<condition");
+		if (conditionData instanceof JumpData)
+		{
+			JumpData jumpData = (JumpData) conditionData;
+			buffer.append(" number=\"").append(jumpData.getConditionNumber()).append("\"");
+			buffer.append(" type=\"").append("jump").append("\"");
+			buffer.append(" coverage=\"").append(coverage).append("\"");
+		}
+		else
+		{
+			SwitchData switchData = (SwitchData) conditionData;
+			buffer.append(" number=\"").append(switchData.getSwitchNumber()).append("\"");
+			buffer.append(" type=\"").append("switch").append("\"");
+			buffer.append(" coverage=\"").append(coverage).append("\"");
+		}
+		buffer.append("/>");
+		println(buffer.toString());
+		decreaseIndentation();
 	}
 
 }
