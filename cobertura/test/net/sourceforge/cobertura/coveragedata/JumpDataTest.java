@@ -51,8 +51,8 @@ public class JumpDataTest extends TestCase
 
 	public void testGetBranchNumber()
 	{
-		assertEquals(0, a.getBranchNumber());
-		assertEquals(1, b.getBranchNumber());
+		assertEquals(0, a.getConditionNumber());
+		assertEquals(1, b.getConditionNumber());
 	}
 
 	public void testGetNumbers()
