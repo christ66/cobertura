@@ -35,16 +35,16 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 {
 	private static final long serialVersionUID = 3;
 
-	private int branchNumber;
+	private int conditionNumber;
 
 	private long trueHits;
 
 	private long falseHits;
 
-	JumpData(int branchNumber)
+	JumpData(int conditionNumber)
 	{
 		super();
-		this.branchNumber = branchNumber;
+		this.conditionNumber = conditionNumber;
 		this.trueHits = 0L;
 		this.falseHits = 0L;
 	}
@@ -53,7 +53,7 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 	{
 		if (!o.getClass().equals(JumpData.class))
 			return Integer.MAX_VALUE;
-		return this.branchNumber - ((JumpData) o).branchNumber;
+		return this.conditionNumber - ((JumpData) o).conditionNumber;
 	}
 
 	void touchBranch(boolean branch)
@@ -68,9 +68,9 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 		}
 	}
 
-	public int getBranchNumber()
+	public int getConditionNumber()
 	{
-		return this.branchNumber;
+		return this.conditionNumber;
 	}
 
 	public long getTrueHits()
@@ -98,12 +98,12 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 		JumpData branchData = (JumpData) obj;
 		return (this.trueHits == branchData.trueHits)
 				&& (this.falseHits == branchData.falseHits)
-				&& (this.branchNumber == branchData.branchNumber);
+				&& (this.conditionNumber == branchData.conditionNumber);
 	}
 
 	public int hashCode()
 	{
-		return this.branchNumber;
+		return this.conditionNumber;
 	}
 
 	public int getNumberOfCoveredBranches()

@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.cobertura.util.StringUtil;
+
 /**
  * <p>
  * This class implements HasBeenInstrumented so that when cobertura
@@ -95,6 +97,21 @@ public class LineData
 		return ((double) getNumberOfCoveredBranches()) / getNumberOfValidBranches();
 	}
 
+	public String getConditionCoverage()
+	{
+		StringBuffer ret = new StringBuffer();
+		if (getNumberOfValidBranches() == 0)
+		{
+			ret.append(StringUtil.getPercentValue(1.0));
+		}
+		else
+		{
+			ret.append(StringUtil.getPercentValue(getBranchCoverageRate()));
+			ret.append(" (").append(getNumberOfCoveredBranches()).append("/").append(getNumberOfValidBranches()).append(")");
+		}
+		return ret.toString();
+	}
+	
 	public long getHits()
 	{
 		return hits;
@@ -247,19 +264,43 @@ public class LineData
 		getSwitchData(switchNumber, null).touchBranch(branch);
 	}
 	
-	public int getBranchSize() {
+	public int getConditionSize() {
 		return ((jumps == null) ? 0 : jumps.size()) + ((switches == null) ? 0 :switches.size());
 	}
 	
-	public double getBranchCoverageRate(int index) {
+	public Object getConditionData(int index)
+	{
+		Object branchData = null;
 		int jumpsSize = (jumps == null) ? 0 : jumps.size();
 		int switchesSize = (switches == null) ? 0 :switches.size();
 		if (index < jumpsSize) 
-			return ((JumpData) jumps.get(index)).getBranchCoverageRate();
+		{
+			branchData = jumps.get(index);
+		}
 		else if (index < jumpsSize + switchesSize)
-			return ((SwitchData) switches.get(index - jumpsSize)).getBranchCoverageRate();
+		{
+			branchData = switches.get(index - jumpsSize);
+		}
+		return branchData;
+	}
+	
+	public String getConditionCoverage(int index) {
+		Object branchData = getConditionData(index);
+		if (branchData == null)
+		{
+			return StringUtil.getPercentValue(1.0);
+		} 
+		else if (branchData instanceof JumpData) 
+		{
+			JumpData jumpData = (JumpData) branchData;
+			return StringUtil.getPercentValue(jumpData.getBranchCoverageRate());
+		}
 		else
-			return 1;
+		{
+			SwitchData switchData = (SwitchData) branchData;
+			return StringUtil.getPercentValue(switchData.getBranchCoverageRate());
+
+		}
 	}
 	
 	JumpData getJumpData(int jumpNumber) 
