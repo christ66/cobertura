@@ -25,6 +25,8 @@
 
 package net.sourceforge.cobertura.util;
 
+import java.text.NumberFormat;
+
 /**
  * Abstract, not to be instantiated utility class for String functions.
  * 
@@ -73,4 +75,19 @@ public abstract class StringUtil
 		return sb.toString();
 	}
 
+	/**
+	 * Takes a double and turns it into a percent string.
+	 * Ex.  0.5 turns into 50%
+	 * 
+	 * @param value
+	 * @return corresponding percent string
+	 */
+	public static String getPercentValue(double value)
+	{
+		//moved from HTMLReport.getPercentValue()
+		NumberFormat formatter;
+		formatter = NumberFormat.getPercentInstance();
+		return formatter.format(value);
+	}
+	
 }
