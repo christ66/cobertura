@@ -47,6 +47,9 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 	private JumpHolder lastJump;
    
 	private FirstPassMethodInstrumenter firstPass;
+	
+	private static final int BOOLEAN_TRUE = ICONST_0;
+	private static final int BOOLEAN_FALSE = ICONST_1;
 
 	public SecondPassMethodInstrumenter(FirstPassMethodInstrumenter firstPass)
 	{
@@ -170,7 +173,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 				Label newLabelX = instrumentIsLastJump();
 				instrumentGetClassData();
 				instrumentPutLineAndBranchNumbers();
-				mv.visitInsn(ICONST_0);
+				mv.visitInsn(BOOLEAN_FALSE);
 				instrumentInvokeTouchJump();
 				Label newLabelY = new Label();
 				mv.visitJumpInsn(GOTO, newLabelY);
@@ -179,7 +182,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 				mv.visitJumpInsn(IFLT, newLabelY);
 				instrumentGetClassData();
 				instrumentPutLineAndBranchNumbers();
-				mv.visitInsn(ICONST_1);
+				mv.visitInsn(BOOLEAN_TRUE);
 				instrumentInvokeTouchJump();
 				mv.visitLabel(newLabelY);
 			}
@@ -320,7 +323,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 		
 		//Invoke the touchJump(lineNumber, branchNumber, branch)
 		instrumentPutLineAndBranchNumbers();
-		mv.visitInsn(branch ? ICONST_1 : ICONST_0);
+		mv.visitInsn(branch ? BOOLEAN_TRUE : BOOLEAN_FALSE);
 		instrumentInvokeTouchJump();
 	}
 
