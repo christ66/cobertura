@@ -22,5 +22,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Ant"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/asm-tree-2.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/xerces/2.6.2/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="lib/xerces/2.6.2/xml-apis.jar"/>
+	<classpathentry kind="lib" path="lib/xerces/2.6.2/xmlParserAPIs.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

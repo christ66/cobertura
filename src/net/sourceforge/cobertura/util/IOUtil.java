@@ -29,10 +29,15 @@ package net.sourceforge.cobertura.util;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 
 /**
  * Helper class with useful I/O operations.
@@ -167,4 +172,11 @@ public abstract class IOUtil
 		return out;
 	}
 
+	public static PrintWriter getPrintWriter(File file) throws UnsupportedEncodingException, FileNotFoundException
+	{
+		Writer osWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+		PrintWriter pw = new PrintWriter(osWriter, false);
+		return pw;
+	}
+	
 }

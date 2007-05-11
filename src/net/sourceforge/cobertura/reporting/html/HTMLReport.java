@@ -28,10 +28,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -54,6 +53,7 @@ import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
+import net.sourceforge.cobertura.util.IOUtil;
 import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.log4j.Logger;
@@ -100,11 +100,11 @@ public class HTMLReport
 	private void generatePackageList() throws IOException
 	{
 		File file = new File(destinationDir, "frame-packages.html");
-		PrintStream out = null;
+		PrintWriter out = null;
 
 		try
 		{
-			out = new PrintStream(new FileOutputStream(file), false, "UTF-8");
+			out = IOUtil.getPrintWriter(file);
 
 			out
 					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
@@ -192,10 +192,10 @@ public class HTMLReport
 				new SourceFileDataBaseNameComparator());
 
 		File file = new File(destinationDir, filename);
-		PrintStream out = null;
+		PrintWriter out = null;
 		try
 		{
-			out = new PrintStream(new FileOutputStream(file), false, "UTF-8");
+			out = IOUtil.getPrintWriter(file);
 
 			out
 					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
@@ -284,11 +284,11 @@ public class HTMLReport
 			filename = "frame-summary-" + packageData.getName() + ".html";
 		}
 		File file = new File(destinationDir, filename);
-		PrintStream out = null;
+		PrintWriter out = null;
 
 		try
 		{
-			out = new PrintStream(new FileOutputStream(file), false, "UTF-8");
+			out = IOUtil.getPrintWriter(file);;
 
 			out
 					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
@@ -448,11 +448,11 @@ public class HTMLReport
 
 		String filename = sourceFileData.getNormalizedName() + ".html";
 		File file = new File(destinationDir, filename);
-		PrintStream out = null;
+		PrintWriter out = null;
 
 		try
 		{
-			out = new PrintStream(new FileOutputStream(file), false, "UTF-8");
+			out = IOUtil.getPrintWriter(file);
 
 			out
 					.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"");
