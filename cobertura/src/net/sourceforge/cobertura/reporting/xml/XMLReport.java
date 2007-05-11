@@ -25,9 +25,7 @@
 package net.sourceforge.cobertura.reporting.xml;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Date;
@@ -45,6 +43,7 @@ import net.sourceforge.cobertura.coveragedata.SwitchData;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
+import net.sourceforge.cobertura.util.IOUtil;
 import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.log4j.Logger;
@@ -68,7 +67,7 @@ public class XMLReport
 		this.finder = finder;
 
 		File file = new File(destinationDir, "coverage.xml");
-		pw = new PrintWriter(new PrintStream(new FileOutputStream(file), false, "UTF-8"));
+		pw = IOUtil.getPrintWriter(file);
 
 		try
 		{

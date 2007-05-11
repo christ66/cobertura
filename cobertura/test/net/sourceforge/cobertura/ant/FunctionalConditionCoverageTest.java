@@ -233,7 +233,10 @@ public class FunctionalConditionCoverageTest extends TestCase
 				
 				verifyMethod(info, testName, classElement, methodElement);
 			}
-			else if (methodName.equals("<clinit>") || methodName.equals("<init>") || methodName.startsWith("util"))
+			else if (methodName.equals("<clinit>") || 
+					methodName.equals("<init>") || 
+					methodName.startsWith("util") ||
+					methodName.equals("class$"))
 			{
 				// These methods are ok--ignore them.
 			}
@@ -274,7 +277,7 @@ public class FunctionalConditionCoverageTest extends TestCase
 					fail("Expected line " + info.ignoreLineNumber + " to be ignored.");
 				}
 			} catch (DataConversionException e) {
-				throw new RuntimeException(e);
+				throw new RuntimeException(e.toString());
 			}
 			if (number == info.conditionNumber) {
 				foundCondition = true;
