@@ -512,11 +512,11 @@ public class HTMLReport
 		if (hasBranch) 
 		{
 			StringBuffer ret = new StringBuffer();
-			ret.append("<a title=\"Line ").append(lineData.getLineNumber()).append(": Branch coverage ")
+			ret.append("<a title=\"Line ").append(lineData.getLineNumber()).append(": Conditional coverage ")
 			   .append(lineData.getConditionCoverage());
 			if (lineData.getConditionSize() > 1)
 			{
-				ret.append(" [particular branches: ");
+				ret.append(" [each condition: ");
 				for (int i = 0; i < lineData.getConditionSize(); i++)
 				{
 					if (i > 0)
