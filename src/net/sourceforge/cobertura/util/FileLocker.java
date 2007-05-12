@@ -85,7 +85,8 @@ public class FileLocker
 	 */
 	public boolean lock()
 	{
-		if (System.getProperty("java.version").startsWith("1.3"))
+		if (System.getProperty("java.version").startsWith("1.3") ||
+				System.getProperty("cobertura.use.java.nio").equalsIgnoreCase("false"))
 		{
 			return true;
 		}
