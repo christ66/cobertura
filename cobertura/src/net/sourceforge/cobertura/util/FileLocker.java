@@ -85,8 +85,9 @@ public class FileLocker
 	 */
 	public boolean lock()
 	{
+		String useNioProperty = System.getProperty("cobertura.use.java.nio");
 		if (System.getProperty("java.version").startsWith("1.3") ||
-				System.getProperty("cobertura.use.java.nio").equalsIgnoreCase("false"))
+				((useNioProperty != null) && useNioProperty.equalsIgnoreCase("false")))
 		{
 			return true;
 		}
