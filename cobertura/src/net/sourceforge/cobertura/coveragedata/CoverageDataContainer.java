@@ -46,6 +46,8 @@ public abstract class CoverageDataContainer
 		implements CoverageData, HasBeenInstrumented, Serializable
 {
 
+   private static final long serialVersionUID = 2;
+
 	/**
 	 * Each key is the name of a child, usually stored as a String or
 	 * an Integer object.  Each value is information about the child,

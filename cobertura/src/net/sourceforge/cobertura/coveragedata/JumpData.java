@@ -33,7 +33,7 @@ import java.io.Serializable;
 public class JumpData implements BranchCoverageData, Comparable, Serializable,
 		HasBeenInstrumented
 {
-	private static final long serialVersionUID = 3;
+	private static final long serialVersionUID = 8;
 
 	private int conditionNumber;
 

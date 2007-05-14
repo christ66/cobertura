@@ -34,7 +34,7 @@ public class PackageData extends CoverageDataContainer
 		implements Comparable, HasBeenInstrumented
 {
 
-	private static final long serialVersionUID = 5;
+	private static final long serialVersionUID = 7;
 
 	private String name;
 
