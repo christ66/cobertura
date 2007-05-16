@@ -131,9 +131,12 @@ public class FileLocker
 			System.err.println("Unable to get lock on " + lockFile.getAbsolutePath() + ": "
 					+ e.getLocalizedMessage());
 			System.err.println("This is known to happen on Linux kernel 2.6.20.");
-			System.err.println("Make sure cobertura.jar is in your server's base classpath.");
+			System.err.println("Make sure cobertura.jar is in the root classpath of the jvm ");
+			System.err.println("process running the instrumented code.  If the instrumented code ");
+			System.err.println("is running in a web server, this means cobertura.jar should be in ");
+			System.err.println("the web server's lib directory.");
 			System.err.println("Don't put multiple copies of cobertura.jar in different WEB-INF/lib directories.");
-			System.err.println("It is important that cobertura be loaded by the parent classloader.");
+			System.err.println("Only one classloader should load cobertura.  It should be the root classloader.");
 			System.err.println("---------------------------------------");
 			return false;
 		}
