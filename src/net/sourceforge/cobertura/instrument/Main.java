@@ -178,22 +178,37 @@ public class Main
 				}
 				else if (isClass(entry) && classPattern.matches(entryName))
 				{
-					// Instrument class
-					ClassReader cr = new ClassReader(entryBytes);
-					ClassWriter cw = new ClassWriter(true);
-					ClassInstrumenter cv = new ClassInstrumenter(projectData,
-							cw, ignoreRegexes, ignoreBranchesRegexes);
-					cr.accept(cv, false);
-
-					// If class was instrumented, get bytes that define the
-					// class
-					if (cv.isInstrumented())
+					try
 					{
-						logger.debug("Putting instrumented entry: "
-								+ entry.getName());
-						entryBytes = cw.toByteArray();
-						modified = true;
-						outputEntry.setTime(System.currentTimeMillis());
+						// Instrument class
+						ClassReader cr = new ClassReader(entryBytes);
+						ClassWriter cw = new ClassWriter(true);
+						ClassInstrumenter cv = new ClassInstrumenter(projectData,
+								cw, ignoreRegexes, ignoreBranchesRegexes);
+						cr.accept(cv, false);
+	
+						// If class was instrumented, get bytes that define the
+						// class
+						if (cv.isInstrumented())
+						{
+							logger.debug("Putting instrumented entry: "
+									+ entry.getName());
+							entryBytes = cw.toByteArray();
+							modified = true;
+							outputEntry.setTime(System.currentTimeMillis());
+						}
+					}
+					catch (Throwable t)
+					{
+						if (entry.getName().endsWith("_Stub.class"))
+						{
+							//no big deal - it is probably an RMI stub, and they don't need to be instrumented
+							logger.debug("Problems instrumenting archive entry: " + entry.getName(), t);
+						}
+						else
+						{
+							logger.warn("Problems instrumenting archive entry: " + entry.getName(), t);
+						}
 					}
 				}
 
@@ -204,8 +219,11 @@ public class Main
 			}
 			catch (Exception e)
 			{
-				logger.warn("Problems with archive entry: " + entry);
-				throw e;
+				logger.warn("Problems with archive entry: " + entry.getName(), e);
+			}
+			catch (Throwable t)
+			{
+				logger.warn("Problems with archive entry: " + entry.getName(), t);
 			}
 			output.flush();
 		}
@@ -288,7 +306,7 @@ public class Main
 			{
 				modified = addInstrumentationToArchive(archive, input, output);
 			}
-			catch (Exception e)
+			catch (Throwable e)
 			{
 				logger.warn("Cannot instrument archive: "
 						+ archive.getAbsolutePath(), e);
