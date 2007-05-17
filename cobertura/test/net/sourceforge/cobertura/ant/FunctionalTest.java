@@ -95,6 +95,7 @@ public class FunctionalTest extends TestCase
 		boolean secondPackageFound = false;
 		for (Iterator iter = classesList.iterator(); iter.hasNext();)
 		{
+			boolean verify = true;
 			Element classElement = (Element)iter.next();
 			String className = classElement.getAttributeValue("name");
 			if (className.equals("test.first.A"))
@@ -105,13 +106,23 @@ public class FunctionalTest extends TestCase
 			{
 				secondPackageFound = true;
 			}
+			else if (className.equals("test.first.RemoteInterface") 
+					|| (className.equals("test.first.RemoteListener"))
+					|| (className.equals("test.first.RemoteListener_Stub")))
+			{
+				//just ignore - it is ok
+				verify = false;
+			}
 			else
 				fail("Test "
 						+ testName
 						+ ": Found a class with the name '"
 						+ className
 						+ "' in the XML report, but was only expecting either 'test.first.A' or 'test.second.A'.");
-			verifyClass(testName, classElement);
+			if (verify)
+			{
+				verifyClass(testName, classElement);
+			}
 		}
 		assertTrue("Test " + testName + ": Did not find class 'test.first.A' in the XML report.",
 				firstPackageFound);

@@ -37,6 +37,15 @@
 	<target name="compile">
 		<mkdir dir="${classes.dir}" />
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" />
+		
+		<rmic 
+			base="${classes.dir}" 
+			classpathref="project.classpath" 
+			stubversion="1.2"
+			includes="test/first/RemoteListener.class"
+			debug="lines,source"
+			verify="true"
+		/>
 	</target>
 
 	<target name="instrument-includes-and-excludes" depends="compile">
@@ -44,6 +53,7 @@
 		<cobertura-instrument datafile="${basedir}/cobertura.ser" todir="${instrumented.dir}" classpathref="project.classpath">
 			<fileset dir="${classes.dir}">
 				<include name="**/A.class" />
+				<include name="test/first/RemoteListener*.class" />
 				<exclude name="**/B.class" />
 				<exclude name="**/*Test*" />
 			</fileset>
@@ -81,6 +91,7 @@
 			<fileset dir="${classes.dir}">
 				<include name="test/first/A.class" />
 				<include name="test/second/B.class" />
+				<include name="test/first/RemoteListener*.class" />
 			</fileset>
 		</zip>
 		<!-- TODO: <signjar jar="${this.test.jars}/app.jar" alias="cobertura" storepass="secret" /> -->
