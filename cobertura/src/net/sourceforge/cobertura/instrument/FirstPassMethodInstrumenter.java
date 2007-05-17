@@ -92,7 +92,7 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 	public void visitEnd() {
 		super.visitEnd();
 
-		methodNode.accept(lineLabels.isEmpty() ? mv : new SecondPassMethodInstrumenter(this)); //when there is no line number info -> no instrumentation
+		methodNode.accept(lineLabels.isEmpty() ? writerMethodVisitor : new SecondPassMethodInstrumenter(this)); //when there is no line number info -> no instrumentation
 	}
 
 	public void visitJumpInsn(int opcode, Label label)
