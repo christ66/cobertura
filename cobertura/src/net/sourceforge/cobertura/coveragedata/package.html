@@ -1,0 +1,23 @@
+<body>
+
+<p>
+A hierarchy of classes used for storing metadata about each of your
+classes.  A ProjectData object contains PackageData objects which
+contain ClassData objects
+which contain LineData objects.  Or, in bad ASCII art:
+</p>
+
+<p>
+ProjectData <--> PackageData <--> ClassData <--> LineData
+</p>
+
+<p>
+The SourceFileData class is not used during instrumention or
+testing.  It is a only used when generating the reports.  Basically
+it's used to lump a set of classes together when those classes come
+from the same file.  This is needed because the HTML reporting
+displays an entire file at a time, instead of displaying a single
+class at a time.
+</p>
+
+</body>
