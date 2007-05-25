@@ -36,7 +36,7 @@
 
 <?php cc_printNavigation($project, $log, $file); ?>
 
-<a href="http://sourceforge.net/"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=130558&amp;type=1" width="88" height="31" alt="SourceForge.net" /></a>
+<a href="http://sourceforge.net/"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=130558&amp;type=2" width="125" height="37" border="0" alt="SourceForge.net" /></a>
 
 </div>
 
