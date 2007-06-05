@@ -64,6 +64,65 @@ Cobertura with Appfuse</a></li>
 <h1>News</h1>
 
 <div class="newsitem">
+<span class="date">5 June 2007</span>
+<div class="text">
+<p>
+We've released Cobertura 1.9!  There is much improved
+branch/conditional coverage and a new maxmemory attribute that can
+be used if instrumentation needs more memory.  See below 
+for the full list of changes.
+</p>
+
+<ul>
+<li>
+Much improved branch/conditional coverage.  Information on whether
+the true as well as the false of an if statement is 
+collected.  Also, information on the branches of a 
+switch statement (including the default) is collected. 
+(Jiří Mareš)
+</li>
+
+<li>
+Assume Java source files are saved as UTF-8 instead of 
+the computer's default encoding.
+</li>
+
+<li>
+Write all HTML and XML reports in UTF-8 instead of the 
+computer's default encoding (Naoki Iwami).
+</li>
+
+<li>
+Fix a bug where the Cobertura ant tasks would not work 
+correctly in Microsoft Windows when Cobertura was 
+installed on a different drive than the drive from which 
+you're running ant (Srivathsan Varadarajan).
+</li>
+
+<li>
+Added a "maxmemory" attribute to the instrument, merge 
+and report ant tasks (Matt Cordes).
+</li>
+
+<li>
+Improve support for Maven and similar environments where 
+control over system properties is difficult such as 
+app servers, IoC containers, IDEs, etc.  Setting the 
+datafile location is difficult in these environments. 
+To correct this, a cobertura.properties file 
+located in the classpath is used to properly set the 
+net.sourceforge.cobertura.datafile property. 
+(Joakim Erdfelt)
+</li>
+
+</ul>
+
+</div>
+</div>
+
+
+
+<div class="newsitem">
 <span class="date">5 November 2006</span>
 <div class="text">
 <p>
