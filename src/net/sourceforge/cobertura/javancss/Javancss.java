@@ -32,9 +32,9 @@ import java.util.Vector;
 
 
 /**
- * @author   Chr. Clemens Lee, recursive feature by P��k� Hannu,
- *           additional javadoc metrics by Emilio Gongora, <emilio@sms.nl>,
- *           and Guillermo Rodriguez, <guille@sms.nl>.
+ * @author   Chr. Clemens Lee, recursive feature by Pääkö Hannu,
+ *           additional javadoc metrics by Emilio Gongora, &lt;emilio@sms.nl&gt;,
+ *           and Guillermo Rodriguez, &lt;guille@sms.nl&gt;.
  */
 public class Javancss
 {
