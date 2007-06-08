@@ -305,7 +305,9 @@
 		<mkdir dir="${build.api.dir}" />
 
 		<javadoc access="private" author="true" breakiterator="true" destdir="${build.api.dir}" failonerror="true" encoding="UTF-8" linksource="true" serialwarn="false" source="1.3" version="true" windowtitle="Cobertura API">
-			<fileset dir="${src.dir}" />
+			<fileset dir="${src.dir}">
+				<include name="**/*.java" />
+			</fileset>
 			<classpath location="${ant.home}/lib/ant.jar" />
 			<classpath refid="base.path" />
 		</javadoc>
