@@ -51,21 +51,21 @@
 
 	<target name="compile" depends="init">
 		<mkdir dir="${build.classes.dir}" />
-		<javac fork="true" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true">
+		<javac fork="true" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true" encoding="UTF-8">
 			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
 			<classpath refid="base.path" />
 		</javac>
 
 		<mkdir dir="${build.otherclasses.dir}" />
-		<javac fork="true" srcdir="${othersrc.dir}" destdir="${build.otherclasses.dir}" debug="true">
+		<javac fork="true" srcdir="${othersrc.dir}" destdir="${build.otherclasses.dir}" debug="true" encoding="UTF-8">
 			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
 			<classpath refid="base.path" />
 		</javac>
 
 		<mkdir dir="${build.functionalconditiontest.dir}" />
-		<javac fork="true" srcdir="${examples.functionalconditiontest.dir}" destdir="${build.functionalconditiontest.dir}" debug="true">
+		<javac fork="true" srcdir="${examples.functionalconditiontest.dir}" destdir="${build.functionalconditiontest.dir}" debug="true" encoding="UTF-8">
 			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
 			<classpath refid="base.path" />
@@ -81,7 +81,7 @@
 
 	<target name="compile-tests" depends="init,compile">
 		<mkdir dir="${build.test.classes.dir}" />
-		<javac fork="true" srcdir="${test.src.dir}" destdir="${build.test.classes.dir}" debug="true">
+		<javac fork="true" srcdir="${test.src.dir}" destdir="${build.test.classes.dir}" debug="true" encoding="UTF-8">
 			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
 			<classpath location="${build.test.classes.dir}" />
