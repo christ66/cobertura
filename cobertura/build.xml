@@ -416,6 +416,98 @@
 
 	</target>
 
+	<target name="create-bundles" depends="jar,javadoc">
+	    <mkdir dir="${build.bundle.dir}" />
+
+		<delete>
+			<fileset dir="${build.bundle.dir}">
+				<include name="*" />
+			</fileset>
+		</delete>
+
+		<!-- the javadoc jar for Cobertura.
+		     used by IDE, maven, and global artifact repository. -->
+		<jar jarfile="${build.bundle.dir}/${ant.project.name}-${version}-javadoc.jar" compress="true">
+			<fileset dir="${build.api.dir}">
+				<include name="**/*" />
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="COPYING" />
+				<include name="COPYRIGHT" />
+				<include name="README" />
+			</fileset>
+			<manifest>
+				<attribute name="Cobertura" value="Javadoc for ${version}"/>
+			</manifest>
+		</jar>
+
+		<!-- the sources jar for Cobertura.
+		     this is not the same as the -src.tar.gz, and is not expected to be
+			 a fully compilable source jar.
+			 This jar should contain the source for the classes that exist in
+			 the cobertura.jar file, and is used from within an IDE to aide
+			 in debugging of an application that utilizes that jar file.
+		     This is an optional jar file for the global repository. -->
+		<jar jarfile="${build.bundle.dir}/${ant.project.name}-${version}-sources.jar" compress="true">
+			<fileset dir="${src.dir}">
+				<include name="**/*" />
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="COPYING" />
+				<include name="COPYRIGHT" />
+				<include name="README" />
+			</fileset>
+			<manifest>
+				<attribute name="Cobertura" value="Source for ${version}"/>
+			</manifest>
+		</jar>
+
+		<!-- copy existing files into expected and versioned names -->
+	    <copy file="COPYING" tofile="${build.bundle.dir}/LICENSE.txt"
+		      overwrite="true" />
+		<copy file="${ant.project.name}.jar" 
+			  tofile="${build.bundle.dir}/${ant.project.name}-${version}.jar"
+			  overwrite="true" />
+
+		<!-- Create the bundle for the cobertura lib -->
+
+	    <copy file="${basedir}/maven/ibiblio/cobertura.pom"
+		      tofile="${build.bundle.dir}/pom.xml"
+			  overwrite="true">
+			<filterset>
+				<filter token="VERSION" value="${version}" />
+			</filterset>
+		</copy>
+
+		<jar jarfile="${basedir}/${ant.project.name}-${version}-bundle.jar" compress="false">
+		    <fileset dir="${build.bundle.dir}">
+				<include name="LICENSE.txt" />
+				<include name="${ant.project.name}-${version}.jar" />
+				<include name="${ant.project.name}-${version}-javadoc.jar" />
+				<include name="${ant.project.name}-${version}-sources.jar" />
+				<include name="pom.xml" />
+			</fileset>
+		</jar>
+
+		<!-- Create the bundle for the cobertura-runtime -->
+
+	    <copy file="${basedir}/maven/ibiblio/cobertura-runtime.pom"
+		      tofile="${build.bundle.dir}/pom.xml"
+			  overwrite="true">
+			<filterset>
+				<filter token="VERSION" value="${version}" />
+			</filterset>
+		</copy>
+
+		<jar jarfile="${basedir}/${ant.project.name}-runtime-${version}-bundle.jar" compress="false">
+		    <fileset dir="${build.bundle.dir}">
+				<include name="LICENSE.txt" />
+				<include name="pom.xml" />
+			</fileset>
+		</jar>
+		
+	</target>
+
 	<target name="install-eclipse-plugin">
 		<apply dir="${eclipse.dir}/plugins" executable="unzip">
 			<arg value="-o" />
@@ -430,6 +522,7 @@
 		<delete>
 			<fileset dir="${basedir}">
 				<include name="cobertura.jar" />
+				<include name="cobertura-*-bundle.jar" />
 				<include name="cobertura.ser" />
 				<include name="cobertura.ser.lock" />
 				<include name="cobertura-*-bin.*" />
