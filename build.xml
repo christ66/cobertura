@@ -113,6 +113,11 @@
 				<exclude name="**/*.java" />
 				<exclude name="**/package.html" />
 			</fileset>
+			<fileset dir="${basedir}">
+				<include name="COPYING" />
+				<include name="COPYRIGHT" />
+				<include name="README" />
+			</fileset>
 			<manifest>
 				<attribute name="Specification-Title" value="${description}"/>
 				<attribute name="Specification-Vendor" value="Cobertura"/>
@@ -438,3 +443,6 @@
 	<target name="release" depends="clean,compile,compile-tests,test,jar,javadoc,dist" description="Full build cycle, producing a distribution." />
 
 </project>
+<!--
+  vim: et sts=4 sw=4 noexpandtab
+  -->
