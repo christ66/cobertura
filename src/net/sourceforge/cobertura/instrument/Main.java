@@ -182,10 +182,10 @@ public class Main
 					{
 						// Instrument class
 						ClassReader cr = new ClassReader(entryBytes);
-						ClassWriter cw = new ClassWriter(true);
+						ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 						ClassInstrumenter cv = new ClassInstrumenter(projectData,
 								cw, ignoreRegexes, ignoreBranchesRegexes);
-						cr.accept(cv, false);
+						cr.accept(cv, 0);
 	
 						// If class was instrumented, get bytes that define the
 						// class
@@ -353,9 +353,9 @@ public class Main
 		{
 			inputStream = new FileInputStream(file);
 			ClassReader cr = new ClassReader(inputStream);
-			cw = new ClassWriter(true);
+			cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes, ignoreBranchesRegexes);
-			cr.accept(cv, false);
+			cr.accept(cv, 0);
 		}
 		catch (Throwable t)
 		{
