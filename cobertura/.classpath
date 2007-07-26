@@ -12,7 +12,6 @@
 			<accessrule kind="nonaccessible" pattern="*"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/asm-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.8.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1-beta-8.jar"/>
 	<classpathentry kind="lib" path="lib/jdom-1.0.jar"/>
@@ -21,9 +20,10 @@
 	<classpathentry kind="lib" path="lib/xalan-2.6.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Ant"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/asm-tree-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/2.6.2/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/2.6.2/xml-apis.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/2.6.2/xmlParserAPIs.jar"/>
+	<classpathentry kind="lib" path="lib/asm-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/asm-tree-3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
