@@ -25,6 +25,7 @@ package net.sourceforge.cobertura.coveragedata;
 
 import net.sourceforge.cobertura.util.ConfigurationUtil;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -64,7 +65,7 @@ public abstract class CoverageDataFileHandler implements HasBeenInstrumented
 		//System.out.println("Cobertura: Loading coverage data from " + dataFile.getAbsolutePath());
 		try
 		{
-			is = new FileInputStream(dataFile);
+			is = new BufferedInputStream(new FileInputStream(dataFile), 16384);
 			return loadCoverageData(is);
 		}
 		catch (IOException e)
