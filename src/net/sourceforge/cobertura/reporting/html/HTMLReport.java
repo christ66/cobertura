@@ -71,17 +71,21 @@ public class HTMLReport
 
 	private ProjectData projectData;
 
+	private String encoding;
+
 	/**
 	 * Create a coverage report
+	 * @param encoding 
 	 */
 	public HTMLReport(ProjectData projectData, File outputDir,
-			FileFinder finder, ComplexityCalculator complexity)
+			FileFinder finder, ComplexityCalculator complexity, String encoding)
 			throws Exception
 	{
 		this.destinationDir = outputDir;
 		this.finder = finder;
 		this.complexity = complexity;
 		this.projectData = projectData;
+		this.encoding = encoding;
 
 		CopyFiles.copy(outputDir);
 		generatePackageList();
@@ -550,12 +554,12 @@ public class HTMLReport
 		BufferedReader br = null;
 		try
 		{
-			br = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), "UTF-8"));
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), encoding));
 		}
 		catch (UnsupportedEncodingException e)
 		{
 			return "<p>Unable to open " + sourceFile.getAbsolutePath()
-					+ ": The encoding 'UTF-8' is not supported by your JVM.</p>";
+					+ ": The encoding '" + encoding +"' is not supported by your JVM.</p>";
 		}
 		catch (FileNotFoundException e)
 		{
