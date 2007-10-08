@@ -43,6 +43,7 @@ public class Main {
 	private String format = "html";
 	private File dataFile = null;
 	private File destinationDir = null;
+	private String encoding = "UTF-8";
 	
 	private void parseArguments(String[] args) throws Exception {
 		FileFinder finder = new FileFinder();
@@ -56,12 +57,14 @@ public class Main {
 				setDestination( args[++i]);
 			} else if (args[i].equals("--format")) {
 				setFormat( args[++i]);
+			} else if (args[i].equals("--encoding")) {
+				setEncoding( args[++i]);
 			} else {
-            	if( baseDir==null) {
-            		finder.addSourceDirectory( args[i]);
-            	} else {
-            		finder.addSourceFile( baseDir, args[i]);
-            	}
+            if( baseDir==null) {
+               finder.addSourceDirectory( args[i]);
+            } else {
+               finder.addSourceFile( baseDir, args[i]);
+            }
 			}
 		}
 
@@ -82,7 +85,7 @@ public class Main {
 		
 		if (LOGGER.isDebugEnabled())
 		{
-			LOGGER.debug("format is " + format);
+			LOGGER.debug("format is " + format + " encoding is " + encoding);
 			LOGGER.debug("dataFile is " + dataFile.getAbsolutePath());
 			LOGGER.debug("destinationDir is "
 					+ destinationDir.getAbsolutePath());
@@ -97,7 +100,7 @@ public class Main {
 
 		ComplexityCalculator complexity = new ComplexityCalculator(finder);
 		if (format.equalsIgnoreCase("html")) {
-			new HTMLReport(projectData, destinationDir, finder, complexity);
+			new HTMLReport(projectData, destinationDir, finder, complexity, encoding);
 		} else if (format.equalsIgnoreCase("xml")) {
 			new XMLReport(projectData, destinationDir, finder, complexity);
 		}
@@ -142,6 +145,10 @@ public class Main {
 			System.exit(1);
 		}
 		destinationDir.mkdirs();
+	}
+
+	private void setEncoding(String encoding){
+		this.encoding = encoding;
 	}
 	
 	public static void main(String[] args) throws Exception {
