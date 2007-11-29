@@ -85,9 +85,8 @@ public abstract class StringUtil
 	public static String getPercentValue(double value)
 	{
 		//moved from HTMLReport.getPercentValue()
-		NumberFormat formatter;
-		formatter = NumberFormat.getPercentInstance();
-		return formatter.format(value);
+      value = Math.floor(value * 100) / 100; //to represent 199 covered lines from 200 as 99% covered, not 100 %
+		return NumberFormat.getPercentInstance().format(value);
 	}
 	
 }
