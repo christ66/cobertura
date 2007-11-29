@@ -49,6 +49,10 @@ public class StringUtilTest extends TestCase
 		assertEquals(null, StringUtil.replaceAll(null, "something", "anything"));
 	}
 
+   public void testGetPercentValue() {
+      assertEquals("99%", StringUtil.getPercentValue((double) 199/200));
+   }
+   
 	public static void main(String[] args)
 	{
 		new StringUtilTest().testReplace();

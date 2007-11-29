@@ -833,9 +833,7 @@ public class HTMLReport
 
 	private static String getDoubleValue(double value)
 	{
-		NumberFormat formatter;
-		formatter = new DecimalFormat();
-		return formatter.format(value);
+		return new DecimalFormat().format(value);
 	}
 
 	private static String getPercentValue(double value)
