@@ -77,6 +77,7 @@ public class ReportTask extends CommonMatchingTask
 	private String format = "html";
 	private File destDir;
 	private String srcDir;
+   private String encoding;
 
 	public ReportTask() {
 		super("net.sourceforge.cobertura.reporting.Main");
@@ -92,9 +93,10 @@ public class ReportTask extends CommonMatchingTask
 				builder.addArg("--destination", destDir.getAbsolutePath());
 			if (format != null)
 				builder.addArg("--format", format);
+         if (encoding != null)
+            builder.addArg("--encoding", encoding);
 			if (srcDir != null)
 				builder.addArg(srcDir);
-
 			createArgumentsForFilesets(builder);
 
 			builder.saveArgs();
@@ -126,6 +128,10 @@ public class ReportTask extends CommonMatchingTask
 	public void setFormat(String format) {
 		this.format = format;
 	}
+
+   public void setEncoding(String encoding) {
+      this.encoding = encoding;
+   }
 	
 	public void setSrcDir(String dir) {
 		srcDir = dir;
