@@ -8,7 +8,8 @@
  * Copyright (C) 2005 Joakim Erdfelt
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2006 Srivathsan Varadarajan
- * Copyright (C) 2006 Matt Cordes
+ * Copyright (C) 2008 Matt Cordes
+ * Copyright (C) 2008 John Lewis
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -72,11 +73,14 @@ import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.tools.ant.AntClassLoader;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.taskdefs.MatchingTask;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.AbstractFileSet;
+import org.apache.tools.ant.types.DirSet;
 import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.Reference;
 
@@ -143,12 +147,29 @@ public abstract class CommonMatchingTask extends MatchingTask
 
 	protected void createArgumentsForFilesets( CommandLineBuilder builder) throws IOException {
 		Iterator iter = fileSets.iterator();
+		boolean filesetFound = false;
 		while (iter.hasNext())
 		{
-			FileSet fileSet = (FileSet)iter.next();
+			AbstractFileSet fileSet = (AbstractFileSet)iter.next();
 
-			builder.addArg("--basedir", baseDir(fileSet));
-			createArgumentsForFilenames( builder, getFilenames(fileSet));
+			if (fileSet instanceof FileSet)
+			{
+				filesetFound = true;
+				builder.addArg("--basedir", baseDir(fileSet));
+				createArgumentsForFilenames( builder, getFilenames(fileSet));
+			}
+			else
+			{
+				if (filesetFound)
+				{
+					/*
+					 * Once --basedir has been used, it cannot be undone without changes to the
+					 * Main methods.   So, any dirsets have to come before filesets.
+					 */
+					throw new BuildException("Dirsets have to come before filesets");
+				}
+				createArgumentsForFilenames( builder, getDirectoryScanner(fileSet).getIncludedDirectories());
+			}
 		}
 	}
 
@@ -177,12 +198,12 @@ public abstract class CommonMatchingTask extends MatchingTask
 		createClasspath().setRefid(r);
 	}
 
-	DirectoryScanner getDirectoryScanner(FileSet fileSet)
+	DirectoryScanner getDirectoryScanner(AbstractFileSet fileSet)
 	{
 		return fileSet.getDirectoryScanner(getProject());
 	}
 
-	String[] getIncludedFiles(FileSet fileSet)
+	String[] getIncludedFiles(AbstractFileSet fileSet)
 	{
 		return getDirectoryScanner(fileSet).getIncludedFiles();
 	}
@@ -192,19 +213,24 @@ public abstract class CommonMatchingTask extends MatchingTask
 		return getDirectoryScanner(fileSet).getExcludedFiles();
 	}
 
-	String[] getFilenames(FileSet fileSet)
+	String[] getFilenames(AbstractFileSet fileSet)
 	{
 		String[] filesToReturn = getIncludedFiles(fileSet);
 
 		return filesToReturn;
 	}
 
-	String baseDir(FileSet fileSet)
+	String baseDir(AbstractFileSet fileSet)
 	{
 		return fileSet.getDirectoryScanner(getProject()).getBasedir()
 				.toString();
 	}
 
+	public void addDirSet(DirSet dirSet)
+	{
+		fileSets.add(dirSet);
+	}
+	
 	public void addFileset(FileSet fileSet)
 	{
 		fileSets.add(fileSet);

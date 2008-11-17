@@ -26,7 +26,9 @@
 
 package net.sourceforge.cobertura.ant;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -55,8 +57,16 @@ import org.jdom.xpath.XPath;
 public class FunctionalTest extends TestCase
 {
 
+	private static int forkedJVMDebugPort = 0;
+
 	private final static File BASEDIR = new File((System.getProperty("basedir") != null) ? System
 			.getProperty("basedir") : ".", "examples/functionaltest1");
+
+	public static void testInstrumentUsingDirSet() throws Exception
+	{
+		runTestAntScript("dirset", "test-dirset");
+		verify("dirset");
+	}
 
 	public static void testInstrumentUsingIncludesAndExcludes() throws Exception
 	{
@@ -245,7 +255,7 @@ public class FunctionalTest extends TestCase
 
 		// Assert that all required files are there
 		String[] requiredFiles = { "index.html", "help.html", "frame-packages.html",
-				"frame-summary.html", "frame-sourcefiles.html" };
+				"frame-summary.html", "frame-sourcefiles.html" , "test.first.A.html"};
 
 		for (int i = 0; i < requiredFiles.length; i++)
 		{
@@ -275,6 +285,15 @@ public class FunctionalTest extends TestCase
 				previousPrefix = htmlFiles[i];
 			}
 		}
+		BufferedReader reader = new BufferedReader(new FileReader(new File(htmlReportDir, "test.first.A.html")));
+		String line;
+		boolean foundSomeMethod = false;
+		while ((line = reader.readLine()) != null) {
+			if (line.matches(".*someMethod.*")) {
+				foundSomeMethod = true;
+			}
+		}
+		assertTrue("someMethod not found in test.first.A.html", foundSomeMethod);
 	}
 
 	private static boolean containsFile(String[] files, String fileName)
@@ -303,6 +322,13 @@ public class FunctionalTest extends TestCase
 		task.setFork(true);
 
 		AntUtil.transferCoberturaDataFileProperty(task);
+		
+		if (forkedJVMDebugPort > 0)
+		{
+			task.createJvmarg().setValue("-Xdebug");
+			task.createJvmarg().setValue("-Xrunjdwp:transport=dt_socket,address=" + forkedJVMDebugPort + ",server=y,suspend=y");
+		}
+
 
 		task.createArg().setValue("-f");
 		task.createArg().setValue(BASEDIR + "/build.xml");
