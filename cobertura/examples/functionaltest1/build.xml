@@ -147,16 +147,33 @@
 	</target>
 
 	<target name="coverage-reports">
+		<run-reports>
+			<fileset dir="${src.dir}">
+				<include name="**/*.java" />
+			</fileset>
+		</run-reports>
+	</target>
+	
+	<macrodef name="run-reports">
+		<element name="set" implicit="true" />
+	<sequential>
 		<mkdir dir="${coverage.xml.dir}" />
 		<cobertura-report datafile="${basedir}/cobertura.ser" srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
 
 		<mkdir dir="${coverage.html.dir}" />
 		<!-- maxmemory is only specified to test the attribute -->
 		<cobertura-report datafile="${basedir}/cobertura.ser" destdir="${coverage.html.dir}" maxmemory="512M">
-			<fileset dir="${src.dir}">
-				<include name="**/*.java" />
-			</fileset>
+			<set />
 		</cobertura-report>
+	</sequential>
+	</macrodef>
+
+	<target name="coverage-reports-with-dirset">
+		<run-reports>
+			<dirset dir="${basedir}">
+				<include name="**/src" />
+			</dirset>
+		</run-reports>
 	</target>
 
 	<target name="coverage-check">
@@ -172,6 +189,7 @@
 		<delete file="cobertura.ser.lock" />
 	</target>
 
+	<target name="test-dirset" depends="clean,compile,instrument-includes-and-excludes,test,coverage-reports-with-dirset" />
 	<target name="test-includes-and-excludes" depends="clean,compile,instrument-includes-and-excludes,test,coverage-reports" />
 	<target name="test-classpath" depends="clean,compile,instrument-classpath,test,coverage-reports" />
 	<target name="test-war" depends="clean,compile,instrument-war,test,coverage-reports" />

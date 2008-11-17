@@ -1,3 +1,6 @@
+version 1.10:
+	* Support Ant <dirset>s (Matt Cordes, John Lewis).
+
 version 1.9:
 	* Much improved branch coverage.  Information on whether
 	  the true as well as the false of an if statement is
