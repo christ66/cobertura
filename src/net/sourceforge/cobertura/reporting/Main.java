@@ -60,11 +60,11 @@ public class Main {
 			} else if (args[i].equals("--encoding")) {
 				setEncoding( args[++i]);
 			} else {
-            if( baseDir==null) {
-               finder.addSourceDirectory( args[i]);
-            } else {
-               finder.addSourceFile( baseDir, args[i]);
-            }
+				if( baseDir==null) {
+					finder.addSourceDirectory( args[i]);
+				} else {
+					finder.addSourceFile( baseDir, args[i]);
+				}
 			}
 		}
 
