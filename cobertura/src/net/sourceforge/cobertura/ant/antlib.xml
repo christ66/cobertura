@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<antlib>
+  <typedef name="instrument" classname="net.sourceforge.cobertura.ant.InstrumentTask"/>
+  <typedef name="merge" classname="net.sourceforge.cobertura.ant.MergeTask"/>
+  <typedef name="report" classname="net.sourceforge.cobertura.ant.ReportTask"/>
+  <typedef name="check" classname="net.sourceforge.cobertura.ant.CheckTask"/>
+</antlib>
