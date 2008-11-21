@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="cobertura.examples.functionaltest1" basedir="." default="help">
+<project name="cobertura.examples.functionaltest1" basedir="." default="help" xmlns:cobertura="antlib:net.sourceforge.cobertura.ant">
 
 	<description>
     Cobertura - http://cobertura.sourceforge.net/
@@ -10,6 +10,10 @@
     Cobertura is licensed under the GNU General Public License
     Cobertura comes with ABSOLUTELY NO WARRANTY
     </description>
+
+	<!-- Import the Cobertura Ant Library -->
+	<property name="cobertura.local.library" location="../../antLibrary" />
+	<import file="${cobertura.local.library}/library.xml" />
 
 	<property file="build.properties" />
 	
@@ -21,12 +25,23 @@
 		-->
 		<pathelement location="../../etc" />
 		<pathelement location="../../build/classes" />
+		
+		<pathelement location="../../src" />
 		<fileset dir="../../lib">
 			<include name="*.jar" />
 		</fileset>
 	</path>
 
-	<taskdef resource="tasks.properties" classpathref="project.classpath" />
+	<target name="taskdef">
+		<taskdef resource="tasks.properties" classpathref="project.classpath" />
+	</target>
+	
+	<target name="taskdef-antlib">
+		<taskdef 
+			classpathref="project.classpath"
+			resource="net/sourceforge/cobertura/ant/antlib.xml"
+			uri="antlib:net.sourceforge.cobertura.ant" />
+	</target>
 
 	<target name="help">
 		<echo>This example is only used for testing, and is not meant</echo>
@@ -36,7 +51,7 @@
 
 	<target name="compile">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" classpathref="project.classpath" />
 		
 		<rmic 
 			base="${classes.dir}" 
@@ -48,37 +63,47 @@
 		/>
 	</target>
 
-	<target name="instrument-includes-and-excludes" depends="compile">
+	<target name="instrument-includes-and-excludes" depends="compile,cobertura-groovy-init">
 		<mkdir dir="${instrumented.dir}" />
-		<cobertura-instrument datafile="${basedir}/cobertura.ser" todir="${instrumented.dir}" classpathref="project.classpath">
-			<fileset dir="${classes.dir}">
-				<include name="**/A.class" />
-				<include name="test/first/RemoteListener*.class" />
-				<exclude name="**/B.class" />
-				<exclude name="**/*Test*" />
-			</fileset>
-		</cobertura-instrument>
+		<cobertura:groovy><![CDATA[
+			//load testUtil definitions
+			evaluate(new File("${ant.project.baseDir}/../../testUtil.groovy"))
+
+			ant."${instrumentTaskName}"(datafile:'${basedir}/cobertura.ser', todir:'${instrumented.dir}', classpathref:'project.classpath') {
+				fileset(dir:'${classes.dir}') {
+					include(name:'**/A.class')
+					include(name:'test/first/RemoteListener*.class')
+					exclude(name:'**/B.class')
+					exclude(name:'**/*Test*')
+				}
+			}
+		]]> </cobertura:groovy>
 
 		<path id="test.classpath">
 			<path location="${instrumented.dir}" />
 		</path>
 	</target>
 
-	<target name="instrument-classpath" depends="compile">
+	<target name="instrument-classpath" depends="compile,cobertura-groovy-init">
 		<mkdir dir="${instrumented.dir}" />
-		<cobertura-instrument datafile="${basedir}/cobertura.ser" todir="${instrumented.dir}">
-			<includeClasses regex="test.*" />
-			<excludeClasses regex="test.*.B" />
-			<excludeClasses regex=".*Test*" />
-			<instrumentationClasspath location="${classes.dir}" />
-		</cobertura-instrument>
+		<cobertura:groovy><![CDATA[
+			//load testUtil definitions
+			evaluate(new File("${ant.project.baseDir}/../../testUtil.groovy"))
+
+			ant."${instrumentTaskName}"(datafile:'${basedir}/cobertura.ser', todir:'${instrumented.dir}') {
+				includeClasses(regex:'test.*')
+				excludeClasses(regex:'test.*.B')
+				excludeClasses(regex:'.*Test*')
+				instrumentationClasspath(location:'${classes.dir}')
+			}
+		]]> </cobertura:groovy>
 
 		<path id="test.classpath">
 			<path location="${instrumented.dir}" />
 		</path>
 	</target>
 
-	<target name="instrument-war" depends="compile">
+	<target name="instrument-war" depends="compile,cobertura-groovy-init">
 		<property name="tmp.dir" value="${basedir}/tmp" />
 		<property name="this.test.work.dir" location="${tmp.dir}/war" />
 		<property name="this.test.wars" location="${tmp.dir}/wars" />
@@ -112,14 +137,19 @@
 
 		<!-- Instrument the war file -->
 		<mkdir dir="${instrumented.dir}" />
-		<cobertura-instrument datafile="${basedir}/cobertura.ser" todir="${instrumented.dir}">
-			<includeClasses regex="test.*" />
-			<excludeClasses regex="test.*.B" />
-			<excludeClasses regex=".*Test*" />
-			<fileset dir="${tmp.dir}">
-				<include name="app.war" />
-			</fileset>
-		</cobertura-instrument>
+		<cobertura:groovy><![CDATA[
+			//load testUtil definitions
+			evaluate(new File("${ant.project.baseDir}/../../testUtil.groovy"))
+
+			ant."${instrumentTaskName}"(datafile:'${basedir}/cobertura.ser', todir:'${instrumented.dir}') {
+				includeClasses(regex:'test.*')
+				excludeClasses(regex:'test.*.B')
+				excludeClasses(regex:'.*Test*')
+				fileset(dir:'${tmp.dir}') {
+					include(name:'app.war')
+				}
+			}
+		]]> </cobertura:groovy>
 
 		<!-- Unwar and set the classpath to the unwarred stuff -->
 		<unwar src="${instrumented.dir}/app.war" dest="${instrumented.dir}" />
@@ -146,38 +176,38 @@
 		</junit>
 	</target>
 
-	<target name="coverage-reports">
-		<run-reports>
-			<fileset dir="${src.dir}">
-				<include name="**/*.java" />
-			</fileset>
-		</run-reports>
+	<target name="coverage-reports" depends="cobertura-groovy-init">
+		<cobertura:groovy><![CDATA[
+			//load runReports definition
+			evaluate(new File("${ant.project.baseDir}/functionalTest.groovy"))
+			
+			runReports {
+				ant.fileset(dir:'${src.dir}', id:'mysrc') {
+					include(name:'**/*.java')
+				}
+			}
+		]]> </cobertura:groovy>
 	</target>
 	
-	<macrodef name="run-reports">
-		<element name="set" implicit="true" />
-	<sequential>
-		<mkdir dir="${coverage.xml.dir}" />
-		<cobertura-report datafile="${basedir}/cobertura.ser" srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
-
-		<mkdir dir="${coverage.html.dir}" />
-		<!-- maxmemory is only specified to test the attribute -->
-		<cobertura-report datafile="${basedir}/cobertura.ser" destdir="${coverage.html.dir}" maxmemory="512M">
-			<set />
-		</cobertura-report>
-	</sequential>
-	</macrodef>
-
-	<target name="coverage-reports-with-dirset">
-		<run-reports>
-			<dirset dir="${basedir}">
-				<include name="**/src" />
-			</dirset>
-		</run-reports>
+	<target name="coverage-reports-with-dirset" depends="cobertura-groovy-init">
+		<cobertura:groovy><![CDATA[
+			//load runReports definition
+			evaluate(new File("${ant.project.baseDir}/functionalTest.groovy"))
+			
+			runReports {
+				ant.dirset(dir:'${basedir}', id:'mysrc') {
+					include(name:'**/src')
+				}
+			}
+		]]> </cobertura:groovy>
 	</target>
 
-	<target name="coverage-check">
-		<cobertura-check branchrate="34" totallinerate="100" />
+	<target name="coverage-check" depends="cobertura-groovy-init">
+		<cobertura:groovy><![CDATA[
+			evaluate(new File("${ant.project.baseDir}/functionalTest.groovy"))
+			
+			ant."${checkTaskName}"(branchrate:'34', totallinerate:'100')
+		]]> </cobertura:groovy>
 	</target>
 
 	<target name="clean">
@@ -189,10 +219,10 @@
 		<delete file="cobertura.ser.lock" />
 	</target>
 
-	<target name="test-dirset" depends="clean,compile,instrument-includes-and-excludes,test,coverage-reports-with-dirset" />
-	<target name="test-includes-and-excludes" depends="clean,compile,instrument-includes-and-excludes,test,coverage-reports" />
-	<target name="test-classpath" depends="clean,compile,instrument-classpath,test,coverage-reports" />
-	<target name="test-war" depends="clean,compile,instrument-war,test,coverage-reports" />
-	<target name="all" depends="test-includes-and-excludes,test-classpath" />
+	<target name="test-dirset" depends="taskdef-antlib,clean,compile,instrument-includes-and-excludes,test,coverage-reports-with-dirset" />
+	<target name="test-includes-and-excludes" depends="taskdef,clean,compile,instrument-includes-and-excludes,test,coverage-reports" />
+	<target name="test-classpath" depends="taskdef,clean,compile,instrument-classpath,test,coverage-reports" />
+	<target name="test-war" depends="taskdef,clean,compile,instrument-war,test,coverage-reports" />
+	<target name="all" depends="taskdef,test-includes-and-excludes,test-classpath" />
 
 </project>
