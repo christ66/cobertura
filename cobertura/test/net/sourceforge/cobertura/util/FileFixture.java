@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2005 James Seigel
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2008 John Lewis
  * 
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -32,7 +33,7 @@ import java.util.HashMap;
 //  src0/
 //    com/
 //      example/
-//        Sample1.java
+//        Sample1.java (contains a @Deprecated annotation to make sure the complexity works with annotations)
 //        Sample2.java
 //  src1/
 //    com/
@@ -76,6 +77,12 @@ public class FileFixture {
         FileWriter writer1 = new FileWriter(sample1);
         writer1.write( "package com.example;\n");
         writer1.write( "public class Sample" + number + " {\n");
+        /*
+         * Add an annotation to make sure the complexity works with them
+         */
+        if (number == 1) {
+        	writer1.write( "@Deprecated\n");
+        }
         writer1.write( "    public void someMethod(int v) {\n");
         writer1.write( "        if(v<0) System.out.println();\n");
         writer1.write( "        else System.out.println('x');\n");

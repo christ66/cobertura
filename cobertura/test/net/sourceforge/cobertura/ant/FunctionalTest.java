@@ -1,7 +1,7 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2006 John Lewis
+ * Copyright (C) 2008 John Lewis
  * Copyright (C) 2006 Mark Doliner
  * 
  * Note: This file is dual licensed under the GPL and the Apache
@@ -131,7 +131,7 @@ public class FunctionalTest extends TestCase
 						+ "' in the XML report, but was only expecting either 'test.first.A' or 'test.second.A'.");
 			if (verify)
 			{
-				verifyClass(testName, classElement);
+				verifyClass(className, testName, classElement);
 			}
 		}
 		assertTrue("Test " + testName + ": Did not find class 'test.first.A' in the XML report.",
@@ -158,9 +158,12 @@ public class FunctionalTest extends TestCase
 	 * Verify that the class's expected methods are found.  Look for
 	 * a method called "call" which should have a hit count of 1.
 	 * The method called "dontCall" should have a hit count of 0.
+	 * @param testName 
 	 */
-	private static void verifyClass(String testName, Element classElement)
+	private static void verifyClass(String className, String testName, Element classElement)
 	{
+		verifyComplexity(className, classElement);
+		
 		// Get a list of methods
 		Element methodsElement = classElement.getChild("methods");
 		List methodList = methodsElement.getChildren("method");
@@ -210,6 +213,12 @@ public class FunctionalTest extends TestCase
 				+ classElement.getAttributeValue("name"), callMethodFound);
 		assertTrue("Test " + testName + ": Did not find method 'dontCall' in the class "
 				+ classElement.getAttributeValue("name"), dontCallMethodFound);
+	}
+
+	private static void verifyComplexity(String className, Element classElement)
+	{
+		String complexity = classElement.getAttributeValue("complexity");
+		assertEquals("Invalid complexity with class " + className, "1.0", complexity);
 	}
 
 	/**
