@@ -1,7 +1,7 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2006 John Lewis
+ * Copyright (C) 2008 John Lewis
  *
  * Note: This file is dual licensed under the GPL and the Apache
  * Source License (so that it can be used from both the main
@@ -30,9 +30,13 @@ package test.first;
  * 
  * @author John Lewis
  */
+
 public class A
 {
-
+	/*
+	 * Add an annotation to make sure complexity is calculated correctly for source with annotations
+	 */
+	@Deprecated
 	public void call()
 	{
 		someMethod();
