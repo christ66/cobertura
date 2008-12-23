@@ -4,6 +4,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Jeremy Thomerson
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2008 Tri Bao Ho
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -24,16 +25,18 @@ package net.sourceforge.cobertura.reporting;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.javancss.Javancss;
+import net.sourceforge.cobertura.javancss.JavancssConstants;
 import net.sourceforge.cobertura.util.FileFinder;
 
 import org.apache.log4j.Logger;
@@ -52,7 +55,7 @@ import org.apache.log4j.Logger;
 public class ComplexityCalculator {
  	private static final Logger logger = Logger.getLogger(ComplexityCalculator.class);
 
-	public static final Complexity ZERO_COMPLEXITY = new Complexity(0,0);
+	public static final Complexity ZERO_COMPLEXITY = new Complexity();
 	
 	// Finder used to map source file names to existing files
 	private final FileFinder finder;
@@ -90,18 +93,22 @@ public class ComplexityCalculator {
 	private Complexity getAccumlatedCCNForSingleFile(File file) {
 		Javancss javancss = new Javancss(file.getAbsolutePath());
 
-		List methodComplexities = javancss.getMethodComplexities();
-		if (methodComplexities.size() <= 0)
-			return ZERO_COMPLEXITY;
-
-		int ccnAccumulator = 0;
-		Iterator iter = methodComplexities.iterator();
-		while (iter.hasNext())
+		if (javancss.getLastErrorMessage() != null)
 		{
-			ccnAccumulator += ((Integer)iter.next()).intValue();
+			//there is an error while parsing the java file. log it
+			logger.warn("JavaNCSS got an error while parsing the java file " + file.getAbsolutePath() + "\n" 
+						+ javancss.getLastErrorMessage());
 		}
+
+		Vector methodMetrics = javancss.getFunctionMetrics();
+		int classCcn = 0;
+        for( Enumeration method = methodMetrics.elements(); method.hasMoreElements();)
+        {
+        	Vector singleMethodMetrics = (Vector)method.nextElement();
+        	classCcn += ((Integer)singleMethodMetrics.elementAt(JavancssConstants.FCT_CCN)).intValue();
+        }
 		
-		return new Complexity( ccnAccumulator, methodComplexities.size());
+		return new Complexity( classCcn, methodMetrics.size());
 	}
 
 
