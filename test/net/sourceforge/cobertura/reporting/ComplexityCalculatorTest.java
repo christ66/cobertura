@@ -34,6 +34,9 @@ public class ComplexityCalculatorTest extends TestCase {
     private ComplexityCalculator complexity;
 	
     public void testGetCCNForSourceFile() {
+    	/*
+    	 * Sample1.java has a @Deprecated annotation to make sure the complexity works with annotations.
+    	 */
     	double ccn1 = complexity.getCCNForSourceFile( new SourceFileData("com/example/Sample1.java"));
     	assertTrue( ccn1!=0.0);
     	double ccn2 = complexity.getCCNForSourceFile( new SourceFileData("com/example/Sample2.java"));
