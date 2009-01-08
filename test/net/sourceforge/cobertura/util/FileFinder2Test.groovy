@@ -1,9 +1,9 @@
-<!--
- *
+/*
  * The Apache Software License, Version 1.1
  *
  * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
  * reserved.
+ * Copyright (C) 2008 Charlie Squires
  * Copyright (C) 2008 John Lewis
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,45 +53,57 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
--->
-<project name="cobertura-library" xmlns:cobertura="antlib:net.sourceforge.cobertura.ant">
+package net.sourceforge.cobertura.util
 
-	<macrodef name="cobertura-groovy-init">
-		<sequential>
-			<path id="cobertura.common.local.library">
-				<fileset dir="${cobertura.local.library}">
-					<include name="**/groovy*.jar" />
-				</fileset>
-			</path>
-				
-			<!-- 
-			Load the Groovy ant task.
-			-->
-			<taskdef 
-				uri="antlib:net.sourceforge.cobertura.ant" 
-				name="groovy"
-				classname="org.codehaus.groovy.ant.Groovy"
-				classpathref="cobertura.common.local.library"
-				loaderref="cobertura.lib.path.loader">
-			</taskdef>
+import junit.framework.TestCase
+import net.sourceforge.cobertura.test.util.TestUtil
+import net.sourceforge.cobertura.util.FileFinder
 
-			<!-- 
-			Load the Groovyc ant task.
-			-->
-			<taskdef 
-				uri="antlib:net.sourceforge.cobertura.ant" 
-				name="groovyc"
-				classname="org.codehaus.groovy.ant.Groovyc"
-				classpathref="cobertura.common.local.library"
-				loaderref="cobertura.lib.path.loader">
-			</taskdef>
-			
-		</sequential>
-	</macrodef>
+public class FileFinder2Test extends TestCase {
 	
-	<target name="cobertura-groovy-init">
-			
-		<cobertura-groovy-init />
-	</target>
 
-</project>
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	void setUp() throws Exception {
+	}
+	
+	public void testSearchJarsForSourceInJar() {
+		TestUtil.withTempDir { tempDir ->
+		
+			def zipFile = TestUtil.createSourceArchive(tempDir)
+			
+			//now test the FileFinder
+    		def fileFinder = new FileFinder();
+    		fileFinder.addSourceDirectory(zipFile.parentFile.absolutePath);
+    	
+    		def source = fileFinder.getSource(TestUtil.SIMPLE_SOURCE_PATHNAME)
+    		verifySource(source)
+    		
+    		/*
+    		 * Now make sure jar files are used.   Rename the zip file to be a jar file
+    		 */
+    		def jarFile = new File(zipFile.parentFile, "source.jar")
+    		assertTrue(zipFile.renameTo(jarFile))
+    		
+    		fileFinder = new FileFinder()
+    		fileFinder.addSourceDirectory(zipFile.parentFile.absolutePath)
+    		
+    		source = fileFinder.getSource(TestUtil.SIMPLE_SOURCE_PATHNAME)
+    		verifySource(source)
+		}
+    }
+	
+	def verifySource(source) {
+		assertNotNull(source)
+		assertNotNull(source.inputStream)
+		def sourceText = source.inputStream.text
+		assertEquals(TestUtil.SOURCE_TEXT, sourceText)
+		source.close()
+	}
+    
+    public void testSearchJarsForSourceNotFound() {
+        def fileFinder = new FileFinder();
+    	assertNull(fileFinder.searchJarsForSource("doesnotexist"))
+   }
+}

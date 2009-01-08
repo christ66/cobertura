@@ -104,7 +104,8 @@
 	</target>
 
 	<target name="instrument-war" depends="compile,cobertura-groovy-init">
-		<property name="tmp.dir" value="${basedir}/tmp" />
+		<property name="tmp" value="tmp" />
+		<property name="tmp.dir" value="${basedir}/${tmp}" />
 		<property name="this.test.work.dir" location="${tmp.dir}/war" />
 		<property name="this.test.wars" location="${tmp.dir}/wars" />
 		<property name="this.test.extract" location="${tmp.dir}/extract" />
@@ -202,6 +203,26 @@
 		]]> </cobertura:groovy>
 	</target>
 
+	<target name="coverage-reports-with-archive" depends="cobertura-groovy-init">
+		<cobertura:groovy><![CDATA[
+			//load runReports definition
+			evaluate(new File("${ant.project.baseDir}/functionalTest.groovy"))
+			
+			//make a source zip file in the tmp.dir
+			ant.sequential {
+				delete(dir:'${tmp.dir}', failonerror:'false')
+				mkdir(dir:'${tmp.dir}')
+				zip(destfile:'${tmp.dir}/source.zip', basedir:'${src.dir}')
+			}
+	
+			runReports {
+				ant.dirset(dir:'${basedir}', id:'mysrc') {
+					include(name:'${tmp}')
+				}
+			}
+		]]> </cobertura:groovy>
+	</target>
+
 	<target name="coverage-check" depends="cobertura-groovy-init">
 		<cobertura:groovy><![CDATA[
 			evaluate(new File("${ant.project.baseDir}/functionalTest.groovy"))
@@ -222,7 +243,7 @@
 	<target name="test-dirset" depends="taskdef-antlib,clean,compile,instrument-includes-and-excludes,test,coverage-reports-with-dirset" />
 	<target name="test-includes-and-excludes" depends="taskdef,clean,compile,instrument-includes-and-excludes,test,coverage-reports" />
 	<target name="test-classpath" depends="taskdef,clean,compile,instrument-classpath,test,coverage-reports" />
-	<target name="test-war" depends="taskdef,clean,compile,instrument-war,test,coverage-reports" />
+	<target name="test-war" depends="taskdef,clean,compile,instrument-war,test,coverage-reports-with-archive" />
 	<target name="all" depends="taskdef,test-includes-and-excludes,test-classpath" />
 
 </project>

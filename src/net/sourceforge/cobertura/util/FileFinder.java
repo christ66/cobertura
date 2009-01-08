@@ -3,6 +3,8 @@
  *
  * Copyright (C) 2005 Jeremy Thomerson
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2009 Charlie Squires
+ * Copyright (C) 2009 John Lewis
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -22,14 +24,19 @@
 package net.sourceforge.cobertura.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.apache.log4j.Logger;
 
@@ -169,6 +176,71 @@ public class FileFinder {
 		LOGGER.debug( "File not found");
 		throw new IOException( "Cannot find source file, name=["+fileName+"]");
 	}
+	
+	/**
+	 * Maps source file name to existing file or source archive.
+	 * When mapping file name first values that were added with
+	 * {@link #addSourceDirectory} and later added with {@link #addSourceFile} are checked.
+	 * 
+	 * @param fileName source file to be mapped
+	 * @return Source that maps to passed sourceFile or null if it can't be found
+	 * @throws NullPointerException if fileName is null
+	 */
+	public Source getSource(String fileName) {
+		File file = null;
+		try
+		{
+			file = getFileForSource(fileName);
+			return new Source(new FileInputStream(file), file);
+		}
+		catch (IOException e)
+		{
+			//Source file wasn't found. Try searching archives.
+			return searchJarsForSource(fileName);
+		}
+		
+	}
+
+	/**
+	 * Gets a BufferedReader for a file within a jar.
+	 * 
+	 * @param fileName source file to get an input stream for
+	 * @return Source for existing file inside a jar that maps to passed sourceFile 
+	 * or null if cannot map source file to existing file
+	 */
+	private Source searchJarsForSource(String fileName) {
+		//Check inside jars in sourceDirectories
+		for( Iterator it=sourceDirectories.iterator(); it.hasNext();) {
+			String directory = (String)it.next();
+			File file = new File(directory);
+			//Get a list of jars and zips in the directory
+			String[] jars = file.list(new JarZipFilter());
+			if(jars != null) {
+				for(String jar : jars) {
+					try
+					{
+						LOGGER.debug("Looking for: " + fileName + " in "+ jar);
+						JarFile jf = new JarFile(directory + "/" + jar);
+	
+						//Get a list of files in the jar
+						Enumeration<JarEntry> files = jf.entries();
+						//See if the jar has the class we need
+						while(files.hasMoreElements()) {
+							JarEntry entry = files.nextElement();
+							if(entry.getName().equals(fileName)) {
+								return new Source(jf.getInputStream(entry), jf);
+							}
+						}
+					}
+					catch (Throwable t)
+					{
+						LOGGER.warn("Error while reading " + jar, t);
+					}
+				}
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Returns a list with string for all source directories.
@@ -201,5 +273,14 @@ public class FileFinder {
      */
     public String toString() {
     	return "FileFinder, source directories: " + getSourceDirectoryList().toString();
+    }
+    
+    /**
+     * A filter that accepts files that end in .jar or .zip
+     */
+    private class JarZipFilter implements FilenameFilter {
+		public boolean accept(File dir, String name) {
+			return(name.endsWith(".jar") || name.endsWith(".zip"));
+		}
     }
 }

@@ -1,7 +1,11 @@
 version 1.10:
-	* Complexity calculation now works with Java 5 language features such as Annotations. (Tri Bao Ho)
+	* Complexity calculation now works with Java 5 language
+	  features such as Annotations. (Tri Bao Ho)
 	* Support Ant <dirset>s. (Matt Cordes, John Lewis)
-	* Support the antlib mechanism for defining and importing ant tasks. (Richard Atkins)
+	* Support the antlib mechanism for defining and importing 
+	  ant tasks. (Richard Atkins)
+	* Report generation will look in zip and jar files if the 
+	  source java file is not found. (Charlie Squires, John Lewis)  
 
 version 1.9:
 	* Much improved branch coverage.  Information on whether

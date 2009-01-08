@@ -350,6 +350,19 @@ public class Javancss implements JavancssConstants
         	System.out.println( "Javancss.<init>(String).pError: " + pError );
         }
     }
+    
+    //cobertura:  add this next constructor so any input stream can be used.
+    public Javancss(InputStream isJavaSource_) {
+        _sErrorMessage = null;
+        _vJavaSourceFiles = new Vector();
+        try {
+            _measureRoot(isJavaSource_);
+        } catch(Exception e) {
+        	System.out.println( "Javancss.<init>(InputStream).e: " + e );
+        } catch(TokenMgrError pError) {
+        	System.out.println( "Javancss.<init>(InputStream).pError: " + pError );
+        }
+    }
 
     /**
      * Only way to create object that does not immediately
