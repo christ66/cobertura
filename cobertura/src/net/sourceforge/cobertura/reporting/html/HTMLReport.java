@@ -5,6 +5,8 @@
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2005 Jeremy Thomerson
  * Copyright (C) 2006 Naoki Iwami
+ * Copyright (C) 2009 Charlie Squires
+ * Copyright (C) 2009 John Lewis
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -26,7 +28,7 @@ package net.sourceforge.cobertura.reporting.html;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -54,6 +56,7 @@ import net.sourceforge.cobertura.reporting.html.files.CopyFiles;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
 import net.sourceforge.cobertura.util.IOUtil;
+import net.sourceforge.cobertura.util.Source;
 import net.sourceforge.cobertura.util.StringUtil;
 
 import org.apache.log4j.Logger;
@@ -540,12 +543,9 @@ public class HTMLReport
 
 	private String generateHtmlizedJavaSource(SourceFileData sourceFileData)
 	{
-		File sourceFile = null;
-		try
-		{
-			sourceFile = finder.getFileForSource(sourceFileData.getName());
-		}
-		catch (IOException e)
+		Source source = finder.getSource(sourceFileData.getName());
+		
+		if (source == null)
 		{
 			return "<p>Unable to locate " + sourceFileData.getName()
 					+ ".  Have you specified the source directory?</p>";
@@ -554,16 +554,16 @@ public class HTMLReport
 		BufferedReader br = null;
 		try
 		{
-			br = new BufferedReader(new InputStreamReader(new FileInputStream(sourceFile), encoding));
+			br = new BufferedReader(new InputStreamReader(source.getInputStream(), encoding));
 		}
 		catch (UnsupportedEncodingException e)
 		{
-			return "<p>Unable to open " + sourceFile.getAbsolutePath()
+			return "<p>Unable to open " + source.getOriginDesc()
 					+ ": The encoding '" + encoding +"' is not supported by your JVM.</p>";
 		}
-		catch (FileNotFoundException e)
+		catch (Throwable t)
 		{
-			return "<p>Unable to open " + sourceFile.getAbsolutePath() + "</p>";
+			return "<p>Unable to open " + source.getOriginDesc() + ": " + t.getLocalizedMessage() + "</p>";
 		}
 
 		StringBuffer ret = new StringBuffer();
@@ -617,8 +617,8 @@ public class HTMLReport
 		}
 		catch (IOException e)
 		{
-			ret.append("<tr><td>Error reading from file "
-					+ sourceFile.getAbsolutePath() + ": "
+			ret.append("<tr><td>Error reading "
+					+ source.getOriginDesc() + ": "
 					+ e.getLocalizedMessage() + "</td></tr>\n");
 		}
 		finally
@@ -626,6 +626,7 @@ public class HTMLReport
 			try
 			{
 				br.close();
+				source.close();
 			}
 			catch (IOException e)
 			{

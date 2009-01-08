@@ -1,5 +1,4 @@
-<!--
- *
+/*
  * The Apache Software License, Version 1.1
  *
  * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
@@ -53,45 +52,36 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
--->
-<project name="cobertura-library" xmlns:cobertura="antlib:net.sourceforge.cobertura.ant">
+package net.sourceforge.cobertura.reporting
 
-	<macrodef name="cobertura-groovy-init">
-		<sequential>
-			<path id="cobertura.common.local.library">
-				<fileset dir="${cobertura.local.library}">
-					<include name="**/groovy*.jar" />
-				</fileset>
-			</path>
-				
-			<!-- 
-			Load the Groovy ant task.
-			-->
-			<taskdef 
-				uri="antlib:net.sourceforge.cobertura.ant" 
-				name="groovy"
-				classname="org.codehaus.groovy.ant.Groovy"
-				classpathref="cobertura.common.local.library"
-				loaderref="cobertura.lib.path.loader">
-			</taskdef>
+import junit.framework.TestCase
+import net.sourceforge.cobertura.test.util.TestUtil
+import net.sourceforge.cobertura.util.FileFinder
+import net.sourceforge.cobertura.coveragedata.SourceFileData
+import net.sourceforge.cobertura.reporting.ComplexityCalculator
 
-			<!-- 
-			Load the Groovyc ant task.
-			-->
-			<taskdef 
-				uri="antlib:net.sourceforge.cobertura.ant" 
-				name="groovyc"
-				classname="org.codehaus.groovy.ant.Groovyc"
-				classpathref="cobertura.common.local.library"
-				loaderref="cobertura.lib.path.loader">
-			</taskdef>
-			
-		</sequential>
-	</macrodef>
+public class ComplexityCalculator2Test extends TestCase {
 	
-	<target name="cobertura-groovy-init">
-			
-		<cobertura-groovy-init />
-	</target>
 
-</project>
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#setUp()
+	 */
+	void setUp() throws Exception {
+	}
+	
+	public void testSearchJarsForSourceInJar() {
+		TestUtil.withTempDir { tempDir ->
+		
+			def zipFile = TestUtil.createSourceArchive(tempDir)
+			
+			//create a ComplexityCalculator that will use the archive
+    		def fileFinder = new FileFinder();
+    		fileFinder.addSourceDirectory(zipFile.parentFile.absolutePath);
+    		def complexity = new ComplexityCalculator( fileFinder)
+    	
+        	double ccn1 = complexity.getCCNForSourceFile( new SourceFileData(TestUtil.SIMPLE_SOURCE_PATHNAME));
+        	assertTrue( ccn1==1.0);
+		}
+    }
+	
+}

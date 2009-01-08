@@ -5,6 +5,7 @@
  * Copyright (C) 2005 Jeremy Thomerson
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2008 Tri Bao Ho
+ * Copyright (C) 2009 John Lewis
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -24,6 +25,7 @@
 package net.sourceforge.cobertura.reporting;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -38,6 +40,7 @@ import net.sourceforge.cobertura.coveragedata.SourceFileData;
 import net.sourceforge.cobertura.javancss.Javancss;
 import net.sourceforge.cobertura.javancss.JavancssConstants;
 import net.sourceforge.cobertura.util.FileFinder;
+import net.sourceforge.cobertura.util.Source;
 
 import org.apache.log4j.Logger;
 
@@ -80,23 +83,27 @@ public class ComplexityCalculator {
 	}
 	
  	/**
-	 * Calculates the code complexity number for single source file.
+	 * Calculates the code complexity number for an input stream.
 	 * "CCN" stands for "code complexity number."  This is
 	 * sometimes referred to as McCabe's number.  This method
 	 * calculates the average cyclomatic code complexity of all
 	 * methods of all classes in a given directory.  
 	 *
-	 * @param file The source file for which you want to calculate
+	 * @param file The input stream for which you want to calculate
 	 *        the complexity
-	 * @return average complexity for the specified source file 
+	 * @return average complexity for the specified input stream 
 	 */
-	private Complexity getAccumlatedCCNForSingleFile(File file) {
-		Javancss javancss = new Javancss(file.getAbsolutePath());
+	private Complexity getAccumlatedCCNForSource(String sourceFileName, Source source) {
+		if (source == null)
+		{
+			return ZERO_COMPLEXITY;
+		}
+		Javancss javancss = new Javancss(source.getInputStream());
 
 		if (javancss.getLastErrorMessage() != null)
 		{
 			//there is an error while parsing the java file. log it
-			logger.warn("JavaNCSS got an error while parsing the java file " + file.getAbsolutePath() + "\n" 
+			logger.warn("JavaNCSS got an error while parsing the java " + source.getOriginDesc() + "\n" 
 						+ javancss.getLastErrorMessage());
 		}
 
@@ -111,6 +118,33 @@ public class ComplexityCalculator {
 		return new Complexity( classCcn, methodMetrics.size());
 	}
 
+ 	/**
+	 * Calculates the code complexity number for single source file.
+	 * "CCN" stands for "code complexity number."  This is
+	 * sometimes referred to as McCabe's number.  This method
+	 * calculates the average cyclomatic code complexity of all
+	 * methods of all classes in a given directory.  
+ 	 * @param sourceFileName 
+	 *
+	 * @param file The source file for which you want to calculate
+	 *        the complexity
+	 * @return average complexity for the specified source file 
+ 	 * @throws IOException 
+	 */
+	private Complexity getAccumlatedCCNForSingleFile(String sourceFileName) throws IOException {
+		Source source = finder.getSource(sourceFileName);
+		try
+		{
+	        return getAccumlatedCCNForSource(sourceFileName, source);
+		}
+		finally
+		{
+			if (source != null)
+			{
+				source.close();
+			}
+		}
+	}
 
 	/**
 	 * Computes CCN for all sources contained in the project.
@@ -186,7 +220,7 @@ public class ComplexityCalculator {
 	    // Compute CCN and cache it for further use
 		Complexity result = ZERO_COMPLEXITY;
 		try {
-			result = getAccumlatedCCNForSingleFile( finder.getFileForSource(sourceFileName));
+			result = getAccumlatedCCNForSingleFile( sourceFileName );
 		} catch( IOException ex) {
 			logger.info( "Cannot find source file during CCN computation, source=["+sourceFileName+"]");
 		}

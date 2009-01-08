@@ -1,10 +1,9 @@
-<!--
- *
+/*
  * The Apache Software License, Version 1.1
  *
  * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
  * reserved.
- * Copyright (C) 2008 John Lewis
+ * Copyright (C) 2009 John Lewis
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -53,45 +52,79 @@
  * information on the Apache Software Foundation, please see
  * <http://www.apache.org/>.
  */
--->
-<project name="cobertura-library" xmlns:cobertura="antlib:net.sourceforge.cobertura.ant">
+package net.sourceforge.cobertura.test.util
 
-	<macrodef name="cobertura-groovy-init">
-		<sequential>
-			<path id="cobertura.common.local.library">
-				<fileset dir="${cobertura.local.library}">
-					<include name="**/groovy*.jar" />
-				</fileset>
-			</path>
-				
-			<!-- 
-			Load the Groovy ant task.
-			-->
-			<taskdef 
-				uri="antlib:net.sourceforge.cobertura.ant" 
-				name="groovy"
-				classname="org.codehaus.groovy.ant.Groovy"
-				classpathref="cobertura.common.local.library"
-				loaderref="cobertura.lib.path.loader">
-			</taskdef>
+import junit.framework.Assert
 
-			<!-- 
-			Load the Groovyc ant task.
-			-->
-			<taskdef 
-				uri="antlib:net.sourceforge.cobertura.ant" 
-				name="groovyc"
-				classname="org.codehaus.groovy.ant.Groovyc"
-				classpathref="cobertura.common.local.library"
-				loaderref="cobertura.lib.path.loader">
-			</taskdef>
-			
-		</sequential>
-	</macrodef>
-	
-	<target name="cobertura-groovy-init">
-			
-		<cobertura-groovy-init />
-	</target>
+public class TestUtil {
 
-</project>
+	public static final antBuilder = new AntBuilder()
+
+	public static final String SOURCE_TEXT = '''
+		package a.mypackage;
+
+		public class SimpleSource {
+			public void aSimpleMethod() {
+			}
+		}
+		'''
+
+	public static final String SIMPLE_SOURCE_PATHNAME = 'a/mypackage/SimpleSource.java'
+
+	/**
+	 * Usage TestUtil.withTempDir { tempDir -> doSomethingWith(tempDir) }
+	 * 
+	 * Create a directory under the system's temporary directory, and automatically
+	 * delete it before returning from withTempDir.
+	 * 
+	 */
+	public static withTempDir(Closure worker) {
+        File tempDir = new File(System.getProperty("java.io.tmpdir"));
+        File tempSubdir = new File(tempDir, "cobertura_test" + System.currentTimeMillis());
+        Throwable savedThrowable = null
+		try {
+			tempSubdir.mkdirs()
+			//now call the closure passing it the subdir
+			worker(tempSubdir)
+		} catch (Throwable t) {
+			savedThrowable = t
+		} finally {
+			try {
+				antBuilder.delete(dir:tempSubdir, failonerror:false)
+			} catch (Throwable t) {
+				if (savedThrowable) {
+					//something went wrong with the delete, but the savedThrowable is more important
+					t.printStackTrace(System.err)
+					throw savedThrowable
+				} else {
+					throw t
+				}
+			}
+			if (savedThrowable) {
+				throw savedThrowable
+			}
+		}
+	}
+
+	public static createSourceArchive(dir)
+	{
+		/*
+		 * Create a simple source file in the temporary directory
+		 */
+		def sourceDir = new File(dir, "src")
+		def sourceFile = new File(sourceDir, SIMPLE_SOURCE_PATHNAME)
+		sourceFile.parentFile.mkdirs()
+		sourceFile.write(SOURCE_TEXT)
+
+		//create a source zip file with the simple source file
+		def zipDir = new File(dir, "zip")
+		zipDir.mkdirs()
+		def zipFile = new File(zipDir, "source.zip")			
+		antBuilder.zip(destfile:zipFile, basedir:sourceDir)
+		
+		//now delete the source file to make sure we use the zip file
+		Assert.assertTrue(sourceFile.delete())
+
+		return zipFile
+	}
+}
