@@ -58,25 +58,18 @@
 
 package net.sourceforge.cobertura.ant;
 
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.taskdefs.MatchingTask;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
 
 /**
  * An ant task that can be used to optionally fail an ant build if
  * the coverage percentage for lines or branches is below a certain,
  * user specifiable threshold.
  */
-public class CheckTask extends MatchingTask
+public class CheckTask extends CommonMatchingTask
 {
 
 	private String dataFile = null;
@@ -99,8 +92,10 @@ public class CheckTask extends MatchingTask
 
 	private boolean haltOnFailure = true;
 
-	private Java java = null;
-
+	public CheckTask() {
+		super("net.sourceforge.cobertura.check.Main");
+	}
+	
 	public void execute() throws BuildException
 	{
 		if (dataFile != null)
@@ -178,51 +173,6 @@ public class CheckTask extends MatchingTask
 		Regex regex = new Regex();
 		regexes.add(regex);
 		return regex;
-	}
-
-	protected Java getJava()
-	{
-		if (java == null)
-		{
-			java = (Java)getProject().createTask("java");
-			java.setTaskName(getTaskName());
-			java.setClassname("net.sourceforge.cobertura.check.Main");
-			java.setFork(true);
-			java.setDir(getProject().getBaseDir());
-
-			if (getClass().getClassLoader() instanceof AntClassLoader)
-			{
-				createClasspath().setPath(
-						((AntClassLoader)getClass().getClassLoader())
-								.getClasspath());
-			}
-			else if (getClass().getClassLoader() instanceof URLClassLoader)
-			{
-				URL[] earls = ((URLClassLoader)getClass().getClassLoader())
-						.getURLs();
-				for (int i = 0; i < earls.length; i++)
-				{
-					createClasspath().setPath(earls[i].getFile());
-				}
-			}
-		}
-
-		return java;
-	}
-
-	public Path createClasspath()
-	{
-		return getJava().createClasspath().createPath();
-	}
-
-	public void setClasspath(Path classpath)
-	{
-		createClasspath().append(classpath);
-	}
-
-	public void setClasspathRef(Reference r)
-	{
-		createClasspath().setRefid(r);
 	}
 
 	public void setDataFile(String dataFile)
