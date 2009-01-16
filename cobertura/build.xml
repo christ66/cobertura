@@ -208,7 +208,7 @@
 		<delete dir="${test.work.dir}" failonerror="false" />
 		<mkdir dir="${build.reports.dir}/junit-xml" />
 
-		<junit fork="true" forkmode="once" failureProperty="test.failed" printsummary="true" timeout="300000">
+		<junit fork="true" forkmode="once" haltonfailure="false" failureProperty="test.failed" printsummary="true" timeout="300000">
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="${build.dir}/cobertura.ser" />
 			<sysproperty key="basedir" value="${basedir}"/>
 			<!--
@@ -249,7 +249,6 @@
 			<report format="frames" todir="${build.reports.dir}/junit-html" />
 		</junitreport>
 
-		<fail message="Tests failed." if="test.failed" />
 	</target>
 
 	<target name="coverage-report">
@@ -283,9 +282,6 @@
 			</fileset>
 		</cobertura-report>
 
-		<cobertura-check datafile="${build.dir}/cobertura.ser"
-		                 totalbranchrate="50"
-		                 totallinerate="50" />
 	</target>
 
 	<!--
@@ -539,9 +535,21 @@
 			</fileset>
 		</delete>
 	</target>
+	
+	<target name="failure-check">
+		<fail message="JUnit tests failed" if="test.failed" />
+		
+	</target>
+	
+	<target name="cobertura-check">
+		<cobertura-check datafile="${build.dir}/cobertura.ser"
+		                 totalbranchrate="70"
+		                 totallinerate="80" />
 
-	<target name="coverage" depends="compile,compile-tests,instrument,test,coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
-	<target name="release" depends="clean,compile,compile-tests,test,jar,javadoc,dist" description="Full build cycle, producing a distribution." />
+	</target>
+
+	<target name="coverage" depends="compile,compile-tests,instrument,test,coverage-report,failure-check,cobertura-check" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
+	<target name="release" depends="clean,compile,compile-tests,test,failure-check,jar,javadoc,dist" description="Full build cycle, producing a distribution." />
 
 </project>
 <!--
