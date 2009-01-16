@@ -223,13 +223,16 @@
 		]]> </cobertura:groovy>
 	</target>
 
-	<target name="coverage-check" depends="cobertura-groovy-init">
+	<target name="coverage-check-only" depends="cobertura-groovy-init">
 		<cobertura:groovy><![CDATA[
 			evaluate(new File("${ant.project.baseDir}/functionalTest.groovy"))
 			
-			ant."${checkTaskName}"(branchrate:'34', totallinerate:'100')
+			checkRates()
+			
 		]]> </cobertura:groovy>
 	</target>
+	
+	<target name="coverage-check" depends="taskdef-antlib,coverage-check-only" />
 
 	<target name="clean">
 		<delete dir="${classes.dir}" />
@@ -240,7 +243,7 @@
 		<delete file="cobertura.ser.lock" />
 	</target>
 
-	<target name="test-dirset" depends="taskdef-antlib,clean,compile,instrument-includes-and-excludes,test,coverage-reports-with-dirset" />
+	<target name="test-dirset" depends="taskdef-antlib,clean,compile,instrument-includes-and-excludes,test,coverage-reports-with-dirset,coverage-check-only" />
 	<target name="test-includes-and-excludes" depends="taskdef,clean,compile,instrument-includes-and-excludes,test,coverage-reports" />
 	<target name="test-classpath" depends="taskdef,clean,compile,instrument-classpath,test,coverage-reports" />
 	<target name="test-war" depends="taskdef,clean,compile,instrument-war,test,coverage-reports-with-archive" />
