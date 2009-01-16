@@ -136,6 +136,14 @@ checkRates = {
 	assertCheckFailure("Check with defaults should fail") {
 		 ant."${checkTaskName}"(datafile:datafile)
 	 }
+	 
+	/*
+	 * Now pass in all 0 values.   It should pass.
+	 */
+	ratesMap.keySet().each { tempMap.put(it, 0) }
+	ant.echo(message:"Doing a check with all zero rates: ${tempMap}")
+	ant."${checkTaskName}"(tempMap)
+	
 }
  
  

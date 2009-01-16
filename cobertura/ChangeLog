@@ -5,7 +5,14 @@ version 1.10:
 	* Support the antlib mechanism for defining and importing 
 	  ant tasks. (Richard Atkins)
 	* Report generation will look in zip and jar files if the 
-	  source java file is not found. (Charlie Squires, John Lewis)  
+	  source java file is not found. (Charlie Squires, John Lewis)
+	* cobertura-check with linerate=0, branchrate=0, 
+	  packagebranchrate=0, packagelinerate=0, totalbranchrate=0,
+	  totallinerate=0 will no longer default all the values to
+	  50 as before.   Therefore, cobertura-check will always pass.
+	  Note that this still means that <cobertura-check /> (with
+	  no attributes) will still default to 50 for all rates. (Charlie
+	  Squires) (Bug 2152919)
 
 version 1.9:
 	* Much improved branch coverage.  Information on whether

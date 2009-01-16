@@ -4,6 +4,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Nathan Wilson
+ * Copyright (C) 2009 Charlie Squires
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -128,12 +129,12 @@ public class Main
 		Header.print(System.out);
 
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
-		double branchCoverageRate = 0.0;
-		double lineCoverageRate = 0.0;
-		double packageBranchCoverageRate = 0.0;
-		double packageLineCoverageRate = 0.0;
-		double totalBranchCoverageRate = 0.0;
-		double totalLineCoverageRate = 0.0;
+		double branchCoverageRate = -1.0;
+		double lineCoverageRate = -1.0;
+		double packageBranchCoverageRate = -1.0;
+		double packageLineCoverageRate = -1.0;
+		double totalBranchCoverageRate = -1.0;
+		double totalLineCoverageRate = -1.0;
 
 		for (int i = 0; i < args.length; i++)
 		{
@@ -182,11 +183,11 @@ public class Main
 		}
 
 		// If they didn't specify any thresholds, then use some defaults
-		if ((branchCoverageRate == 0) && (lineCoverageRate == 0)
-				&& (packageLineCoverageRate == 0)
-				&& (packageBranchCoverageRate == 0)
-				&& (totalLineCoverageRate == 0)
-				&& (totalBranchCoverageRate == 0)
+		if ((branchCoverageRate == -1.0) && (lineCoverageRate == -1.0)
+				&& (packageLineCoverageRate == -1.0)
+				&& (packageBranchCoverageRate == -1.0)
+				&& (totalLineCoverageRate == -1.0)
+				&& (totalBranchCoverageRate == -1.0)
 				&& (this.minimumCoverageRates.size() == 0))
 		{
 			branchCoverageRate = 0.5;
@@ -195,6 +196,22 @@ public class Main
 			packageLineCoverageRate = 0.5;
 			totalBranchCoverageRate = 0.5;
 			totalLineCoverageRate = 0.5;
+		}
+		// If they specified one or more thresholds, default everything else to 0
+		else
+		{
+			if (branchCoverageRate == -1.0)
+				branchCoverageRate = 0.0;
+			if (lineCoverageRate == -1.0)
+				lineCoverageRate = 0.0;
+			if (packageLineCoverageRate == -1.0)
+				packageLineCoverageRate = 0.0;
+			if (packageBranchCoverageRate == -1.0)
+				packageBranchCoverageRate = 0.0;
+			if (totalLineCoverageRate == -1.0)
+				totalLineCoverageRate = 0.0;
+			if (totalBranchCoverageRate == -1.0)
+				totalBranchCoverageRate = 0.0;
 		}
 
 		this.minimumCoverageRate = new CoverageRate(lineCoverageRate,
@@ -274,7 +291,7 @@ public class Main
 		exitStatus |= checkPackageCoverageLevels(packageBranchCoverageRate,
 				packageLineCoverageRate);
 
-		// Check the rates for the overal project
+		// Check the rates for the overall project
 		if ((totalBranches > 0)
 				&& (totalBranchCoverageRate > (totalBranchesCovered / totalBranches)))
 		{
