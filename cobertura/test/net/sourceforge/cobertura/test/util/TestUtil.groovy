@@ -59,6 +59,8 @@ import junit.framework.Assert
 public class TestUtil {
 
 	public static final antBuilder = new AntBuilder()
+	
+	private static File coberturaClassDir
 
 	public static final String SOURCE_TEXT = '''
 		package a.mypackage;
@@ -126,5 +128,103 @@ public class TestUtil {
 		Assert.assertTrue(sourceFile.delete())
 
 		return zipFile
+	}
+	
+	public static synchronized getCoberturaClassDir() {
+		if (coberturaClassDir == null)
+		{
+			coberturaClassDir = new File("build/test/cobertura_classes")
+			coberturaClassDir.mkdirs()
+			antBuilder.javac(srcdir:'src', destdir:coberturaClassDir) {
+				classpath {
+					fileset(dir:'lib') {
+						include(name:'**.*.jar')
+					}
+				}
+			}
+		}
+		return coberturaClassDir
+	}
+	
+	private static waitForLiveServer(webContainerHostname, webContainerPort, timeoutMin) {
+		InetSocketAddress address = new InetSocketAddress(webContainerHostname, webContainerPort);
+		
+		antBuilder.echo(message:"Waiting $timeoutMin min for web server...")
+		long beginTime = System.currentTimeMillis();
+		long endTime = System.currentTimeMillis() + (timeoutMin * 60 * 1000); 
+		boolean portOpened = false;
+		while ((!portOpened) && (System.currentTimeMillis() < endTime)) {
+			portOpened = trySocket(address);
+			
+			if (portOpened) {
+				antBuilder.echo("Web server has opened the port in " + (System.currentTimeMillis() - beginTime)/1000.0/60.0 + " min.");
+			} else {
+				try {
+					Thread.sleep(2000);  //2 sec
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		if (!portOpened) {
+			throw new RuntimeException("Timed out waiting for webapp server to initialize");
+		}
+	}
+	
+	/**
+	 * Checks to see if a socket is opened.
+	 */
+	public static boolean trySocket(InetSocketAddress address) {
+		boolean success = false;
+		
+		Socket socket = null
+		try
+		{
+			socket = new Socket()
+			socket.connect(address);
+			success = true;
+		}
+		catch (ConnectException e) {
+			//this is expected
+		}
+		catch (Throwable e) {
+			e.printStackTrace();
+		}
+		finally {
+			if (socket)
+			{
+				socket.close();
+			}
+		}
+		return success;
+	}
+
+	public static getXMLReportDOM(xmlReport)
+	{
+		def parser = new XmlParser()
+		parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",false)
+		parser.parse(xmlReport)
+	}
+	
+	public static isMethodHit(dom, methodName)
+	{
+		def methods = dom.packages.'package'.classes.'class'.methods.method
+		def getMethod = methods.grep { it.'@name' == methodName }
+		def hitsPerLine = getMethod.lines.line.'@hits'[0]
+		return (hitsPerLine.any { it.toInteger() >= 1 })
+	}
+	
+	public static getCoberturaAntBuilder(cobertura)
+	{
+		def ret = new AntBuilder()
+		ret.taskdef(resource:"tasks.properties") {
+			classpath {
+				pathelement(location:cobertura)
+				fileset(dir:'lib') {
+					include(name:"**/*.jar")
+				}
+			}
+		}
+		return ret
 	}
 }
