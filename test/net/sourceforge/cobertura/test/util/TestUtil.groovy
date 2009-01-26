@@ -135,10 +135,10 @@ public class TestUtil {
 		{
 			coberturaClassDir = new File("build/test/cobertura_classes")
 			coberturaClassDir.mkdirs()
-			antBuilder.javac(srcdir:'src', destdir:coberturaClassDir) {
+			antBuilder.javac(srcdir:'src', destdir:coberturaClassDir, debug:true) {
 				classpath {
 					fileset(dir:'lib') {
-						include(name:'**.*.jar')
+						include(name:'**/*.jar')
 					}
 				}
 			}
@@ -212,6 +212,29 @@ public class TestUtil {
 		def getMethod = methods.grep { it.'@name' == methodName }
 		def hitsPerLine = getMethod.lines.line.'@hits'[0]
 		return (hitsPerLine.any { it.toInteger() >= 1 })
+	}
+	
+	public static getHitCount(dom, className, methodName)
+	{
+		def classes = dom.packages.'package'.classes.'class'
+		def clazz = classes.grep { it.'@name' == className }[0]
+		if (clazz == null)
+		{
+			return 0
+		}
+		def methods = clazz.methods.method
+		def method = methods.grep { it.'@name' == methodName }[0]
+		if (method == null)
+		{
+			return 0
+		}
+		def firstLine = method.lines.line[0]
+		if (firstLine == null)
+		{
+			return 0
+		}
+		def hitCount = firstLine.'@hits'
+		return hitCount.toInteger()
 	}
 	
 	public static getCoberturaAntBuilder(cobertura)
