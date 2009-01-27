@@ -5,7 +5,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Jeremy Thomerson
  * Copyright (C) 2006 Jiri Mares
- * Copyright (C) 2008 jay (juliangamble)
+ * Copyright (C) 2008 Julian Gamble
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
