@@ -60,7 +60,7 @@
 		<sequential>
 			<path id="cobertura.common.local.library">
 				<fileset dir="${cobertura.local.library}">
-					<include name="**/groovy*.jar" />
+					<include name="**/*.jar" />
 				</fileset>
 			</path>
 				

@@ -17,6 +17,8 @@ version 1.10:
 	  web server and invoke http://<HOST>:<PORT>/coberturaFlush/flushCobertura
 	  for a convenient way of flushing the cobertura data to the
 	  datafile without stopping the web server.  (Amit Nithianandan)
+	* XML report now shows total lines-covered, lines-valid, 
+	  branches-covered, branches-valid, and complexity.  (jay (juliangamble))
 
 version 1.9:
 	* Much improved branch coverage.  Information on whether
