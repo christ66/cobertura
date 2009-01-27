@@ -1,9 +1,67 @@
+/*
+ * The Apache Software License, Version 1.1
+ *
+ * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
+ * reserved.
+ * Copyright (C) 2009 John Lewis
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. The end-user documentation included with the redistribution, if
+ *    any, must include the following acknowlegement:
+ *       "This product includes software developed by the
+ *        Apache Software Foundation (http://www.apache.org/)."
+ *    Alternately, this acknowlegement may appear in the software itself,
+ *    if and wherever such third-party acknowlegements normally appear.
+ *
+ * 4. The names "Ant" and "Apache Software
+ *    Foundation" must not be used to endorse or promote products derived
+ *    from this software without prior written permission. For written
+ *    permission, please contact apache@apache.org.
+ *
+ * 5. Products derived from this software may not be called "Apache"
+ *    nor may "Apache" appear in their names without prior written
+ *    permission of the Apache Group.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This software consists of voluntary contributions made by many
+ * individuals on behalf of the Apache Software Foundation.  For more
+ * information on the Apache Software Foundation, please see
+ * <http://www.apache.org/>.
+ */
+
 package net.sourceforge.cobertura.test.util
 
+import static org.junit.Assert.*
 
 
 public class WebappServer
 {
+	static final SIMPLE_SERVLET_CLASSNAME = "com.acme.servlet.SimpleServlet"
+	
 	static final SIMPLE_SERVLET_TEXT = '''
 		package com.acme.servlet;
 	
@@ -54,6 +112,7 @@ public class WebappServer
 	def dir = "."
 	def msecNeededToStop = 1000
 	def coberturaAnt
+	def modifyMainCoberturaDataFile
 
 	/**
 	 * Copies a web server installation into dir and deploys a webapp to it.
@@ -61,6 +120,8 @@ public class WebappServer
 	 */
 	public deployApp(map)
 	{
+		modifyMainCoberturaDataFile = map.modifyMainCoberturaDataFile
+		
 		def extractedDir = new File(dir, "extracted")
 		def webInfDir = new File(extractedDir, "WEB-INF")
 		def classesDir = new File(webInfDir, "classes")
@@ -82,6 +143,16 @@ public class WebappServer
 		if (map.instrumentRegEx)
 		{
 			instrumentWar(war, map.instrumentRegEx)
+		}
+		
+		if (map.instrumentCobertura)
+		{
+			instrumentCoberturaJar(coberturaJar)
+		}
+		
+		if (map.deployCoberturaFlush)
+		{
+			deployCoberturaFlush(map.instrumentCobertura)
 		}
 	}
 	
@@ -124,6 +195,29 @@ public class WebappServer
 		return war
 	}
 	
+	private deployCoberturaFlush(instrumentCobertura)
+	{
+		def webappsDir = new File(dir, "webapps")
+		def war = new File(webappsDir, "coberturaFlush.war")
+		
+		/*
+		 * Here we want to make the coberturaFlush war similar to the way
+		 * the production build does it.  So, use the same file.
+		 */
+		GroovyScriptEngine gse = new GroovyScriptEngine(".")
+		Binding binding = new Binding()
+		binding.setVariable("ant", ant)
+		gse.run("buildUtil.groovy", binding)
+		//now call the buildWar closure
+		binding.getVariable("buildWar")(war)
+		
+		
+		if (instrumentCobertura)
+		{
+			instrumentWar(war, "net.sourceforge.cobertura.*")
+		}
+	}
+	
 	private instrumentWar(war, instrumentRegEx)
 	{
 		coberturaAnt.'cobertura-instrument'(datafile:"${dir}/cobertura.ser") {
@@ -135,6 +229,17 @@ public class WebappServer
 		}
 	}
 	
+	private instrumentCoberturaJar(coberturaJar)
+	{
+		coberturaAnt.'cobertura-instrument'(datafile:"${dir}/cobertura.ser") {
+			includeClasses(regex:"net.sourceforge.cobertura.*")
+			excludeClasses(regex:'.*Test.*')
+			fileset(dir:coberturaJar.getParent()) {
+				include(name:coberturaJar.name)
+			}
+		}
+	}
+
 	/**
 	 * Starts the web server and calls the closure.   The web server will be stopped 
 	 * when the closure exits (successfully or not).
@@ -149,11 +254,20 @@ public class WebappServer
 		try
 		{
 			data = [
-			            datafile:new File("${dir}/cobertura.ser"), 
 			            xmlReport:new File("${dir}/coverage.xml"),
 			            hostname:LOCALHOST,
 			            webappPort:freePorts.webapp,
 			    		coberturaAnt:coberturaAnt]
+			
+			data.datafile = getDatafileToUse()
+			
+			/*
+			 * add a closure that can be called to flush the cobertura data
+			 */
+			data.flushCobertura = {
+					def webappResponse = (new java.net.URL("http://${data.hostname}:${data.webappPort}/coberturaFlush/flushCobertura")).text
+					assertEquals("Response of coberturaFlush unexpected", "", webappResponse.trim())
+			}
 		
 			TestUtil.waitForLiveServer(data.hostname, data.webappPort, 1)  //1 min timeout
 			closure.call(data)
@@ -171,6 +285,33 @@ public class WebappServer
 		def dom = TestUtil.getXMLReportDOM(data.xmlReport)
 		data.dom = dom
 		return data
+	}
+	
+	private getDatafileToUse()
+	{
+		def datafile = new File("${dir}/cobertura.ser")
+		
+		if (modifyMainCoberturaDataFile)
+		{
+			/*
+			 * modify the cobertura.ser file created by the instrumentation target
+			 * of the main build.xml file.   That way, the counts
+			 * will end up in the overall coverage report
+			 */
+			def tempfile = new File("build/cobertura.ser")
+			if (tempfile.exists())
+			{
+				datafile = tempfile
+			}
+			else
+			{
+				/*
+				 * It looks like the main build.xml's instrument target has not been run.
+				 * So, a coverage report is not being generated.
+				 */
+			}
+		}
+		return datafile
 	}
 	
 	/**
@@ -222,6 +363,10 @@ public class WebappServer
 			sysproperty(key:'jetty.port', value:freePorts.webapp)
 			sysproperty(key:'STOP.PORT', value:freePorts.stop)
 			sysproperty(key:'STOP.KEY', value:'cobertura')
+			if (modifyMainCoberturaDataFile)
+			{
+				sysproperty(key:'net.sourceforge.cobertura.datafile', value:getDatafileToUse().getAbsolutePath())
+			}
 		}
 	}
 	
