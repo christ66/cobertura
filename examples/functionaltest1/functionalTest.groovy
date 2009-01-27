@@ -71,6 +71,26 @@ runReports = { set ->
 	ant."${reportTaskName}"([datafile:'${basedir}/cobertura.ser', destdir:'${coverage.html.dir}', maxmemory:'512M'], set)
 
 }
+
+readXMLReport = { xmlReport ->
+	def parser = new XmlParser()
+	parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",false)
+	
+	def info = [:]
+	info.root = parser.parse(xmlReport)
+	
+	info.totalLineRate = rateToInt(info.root.'@line-rate')
+	info.totalBranchRate = rateToInt(info.root.'@branch-rate')
+	info.totalLinesCovered = info.root.'@lines-covered'.toInteger()
+	info.totalLinesValid = info.root.'@lines-valid'.toInteger()
+	info.totalBranchesCovered = info.root.'@branches-covered'.toInteger()
+	info.totalBranchesValid = info.root.'@branches-valid'.toInteger()
+	
+	assertEquals("line-rate should equal lines-covered/lines-valid", info.totalLineRate, calculateRate(info.totalLinesCovered, info.totalLinesValid))
+	assertEquals("branch-rate should equal branches-covered/branches-valid", info.totalBranchRate, calculateRate(info.totalBranchesCovered, info.totalBranchesValid))
+
+	info
+}
  
 checkRates = {
 	/*
@@ -78,33 +98,22 @@ checkRates = {
 	 */
 	def datafile = new File("${ant.project.baseDir}/cobertura.ser")
 	def xmlReport = new File("${ant.project.baseDir}/${ant.project.properties.'coverage.xml.dir'}/coverage.xml")
-	 
-	def parser = new XmlParser()
-	parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",false)
-	def root = parser.parse(xmlReport)
 	
-	def totalLineRate = rateToInt(root.'@line-rate')
-	def totalBranchRate = rateToInt(root.'@branch-rate')
-	def totalLinesCovered = root.'@lines-covered'.toInteger()
-	def totalLinesValid = root.'@lines-valid'.toInteger()
-	def totalBranchesCovered = root.'@branches-covered'.toInteger()
-	def totalBranchesValid = root.'@branches-valid'.toInteger()
+	def info = readXMLReport(xmlReport)
 	
-	assertEquals("line-rate should equal lines-covered/lines-valid", totalLineRate, calculateRate(totalLinesCovered, totalLinesValid))
-	assertEquals("branch-rate should equal branches-covered/branches-valid", totalBranchRate, calculateRate(totalBranchesCovered, totalBranchesValid))
 	
-	def minPackageLineRate = rateToInt(root.packages.'package'.'@line-rate'*.toDouble().min().toString())
-	def minPackageBranchRate = rateToInt(root.packages.'package'.'@branch-rate'*.toDouble().min().toString())
-	def minClassLineRate = rateToInt(root.packages.'package'.classes.'class'.'@line-rate'*.toDouble().min().toString())
-	def minClassBranchRate = rateToInt(root.packages.'package'.classes.'class'.'@branch-rate'*.toDouble().min().toString())
+	info.minPackageLineRate = rateToInt(info.root.packages.'package'.'@line-rate'*.toDouble().min().toString())
+	info.minPackageBranchRate = rateToInt(info.root.packages.'package'.'@branch-rate'*.toDouble().min().toString())
+	info.minClassLineRate = rateToInt(info.root.packages.'package'.classes.'class'.'@line-rate'*.toDouble().min().toString())
+	info.minClassBranchRate = rateToInt(info.root.packages.'package'.classes.'class'.'@branch-rate'*.toDouble().min().toString())
 	
 	def ratesMap = [
-			totallinerate:totalLineRate,
-			totalbranchrate:totalBranchRate,
-			packagelinerate:minPackageLineRate,
-			packagebranchrate:minPackageBranchRate,
-			linerate:minClassLineRate,
-			branchrate:minClassBranchRate
+			totallinerate:info.totalLineRate,
+			totalbranchrate:info.totalBranchRate,
+			packagelinerate:info.minPackageLineRate,
+			packagebranchrate:info.minPackageBranchRate,
+			linerate:info.minClassLineRate,
+			branchrate:info.minClassBranchRate
 	]
 	
 	/*
