@@ -13,7 +13,7 @@ version 1.10:
 	  Note that this still means that <cobertura-check /> (with
 	  no attributes) will still default to 50 for all rates. (Charlie
 	  Squires) (Bug 2152919)
-	* New CoberturaFlush.war is created.   Deploy it to a 
+	* New coberturaFlush.war is created.   Deploy it to a 
 	  web server and invoke http://<HOST>:<PORT>/coberturaFlush/flushCobertura
 	  for a convenient way of flushing the cobertura data to the
 	  datafile without stopping the web server.  (Amit Nithianandan)
