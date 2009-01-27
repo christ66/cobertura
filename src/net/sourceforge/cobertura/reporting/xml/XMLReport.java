@@ -5,6 +5,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Jeremy Thomerson
  * Copyright (C) 2006 Jiri Mares
+ * Copyright (C) 2008 jay (juliangamble)
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -53,7 +54,7 @@ public class XMLReport
 
 	private static final Logger logger = Logger.getLogger(XMLReport.class);
 
-	protected final static String coverageDTD = "coverage-03.dtd";
+	protected final static String coverageDTD = "coverage-04.dtd";
 
 	private final PrintWriter pw;
 	private final FileFinder finder;
@@ -76,13 +77,27 @@ public class XMLReport
 					+ coverageDTD + "\">");
 			println("");
 
+			double ccn = complexity.getCCNForProject(projectData);
+			int numLinesCovered = projectData.getNumberOfCoveredLines();
+			int numLinesValid = projectData.getNumberOfValidLines();
+			int numBranchesCovered = projectData.getNumberOfCoveredBranches();
+			int numBranchesValid = projectData.getNumberOfValidBranches();
+			 
 			// TODO: Set a schema?
 			//println("<coverage " + sourceDirectories.toString() + " xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
-			println("<coverage line-rate=\""
-					+ projectData.getLineCoverageRate() + "\" branch-rate=\""
-					+ projectData.getBranchCoverageRate() + "\" version=\""
-					+ Header.version() + "\" timestamp=\""
-					+ new Date().getTime() + "\">");
+			println(
+					"<coverage line-rate=\"" + projectData.getLineCoverageRate()
+					+ "\" branch-rate=\"" + projectData.getBranchCoverageRate()
+					+ "\" lines-covered=\"" + numLinesCovered
+					+ "\" lines-valid=\"" + numLinesValid
+					+ "\" branches-covered=\"" + numBranchesCovered
+					+ "\" branches-valid=\"" + numBranchesValid
+
+					+ "\" complexity=\"" + ccn
+
+					+ "\" version=\"" + Header.version()
+					+ "\" timestamp=\"" + new Date().getTime()
+					+ "\">");
 
 			increaseIndentation();
 			dumpSources();

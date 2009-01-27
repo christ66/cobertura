@@ -94,8 +94,14 @@ public class FunctionalTest extends TestCase
 
 	private static void verifyXml(String testName) throws Exception
 	{
+		Document document = getXmlReportDocument();
+		//verify the overall complexity
+		String complexity = document.getRootElement().getAttributeValue("complexity");
+		assertEquals("Invalid overall complexity ", "1.0", complexity);
+
+		
 		// Get a list of all classes listed in the XML report
-		List classesList = getClassElements();
+		List classesList = getClassElements(document);
 		assertTrue("Test " + testName + ": Did not find any classes listed in the XML report.",
 				classesList.size() > 0);
 
@@ -140,15 +146,20 @@ public class FunctionalTest extends TestCase
 				secondPackageFound);
 	}
 
+	private static Document getXmlReportDocument() throws IOException, JDOMException
+	{
+		File xmlFile = new File(BASEDIR, "reports/cobertura-xml/coverage.xml");
+		Document document = JUnitXMLHelper.readXmlFile(xmlFile, true);
+		return document;
+	}
+
 	/**
 	 * Use XPath to get all &lt;class&gt; elements in the
 	 * cobertura.xml file under the given directory.
 	 * @return A list of JDOM Elements.
 	 */
-	private static List getClassElements() throws IOException, JDOMException
+	private static List getClassElements(Document document) throws IOException, JDOMException
 	{
-		File xmlFile = new File(BASEDIR, "reports/cobertura-xml/coverage.xml");
-		Document document = JUnitXMLHelper.readXmlFile(xmlFile, true);
 		XPath xpath = XPath.newInstance("/coverage/packages/package/classes/class");
 		List classesList = xpath.selectNodes(document);
 		return classesList;

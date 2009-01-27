@@ -55,6 +55,7 @@
  
 import org.apache.tools.ant.BuildException
 
+import static org.junit.Assert.*
 
 //load testUtil definitions
 evaluate(new File("${ant.project.baseDir}/../../testUtil.groovy"))
@@ -84,6 +85,14 @@ checkRates = {
 	
 	def totalLineRate = rateToInt(root.'@line-rate')
 	def totalBranchRate = rateToInt(root.'@branch-rate')
+	def totalLinesCovered = root.'@lines-covered'.toInteger()
+	def totalLinesValid = root.'@lines-valid'.toInteger()
+	def totalBranchesCovered = root.'@branches-covered'.toInteger()
+	def totalBranchesValid = root.'@branches-valid'.toInteger()
+	
+	assertEquals("line-rate should equal lines-covered/lines-valid", totalLineRate, calculateRate(totalLinesCovered, totalLinesValid))
+	assertEquals("branch-rate should equal branches-covered/branches-valid", totalBranchRate, calculateRate(totalBranchesCovered, totalBranchesValid))
+	
 	def minPackageLineRate = rateToInt(root.packages.'package'.'@line-rate'*.toDouble().min().toString())
 	def minPackageBranchRate = rateToInt(root.packages.'package'.'@branch-rate'*.toDouble().min().toString())
 	def minClassLineRate = rateToInt(root.packages.'package'.classes.'class'.'@line-rate'*.toDouble().min().toString())
@@ -148,6 +157,7 @@ checkRates = {
  
  
 rateToInt = { doubleString ->
+	doubleString = doubleString.toString()    //in case it is not a string
 	//multiply rate by 100 and drop the decimals
 	(Double.parseDouble(doubleString) * 100.0).intValue()
 }
@@ -165,7 +175,13 @@ assertCheckFailure = { errorMessage, closure ->
 	}
 }
 
-
+calculateRate = { covered, value ->
+	if (value == 0)
+	{
+		return 100
+	}
+	rateToInt(covered/value)
+}
  
  
  
