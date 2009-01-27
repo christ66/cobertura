@@ -21,6 +21,9 @@
 		<fileset dir="${lib.dir}">
 			<include name="**/*.jar" />
 		</fileset>
+		<fileset dir="${jetty.dir}">
+			<include name="lib/servlet-api*.jar" />
+		</fileset>
 	</path>
 
 	<path id="cobertura.classpath">
@@ -177,6 +180,15 @@
 				<attribute name="Implementation-Version" value="${version}"/>
 			</manifest>
 		</jar>
+	</target>
+	
+	<target name="war" depends="cobertura-groovy-init">
+		<cobertura:groovy>
+			//load buildUtil definitions
+			evaluate(new File("buildUtil.groovy"))
+			
+			buildWar(new File("coberturaFlush.war"))
+		</cobertura:groovy>
 	</target>
 
 	<target name="instrument" depends="jar">
@@ -346,6 +358,7 @@
 				<exclude name="lib/xalan*" />
 
 				<include name="cobertura.jar" />
+				<include name="coberturaFlush.war" />
 				<include name="examples/basic/README" />
 				<include name="examples/basic/build.properties" />
 				<include name="examples/basic/*.xml" />
@@ -532,6 +545,7 @@
 				<include name="cobertura-*-bin.*" />
 				<include name="cobertura-*-src.*" />
 				<include name="cobertura-*-eclipse-plugin.zip" />
+				<include name="coberturaFlush.war" />
 			</fileset>
 		</delete>
 	</target>
@@ -549,7 +563,7 @@
 	</target>
 
 	<target name="coverage" depends="compile,compile-tests,instrument,test,coverage-report,failure-check,cobertura-check" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
-	<target name="release" depends="clean,compile,compile-tests,test,failure-check,jar,javadoc,dist" description="Full build cycle, producing a distribution." />
+	<target name="release" depends="clean,compile,compile-tests,test,failure-check,jar,war,javadoc,dist" description="Full build cycle, producing a distribution." />
 
 </project>
 <!--
