@@ -19,6 +19,11 @@ version 1.10:
 	  datafile without stopping the web server.  (Amit Nithianandan)
 	* XML report now shows total lines-covered, lines-valid, 
 	  branches-covered, branches-valid, and complexity.  (Julian Gamble)
+	* New report option called "summaryXml" will create
+	  a small summary XML report that does not have all the
+	  details on the classes - just the overall totals.  This
+	  is for large projects where the full XML report gets so
+	  big it impairs continuous build processes.  (Julian Gamble and Dan Godfrey)
 
 version 1.9:
 	* Much improved branch coverage.  Information on whether

@@ -94,11 +94,11 @@ public class FunctionalTest extends TestCase
 
 	private static void verifyXml(String testName) throws Exception
 	{
-		Document document = getXmlReportDocument();
-		//verify the overall complexity
-		String complexity = document.getRootElement().getAttributeValue("complexity");
-		assertEquals("Invalid overall complexity ", "1.0", complexity);
+		Document document = getSummaryXmlReportDocument();
+		verifyOverallComplexity(document);
 
+		document = getXmlReportDocument();
+		verifyOverallComplexity(document);
 		
 		// Get a list of all classes listed in the XML report
 		List classesList = getClassElements(document);
@@ -145,10 +145,23 @@ public class FunctionalTest extends TestCase
 		assertTrue("Test " + testName + ": Did not find class 'test.second.A' in the XML report.",
 				secondPackageFound);
 	}
+	
+	private static void verifyOverallComplexity(Document document)
+	{
+		String complexity = document.getRootElement().getAttributeValue("complexity");
+		assertEquals("Invalid overall complexity ", "1.0", complexity);
+	}
 
 	private static Document getXmlReportDocument() throws IOException, JDOMException
 	{
 		File xmlFile = new File(BASEDIR, "reports/cobertura-xml/coverage.xml");
+		Document document = JUnitXMLHelper.readXmlFile(xmlFile, true);
+		return document;
+	}
+
+	private static Document getSummaryXmlReportDocument() throws IOException, JDOMException
+	{
+		File xmlFile = new File(BASEDIR, "reports/cobertura-xml/coverage-summary.xml");
 		Document document = JUnitXMLHelper.readXmlFile(xmlFile, true);
 		return document;
 	}

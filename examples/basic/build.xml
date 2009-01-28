@@ -6,6 +6,7 @@
     Cobertura - http://cobertura.sourceforge.net/
     Copyright (C) 2003 jcoverage ltd.
     Copyright (C) 2005 Mark Doliner &lt;thekingant@users.sourceforge.net&gt;
+    Copyright (C) 2006 Dan Godfrey
     Cobertura is licensed under the GNU General Public License
     Cobertura comes with ABSOLUTELY NO WARRANTY
     </description>
@@ -27,6 +28,7 @@
 		<mkdir dir="${reports.xml.dir}" />
 		<mkdir dir="${reports.html.dir}" />
 		<mkdir dir="${coverage.xml.dir}" />
+		<mkdir dir="${coverage.summaryxml.dir}" />
 		<mkdir dir="${coverage.html.dir}" />
 	</target>
 
@@ -111,6 +113,14 @@
 		<cobertura-report srcdir="${src.dir}" destdir="${coverage.xml.dir}" format="xml" />
 	</target>
 
+	<target name="summary-coverage-report">
+		<!--
+			Generate an summary XML file containing the coverage data using
+			the "srcdir" attribute.
+		-->
+		<cobertura-report srcdir="${src.dir}" destdir="${coverage.summaryxml.dir}" format="summaryXml" />
+	</target>
+
 	<target name="alternate-coverage-report">
 		<!--
 			Generate a series of HTML files containing the coverage
@@ -131,6 +141,6 @@
 		<delete file="cobertura.ser" />
 	</target>
 
-	<target name="coverage" depends="compile,instrument,test,coverage-report,alternate-coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports."/>
+	<target name="coverage" depends="compile,instrument,test,coverage-report,summary-coverage-report,alternate-coverage-report" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports."/>
 
 </project>

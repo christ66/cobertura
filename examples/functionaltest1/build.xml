@@ -177,7 +177,7 @@
 		</junit>
 	</target>
 
-	<target name="coverage-reports" depends="cobertura-groovy-init">
+	<target name="coverage-reports-only" depends="cobertura-groovy-init">
 		<cobertura:groovy><![CDATA[
 			//load runReports definition
 			evaluate(new File("${ant.project.baseDir}/functionalTest.groovy"))
@@ -189,6 +189,8 @@
 			}
 		]]> </cobertura:groovy>
 	</target>
+	
+	<target name="coverage-reports" depends="taskdef,coverage-reports-only" />
 	
 	<target name="coverage-reports-with-dirset" depends="cobertura-groovy-init">
 		<cobertura:groovy><![CDATA[
@@ -244,8 +246,8 @@
 	</target>
 
 	<target name="test-dirset" depends="taskdef-antlib,clean,compile,instrument-includes-and-excludes,test,coverage-reports-with-dirset,coverage-check-only" />
-	<target name="test-includes-and-excludes" depends="taskdef,clean,compile,instrument-includes-and-excludes,test,coverage-reports" />
-	<target name="test-classpath" depends="taskdef,clean,compile,instrument-classpath,test,coverage-reports" />
+	<target name="test-includes-and-excludes" depends="taskdef,clean,compile,instrument-includes-and-excludes,test,coverage-reports-only" />
+	<target name="test-classpath" depends="taskdef,clean,compile,instrument-classpath,test,coverage-reports-only" />
 	<target name="test-war" depends="taskdef,clean,compile,instrument-war,test,coverage-reports-with-archive" />
 	<target name="all" depends="taskdef,test-includes-and-excludes,test-classpath" />
 
