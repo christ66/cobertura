@@ -62,9 +62,24 @@ evaluate(new File("${ant.project.baseDir}/../../testUtil.groovy"))
 
 runReports = { set ->
 
-	
+	//run a full xml report
 	ant."${reportTaskName}"(datafile:'${basedir}/cobertura.ser', srcdir:'${src.dir}', destdir:'${coverage.xml.dir}', format:'xml')
+	
+	def fullReport = readXMLReport("${ant.project.baseDir}/${properties.'coverage.xml.dir'}/coverage.xml")
 
+	//now run the summary report
+	ant."${reportTaskName}"(datafile:'${basedir}/cobertura.ser', srcdir:'${src.dir}', destdir:'${coverage.xml.dir}', format:'summaryxml')
+
+	def summary = readXMLReport("${ant.project.baseDir}/${properties.'coverage.xml.dir'}/coverage-summary.xml")
+
+	assertEquals(fullReport.totalComplexity, summary.totalComplexity, 0)
+	assertEquals(fullReport.totalLineRate, summary.totalLineRate)
+	assertEquals(fullReport.totalBranchRate, summary.totalBranchRate)
+	assertEquals(fullReport.totalLinesCovered, summary.totalLinesCovered)
+	assertEquals(fullReport.totalLinesValid, summary.totalLinesValid)
+	assertEquals(fullReport.totalBranchesCovered, summary.totalBranchesCovered)
+	assertEquals(fullReport.totalBranchesValid, summary.totalBranchesValid)
+	
 	ant.mkdir(dir:'${coverage.html.dir}')
 	
 	// maxmemory is only specified to test the attribute
@@ -85,6 +100,7 @@ readXMLReport = { xmlReport ->
 	info.totalLinesValid = info.root.'@lines-valid'.toInteger()
 	info.totalBranchesCovered = info.root.'@branches-covered'.toInteger()
 	info.totalBranchesValid = info.root.'@branches-valid'.toInteger()
+	info.totalComplexity = info.root.'@complexity'.toDouble()
 	
 	assertEquals("line-rate should equal lines-covered/lines-valid", info.totalLineRate, calculateRate(info.totalLinesCovered, info.totalLinesValid))
 	assertEquals("branch-rate should equal branches-covered/branches-valid", info.totalBranchRate, calculateRate(info.totalBranchesCovered, info.totalBranchesValid))

@@ -5,6 +5,7 @@
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2005 Jeremy Thomerson
  * Copyright (C) 2005 Grzegorz Lukasik
+ * Copyright (C) 2006 Dan Godfrey
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -29,6 +30,7 @@ import java.io.File;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.html.HTMLReport;
+import net.sourceforge.cobertura.reporting.xml.SummaryXMLReport;
 import net.sourceforge.cobertura.reporting.xml.XMLReport;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.FileFinder;
@@ -103,16 +105,20 @@ public class Main {
 			new HTMLReport(projectData, destinationDir, finder, complexity, encoding);
 		} else if (format.equalsIgnoreCase("xml")) {
 			new XMLReport(projectData, destinationDir, finder, complexity);
+		} else if (format.equalsIgnoreCase("summaryXml")) {
+			new SummaryXMLReport(projectData, destinationDir, finder, complexity);
 		}
 	}
 	
 	private void setFormat(String value) 
 	{
 		format = value;
-		if (!format.equalsIgnoreCase("html") && !format.equalsIgnoreCase("xml")) {
+		if (!format.equalsIgnoreCase("html") 
+				&& !format.equalsIgnoreCase("xml")
+				&& !format.equalsIgnoreCase("summaryXml")) {
 			System.err.println("" +
 					"Error: format \"" +
-					format + "\" is invalid. Must be either html or xml"
+					format + "\" is invalid. Must be either html or xml or summaryXml"
 					);
 			System.exit(1);
 		}
