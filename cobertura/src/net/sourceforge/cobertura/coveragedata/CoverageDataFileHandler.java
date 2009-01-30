@@ -4,6 +4,7 @@
  * Copyright (C) 2003 jcoverage ltd.
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2007 Joakim Erdfelt
+ * Copyright (C) 2007 Ignat Zapolsky
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
