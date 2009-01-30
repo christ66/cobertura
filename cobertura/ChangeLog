@@ -1,6 +1,8 @@
 version 1.10:
 	* Complexity calculation now works with Java 5 language
 	  features such as Annotations. (Tri Bao Ho)
+	* Removed the bold font from the source-view for uncovered lines to
+      improve the alignment.  (Jiri Mares)
 	* Support Ant <dirset>s. (Matt Cordes, John Lewis)
 	* Support the antlib mechanism for defining and importing 
 	  ant tasks. (Richard Atkins)
@@ -26,6 +28,11 @@ version 1.10:
 	  details on the classes - just the overall totals.  This
 	  is for large projects where the full XML report gets so
 	  big it impairs continuous build processes.  (Julian Gamble and Dan Godfrey)
+	* Migrated from asm-2.2.1 to asm-3.0. (Jiri Mares)
+    * The percentage coverage of 199 out of 200 lines has been 100%. 
+      No more! Now it is 99%.  (Jiri Mares)
+    * Spelling error corrected in main.css file - changed magin to
+      margin. (Dennis Lundberg)
 
 version 1.9:
 	* Much improved branch coverage.  Information on whether
