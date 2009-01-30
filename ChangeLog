@@ -4,6 +4,8 @@ version 1.10:
 	* Support Ant <dirset>s. (Matt Cordes, John Lewis)
 	* Support the antlib mechanism for defining and importing 
 	  ant tasks. (Richard Atkins)
+	* Reports now support source encoded in something than UTF-8. (Jiri Mares)
+	* Report generation performance improvement. (Ignat Zapolsky)
 	* Report generation will look in zip and jar files if the 
 	  source java file is not found. (Charlie Squires, John Lewis)
 	* cobertura-check with linerate=0, branchrate=0, 
