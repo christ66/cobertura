@@ -63,6 +63,71 @@ Cobertura with Appfuse</a></li>
 
 <h1>News</h1>
 
+
+<div class="newsitem">
+<span class="date">4 Feb 2009</span>
+<div class="text">
+<p>
+We've released Cobertura 1.9.1!  This is mostly to fix the Complexity calculation for 
+source with Java 5 language features such as Annotations.  Existing users of Cobertura need
+to make sure you use ASM 3.0 jars for this release.  See below 
+for the full list of changes.
+</p>
+
+<ul>
+<li>
+Complexity calculation now works with Java 5 language features such as Annotations. (Tri Bao Ho)
+</li>
+<li>
+Removed the bold font from the source-view for uncovered lines to improve the alignment.  (Jiří Mareš)
+</li>
+<li>
+Support Ant &lt;dirset&gt;s. (Matt Cordes, John Lewis)
+</li>
+<li>
+Support the antlib mechanism for defining and importing ant tasks. (Richard Atkins)
+</li>
+<li>
+Reports now support source encoded in something other than UTF-8. (Jiří Mareš)
+</li>
+<li>
+Report generation performance improvement. (Ignat Zapolsky)
+</li>
+<li>
+Report generation will look in zip and jar files if the source Java file is not found. (Charlie Squires, John Lewis)
+</li>
+<li>
+cobertura-check with linerate=0, branchrate=0, packagebranchrate=0, packagelinerate=0, totalbranchrate=0, totallinerate=0 
+will no longer default all the values to 50 as before.   Therefore, cobertura-check will always pass.<br/>
+Note that this still means that &lt;cobertura-check /&gt; (with no attributes) will still default to 50 for all rates. (Charlie Squires) (Bug 2152919)
+</li>
+<li>
+New coberturaFlush.war is created.   Deploy it to a web server and invoke http://&lt;HOST&gt;:&lt;PORT&gt;/coberturaFlush/flushCobertura 
+for a convenient way of flushing the cobertura data to the datafile without stopping the web server.  (Amit Nithianandan)
+</li>
+<li>
+XML report now shows total lines-covered, lines-valid, branches-covered, branches-valid, and complexity.  (Julian Gamble)
+</li>
+<li>
+New report option called "summaryXml" will create a small summary XML report that does not have all the 
+details on the classes - just the overall totals.  This is for large projects where the full XML report gets so 
+big it impairs continuous build processes.  (Julian Gamble and Dan Godfrey)
+</li>
+<li>
+Migrated from asm-2.2.1 to asm-3.0. (Jiří Mareš)
+</li>
+<li>
+The percentage coverage of 199 out of 200 lines has been 100%.  No more! Now it is 99%.  (Jiří Mareš)
+</li>
+<li>
+Spelling error corrected in main.css file - changed magin to margin. (Dennis Lundberg)
+</li>
+</li>
+</ul>
+
+</div>
+</div>
+
 <div class="newsitem">
 <span class="date">3 Feb 2009</span>
 <div class="text">
@@ -73,6 +138,7 @@ New Spanish tutorial available thanks to Alejandro P&eacute;rez Garc&iacute;a!<B
 </p>
 </div>
 </div>
+
 
 
 <div class="newsitem">
