@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2006 John Lewis
+ * Copyright (C) 2007 Ignat Zapolsky
  *
  * Note: This file is dual licensed under the GPL and the Apache
  * Source License (so that it can be used from both the main
@@ -26,6 +27,7 @@
 
 package net.sourceforge.cobertura.util;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -174,7 +176,7 @@ public abstract class IOUtil
 
 	public static PrintWriter getPrintWriter(File file) throws UnsupportedEncodingException, FileNotFoundException
 	{
-		Writer osWriter = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+		Writer osWriter = new BufferedWriter (new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), 16384);
 		PrintWriter pw = new PrintWriter(osWriter, false);
 		return pw;
 	}
