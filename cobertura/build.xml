@@ -442,9 +442,12 @@
 			</fileset>
 		</delete>
 
+	    <mkdir dir="${build.bundle.source.dir}" />
+	    <mkdir dir="${build.bundle.runtime.dir}" />
+
 		<!-- the javadoc jar for Cobertura.
 		     used by IDE, maven, and global artifact repository. -->
-		<jar jarfile="${build.bundle.dir}/${ant.project.name}-${version}-javadoc.jar" compress="true">
+		<jar jarfile="${build.bundle.source.dir}/${ant.project.name}-${version}-javadoc.jar" compress="true">
 			<fileset dir="${build.api.dir}">
 				<include name="**/*" />
 			</fileset>
@@ -465,7 +468,7 @@
 			 the cobertura.jar file, and is used from within an IDE to aide
 			 in debugging of an application that utilizes that jar file.
 		     This is an optional jar file for the global repository. -->
-		<jar jarfile="${build.bundle.dir}/${ant.project.name}-${version}-sources.jar" compress="true">
+		<jar jarfile="${build.bundle.source.dir}/${ant.project.name}-${version}-sources.jar" compress="true">
 			<fileset dir="${src.dir}">
 				<include name="**/*" />
 			</fileset>
@@ -480,24 +483,28 @@
 		</jar>
 
 		<!-- copy existing files into expected and versioned names -->
-	    <copy file="COPYING" tofile="${build.bundle.dir}/LICENSE.txt"
+	    <copy file="COPYING" tofile="${build.bundle.source.dir}/LICENSE.txt"
 		      overwrite="true" />
 		<copy file="${ant.project.name}.jar" 
-			  tofile="${build.bundle.dir}/${ant.project.name}-${version}.jar"
+			  tofile="${build.bundle.source.dir}/${ant.project.name}-${version}.jar"
 			  overwrite="true" />
 
 		<!-- Create the bundle for the cobertura lib -->
 
 	    <copy file="${basedir}/maven/ibiblio/cobertura.pom"
-		      tofile="${build.bundle.dir}/pom.xml"
+		      tofile="${build.bundle.source.dir}/pom.xml"
 			  overwrite="true">
 			<filterset>
 				<filter token="VERSION" value="${version}" />
 			</filterset>
 		</copy>
-
+		
+		<!--
+		This bundle jar is only used if the new release is manually uploaded to the
+		maven repository.
+		-->
 		<jar jarfile="${basedir}/${ant.project.name}-${version}-bundle.jar" compress="false">
-		    <fileset dir="${build.bundle.dir}">
+		    <fileset dir="${build.bundle.source.dir}">
 				<include name="LICENSE.txt" />
 				<include name="${ant.project.name}-${version}.jar" />
 				<include name="${ant.project.name}-${version}-javadoc.jar" />
@@ -509,19 +516,32 @@
 		<!-- Create the bundle for the cobertura-runtime -->
 
 	    <copy file="${basedir}/maven/ibiblio/cobertura-runtime.pom"
-		      tofile="${build.bundle.dir}/pom.xml"
+		      tofile="${build.bundle.runtime.dir}/pom.xml"
 			  overwrite="true">
 			<filterset>
 				<filter token="VERSION" value="${version}" />
 			</filterset>
 		</copy>
 
+	    <copy file="COPYING" tofile="${build.bundle.runtime.dir}/LICENSE.txt"
+		      overwrite="true" />
+
 		<jar jarfile="${basedir}/${ant.project.name}-runtime-${version}-bundle.jar" compress="false">
-		    <fileset dir="${build.bundle.dir}">
+		    <fileset dir="${build.bundle.runtime.dir}">
 				<include name="LICENSE.txt" />
 				<include name="pom.xml" />
 			</fileset>
 		</jar>
+		
+	</target>
+	
+	<target name="deploy-to-local-maven-repo-only" depends="cobertura-groovy-init">
+		<cobertura:groovy>
+			//load buildUtil definitions
+			evaluate(new File("buildUtil.groovy"))
+			
+			deployToLocalMavenRepo()
+		</cobertura:groovy>
 		
 	</target>
 
@@ -563,7 +583,7 @@
 	</target>
 
 	<target name="coverage" depends="compile,compile-tests,instrument,test,coverage-report,failure-check,cobertura-check" description="Compile, instrument ourself, run the tests and generate JUnit and coverage reports." />
-	<target name="release" depends="clean,compile,compile-tests,test,failure-check,jar,war,javadoc,dist" description="Full build cycle, producing a distribution." />
+	<target name="release" depends="clean,compile,compile-tests,test,failure-check,jar,war,javadoc,dist,create-bundles,deploy-to-local-maven-repo-only" description="Full build cycle, producing a distribution." />
 
 </project>
 <!--
