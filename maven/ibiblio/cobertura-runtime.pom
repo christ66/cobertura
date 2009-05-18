@@ -2,6 +2,7 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
 
+  <groupId>net.sourceforge.cobertura</groupId>
   <artifactId>cobertura-runtime</artifactId>
   <name>Cobertura :: Limited Runtime</name>
   <version>@VERSION@</version>
