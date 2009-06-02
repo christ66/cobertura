@@ -248,6 +248,13 @@ public class TestUtil {
 				}
 			}
 		}
+		ret.taskdef(name:'groovyc', classname:'org.codehaus.groovy.ant.Groovyc') {
+			classpath {
+				fileset(dir:'antLibrary/common/groovy') {
+					include(name:'*.groovy')
+				}
+			}
+		}
 		return ret
 	}
 }

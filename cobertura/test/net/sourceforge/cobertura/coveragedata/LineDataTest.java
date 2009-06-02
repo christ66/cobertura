@@ -22,6 +22,8 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import junit.framework.TestCase;
 
 public class LineDataTest extends TestCase
@@ -156,6 +158,162 @@ public class LineDataTest extends TestCase
 		for (int i = 0; i < 400; i++)
 			a.touch();
 		assertEquals(400, a.getHits());
+	}
+
+	private static void getSwitchDataIteratively(LineData data)
+	{
+		/*
+		 * When this test fails, it usually does so well before 2000 iterations.   If it
+		 * gets past 2000, it will usually pass, so there is not much need in going much
+		 * past 2000.
+		 */
+		for (int i=0; i<2000; i++)
+		{
+			/*
+			 * The following yield is needed to make sure the other thread gets
+			 * some CPU.  Otherwise, this thread will get too much of a jump ahead
+			 * of the other thread.
+			 */
+			Thread.yield(); 
+			
+			data.getSwitchData(i, new SwitchData(1));
+		}
+	}
+	
+	private void runGetSwitchDataTestWithTwoThreads() throws Throwable
+	{
+		final LineData data = new LineData(2);
+		final AtomicReference<Throwable> possibleThrowable = new AtomicReference<Throwable>();
+		
+		ThreadGroup threadGroup = new ThreadGroup("TestThreadGroup") {
+			public void uncaughtException(Thread thread, Throwable t)
+			{
+				/*
+				 * Save the Throwable for later use and interrupt this thread so it exits
+				 */
+				possibleThrowable.set(t);
+				thread.interrupt();
+			}
+		};
+		
+		/*
+		 * Create two threads using the above thread group
+		 */
+		Thread thread1 = new Thread(threadGroup, "1") {
+			public void run()
+			{
+				getSwitchDataIteratively(data);
+			}
+		};
+		Thread thread2 = new Thread(threadGroup, "2") {
+			public void run()
+			{
+				getSwitchDataIteratively(data);
+			}
+		};
+		thread1.start();
+		thread2.start();
+		/*
+		 * Wait for the threads to exit
+		 */
+		if (thread1.isAlive()) thread1.join();
+		if (thread2.isAlive()) thread2.join();
+		Throwable t = possibleThrowable.get();
+		if (t != null)
+		{
+			throw t;
+		}
+	}
+
+	public void testMultiThreadedGetSwitchData() throws Throwable
+	{
+		/*
+		 * This test will often pass with only one iteration.
+		 * It passes once in a while with 10.   It never passes
+		 * with 100 (I hope).
+		 */
+		for (int i=0; i<100; i++)
+		{
+			runGetSwitchDataTestWithTwoThreads();
+		}
+	}
+	
+	private static void getJumpDataIteratively(LineData data)
+	{
+		/*
+		 * When this test fails, it usually does so well before 2000 iterations.   If it
+		 * gets past 2000, it will usually pass, so there is not much need in going much
+		 * past 2000.
+		 */
+		for (int i=0; i<2000; i++)
+		{
+			/*
+			 * The following yield is needed to make sure the other thread gets
+			 * some CPU.  Otherwise, this thread will get too much of a jump ahead
+			 * of the other thread.
+			 */
+			Thread.yield(); 
+			
+			data.getJumpData(i);
+		}
+	}
+	
+	private void runGetJumpDataTestWithTwoThreads() throws Throwable
+	{
+		final LineData data = new LineData(2);
+		final AtomicReference<Throwable> possibleThrowable = new AtomicReference<Throwable>();
+		
+		ThreadGroup threadGroup = new ThreadGroup("TestThreadGroup") {
+			public void uncaughtException(Thread thread, Throwable t)
+			{
+				/*
+				 * Save the Throwable for later use and interrupt this thread so it exits
+				 */
+				possibleThrowable.set(t);
+				thread.interrupt();
+			}
+		};
+		
+		/*
+		 * Create two threads using the above thread group
+		 */
+		Thread thread1 = new Thread(threadGroup, "1") {
+			public void run()
+			{
+				getJumpDataIteratively(data);
+			}
+		};
+		Thread thread2 = new Thread(threadGroup, "2") {
+			public void run()
+			{
+				getJumpDataIteratively(data);
+			}
+		};
+		thread1.start();
+		thread2.start();
+		/*
+		 * Wait for the threads to exit
+		 */
+		if (thread1.isAlive()) thread1.join();
+		if (thread2.isAlive()) thread2.join();
+		Throwable t = possibleThrowable.get();
+		if (t != null)
+		{
+			throw t;
+		}
+	}
+
+	public void testMultiThreadedGetJumpData() throws Throwable
+	{
+		/*
+		 * This test will often pass with only one iteration.
+		 * It passes once in a while with 10.   It never passes
+		 * with 100 (I hope).
+		 */
+		for (int i=0; i<100; i++)
+		{
+			runGetJumpDataTestWithTwoThreads();
+		}
 	}
 
 }
