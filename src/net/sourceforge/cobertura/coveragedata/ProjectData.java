@@ -33,6 +33,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import net.sourceforge.cobertura.util.FileLocker;
 
@@ -42,54 +44,95 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	private static final long serialVersionUID = 6;
 
 	private static ProjectData globalProjectData = null;
+	private static final transient Lock globalProjectDataLock = new ReentrantLock();
 
 	private static SaveTimer saveTimer = null;
 
 	/** This collection is used for quicker access to the list of classes. */
-	private Map classes = Collections.synchronizedMap(new HashMap());
+	private Map classes = new HashMap();
 
 	public void addClassData(ClassData classData)
 	{
-		String packageName = classData.getPackageName();
-		PackageData packageData = (PackageData)children.get(packageName);
-		if (packageData == null)
+		lock.lock();
+		try
 		{
-			packageData = new PackageData(packageName);
-			// Each key is a package name, stored as an String object.
-			// Each value is information about the package, stored as a PackageData object.
-			this.children.put(packageName, packageData);
+			String packageName = classData.getPackageName();
+			PackageData packageData = (PackageData)children.get(packageName);
+			if (packageData == null)
+			{
+				packageData = new PackageData(packageName);
+				// Each key is a package name, stored as an String object.
+				// Each value is information about the package, stored as a PackageData object.
+				this.children.put(packageName, packageData);
+			}
+			packageData.addClassData(classData);
+			this.classes.put(classData.getName(), classData);
 		}
-		packageData.addClassData(classData);
-		this.classes.put(classData.getName(), classData);
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public ClassData getClassData(String name)
 	{
-		return (ClassData)this.classes.get(name);
+		lock.lock();
+		try
+		{
+			return (ClassData)this.classes.get(name);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
 	 * This is called by instrumented bytecode.
 	 */
-	public synchronized ClassData getOrCreateClassData(String name)
+	public ClassData getOrCreateClassData(String name)
 	{
-		ClassData classData = (ClassData)this.classes.get(name);
-		if (classData == null)
+		lock.lock();
+		try
 		{
-			classData = new ClassData(name);
-			addClassData(classData);
+			ClassData classData = (ClassData)this.classes.get(name);
+			if (classData == null)
+			{
+				classData = new ClassData(name);
+				addClassData(classData);
+			}
+			return classData;
 		}
-		return classData;
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public Collection getClasses()
 	{
-		return this.classes.values();
+		lock.lock();
+		try
+		{
+			return this.classes.values();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public int getNumberOfClasses()
 	{
-		return this.classes.size();
+		lock.lock();
+		try
+		{
+			return this.classes.size();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public int getNumberOfSourceFiles()
@@ -99,17 +142,33 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	public SortedSet getPackages()
 	{
-		return new TreeSet(this.children.values());
+		lock.lock();
+		try
+		{
+			return new TreeSet(this.children.values());
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public Collection getSourceFiles()
 	{
 		SortedSet sourceFileDatas = new TreeSet();
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			PackageData packageData = (PackageData)iter.next();
-			sourceFileDatas.addAll(packageData.getSourceFiles());
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				PackageData packageData = (PackageData)iter.next();
+				sourceFileDatas.addAll(packageData.getSourceFiles());
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		return sourceFileDatas;
 	}
@@ -127,28 +186,45 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	public SortedSet getSubPackages(String packageName)
 	{
 		SortedSet subPackages = new TreeSet();
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			PackageData packageData = (PackageData)iter.next();
-			if (packageData.getName().startsWith(packageName))
-				subPackages.add(packageData);
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				PackageData packageData = (PackageData)iter.next();
+				if (packageData.getName().startsWith(packageName))
+					subPackages.add(packageData);
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		return subPackages;
 	}
 
 	public void merge(CoverageData coverageData)
 	{
-		super.merge(coverageData);
-
 		ProjectData projectData = (ProjectData)coverageData;
-		for (Iterator iter = projectData.classes.keySet().iterator(); iter.hasNext();)
+		getBothLocks(projectData);
+		try
 		{
-			Object key = iter.next();
-			if (!this.classes.containsKey(key))
+			super.merge(coverageData);
+	
+			for (Iterator iter = projectData.classes.keySet().iterator(); iter.hasNext();)
 			{
-				this.classes.put(key, projectData.classes.get(key));
+				Object key = iter.next();
+				if (!this.classes.containsKey(key))
+				{
+					this.classes.put(key, projectData.classes.get(key));
+				}
 			}
+		}
+		finally
+		{
+			lock.unlock();
+			projectData.lock.unlock();
 		}
 	}
 
@@ -161,12 +237,20 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 	 */
 	public static ProjectData getGlobalProjectData()
 	{
-		if (globalProjectData != null)
+		globalProjectDataLock.lock();
+		try
+		{
+			if (globalProjectData != null)
+				return globalProjectData;
+	
+			globalProjectData = new ProjectData();
+			initialize();
 			return globalProjectData;
-
-		globalProjectData = new ProjectData();
-		initialize();
-		return globalProjectData;
+		}
+		finally
+		{
+			globalProjectDataLock.unlock();
+		}
 	}
 
 	// TODO: Is it possible to do this as a static initializer?
@@ -203,19 +287,29 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	public static void saveGlobalProjectData()
 	{
-		ProjectData projectDataToSave = globalProjectData;
-
-		/*
-		 * The next statement is not necessary at the moment, because this method is only called
-		 * either at the very beginning or at the very end of a test.  If the code is changed
-		 * to save more frequently, then this will become important.
-		 */
-		globalProjectData = new ProjectData();
+		ProjectData projectDataToSave = null;
+		
+		globalProjectDataLock.lock();
+		try
+		{
+			projectDataToSave = globalProjectData;
+	
+			/*
+			 * The next statement is not necessary at the moment, because this method is only called
+			 * either at the very beginning or at the very end of a test.  If the code is changed
+			 * to save more frequently, then this will become important.
+			 */
+			globalProjectData = new ProjectData();
+		}
+		finally
+		{
+			globalProjectDataLock.unlock();
+		}
 
 		/*
 		 * Now sleep a bit in case there is a thread still holding a reference to the "old"
 		 * globalProjectData (now referenced with projectDataToSave).  
-		 * We want it to finish its updates.  I assume 2 seconds is plenty of time.
+		 * We want it to finish its updates.  I assume 1 second is plenty of time.
 		 */
 		try
 		{

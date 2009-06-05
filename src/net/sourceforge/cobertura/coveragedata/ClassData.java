@@ -82,21 +82,29 @@ public class ClassData extends CoverageDataContainer
 	public LineData addLine(int lineNumber, String methodName,
 			String methodDescriptor)
 	{
-		LineData lineData = getLineData(lineNumber);
-		if (lineData == null)
+		lock.lock();
+		try
 		{
-			lineData = new LineData(lineNumber);
-			// Each key is a line number in this class, stored as an Integer object.
-			// Each value is information about the line, stored as a LineData object.
-			children.put(new Integer(lineNumber), lineData);
+			LineData lineData = getLineData(lineNumber);
+			if (lineData == null)
+			{
+				lineData = new LineData(lineNumber);
+				// Each key is a line number in this class, stored as an Integer object.
+				// Each value is information about the line, stored as a LineData object.
+				children.put(new Integer(lineNumber), lineData);
+			}
+			lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
+	      
+			// methodName and methodDescriptor can be null when cobertura.ser with 
+			// no line information was loaded (or was not loaded at all).
+			if( methodName!=null && methodDescriptor!=null)
+				methodNamesAndDescriptors.add(methodName + methodDescriptor);
+			return lineData;
 		}
-		lineData.setMethodNameAndDescriptor(methodName, methodDescriptor);
-      
-		// methodName and methodDescriptor can be null when cobertura.ser with 
-		// no line information was loaded (or was not loaded at all).
-		if( methodName!=null && methodDescriptor!=null)
-			methodNamesAndDescriptors.add(methodName + methodDescriptor);
-		return lineData;
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -111,7 +119,15 @@ public class ClassData extends CoverageDataContainer
 
 	public boolean containsInstrumentationInfo()
 	{
-		return this.containsInstrumentationInfo;
+		lock.lock();
+		try
+		{
+			return this.containsInstrumentationInfo;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -127,12 +143,21 @@ public class ClassData extends CoverageDataContainer
 			return false;
 
 		ClassData classData = (ClassData)obj;
-		return super.equals(obj)
-			&& this.branches.equals(classData.branches)
-			&& this.methodNamesAndDescriptors
-				.equals(classData.methodNamesAndDescriptors)
-			&& this.name.equals(classData.name)
-			&& this.sourceFileName.equals(classData.sourceFileName);
+		getBothLocks(classData);
+		try
+		{
+			return super.equals(obj)
+				&& this.branches.equals(classData.branches)
+				&& this.methodNamesAndDescriptors
+					.equals(classData.methodNamesAndDescriptors)
+				&& this.name.equals(classData.name)
+				&& this.sourceFileName.equals(classData.sourceFileName);
+		}
+		finally
+		{
+			lock.unlock();
+			classData.lock.unlock();
+		}
 	}
 
 	public String getBaseName()
@@ -153,21 +178,37 @@ public class ClassData extends CoverageDataContainer
 		int total = 0;
 		int covered = 0;
 
-		for (Iterator iter = branches.values().iterator(); iter.hasNext();) {
-			LineData next = (LineData) iter.next();
-			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor()))
-			{
-				total += next.getNumberOfValidBranches();
-				covered += next.getNumberOfCoveredBranches();
+		lock.lock();
+		try
+		{
+			for (Iterator iter = branches.values().iterator(); iter.hasNext();) {
+				LineData next = (LineData) iter.next();
+				if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor()))
+				{
+					total += next.getNumberOfValidBranches();
+					covered += next.getNumberOfCoveredBranches();
+				}
 			}
+			if (total == 0) return 1.0;
+			return (double) covered / total;
 		}
-		if (total == 0) return 1.0;
-		return (double) covered / total;
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public Collection getBranches() 
 	{
-		return Collections.unmodifiableCollection(branches.keySet());
+		lock.lock();
+		try
+		{
+			return Collections.unmodifiableCollection(branches.keySet());
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -177,12 +218,20 @@ public class ClassData extends CoverageDataContainer
 	public LineData getLineCoverage(int lineNumber) 
 	{
 		Integer lineObject = new Integer(lineNumber);
-		if (!children.containsKey(lineObject)) 
+		lock.lock();
+		try
 		{
-			return null;
+			if (!children.containsKey(lineObject)) 
+			{
+				return null;
+			}
+	
+			return (LineData) children.get(lineObject);
 		}
-
-		return (LineData) children.get(lineObject);
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -193,46 +242,78 @@ public class ClassData extends CoverageDataContainer
 		int total = 0;
 		int hits = 0;
 
-		Iterator iter = children.values().iterator();
-		while (iter.hasNext()) 
+		lock.lock();
+		try
 		{
-			LineData next = (LineData) iter.next();
-			if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor())) 
+			Iterator iter = children.values().iterator();
+			while (iter.hasNext()) 
 			{
-				total++;
-				if (next.getHits() > 0) {
-					hits++;
+				LineData next = (LineData) iter.next();
+				if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor())) 
+				{
+					total++;
+					if (next.getHits() > 0) {
+						hits++;
+					}
 				}
 			}
+			if (total == 0) return 1d;
+			return (double) hits / total;
 		}
-		if (total == 0) return 1d;
-		return (double) hits / total;
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	private LineData getLineData(int lineNumber)
 	{
-		return (LineData)children.get(new Integer(lineNumber));
+		lock.lock();
+		try
+		{
+			return (LineData)children.get(Integer.valueOf(lineNumber));
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public SortedSet getLines()
 	{
-		return new TreeSet(this.children.values());
+		lock.lock();
+		try
+		{
+			return new TreeSet(this.children.values());
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public Collection getLines(String methodNameAndDescriptor)
 	{
 		Collection lines = new HashSet();
-		Iterator iter = children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			LineData next = (LineData)iter.next();
-			if (methodNameAndDescriptor.equals(next.getMethodName()
-					+ next.getMethodDescriptor()))
+			Iterator iter = children.values().iterator();
+			while (iter.hasNext())
 			{
-				lines.add(next);
+				LineData next = (LineData)iter.next();
+				if (methodNameAndDescriptor.equals(next.getMethodName()
+						+ next.getMethodDescriptor()))
+				{
+					lines.add(next);
+				}
 			}
+			return lines;
 		}
-		return lines;
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -241,7 +322,15 @@ public class ClassData extends CoverageDataContainer
 	 */
 	public Set getMethodNamesAndDescriptors() 
 	{
-		return methodNamesAndDescriptors;
+		lock.lock();
+		try
+		{
+			return methodNamesAndDescriptors;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public String getName() 
@@ -255,11 +344,19 @@ public class ClassData extends CoverageDataContainer
 	public int getNumberOfValidBranches() 
 	{
 		int number = 0;
-		for (Iterator i = branches.values().iterator(); 
-			i.hasNext(); 
-			number += ((LineData) i.next()).getNumberOfValidBranches())
-			;
-		return number;
+		lock.lock();
+		try
+		{
+			for (Iterator i = branches.values().iterator(); 
+				i.hasNext(); 
+				number += ((LineData) i.next()).getNumberOfValidBranches())
+				;
+			return number;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -268,11 +365,19 @@ public class ClassData extends CoverageDataContainer
 	public int getNumberOfCoveredBranches() 
 	{
 		int number = 0;
-		for (Iterator i = branches.values().iterator(); 
-			i.hasNext(); 
-			number += ((LineData) i.next()).getNumberOfCoveredBranches())
-			;
-		return number;
+		lock.lock();
+		try
+		{
+			for (Iterator i = branches.values().iterator(); 
+				i.hasNext(); 
+				number += ((LineData) i.next()).getNumberOfCoveredBranches())
+				;
+			return number;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public String getPackageName()
@@ -297,23 +402,31 @@ public class ClassData extends CoverageDataContainer
 	public String getSourceFileName()
 	{
 		String baseName;
-		if (sourceFileName != null)
-			baseName = sourceFileName;
-		else
+		lock.lock();
+		try
 		{
-			baseName = getBaseName();
-			int firstDollarSign = baseName.indexOf('$');
-			if (firstDollarSign == -1 || firstDollarSign == 0)
-				baseName += ".java";
+			if (sourceFileName != null)
+				baseName = sourceFileName;
 			else
-				baseName = baseName.substring(0, firstDollarSign)
-					+ ".java";
+			{
+				baseName = getBaseName();
+				int firstDollarSign = baseName.indexOf('$');
+				if (firstDollarSign == -1 || firstDollarSign == 0)
+					baseName += ".java";
+				else
+					baseName = baseName.substring(0, firstDollarSign)
+						+ ".java";
+			}
+	
+			String packageName = getPackageName();
+			if (packageName.equals(""))
+				return baseName;
+			return packageName.replace('.', '/') + '/' + baseName;
 		}
-
-		String packageName = getPackageName();
-		if (packageName.equals(""))
-			return baseName;
-		return packageName.replace('.', '/') + '/' + baseName;
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public int hashCode()
@@ -326,7 +439,15 @@ public class ClassData extends CoverageDataContainer
 	 */
 	public boolean hasBranch(int lineNumber) 
 	{
-		return branches.containsKey(new Integer(lineNumber));
+		lock.lock();
+		try
+		{
+			return branches.containsKey(Integer.valueOf(lineNumber));
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -337,36 +458,68 @@ public class ClassData extends CoverageDataContainer
 	 */
 	public boolean isValidSourceLineNumber(int lineNumber) 
 	{
-		return children.containsKey(new Integer(lineNumber));
+		lock.lock();
+		try
+		{
+			return children.containsKey(Integer.valueOf(lineNumber));
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public void addLineJump(int lineNumber, int branchNumber) 
 	{
-		LineData lineData = getLineData(lineNumber);
-		if (lineData != null) 
+		lock.lock();
+		try
 		{
-			lineData.addJump(branchNumber);
-			this.branches.put(new Integer(lineNumber), lineData);
+			LineData lineData = getLineData(lineNumber);
+			if (lineData != null) 
+			{
+				lineData.addJump(branchNumber);
+				this.branches.put(Integer.valueOf(lineNumber), lineData);
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 	}
 
 	public void addLineSwitch(int lineNumber, int switchNumber, int[] keys) 
 	{
-		LineData lineData = getLineData(lineNumber);
-		if (lineData != null) 
+		lock.lock();
+		try
 		{
-			lineData.addSwitch(switchNumber, keys);
-			this.branches.put(new Integer(lineNumber), lineData);
+			LineData lineData = getLineData(lineNumber);
+			if (lineData != null) 
+			{
+				lineData.addSwitch(switchNumber, keys);
+				this.branches.put(Integer.valueOf(lineNumber), lineData);
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 	}
 
 	public void addLineSwitch(int lineNumber, int switchNumber, int min, int max) 
 	{
-		LineData lineData = getLineData(lineNumber);
-		if (lineData != null) 
+		lock.lock();
+		try
 		{
-			lineData.addSwitch(switchNumber, min, max);
-			this.branches.put(new Integer(lineNumber), lineData);
+			LineData lineData = getLineData(lineNumber);
+			if (lineData != null) 
+			{
+				lineData.addSwitch(switchNumber, min, max);
+				this.branches.put(Integer.valueOf(lineNumber), lineData);
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 	}
 
@@ -383,47 +536,80 @@ public class ClassData extends CoverageDataContainer
 		if (!this.getName().equals(classData.getName()))
 			return;
 
-		super.merge(coverageData);
-
-		// We can't just call this.branches.putAll(classData.branches);
-		// Why not?  If we did a putAll, then the LineData objects from
-		// the coverageData class would overwrite the LineData objects
-		// that are already in "this.branches"  And we don't need to
-		// update the LineData objects that are already in this.branches
-		// because they are shared between this.branches and this.children,
-		// so the object hit counts will be moved when we called
-		// super.merge() above.
-		for (Iterator iter = classData.branches.keySet().iterator(); iter.hasNext();)
+		getBothLocks(classData);
+		try
 		{
-			Object key = iter.next();
-			if (!this.branches.containsKey(key))
+			super.merge(coverageData);
+	
+			// We can't just call this.branches.putAll(classData.branches);
+			// Why not?  If we did a putAll, then the LineData objects from
+			// the coverageData class would overwrite the LineData objects
+			// that are already in "this.branches"  And we don't need to
+			// update the LineData objects that are already in this.branches
+			// because they are shared between this.branches and this.children,
+			// so the object hit counts will be moved when we called
+			// super.merge() above.
+			for (Iterator iter = classData.branches.keySet().iterator(); iter.hasNext();)
 			{
-				this.branches.put(key, classData.branches.get(key));
+				Object key = iter.next();
+				if (!this.branches.containsKey(key))
+				{
+					this.branches.put(key, classData.branches.get(key));
+				}
 			}
+	
+			this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
+			this.methodNamesAndDescriptors.addAll(classData
+					.getMethodNamesAndDescriptors());
+			if (classData.sourceFileName != null)
+				this.sourceFileName = classData.sourceFileName;
 		}
-
-		this.containsInstrumentationInfo |= classData.containsInstrumentationInfo;
-		this.methodNamesAndDescriptors.addAll(classData
-				.getMethodNamesAndDescriptors());
-		if (classData.sourceFileName != null)
-			this.sourceFileName = classData.sourceFileName;
+		finally
+		{
+			lock.unlock();
+			classData.lock.unlock();
 		}
+	}
 
 	public void removeLine(int lineNumber)
 	{
-		Integer lineObject = new Integer(lineNumber);
-		children.remove(lineObject);
-		branches.remove(lineObject);
+		Integer lineObject = Integer.valueOf(lineNumber);
+		lock.lock();
+		try
+		{
+			children.remove(lineObject);
+			branches.remove(lineObject);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public void setContainsInstrumentationInfo()
 	{
-		this.containsInstrumentationInfo = true;
+		lock.lock();
+		try
+		{
+			this.containsInstrumentationInfo = true;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public void setSourceFileName(String sourceFileName)
 	{
-		this.sourceFileName = sourceFileName;
+		lock.lock();
+		try
+		{
+			this.sourceFileName = sourceFileName;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -433,10 +619,18 @@ public class ClassData extends CoverageDataContainer
 	 */
 	public void touch(int lineNumber)
 	{
-		LineData lineData = getLineData(lineNumber);
-		if (lineData == null)
-			lineData = addLine(lineNumber, null, null);
-		lineData.touch();
+		lock.lock();
+		try
+		{
+			LineData lineData = getLineData(lineNumber);
+			if (lineData == null)
+				lineData = addLine(lineNumber, null, null);
+			lineData.touch();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -447,10 +641,18 @@ public class ClassData extends CoverageDataContainer
 	 * @param branch The hit counter (true or false)
 	 */
 	public void touchJump(int lineNumber, int branchNumber, boolean branch) {
-		LineData lineData = getLineData(lineNumber);
-		if (lineData == null)
-			lineData = addLine(lineNumber, null, null);
-		lineData.touchJump(branchNumber, branch);
+		lock.lock();
+		try
+		{
+			LineData lineData = getLineData(lineNumber);
+			if (lineData == null)
+				lineData = addLine(lineNumber, null, null);
+			lineData.touchJump(branchNumber, branch);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -461,10 +663,18 @@ public class ClassData extends CoverageDataContainer
 	 * @param branch The hit counter 
 	 */
 	public void touchSwitch(int lineNumber, int switchNumber, int branch) {
-		LineData lineData = getLineData(lineNumber);
-		if (lineData == null)
-			lineData = addLine(lineNumber, null, null);
-		lineData.touchSwitch(switchNumber, branch);
+		lock.lock();
+		try
+		{
+			LineData lineData = getLineData(lineNumber);
+			if (lineData == null)
+				lineData = addLine(lineNumber, null, null);
+			lineData.touchSwitch(switchNumber, branch);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 }

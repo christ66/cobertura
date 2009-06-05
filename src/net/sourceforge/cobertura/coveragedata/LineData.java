@@ -24,9 +24,13 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import net.sourceforge.cobertura.util.StringUtil;
 
@@ -42,6 +46,8 @@ public class LineData
 		implements Comparable, CoverageData, HasBeenInstrumented, Serializable
 {
 	private static final long serialVersionUID = 4;
+
+	private transient Lock lock;
 
 	private long hits;
 	private List jumps;
@@ -62,6 +68,12 @@ public class LineData
 		this.lineNumber = lineNumber;
 		this.methodName = methodName;
 		this.methodDescriptor = methodDescriptor;
+		initLock();
+	}
+	
+	private void initLock()
+	{
+		 lock = new ReentrantLock();
 	}
 
 	/**
@@ -82,19 +94,36 @@ public class LineData
 			return false;
 
 		LineData lineData = (LineData)obj;
-		return (this.hits == lineData.hits)
-				&& ((this.jumps == lineData.jumps) || ((this.jumps != null) && (this.jumps.equals(lineData.jumps))))
-				&& ((this.switches == lineData.switches) || ((this.switches != null) && (this.switches.equals(lineData.switches))))
-				&& (this.lineNumber == lineData.lineNumber)
-				&& (this.methodDescriptor.equals(lineData.methodDescriptor))
-				&& (this.methodName.equals(lineData.methodName));
+		getBothLocks(lineData);
+		try
+		{
+			return (this.hits == lineData.hits)
+					&& ((this.jumps == lineData.jumps) || ((this.jumps != null) && (this.jumps.equals(lineData.jumps))))
+					&& ((this.switches == lineData.switches) || ((this.switches != null) && (this.switches.equals(lineData.switches))))
+					&& (this.lineNumber == lineData.lineNumber)
+					&& (this.methodDescriptor.equals(lineData.methodDescriptor))
+					&& (this.methodName.equals(lineData.methodName));
+		}
+		finally
+		{
+			lock.unlock();
+			lineData.lock.unlock();
+		}
 	}
 
 	public double getBranchCoverageRate()
 	{
 		if (getNumberOfValidBranches() == 0)
 			return 1d;
-		return ((double) getNumberOfCoveredBranches()) / getNumberOfValidBranches();
+		lock.lock();
+		try
+		{
+			return ((double) getNumberOfCoveredBranches()) / getNumberOfValidBranches();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public String getConditionCoverage()
@@ -106,20 +135,44 @@ public class LineData
 		}
 		else
 		{
-			ret.append(StringUtil.getPercentValue(getBranchCoverageRate()));
-			ret.append(" (").append(getNumberOfCoveredBranches()).append("/").append(getNumberOfValidBranches()).append(")");
+			lock.lock();
+			try
+			{
+				ret.append(StringUtil.getPercentValue(getBranchCoverageRate()));
+				ret.append(" (").append(getNumberOfCoveredBranches()).append("/").append(getNumberOfValidBranches()).append(")");
+			}
+			finally
+			{
+				lock.unlock();
+			}
 		}
 		return ret.toString();
 	}
 	
 	public long getHits()
 	{
-		return hits;
+		lock.lock();
+		try
+		{
+			return hits;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public boolean isCovered()
 	{
-		return (getHits() > 0) && ((getNumberOfValidBranches() == 0) || ((1.0 - getBranchCoverageRate()) < 0.0001));
+		lock.lock();
+		try
+		{
+			return (getHits() > 0) && ((getNumberOfValidBranches() == 0) || ((1.0 - getBranchCoverageRate()) < 0.0001));
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 	
 	public double getLineCoverageRate()
@@ -134,12 +187,28 @@ public class LineData
 
 	public String getMethodDescriptor()
 	{
-		return methodDescriptor;
+		lock.lock();
+		try
+		{
+			return methodDescriptor;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public String getMethodName()
 	{
-		return methodName;
+		lock.lock();
+		try
+		{
+			return methodName;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -162,25 +231,41 @@ public class LineData
 	public int getNumberOfValidBranches()
 	{
 		int ret = 0;
-		if (jumps != null)
-			for (int i = jumps.size() - 1; i >= 0; i--)
-				ret += ((JumpData) jumps.get(i)).getNumberOfValidBranches();
-		if (switches != null)
-			for (int i = switches.size() - 1; i >= 0; i--)
-				ret += ((SwitchData) switches.get(i)).getNumberOfValidBranches();
-		return ret;
+		lock.lock();
+		try
+		{
+			if (jumps != null)
+				for (int i = jumps.size() - 1; i >= 0; i--)
+					ret += ((JumpData) jumps.get(i)).getNumberOfValidBranches();
+			if (switches != null)
+				for (int i = switches.size() - 1; i >= 0; i--)
+					ret += ((SwitchData) switches.get(i)).getNumberOfValidBranches();
+			return ret;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 	
 	public int getNumberOfCoveredBranches()
 	{
 		int ret = 0;
-		if (jumps != null)
-			for (int i = jumps.size() - 1; i >= 0; i--)
-				ret += ((JumpData) jumps.get(i)).getNumberOfCoveredBranches();
-		if (switches != null)
-			for (int i = switches.size() - 1; i >= 0; i--)
-				ret += ((SwitchData) switches.get(i)).getNumberOfCoveredBranches();
-		return ret;
+		lock.lock();
+		try
+		{
+			if (jumps != null)
+				for (int i = jumps.size() - 1; i >= 0; i--)
+					ret += ((JumpData) jumps.get(i)).getNumberOfCoveredBranches();
+			if (switches != null)
+				for (int i = switches.size() - 1; i >= 0; i--)
+					ret += ((SwitchData) switches.get(i)).getNumberOfCoveredBranches();
+			return ret;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public int getNumberOfValidLines()
@@ -195,37 +280,54 @@ public class LineData
 
 	public boolean hasBranch()
 	{
-		return (jumps != null) || (switches != null);
+		lock.lock();
+		try
+		{
+			return (jumps != null) || (switches != null);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public void merge(CoverageData coverageData)
 	{
 		LineData lineData = (LineData)coverageData;
-		this.hits += lineData.hits;
-		if (lineData.jumps != null)
-			if (this.jumps == null) 
-				this.jumps = lineData.jumps;
-			else
-			{
-				for (int i = Math.min(this.jumps.size(), lineData.jumps.size()) - 1; i >= 0; i--)
-					((JumpData) this.jumps.get(i)).merge((JumpData) lineData.jumps.get(i));
-				for (int i = Math.min(this.jumps.size(), lineData.jumps.size()); i < lineData.jumps.size(); i++) 
-					this.jumps.add(lineData.jumps.get(i));
-			}
-		if (lineData.switches != null)
-			if (this.switches == null) 
-				this.switches = lineData.switches;
-			else
-			{
-				for (int i = Math.min(this.switches.size(), lineData.switches.size()) - 1; i >= 0; i--)
-					((SwitchData) this.switches.get(i)).merge((SwitchData) lineData.switches.get(i));
-				for (int i = Math.min(this.switches.size(), lineData.switches.size()); i < lineData.switches.size(); i++) 
-					this.switches.add(lineData.switches.get(i));
-			}
-		if (lineData.methodName != null)
-			this.methodName = lineData.methodName;
-		if (lineData.methodDescriptor != null)
-			this.methodDescriptor = lineData.methodDescriptor;
+		getBothLocks(lineData);
+		try
+		{
+			this.hits += lineData.hits;
+			if (lineData.jumps != null)
+				if (this.jumps == null) 
+					this.jumps = lineData.jumps;
+				else
+				{
+					for (int i = Math.min(this.jumps.size(), lineData.jumps.size()) - 1; i >= 0; i--)
+						((JumpData) this.jumps.get(i)).merge((JumpData) lineData.jumps.get(i));
+					for (int i = Math.min(this.jumps.size(), lineData.jumps.size()); i < lineData.jumps.size(); i++) 
+						this.jumps.add(lineData.jumps.get(i));
+				}
+			if (lineData.switches != null)
+				if (this.switches == null) 
+					this.switches = lineData.switches;
+				else
+				{
+					for (int i = Math.min(this.switches.size(), lineData.switches.size()) - 1; i >= 0; i--)
+						((SwitchData) this.switches.get(i)).merge((SwitchData) lineData.switches.get(i));
+					for (int i = Math.min(this.switches.size(), lineData.switches.size()); i < lineData.switches.size(); i++) 
+						this.switches.add(lineData.switches.get(i));
+				}
+			if (lineData.methodName != null)
+				this.methodName = lineData.methodName;
+			if (lineData.methodDescriptor != null)
+				this.methodDescriptor = lineData.methodDescriptor;
+		}
+		finally
+		{
+			lock.unlock();
+			lineData.lock.unlock();
+		}
 	}
 
 	void addJump(int jumpNumber)
@@ -245,13 +347,29 @@ public class LineData
 
 	void setMethodNameAndDescriptor(String name, String descriptor)
 	{
-		this.methodName = name;
-		this.methodDescriptor = descriptor;
+		lock.lock();
+		try
+		{
+			this.methodName = name;
+			this.methodDescriptor = descriptor;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	void touch()
 	{
-		this.hits++;
+		lock.lock();
+		try
+		{
+			this.hits++;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 	
 	void touchJump(int jumpNumber, boolean branch) 
@@ -265,23 +383,39 @@ public class LineData
 	}
 	
 	public int getConditionSize() {
-		return ((jumps == null) ? 0 : jumps.size()) + ((switches == null) ? 0 :switches.size());
+		lock.lock();
+		try
+		{
+			return ((jumps == null) ? 0 : jumps.size()) + ((switches == null) ? 0 :switches.size());
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 	
 	public Object getConditionData(int index)
 	{
 		Object branchData = null;
-		int jumpsSize = (jumps == null) ? 0 : jumps.size();
-		int switchesSize = (switches == null) ? 0 :switches.size();
-		if (index < jumpsSize) 
+		lock.lock();
+		try
 		{
-			branchData = jumps.get(index);
+			int jumpsSize = (jumps == null) ? 0 : jumps.size();
+			int switchesSize = (switches == null) ? 0 :switches.size();
+			if (index < jumpsSize) 
+			{
+				branchData = jumps.get(index);
+			}
+			else if (index < jumpsSize + switchesSize)
+			{
+				branchData = switches.get(index - jumpsSize);
+			}
+			return branchData;
 		}
-		else if (index < jumpsSize + switchesSize)
+		finally
 		{
-			branchData = switches.get(index - jumpsSize);
+			lock.unlock();
 		}
-		return branchData;
 	}
 	
 	public String getConditionCoverage(int index) {
@@ -305,33 +439,90 @@ public class LineData
 	
 	JumpData getJumpData(int jumpNumber) 
 	{
-		if (jumps == null) 
+		lock.lock();
+		try
 		{
-			jumps = new ArrayList();
+			if (jumps == null) 
+			{
+				jumps = new ArrayList();
+			}
+			if (jumps.size() <= jumpNumber) 
+			{
+				for (int i = jumps.size(); i <= jumpNumber; jumps.add(new JumpData(i++)));
+			}
+			return (JumpData) jumps.get(jumpNumber);
 		}
-		if (jumps.size() <= jumpNumber) 
+		finally
 		{
-			for (int i = jumps.size(); i <= jumpNumber; jumps.add(new JumpData(i++)));
+			lock.unlock();
 		}
-		return (JumpData) jumps.get(jumpNumber);
 	}
 	
 	SwitchData getSwitchData(int switchNumber, SwitchData data) 
 	{
-		if (switches == null) 
+		lock.lock();
+		try
 		{
-			switches = new ArrayList();
+			if (switches == null) 
+			{
+				switches = new ArrayList();
+			}
+			if (switches.size() < switchNumber) 
+			{
+				for (int i = switches.size(); i < switchNumber; switches.add(new SwitchData(i++)));
+			}
+			if (switches.size() == switchNumber) 
+				if (data != null)
+					switches.add(data);
+				else
+					switches.add(new SwitchData(switchNumber));
+			return (SwitchData) switches.get(switchNumber);
 		}
-		if (switches.size() < switchNumber) 
+		finally
 		{
-			for (int i = switches.size(); i < switchNumber; switches.add(new SwitchData(i++)));
+			lock.unlock();
 		}
-		if (switches.size() == switchNumber) 
-			if (data != null)
-				switches.add(data);
-			else
-				switches.add(new SwitchData(switchNumber));
-		return (SwitchData) switches.get(switchNumber);
 	}
 
+	private void getBothLocks(LineData other) {
+		/*
+		 * To prevent deadlock, we need to get both locks or none at all.
+		 * 
+		 * When this method returns, the thread will have both locks.
+		 * Make sure you unlock them!
+		 */
+		boolean myLock = false;
+		boolean otherLock = false;
+		while ((!myLock) || (!otherLock))
+		{
+			try
+			{
+				myLock = lock.tryLock();
+				otherLock = other.lock.tryLock();
+			}
+			finally
+			{
+				if ((!myLock) || (!otherLock))
+				{
+					//could not obtain both locks - so unlock the one we got.
+					if (myLock)
+					{
+						lock.unlock();
+					}
+					if (otherLock)
+					{
+						other.lock.unlock();
+					}
+					//do a yield so the other threads will get to work.
+					Thread.yield();
+				}
+			}
+		}
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+	{
+		in.defaultReadObject();
+		initLock();
+	}
 }
