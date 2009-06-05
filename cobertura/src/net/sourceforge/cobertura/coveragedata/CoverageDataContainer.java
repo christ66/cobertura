@@ -24,11 +24,15 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Collections;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>
@@ -46,15 +50,27 @@ public abstract class CoverageDataContainer
 		implements CoverageData, HasBeenInstrumented, Serializable
 {
 
-   private static final long serialVersionUID = 2;
+	private static final long serialVersionUID = 2;
+
+	protected transient Lock lock;
 
 	/**
 	 * Each key is the name of a child, usually stored as a String or
 	 * an Integer object.  Each value is information about the child,
 	 * stored as an object that implements the CoverageData interface.
 	 */
-	Map children = Collections.synchronizedMap(new HashMap());
+	Map children = new HashMap();
 
+	public CoverageDataContainer()
+	{
+		initLock();
+	}
+	
+	private void initLock()
+	{
+		lock = new ReentrantLock();
+	}
+	
 	/**
 	 * Determine if this CoverageDataContainer is equal to
 	 * another one.  Subclasses should override this and
@@ -71,7 +87,15 @@ public abstract class CoverageDataContainer
 			return false;
 
 		CoverageDataContainer coverageDataContainer = (CoverageDataContainer)obj;
-		return this.children.equals(coverageDataContainer.children);
+		lock.lock();
+		try
+		{
+			return this.children.equals(coverageDataContainer.children);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -82,12 +106,20 @@ public abstract class CoverageDataContainer
 	{
 		int number = 0;
 		int numberCovered = 0;
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			CoverageData coverageContainer = (CoverageData)iter.next();
-			number += coverageContainer.getNumberOfValidBranches();
-			numberCovered += coverageContainer.getNumberOfCoveredBranches();
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				CoverageData coverageContainer = (CoverageData)iter.next();
+				number += coverageContainer.getNumberOfValidBranches();
+				numberCovered += coverageContainer.getNumberOfCoveredBranches();
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		if (number == 0)
 		{
@@ -106,7 +138,15 @@ public abstract class CoverageDataContainer
 	 */
 	public CoverageData getChild(String name)
 	{
-		return (CoverageData)this.children.get(name);
+		lock.lock();
+		try
+		{
+			return (CoverageData)this.children.get(name);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -118,12 +158,20 @@ public abstract class CoverageDataContainer
 	{
 		int number = 0;
 		int numberCovered = 0;
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			CoverageData coverageContainer = (CoverageData)iter.next();
-			number += coverageContainer.getNumberOfValidLines();
-			numberCovered += coverageContainer.getNumberOfCoveredLines();
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				CoverageData coverageContainer = (CoverageData)iter.next();
+				number += coverageContainer.getNumberOfValidLines();
+				numberCovered += coverageContainer.getNumberOfCoveredLines();
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		if (number == 0)
 		{
@@ -138,17 +186,33 @@ public abstract class CoverageDataContainer
 	 */
 	public int getNumberOfChildren()
 	{
-		return this.children.size();
+		lock.lock();
+		try
+		{
+			return this.children.size();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public int getNumberOfCoveredBranches()
 	{
 		int number = 0;
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			CoverageData coverageContainer = (CoverageData)iter.next();
-			number += coverageContainer.getNumberOfCoveredBranches();
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				CoverageData coverageContainer = (CoverageData)iter.next();
+				number += coverageContainer.getNumberOfCoveredBranches();
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		return number;
 	}
@@ -156,11 +220,19 @@ public abstract class CoverageDataContainer
 	public int getNumberOfCoveredLines()
 	{
 		int number = 0;
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			CoverageData coverageContainer = (CoverageData)iter.next();
-			number += coverageContainer.getNumberOfCoveredLines();
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				CoverageData coverageContainer = (CoverageData)iter.next();
+				number += coverageContainer.getNumberOfCoveredLines();
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		return number;
 	}
@@ -168,11 +240,19 @@ public abstract class CoverageDataContainer
 	public int getNumberOfValidBranches()
 	{
 		int number = 0;
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			CoverageData coverageContainer = (CoverageData)iter.next();
-			number += coverageContainer.getNumberOfValidBranches();
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				CoverageData coverageContainer = (CoverageData)iter.next();
+				number += coverageContainer.getNumberOfValidBranches();
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		return number;
 	}
@@ -180,11 +260,19 @@ public abstract class CoverageDataContainer
 	public int getNumberOfValidLines()
 	{
 		int number = 0;
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			CoverageData coverageContainer = (CoverageData)iter.next();
-			number += coverageContainer.getNumberOfValidLines();
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				CoverageData coverageContainer = (CoverageData)iter.next();
+				number += coverageContainer.getNumberOfValidLines();
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		return number;
 	}
@@ -196,7 +284,15 @@ public abstract class CoverageDataContainer
 	 */
 	public int hashCode()
 	{
-		return this.children.size();
+		lock.lock();
+		try
+		{
+			return this.children.size();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -207,24 +303,74 @@ public abstract class CoverageDataContainer
 	public void merge(CoverageData coverageData)
 	{
 		CoverageDataContainer container = (CoverageDataContainer)coverageData;
-		Iterator iter = container.children.keySet().iterator();
-		while (iter.hasNext())
+		getBothLocks(container);
+		try
 		{
-			Object key = iter.next();
-			CoverageData newChild = (CoverageData)container.children.get(key);
-			CoverageData existingChild = (CoverageData)this.children.get(key);
-			if (existingChild != null)
+			Iterator iter = container.children.keySet().iterator();
+			while (iter.hasNext())
 			{
-				existingChild.merge(newChild);
+				Object key = iter.next();
+				CoverageData newChild = (CoverageData)container.children.get(key);
+				CoverageData existingChild = (CoverageData)this.children.get(key);
+				if (existingChild != null)
+				{
+					existingChild.merge(newChild);
+				}
+				else
+				{
+					// TODO: Shouldn't we be cloning newChild here?  I think so that
+					//       would be better... but we would need to override the
+					//       clone() method all over the place?
+					this.children.put(key, newChild);
+				}
 			}
-			else
+		}
+		finally
+		{
+			lock.unlock();
+			container.lock.unlock();
+		}
+	}
+
+	protected void getBothLocks(CoverageDataContainer other) {
+		/*
+		 * To prevent deadlock, we need to get both locks or none at all.
+		 * 
+		 * When this method returns, the thread will have both locks.
+		 * Make sure you unlock them!
+		 */
+		boolean myLock = false;
+		boolean otherLock = false;
+		while ((!myLock) || (!otherLock))
+		{
+			try
 			{
-				// TODO: Shouldn't we be cloning newChild here?  I think so that
-				//       would be better... but we would need to override the
-				//       clone() method all over the place?
-				this.children.put(key, newChild);
+				myLock = lock.tryLock();
+				otherLock = other.lock.tryLock();
+			}
+			finally
+			{
+				if ((!myLock) || (!otherLock))
+				{
+					//could not obtain both locks - so unlock the one we got.
+					if (myLock)
+					{
+						lock.unlock();
+					}
+					if (otherLock)
+					{
+						other.lock.unlock();
+					}
+					//do a yield so the other threads will get to work.
+					Thread.yield();
+				}
 			}
 		}
 	}
 
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+	{
+		in.defaultReadObject();
+		initLock();
+	}
 }

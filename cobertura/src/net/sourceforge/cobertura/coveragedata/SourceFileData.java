@@ -49,16 +49,24 @@ public class SourceFileData extends CoverageDataContainer
 		this.name = name;
 	}
 
-	public synchronized void addClassData(ClassData classData)
+	public void addClassData(ClassData classData)
 	{
-		if (children.containsKey(classData.getBaseName()))
-			throw new IllegalArgumentException("Source file " + this.name
-					+ " already contains a class with the name "
-					+ classData.getBaseName());
-
-		// Each key is a class basename, stored as an String object.
-		// Each value is information about the class, stored as a ClassData object.
-		children.put(classData.getBaseName(), classData);
+		lock.lock();
+		try
+		{
+			if (children.containsKey(classData.getBaseName()))
+				throw new IllegalArgumentException("Source file " + this.name
+						+ " already contains a class with the name "
+						+ classData.getBaseName());
+	
+			// Each key is a class basename, stored as an String object.
+			// Each value is information about the class, stored as a ClassData object.
+			children.put(classData.getBaseName(), classData);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	/**
@@ -73,19 +81,35 @@ public class SourceFileData extends CoverageDataContainer
 
 	public boolean contains(String name)
 	{
-		return this.children.containsKey(name);
+		lock.lock();
+		try
+		{
+			return this.children.containsKey(name);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public boolean containsInstrumentationInfo()
 	{
-		// Return false if any of our child ClassData's does not
-		// contain instrumentation info
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			ClassData classData = (ClassData)iter.next();
-			if (!classData.containsInstrumentationInfo())
-				return false;
+			// Return false if any of our child ClassData's does not
+			// contain instrumentation info
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				ClassData classData = (ClassData)iter.next();
+				if (!classData.containsInstrumentationInfo())
+					return false;
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		return true;
 	}
@@ -103,8 +127,17 @@ public class SourceFileData extends CoverageDataContainer
 			return false;
 
 		SourceFileData sourceFileData = (SourceFileData)obj;
-		return super.equals(obj)
-				&& this.name.equals(sourceFileData.name);
+		getBothLocks(sourceFileData);
+		try
+		{
+			return super.equals(obj)
+					&& this.name.equals(sourceFileData.name);
+		}
+		finally
+		{
+			lock.unlock();
+			sourceFileData.lock.unlock();
+		}
 	}
 
 	public String getBaseName()
@@ -130,17 +163,33 @@ public class SourceFileData extends CoverageDataContainer
 
 	public SortedSet getClasses()
 	{
-		return new TreeSet(this.children.values());
+		lock.lock();
+		try
+		{
+			return new TreeSet(this.children.values());
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public LineData getLineCoverage(int lineNumber)
 	{
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			ClassData classData = (ClassData)iter.next();
-			if (classData.isValidSourceLineNumber(lineNumber))
-				return classData.getLineCoverage(lineNumber);
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				ClassData classData = (ClassData)iter.next();
+				if (classData.isValidSourceLineNumber(lineNumber))
+					return classData.getLineCoverage(lineNumber);
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		return null;
 	}
@@ -193,12 +242,20 @@ public class SourceFileData extends CoverageDataContainer
 
 	public boolean isValidSourceLineNumber(int lineNumber)
 	{
-		Iterator iter = this.children.values().iterator();
-		while (iter.hasNext())
+		lock.lock();
+		try
 		{
-			ClassData classData = (ClassData)iter.next();
-			if (classData.isValidSourceLineNumber(lineNumber))
-				return true;
+			Iterator iter = this.children.values().iterator();
+			while (iter.hasNext())
+			{
+				ClassData classData = (ClassData)iter.next();
+				if (classData.isValidSourceLineNumber(lineNumber))
+					return true;
+			}
+		}
+		finally
+		{
+			lock.unlock();
 		}
 		return false;
 	}

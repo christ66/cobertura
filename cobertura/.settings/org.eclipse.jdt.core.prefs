@@ -1,5 +1,6 @@
-#Tue Dec 23 15:43:59 EST 2008
+#Mon Jan 05 17:35:39 EST 2009
 eclipse.preferences.version=1
+org.eclipse.jdt.core.builder.resourceCopyExclusionFilter=*.launch,*.testsuite,*.deploy,*.location,*.execution,*.datapool,*.artifact,*.html,*.svg,*.groovy
 org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.5
 org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve

@@ -21,7 +21,11 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * <p>
@@ -35,6 +39,8 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 {
 	private static final long serialVersionUID = 8;
 
+	protected transient Lock lock;
+
 	private int conditionNumber;
 
 	private long trueHits;
@@ -47,6 +53,12 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 		this.conditionNumber = conditionNumber;
 		this.trueHits = 0L;
 		this.falseHits = 0L;
+		initLock();
+	}
+	
+	private void initLock()
+	{
+		lock = new ReentrantLock();
 	}
 
 	public int compareTo(Object o)
@@ -58,13 +70,21 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 
 	void touchBranch(boolean branch)
 	{
-		if (branch)
+		lock.lock();
+		try
 		{
-			this.trueHits++;
+			if (branch)
+			{
+				this.trueHits++;
+			}
+			else
+			{
+				this.falseHits++;
+			}
 		}
-		else
+		finally
 		{
-			this.falseHits++;
+			lock.unlock();
 		}
 	}
 
@@ -75,17 +95,41 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 
 	public long getTrueHits()
 	{
-		return this.trueHits;
+		lock.lock();
+		try
+		{
+			return this.trueHits;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public long getFalseHits()
 	{
-		return this.falseHits;
+		lock.lock();
+		try
+		{
+			return this.falseHits;
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public double getBranchCoverageRate()
 	{
-		return ((double) getNumberOfCoveredBranches()) / getNumberOfValidBranches();
+		lock.lock();
+		try
+		{
+			return ((double) getNumberOfCoveredBranches()) / getNumberOfValidBranches();
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public boolean equals(Object obj)
@@ -96,9 +140,18 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 			return false;
 
 		JumpData branchData = (JumpData) obj;
-		return (this.trueHits == branchData.trueHits)
-				&& (this.falseHits == branchData.falseHits)
-				&& (this.conditionNumber == branchData.conditionNumber);
+		getBothLocks(branchData);
+		try
+		{
+			return (this.trueHits == branchData.trueHits)
+					&& (this.falseHits == branchData.falseHits)
+					&& (this.conditionNumber == branchData.conditionNumber);
+		}
+		finally
+		{
+			lock.unlock();
+			branchData.lock.unlock();
+		}
 	}
 
 	public int hashCode()
@@ -108,7 +161,15 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 
 	public int getNumberOfCoveredBranches()
 	{
-		return ((trueHits > 0) ? 1 : 0) + ((falseHits > 0) ? 1: 0);
+		lock.lock();
+		try
+		{
+			return ((trueHits > 0) ? 1 : 0) + ((falseHits > 0) ? 1: 0);
+		}
+		finally
+		{
+			lock.unlock();
+		}
 	}
 
 	public int getNumberOfValidBranches()
@@ -119,8 +180,59 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 	public void merge(BranchCoverageData coverageData)
 	{
 		JumpData jumpData = (JumpData) coverageData;
-		this.trueHits += jumpData.trueHits;
-		this.falseHits += jumpData.falseHits;
+		getBothLocks(jumpData);
+		try
+		{
+			this.trueHits += jumpData.trueHits;
+			this.falseHits += jumpData.falseHits;
+		}
+		finally
+		{
+			lock.unlock();
+			jumpData.lock.unlock();
+		}
+	}
+
+	private void getBothLocks(JumpData other) {
+		/*
+		 * To prevent deadlock, we need to get both locks or none at all.
+		 * 
+		 * When this method returns, the thread will have both locks.
+		 * Make sure you unlock them!
+		 */
+		boolean myLock = false;
+		boolean otherLock = false;
+		while ((!myLock) || (!otherLock))
+		{
+			try
+			{
+				myLock = lock.tryLock();
+				otherLock = other.lock.tryLock();
+			}
+			finally
+			{
+				if ((!myLock) || (!otherLock))
+				{
+					//could not obtain both locks - so unlock the one we got.
+					if (myLock)
+					{
+						lock.unlock();
+					}
+					if (otherLock)
+					{
+						other.lock.unlock();
+					}
+					//do a yield so the other threads will get to work.
+					Thread.yield();
+				}
+			}
+		}
+	}
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+	{
+		in.defaultReadObject();
+		initLock();
 	}
 
 }
