@@ -6,6 +6,7 @@
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2005 Björn Beskow
  * Copyright (C) 2006 John Lewis
+ * Copyright (C) 2009 Chris van Es
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -322,25 +323,33 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		// Get a file lock
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 		FileLocker fileLocker = new FileLocker(dataFile);
-
-		// Read the old data, merge our current data into it, then
-		// write a new ser file.
-		if (fileLocker.lock())
+		
+		try
 		{
-			ProjectData datafileProjectData = loadCoverageDataFromDatafile(dataFile);
-			if (datafileProjectData == null)
+			// Read the old data, merge our current data into it, then
+			// write a new ser file.
+			if (fileLocker.lock())
 			{
-				datafileProjectData = projectDataToSave;
+				ProjectData datafileProjectData = loadCoverageDataFromDatafile(dataFile);
+				if (datafileProjectData == null)
+				{
+					datafileProjectData = projectDataToSave;
+				}
+				else
+				{
+					datafileProjectData.merge(projectDataToSave);
+				}
+				CoverageDataFileHandler.saveCoverageData(datafileProjectData, dataFile);
 			}
-			else
-			{
-				datafileProjectData.merge(projectDataToSave);
-			}
-			CoverageDataFileHandler.saveCoverageData(datafileProjectData, dataFile);
 		}
-
-		// Release the file lock
-		fileLocker.release();
+		finally
+		{
+			// Release the file lock
+			fileLocker.release();
+			
+			// delete the lock file
+			fileLocker.delete();
+		}
 	}
 
 	private static ProjectData loadCoverageDataFromDatafile(File dataFile)
