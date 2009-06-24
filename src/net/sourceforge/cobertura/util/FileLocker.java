@@ -2,6 +2,7 @@
  *
  * Copyright (C) 2006 John Lewis
  * Copyright (C) 2006 Mark Doliner
+ * Copyright (C) 2009 Chris van Es
  *
  * Note: This file is dual licensed under the GPL and the Apache
  * Source License 1.1 (so that it can be used from both the main
@@ -77,9 +78,13 @@ public class FileLocker
 		{
 			lockFile = new File(parent, lockFileName);
 		}
-		lockFile.deleteOnExit();
 	}
 
+	public void delete()
+	{
+		lockFile.delete();
+	}
+	
 	/**
 	 * Obtains a lock on the file.  This blocks until the lock is obtained.
 	 */
