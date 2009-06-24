@@ -376,6 +376,7 @@
 
 		<copy todir="${build.dist.dir}/package-src/cobertura-${version}">
 			<fileset dir="${basedir}">
+				<include name="antLibrary/**" />
 				<include name="ChangeLog" />
 				<include name="cobertura-*.bat" />
 				<include name="COPYING" />
