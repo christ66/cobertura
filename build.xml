@@ -340,11 +340,12 @@
 			tree.  The "binary" jar contains the minimum files needed to
 			use Cobertura.
 		-->
+		<copy-unix-scripts todir="${build.dist.dir}/package-bin/cobertura-${version}" />
+				
 		<copy todir="${build.dist.dir}/package-bin/cobertura-${version}">
 			<fileset dir="${basedir}">
 				<include name="ChangeLog" />
 				<include name="cobertura-*.bat" />
-				<include name="cobertura-*.sh" />
 				<include name="COPYING" />
 				<include name="COPYRIGHT" />
 				<include name="README" />
@@ -371,11 +372,12 @@
 			tree.  The "source" jar contains everything needed to build
 			Cobertura.
 		-->
+		<copy-unix-scripts todir="${build.dist.dir}/package-src/cobertura-${version}" />
+
 		<copy todir="${build.dist.dir}/package-src/cobertura-${version}">
 			<fileset dir="${basedir}">
 				<include name="ChangeLog" />
 				<include name="cobertura-*.bat" />
-				<include name="cobertura-*.sh" />
 				<include name="COPYING" />
 				<include name="COPYRIGHT" />
 				<include name="README" />
@@ -396,19 +398,19 @@
 		</copy>
 
 		<!-- Create bz2 files -->
-		<tar basedir="${build.dist.dir}/package-bin" destfile="${ant.project.name}-${version}-bin.tar.bz2" compression="bzip2"/>
-		<tar basedir="${build.dist.dir}/package-src" destfile="${ant.project.name}-${version}-src.tar.bz2" compression="bzip2"/>
+		<create-tar basedir="${build.dist.dir}/package-bin" destfile="${ant.project.name}-${version}-bin.tar.bz2" compression="bzip2"/>
+		<create-tar basedir="${build.dist.dir}/package-src" destfile="${ant.project.name}-${version}-src.tar.bz2" compression="bzip2"/>
 
 		<!-- Create gz files -->
-		<tar basedir="${build.dist.dir}/package-bin" destfile="${ant.project.name}-${version}-bin.tar.gz" compression="gzip"/>
-		<tar basedir="${build.dist.dir}/package-src" destfile="${ant.project.name}-${version}-src.tar.gz" compression="gzip"/>
+		<create-tar basedir="${build.dist.dir}/package-bin" destfile="${ant.project.name}-${version}-bin.tar.gz" compression="gzip"/>
+		<create-tar basedir="${build.dist.dir}/package-src" destfile="${ant.project.name}-${version}-src.tar.gz" compression="gzip"/>
 
 		<!-- Create zip files -->
-		<zip basedir="${build.dist.dir}/package-bin" destfile="${ant.project.name}-${version}-bin.zip" encoding="UTF-8"/>
-		<zip basedir="${build.dist.dir}/package-src" destfile="${ant.project.name}-${version}-src.zip" encoding="UTF-8"/>
+		<create-zip basedir="${build.dist.dir}/package-bin" destfile="${ant.project.name}-${version}-bin.zip"/>
+		<create-zip basedir="${build.dist.dir}/package-src" destfile="${ant.project.name}-${version}-src.zip"/>
 
 		<!-- Make an Eclipse plugin zip -->
-		<zip destfile="${ant.project.name}-${version}-eclipse-plugin.zip" encoding="UTF-8">
+		<!--<zip destfile="${ant.project.name}-${version}-eclipse-plugin.zip" encoding="UTF-8">
 			<zipfileset prefix="com.${ant.project.name}_${version}" dir="${basedir}">
 				<include name="ChangeLog" />
 				<include name="COPYING" />
@@ -430,8 +432,54 @@
 				<include name="plugin.xml" />
 			</zipfileset>
 		</zip>
-
+		-->
 	</target>
+	
+	<macrodef name="copy-unix-scripts">
+		<attribute name="todir" />
+		<sequential>
+			<copy todir="@{todir}">
+				<fileset dir="${basedir}">
+					<include name="cobertura-*.sh" />
+				</fileset>
+				<!-- remove windows carriage returns from unix scripts -->
+				<filterchain>
+					<fixcrlf eof="remove" eol="unix"/>
+				</filterchain>
+			</copy>
+		</sequential>
+	</macrodef>
+	
+	<macrodef name="create-zip">
+		<attribute name="basedir" />
+		<attribute name="destfile" />
+		<sequential>
+			<zip destfile="@{destfile}" encoding="UTF-8">
+				<zipfileset dir="@{basedir}" filemode="755">
+					<include name="*.sh"/>
+				</zipfileset>
+				<zipfileset dir="@{basedir}">
+					<exclude name="*.sh"/>
+				</zipfileset>
+			</zip>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="create-tar">
+		<attribute name="basedir" />
+		<attribute name="destfile" />
+		<attribute name="compression" />
+		<sequential>
+			<tar destfile="@{destfile}" compression="@{compression}">
+				<tarfileset dir="@{basedir}" mode="755">
+					<include name="*.sh"/>
+				</tarfileset>
+				<tarfileset dir="@{basedir}">
+					<exclude name="*.sh"/>
+				</tarfileset>
+			</tar>
+		</sequential>
+	</macrodef>
 
 	<target name="create-bundles" depends="jar,javadoc">
 	    <mkdir dir="${build.bundle.dir}" />
