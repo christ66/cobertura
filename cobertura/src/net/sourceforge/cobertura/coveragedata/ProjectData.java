@@ -344,9 +344,6 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		}
 		finally
 		{
-			// delete the lock file
-			fileLocker.delete();
-
 			// Release the file lock
 			fileLocker.release();
 		}
