@@ -80,11 +80,6 @@ public class FileLocker
 		}
 	}
 
-	public void delete()
-	{
-		lockFile.delete();
-	}
-	
 	/**
 	 * Obtains a lock on the file.  This blocks until the lock is obtained.
 	 */
@@ -162,9 +157,13 @@ public class FileLocker
 	{
 		if (lock != null)
 			lock = releaseFileLock(lock);
+		
 		if (lockChannel != null)
 			lockChannel = closeChannel(lockChannel);
-		lockFile.delete();
+		if (!lockFile.delete())
+		{
+			System.err.println("lock file could not be deleted");
+		}
 	}
 
 	private static Object releaseFileLock(Object lock)
