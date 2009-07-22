@@ -208,6 +208,9 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	public void merge(CoverageData coverageData)
 	{
+		if (coverageData == null) {
+			return;
+		}
 		ProjectData projectData = (ProjectData)coverageData;
 		getBothLocks(projectData);
 		try

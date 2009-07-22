@@ -56,6 +56,9 @@ public class MergeTest extends TestCase {
 		redProject.addClassData( sixthClass);
 		redProject.addClassData( seventhClass);
 		
+		//merge with null - should not change the greenProject
+		greenProject.merge(null);
+		
 		greenProject.merge( redProject);
 		
 		Iterator subpackages = greenProject.getSubPackages( "").iterator();

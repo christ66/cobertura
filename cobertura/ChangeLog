@@ -1,6 +1,9 @@
 version 1.9.2.1:
 	* Support the case where multiple classloaders each load the Cobertura 
 	  classes.  (Ed Randall)
+	* Fixed bug added with 1.9.2 where a NullPointerException is thrown
+	  if ProjectData.saveGlobalProjectData() is called before any instrumented
+	  code is executed.
 
 version 1.9.2:
 	* Cobertura is now thread safe.
