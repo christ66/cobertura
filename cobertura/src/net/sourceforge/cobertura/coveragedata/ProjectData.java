@@ -7,6 +7,7 @@
  * Copyright (C) 2005 Björn Beskow
  * Copyright (C) 2006 John Lewis
  * Copyright (C) 2009 Chris van Es
+ * Copyright (C) 2009 Ed Randall
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -322,30 +323,51 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 		// Get a file lock
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
-		FileLocker fileLocker = new FileLocker(dataFile);
 		
-		try
-		{
-			// Read the old data, merge our current data into it, then
-			// write a new ser file.
-			if (fileLocker.lock())
+		/*
+		 * A note about the next synchronized block:  Cobertura uses static fields to
+		 * hold the data.   When there are multiple classloaders, each classloader
+		 * will keep track of the line counts for the classes that it loads.  
+		 * 
+		 * The static initializers for the Cobertura classes are also called for
+		 * each classloader.   So, there is one shutdown hook for each classloader.
+		 * So, when the JVM exits, each shutdown hook will try to write the
+		 * data it has kept to the datafile.   They will do this at the same
+		 * time.   Before Java 6, this seemed to work fine, but with Java 6, there
+		 * seems to have been a change with how file locks are implemented.   So,
+		 * care has to be taken to make sure only one thread locks a file at a time.
+		 * 
+		 * So, we will synchronize on the string that represents the path to the
+		 * dataFile.  Apparently, there will be only one of these in the JVM
+		 * even if there are multiple classloaders.  I assume that is because
+		 * the String class is loaded by the JVM's root classloader. 
+		 */
+		synchronized (dataFile.getPath().intern() ) {
+			FileLocker fileLocker = new FileLocker(dataFile);
+			
+			try
 			{
-				ProjectData datafileProjectData = loadCoverageDataFromDatafile(dataFile);
-				if (datafileProjectData == null)
+				// Read the old data, merge our current data into it, then
+				// write a new ser file.
+				if (fileLocker.lock())
 				{
-					datafileProjectData = projectDataToSave;
+					ProjectData datafileProjectData = loadCoverageDataFromDatafile(dataFile);
+					if (datafileProjectData == null)
+					{
+						datafileProjectData = projectDataToSave;
+					}
+					else
+					{
+						datafileProjectData.merge(projectDataToSave);
+					}
+					CoverageDataFileHandler.saveCoverageData(datafileProjectData, dataFile);
 				}
-				else
-				{
-					datafileProjectData.merge(projectDataToSave);
-				}
-				CoverageDataFileHandler.saveCoverageData(datafileProjectData, dataFile);
 			}
-		}
-		finally
-		{
-			// Release the file lock
-			fileLocker.release();
+			finally
+			{
+				// Release the file lock
+				fileLocker.release();
+			}
 		}
 	}
 

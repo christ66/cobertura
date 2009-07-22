@@ -237,6 +237,24 @@ public class TestUtil {
 		return hitCount.toInteger()
 	}
 	
+	public static getLineCounts(dom, className, methodName)
+	{
+		def classes = dom.packages.'package'.classes.'class'
+		def clazz = classes.grep { it.'@name' == className }[0]
+		if (clazz == null)
+		{
+			return 0
+		}
+		def methods = clazz.methods.method
+		def method = methods.grep { it.'@name' == methodName }[0]
+		if (method == null)
+		{
+			return 0
+		}
+		def lines = method.lines.line.collect {[number:it.'@number', hits:it.'@hits'.toInteger()]}
+		return lines
+	}
+	
 	public static getCoberturaAntBuilder(cobertura)
 	{
 		def ret = new AntBuilder()
