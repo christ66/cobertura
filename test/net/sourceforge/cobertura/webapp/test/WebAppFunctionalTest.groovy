@@ -226,4 +226,58 @@ public class WebAppFunctionalTest {
 		}
 	}
 
+	@Test
+	void flushCoberturaDataOnly() {
+		/*
+		 * Test case where a flush is done before any instrumented code is executed.
+		 */
+		TestUtil.withTempDir { tempDir ->
+			def webappServerDir = new File(tempDir, "webserver")
+			def srcDir = new File(tempDir, "src")
+			
+			WebappServer.writeSimpleServletSource(srcDir)
+			
+			def appName = "simple"
+
+			def webappServer = new WebappServer(dir:webappServerDir)
+
+			webappServer.deployApp(
+					webInfText:WebappServer.SIMPLE_SERVLET_WEB_XML_TEXT,
+					srcDir:srcDir,
+					appName:appName,
+					deployCoberturaFlush:true,
+					instrumentRegEx:'com.acme.*')
+				
+	
+			def data = webappServer.withRunningServer { data ->
+			
+				//Do a coverage report of the main cobertura.ser file at the root of the project
+				data.coberturaAnt.'cobertura-report'(datafile:data.datafile, format:'xml', destdir:data.xmlReport.getParent())
+				def dom = TestUtil.getXMLReportDOM(data.xmlReport)
+				
+				def hitCountBefore = TestUtil.getHitCount(dom, WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet")
+				assertEquals(0, hitCountBefore)
+				
+				//flush the cobertura data by doing an HTTP get
+				data.flushCobertura()
+				
+				//run the report again
+				data.coberturaAnt.'cobertura-report'(datafile:data.datafile, format:'xml', destdir:data.xmlReport.getParent())
+				dom = TestUtil.getXMLReportDOM(data.xmlReport)
+
+				def hitCountAfter = TestUtil.getHitCount(dom, WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet")
+				
+				assertEquals(0, hitCountAfter)
+			}
+			
+			//run the report again
+			data.coberturaAnt.'cobertura-report'(datafile:data.datafile, format:'xml', destdir:data.xmlReport.getParent())
+			def dom = TestUtil.getXMLReportDOM(data.xmlReport)
+
+			def finalCount = TestUtil.getHitCount(dom, WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet")
+			
+			assertEquals(0, finalCount)
+			
+		}
+	}
 }
