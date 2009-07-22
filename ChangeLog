@@ -1,3 +1,7 @@
+version 1.9.2.1:
+	* Support the case where multiple classloaders each load the Cobertura 
+	  classes.  (Ed Randall)
+
 version 1.9.2:
 	* Cobertura is now thread safe.
 	* Fix for FileLocker exception when writing coverage data 
