@@ -98,6 +98,10 @@ public class ComplexityCalculator {
 		{
 			return ZERO_COMPLEXITY;
 		}
+		if (!sourceFileName.endsWith(".java"))
+		{
+			return ZERO_COMPLEXITY;
+		}
 		Javancss javancss = new Javancss(source.getInputStream());
 
 		if (javancss.getLastErrorMessage() != null)
