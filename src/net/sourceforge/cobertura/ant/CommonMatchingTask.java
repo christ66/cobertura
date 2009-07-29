@@ -92,6 +92,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 
 	private Java java = null;
 	private String maxMemory = null;
+	private int forkedJVMDebugPort;
 
 	public CommonMatchingTask(String className)
 	{
@@ -114,6 +115,11 @@ public abstract class CommonMatchingTask extends MatchingTask
 			java.setDir(getProject().getBaseDir());
 			if (maxMemory != null)
 				java.setJvmargs("-Xmx" + maxMemory);
+			if (forkedJVMDebugPort > 0)
+			{
+				java.setJvmargs("-Xdebug");
+				java.setJvmargs("-Xrunjdwp:transport=dt_socket,address=" + forkedJVMDebugPort + ",server=y,suspend=y");
+			}
 
 			/**
 			 * We replace %20 with a space character because, for some
@@ -244,4 +250,19 @@ public abstract class CommonMatchingTask extends MatchingTask
 	{
 		this.maxMemory = maxMemory != null ? maxMemory.trim() : null;
 	}
+	
+	/**
+	 * Used to debug the process that is forked to perform the operation.
+	 * Setting this to a non-zero number will cause the process to open
+	 * a debug port on that port number.   It will suspend until a 
+	 * remote debugger is attached to the port.
+	 * 
+	 * @param forkedJVMDebugPort
+	 */
+	public void setForkedJVMDebugPort(int forkedJVMDebugPort)
+	{
+		this.forkedJVMDebugPort = forkedJVMDebugPort;
+	}
+
+
 }
