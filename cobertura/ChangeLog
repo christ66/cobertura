@@ -1,4 +1,6 @@
 version 1.9.2.1:
+	* Non-Java source files (like Groovy) no longer show the JavaNCSS warnings
+	  during cobertura-report.  Fix of bug #2819844.
 	* Support the case where multiple classloaders each load the Cobertura 
 	  classes.  (Ed Randall)
 	* Fixed bug added with 1.9.2 where a NullPointerException is thrown
