@@ -7,7 +7,7 @@
 
 <project name="javancss" default="javac" basedir=".">
 
-   <property name="DESTINATION" value="classes"/>
+   <property name="DESTINATION" value="target/classes"/>
    <property name="CLASSPATH"   value="${DESTINATION}:lib/ccl.jar:lib/jhbasic.jar:lib/javancss.jar"/>
    <!-- overwrite with e.g. ant -DJAVACC_HOME=/sbcimp/run/tp/sun/JavaCC/2.0/ javacc -->
    <property name="JAVACC_HOME" value="/usr/local/java/javacc"/>
@@ -19,6 +19,7 @@
       <javac srcdir     ="src"
              destdir    ="${DESTINATION}"
              classpath  ="${CLASSPATH}"
+      	     encoding   ="ISO-8859-1"
              debug      ="on"
              deprecation="on"
              optimize   ="off"
@@ -31,13 +32,14 @@
 
    <target name="javacc">
       <mkdir  dir="${DESTINATION}"/>
+      <mkdir  dir="${user.dir}/src/main/java/javancss/parser"/>
       <java classname="javacc"
             fork     ="yes"
-            dir      ="${user.dir}/src/main/java/javancss">
+            dir      ="${user.dir}/src/main/java/javancss/parser">
          <classpath>
             <pathelement location="lib/javacc.jar"/>
          </classpath>
-         <arg value="../../javacc/Java1.1.jj"/>
+         <arg value="../../../javacc/Java1.1.jj"/>
       </java>
    </target>
 
@@ -56,25 +58,19 @@
    <target name="clean">
       <delete dir="${DESTINATION}"/>
       <delete file="${user.dir}/lib/javancss.jar"/>
-      <delete file="${user.dir}/src/main/java/javancss/JavaCharStream.java"/>
-      <delete file="${user.dir}/src/main/java/javancss/JavaParser.java"/>
-      <delete file="${user.dir}/src/main/java/javancss/JavaParserConstants.java"/>
-      <delete file="${user.dir}/src/main/java/javancss/JavaParserTokenManager.java"/>
-      <delete file="${user.dir}/src/main/java/javancss/ParseException.java"/>
-      <delete file="${user.dir}/src/main/java/javancss/Token.java"/>
-      <delete file="${user.dir}/src/main/java/javancss/TokenMgrError.java"/>
-      <delete file="${user.dir}/t"/>
+      <delete dir="${user.dir}/src/main/java/javancss/parser"/>
    </target>
 
    <target name="taskdef">
-      <taskdef name="javancss" 
+      <taskdef name="javancss"
                classname="javancss.JavancssAntTask"
-               classpath="${CLASSPATH}:lib/javancssanttask.jar"/>
+               classpath="${CLASSPATH}"/>
   </target>
 
    <target name="javancss" depends="taskdef">
       <javancss srcdir="src"
                 includes="**/*.java"
+      	        ccnPerFuncMax="100"
                 generateReport="yes"/>
    </target>
 
@@ -92,11 +88,18 @@
      </java>
    </target>
 
-   <target name="jar" >
-     <jar destfile="lib/javancss.jar" basedir="classes">
+   <target name="jar" depends="javac">
+     <xmlproperty file="pom.xml" prefix="pom.xml" />
+     <jar destfile="lib/javancss.jar" basedir="target/classes">
        <manifest>
          <attribute name="Main-Class" value="javancss.Main" />
          <attribute name="Class-Path" value="jhbasic.jar ccl.jar" />
+      	 <attribute name="Specification-Title" value="${pom.xml.project.name}" />
+       	 <attribute name="Specification-Version" value="${pom.xml.project.version}" />
+      	 <attribute name="Specification-Vendor" value="${pom.xml.project.organization.name}" />
+     	 <attribute name="Implementation-Title" value="${pom.xml.project.name}" />
+      	 <attribute name="Implementation-Version" value="${pom.xml.project.version}" />
+     	 <attribute name="Implementation-Vendor" value="${pom.xml.project.organization.name}" />
        </manifest>
      </jar>
    </target>
