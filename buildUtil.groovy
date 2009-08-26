@@ -320,3 +320,225 @@ assertNoErrors = { text ->
 		assertFalse("[ERROR] found in output", line.matches(".*\\[ERROR\\].*"))
 	}
 }
+
+/**
+ * Used to merge Javancss into Cobertura.   See javancss/coberturaREADME.txt for details.
+ * 
+ * Generally, we will be calling maven to build and test javancss.  Then,
+ * we will be copying files from javancss to src/net/sourceforge/cobertura/javancss making
+ * sure the relevant package names are converted.   Also, look for comments in
+ * the source such as COBERTURA REMOVE BEGIN that indicate that certain lines are not to be
+ * copied.
+ */
+mergeJavancss = {
+	def javancssDir = new File('javancss')
+	def generatedSource = new File(javancssDir, 'target/generated-sources/javacc/javancss')
+	def nonGeneratedSource = new File(javancssDir, 'src/main/java/javancss')
+	def targetDir = new File('src/net/sourceforge/cobertura/javancss')
+	
+	runMavenToBuildJavancss(javancssDir)
+	
+	def mergedFiles = []
+	mergeDir(from:generatedSource, to:targetDir, mergedFiles:mergedFiles)
+	mergeDir(from:nonGeneratedSource, to:targetDir, mergedFiles:mergedFiles)
+	
+	lookForObsoleteFiles(targetDir:targetDir, mergedFiles:mergedFiles)
+	
+}
+
+/**
+ * Any file that is in src/net/sourceforge/cobertura/javancss that was not
+ * copied over from the javancss directory is assumed to be obsolete.
+ * So, we will rename the file so it ends with ".probably.obsolete".
+ */
+lookForObsoleteFiles = { map ->
+	def targetDir = map.targetDir
+	def mergedFiles = map.mergedFiles
+	
+	targetDir.listFiles().each { file ->
+		if (file.isFile() 
+				&& !mergedFiles.contains(file.name) 
+				&& !file.name.endsWith("probably.obsolete")
+				&& file.name != "coberturaREADME.txt")
+		{
+			//rename the file
+			def newFilename = "${file.name}.probably.obsolete"
+			def newFile = new File(file.getParent(), newFilename)
+			ant.echo(message:"Renaming $file to $newFile.name")
+			file.renameTo(newFile)
+		}
+	}
+}
+
+assertMavenHomeIsSet = {
+	if (properties.'maven.home' == null) {
+				
+		def mavenHome = System.getenv('M2_HOME')
+		if (mavenHome) {
+			ant.property(name:'maven.home', value:mavenHome)
+		} else {
+			fail('Ant property maven.home or M2_HOME environment variable must be set')
+		}
+	}
+}
+ 
+runMavenToBuildJavancss = { javancssDir ->
+	assertMavenHomeIsSet()
+			
+	ant.java(
+			classname:'org.codehaus.classworlds.Launcher', 
+			fork:true,
+			dir:javancssDir,
+			failonerror:true) {
+		jvmarg(value:'-Xmx512m')
+		classpath {
+			fileset(dir:'${maven.home}/boot') {
+				include(name:'*.jar')
+			}
+			fileset(dir:'${maven.home}/lib') {
+				include(name:'*.jar')
+			}
+		}
+		sysproperty(key:'classworlds.conf', value:'${maven.home}/bin/m2.conf')
+		sysproperty(key:'maven.home', value:'${maven.home}')
+		arg(line:'--batch-mode clean test')
+	}		 
+}
+ 
+
+mergeDir = { map ->
+	def dir = map.from
+	def targetDir = map.to
+	def mergedFiles = map.mergedFiles
+	
+	assertTrue("${dir} does not exist", dir.exists())
+	def files = dir.listFiles()
+	assertTrue("No files in ${dir}", files.size() > 0)
+	
+	files.each { file ->
+		if (file.isFile()) {
+			mergeFile(from:file, to:targetDir, mergedFiles:mergedFiles)
+		}
+	}
+}
+
+mergeFile = { map ->
+	def file = map.from
+	def targetDir = map.to
+	def mergedFiles = map.mergedFiles
+
+	if (shouldSkipFile(file)) {
+		return
+	}
+	targetDir.mkdirs()
+	def targetFile = new File(targetDir, file.name)
+	def pw = targetFile.newPrintWriter()
+	printCopyright(pw)
+	printDeveloperWarning(pw)
+	def skipLines = false
+	
+	/*
+	 * Look for various instructions in the comments.   If a comment says
+	 * COBERTURA REMOVE BEGIN, then start skipping lines until a comment
+	 * that says COBERTURA REMOVE END is encountered.
+	 * 
+	 * Also, look for lines that have the javancss.* package names.   Change
+	 * the packages to net.sourceforge.cobertura.javancss.*.
+	 */
+	file.eachLine { line ->
+		if (skipLines)
+		{
+			if (line =~ '//COBERTURA REMOVE END')
+			{
+				skipLines = false
+			}
+			return
+		}
+		if (line =~ /package javancss;/)
+		{
+			pw.println("package net.sourceforge.cobertura.javancss;")
+		} else if (line =~ /package javancss.test;/)
+		{
+			pw.println("package net.sourceforge.cobertura.javancss.test;")
+		} else if (line =~ /^import ccl.util.*;/)
+		{
+			def pattern = ~/^import ccl.util\.(.*);/
+			def matcher = pattern.matcher(line)
+			assertTrue(matcher.matches())
+			pw.println("import net.sourceforge.cobertura.javancss.ccl.${matcher.group(1)};")
+		} else if (line =~ /^import javancss\..*;/)
+		{
+			def pattern = ~/^import javancss\.(.*);/
+			def matcher = pattern.matcher(line)
+			assertTrue(matcher.matches())
+			pw.println("import net.sourceforge.cobertura.javancss.${matcher.group(1)};")
+		} else if (line =~ '//COBERTURA REMOVE BEGIN')
+		{
+			//skip lines until 'COBERTURA REMOVE END'
+			skipLines = true
+		} else if (line =~ '^//COBERTURA REMOVE.*')
+		{
+			//skip one line only
+		} else {
+			pw.println(line)
+		}
+	}
+	pw.flush()
+	pw.close()
+	mergedFiles << file.name
+}
+
+/**
+ * If the file has COBERTURA EXCLUDE THIS FILE, then we will not
+ * copy it over.
+ */
+shouldSkipFile = { file ->
+	return file.text.contains("//COBERTURA EXCLUDE THIS FILE")
+}
+
+printCopyright = { pw ->
+	pw.write """/*
+ * Cobertura - http://cobertura.sourceforge.net/
+ *
+ * This file was taken from JavaNCSS
+ * http://www.kclee.com/clemens/java/javancss/
+ * Copyright (C) 2000 Chr. Clemens Lee <clemens a.t kclee d.o.t com>
+ *
+ * Cobertura is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published
+ * by the Free Software Foundation; either version 2 of the License,
+ * or (at your option) any later version.
+ *
+ * Cobertura is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cobertura; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA
+ */
+
+
+"""
+}
+ 
+printDeveloperWarning = { pw ->
+	pw.write """/*
+ *
+ * WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING  
+ *
+ * WARNING TO COBERTURA DEVELOPERS
+ *
+ * DO NOT MODIFY THIS FILE!
+ *
+ * MODIFY THE FILES UNDER THE JAVANCSS DIRECTORY LOCATED AT THE ROOT OF THE COBERTURA PROJECT.
+ *
+ * FOLLOW THE PROCEDURE FOR MERGING THE LATEST JAVANCSS INTO COBERTURA LOCATED AT
+ * javancss/coberturaREADME.txt
+ *
+ * WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   
+ */
+"""
+}
