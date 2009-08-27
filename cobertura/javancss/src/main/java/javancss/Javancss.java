@@ -1,3 +1,4 @@
+//COBERTURA REMOVE BEGIN
 /*
 Copyright (C) 2000 Chr. Clemens Lee <clemens@kclee.com>.
 
@@ -18,6 +19,7 @@ You should have received a copy of the GNU General Public License
 along with JavaNCSS; see the file COPYING.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
+//COBERTURA REMOVE END
 
 package javancss;
 
@@ -257,7 +259,8 @@ public class Javancss implements Exitable,
                     {
                         continue;
                     }
-                    _htProcessedAtFiles.put( sFileName, Util.getConstantObject() );
+                    //cobertura change - 2nd parm changed from Util.getConstantObject() to sFileName
+                    _htProcessedAtFiles.put( sFileName, sFileName );
                     String sJavaSourceFileNames = null;
                     try 
                     {
@@ -317,6 +320,7 @@ public class Javancss implements Exitable,
                    get(sPackage);
             _vPackageMetrics.addElement(pckmNext);
         }
+        //cobertura - the sort method does not actually sort
         _vPackageMetrics = Util.sort(_vPackageMetrics);
     }
 
@@ -339,7 +343,7 @@ public class Javancss implements Exitable,
     public Vector getFunctions() {
         return _vFunctionMetrics;
     }
-
+//COBERTURA REMOVE BEGIN
     public String printObjectNcss() {
         return getFormatter().printObjectNcss();
     }
@@ -355,6 +359,7 @@ public class Javancss implements Exitable,
     public String printJavaNcss() {
         return getFormatter().printJavaNcss();
     }
+//COBERTURA REMOVE END
 
     public Javancss(Vector vJavaSourceFiles_) {
         _vJavaSourceFiles = vJavaSourceFiles_;
@@ -373,9 +378,24 @@ public class Javancss implements Exitable,
         try {
             _measureRoot(System.in);
         } catch(Exception e) {
-            Util.debug( "Javancss.<init>(String).e: " + e );
+        	//cobertura - changed from Util.debug to System.out.println
+        	System.out.println( "Javancss.<init>(String).e: " + e );
         } catch(TokenMgrError pError) {
-            Util.debug( "Javancss.<init>(String).pError: " + pError );
+        	//cobertura - changed from Util.debug to System.out.println
+        	System.out.println( "Javancss.<init>(String).pError: " + pError );
+        }
+    }
+
+    //cobertura:  add this next constructor so any input stream can be used.
+    public Javancss(InputStream isJavaSource_) {
+        _sErrorMessage = null;
+        _vJavaSourceFiles = new Vector();
+        try {
+            _measureRoot(isJavaSource_);
+        } catch(Exception e) {
+        	System.out.println( "Javancss.<init>(InputStream).e: " + e );
+        } catch(TokenMgrError pError) {
+        	System.out.println( "Javancss.<init>(InputStream).pError: " + pError );
         }
     }
 
@@ -392,14 +412,16 @@ public class Javancss implements Exitable,
 
     public boolean parseImports() {
         if ( Util.isEmpty( _sJavaSourceFileName ) ) {
-            Util.debug( "Javancss.parseImports().NO_FILE" );
+        	//cobertura - changed from Util.debug to System.out.println
+        	System.out.println( "Javancss.parseImports().NO_FILE" );
 
             return true;
         }
         DataInputStream disSource = createInputStream
                ( _sJavaSourceFileName );
         if ( disSource == null ) {
-            Util.debug( "Javancss.parseImports().NO_DIS" );
+        	//cobertura - changed from Util.debug to System.out.println
+        	System.out.println( "Javancss.parseImports().NO_DIS" );
 
             return true;
         }
@@ -412,7 +434,8 @@ public class Javancss implements Exitable,
             _aoPackage = _pJavaParser.getPackageObjects();
             Util.debug( "Javancss.parseImports().END_PARSING" );
         } catch(ParseException pParseException) {
-            Util.debug( "Javancss.parseImports().PARSE_EXCEPTION" );
+        	//cobertura - changed from Util.debug to System.out.println
+        	System.out.println( "Javancss.parseImports().PARSE_EXCEPTION" );
             if (_sErrorMessage == null) {
                 _sErrorMessage = "";
             }
@@ -425,7 +448,8 @@ public class Javancss implements Exitable,
 
             return true;
         } catch(TokenMgrError pTokenMgrError) {
-            Util.debug( "Javancss.parseImports().TOKEN_ERROR" );
+        	//cobertura - changed from Util.debug to System.out.println
+        	System.out.println( "Javancss.parseImports().TOKEN_ERROR" );
             if (_sErrorMessage == null) {
                 _sErrorMessage = "";
             }
@@ -444,7 +468,7 @@ public class Javancss implements Exitable,
         _vJavaSourceFiles = new Vector();
         _vJavaSourceFiles.addElement(sJavaSourceFile_);
     }
-
+//COBERTURA REMOVE BEGIN
     public Javancss(StringBufferInputStream pStringBufferInputStream_) {
         try {
             _measureRoot(pStringBufferInputStream_);
@@ -452,7 +476,8 @@ public class Javancss implements Exitable,
         } catch(TokenMgrError pError) {
         }
     }
-
+//COBERTURA REMOVE END
+//COBERTURA REMOVE BEGIN
     private void _addJavaFiles( File file, Vector v )
     {
         String sFile = FileUtil.normalizeFileName( file.getPath() );
@@ -482,7 +507,8 @@ public class Javancss implements Exitable,
             }
         }
     }
-
+//COBERTURA REMOVE END
+//COBERTURA REMOVE BEGIN
     private void _removeDirs( Vector vDirs )
     {
         if ( Util.isDebug() )
@@ -502,9 +528,9 @@ public class Javancss implements Exitable,
             }
         }
     }
-
+//COBERTURA REMOVE END
     private Init _pInit = null;
-
+//COBERTURA REMOVE BEGIN
     /**
      * This is the constructor used in the main routine in
      * javancss.Main.
@@ -688,7 +714,7 @@ public class Javancss implements Exitable,
         }
         ps = null;
     }
-
+//COBERTURA REMOVE END
     public int getNcss() {
         return _ncss;
     }
@@ -750,6 +776,7 @@ public class Javancss implements Exitable,
         _bExit = true;
     }
 
+//COBERTURA REMOVE BEGIN
     private boolean _bXML = false;
 
     public void setXML( boolean bXML )
@@ -772,4 +799,5 @@ public class Javancss implements Exitable,
 
         return new AsciiFormatter( this );
     }
+//COBERTURA REMOVE END
 }
