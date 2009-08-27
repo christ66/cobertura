@@ -4,7 +4,7 @@ JavaNCSS
 A Source Measurement Suite for Java
 
 URL
-   http://www.kclee.de/clemens/java/javancss/
+   http://www.kclee.com/clemens/java/javancss/
 
 DESCRIPTION
    Ever wondered how many lines of code or how many classes there
@@ -41,17 +41,16 @@ SYSTEM REQUIREMENTS
    Java JDK >= 1.4.1
    
 INSTALLATION
-   See file javancss-X.Y/doc/index.html
+   See file javancss/doc/index.html
 
 LICENSE
-   GNU LGPL 3.0
+   GNU General Public License
 
 VERSION
-   See file javancss-X.Y/doc/index.html#release
+   29.50
 
 DATE
-   See file javancss-X.Y/doc/index.html#release
+   10/06/2006
 
-AUTHORS
-   Chr. Clemens Lee, <clemens@kclee.de>
-   http://xircles.codehaus.org/projects/javancss/members 
+AUTHOR
+   Chr. Clemens Lee, <clemens@kclee.com>
