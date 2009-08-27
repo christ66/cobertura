@@ -1,3 +1,4 @@
+//COBERTURA EXCLUDE THIS FILE
 /*
 Copyright (C) 2000 Chr. Clemens Lee <clemens@kclee.com>.
 

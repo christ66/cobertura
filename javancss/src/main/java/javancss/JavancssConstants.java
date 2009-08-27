@@ -1,3 +1,4 @@
+//COBERTURA REMOVE BEGIN
 /*
 Copyright (C) 2000 Chr. Clemens Lee <clemens@kclee.com>.
 
@@ -18,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with JavaNCSS; see the file COPYING.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
-
+//COBERTURA REMOVE END
 package javancss;
 
 /**
@@ -40,6 +41,11 @@ public interface JavancssConstants
   static final int FCT_SINGLE_LINES = 5;
   static final int FCT_MULTI_LINES  = 6;
 
+  // specially added for Cobertura
+  static final int FCT_BEGIN_LINE_NUMBER  = 7;
+  // specially added for Cobertura
+  static final int FCT_END_LINE_NUMBER  = 8;
+  
   static final int OBJ_NAME  = 0;
   static final int OBJ_NCSS  = 1;
   static final int OBJ_FCTS  = 2;
