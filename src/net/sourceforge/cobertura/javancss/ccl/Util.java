@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package net.sourceforge.cobertura.javancss;
+package net.sourceforge.cobertura.javancss.ccl;
 
 import java.util.Vector;
 
@@ -62,6 +62,15 @@ import java.util.Vector;
  *         clemens@kclee.com
  *         </a>>
  */
+
+
+
+/*
+ * cobertura - this file was moved from net.sourceforge.cobertura.javancss package.
+ * 
+ * Mark Doliner apparently got the source from somewhere, but it is not available now.
+ */
+
 public class Util
 {
 
@@ -75,16 +84,15 @@ public class Util
 	{
 		super();
 	}
-
+	
 	// -----------------------------------------------------
 	// debug methods and assertion stuff
 	// -----------------------------------------------------
-
-	/**
+/**
 	 * panicIf <=> not assert. Throws ApplicationException if true.
 	 * It's not necessary to catch this exception.
 	 */
-	static void panicIf(boolean bPanic_)
+	public static void panicIf(boolean bPanic_)
 	{
 		if (bPanic_)
 		{
@@ -98,7 +106,7 @@ public class Util
 	 *
 	 * @param sMessage_ The error message for the Exception.
 	 */
-	static void panicIf(boolean bPanic_, String sMessage_)
+	public static void panicIf(boolean bPanic_, String sMessage_)
 	{
 		if (bPanic_)
 		{
@@ -178,7 +186,7 @@ public class Util
 	 * @return The single lines do not contain the cCutter_ character
 	 *         at the end.
 	 */
-	private static Vector stringToLines(String pString_, char cCutter_)
+	public static Vector stringToLines(String pString_, char cCutter_)
 	{
 		return stringToLines(0, pString_, cCutter_);
 	}
@@ -209,5 +217,29 @@ public class Util
 		{
 		}
 	}
+	
+	public static Vector concat(Vector vFirst_, Vector vSecond_)
+	{
+		//cobertura Mark Doliner appears to have simplified this.
+		vFirst_.addAll(vSecond_);
+		return vFirst_;
+	}
+
+
+	public static Vector<Object> sort(Vector<Object> input)
+	{
+		//cobertura - apparently Mark Doliner didn't think we need to sort.
+		return input;
+	}
+	
+	public static void debug(String obj) {
+		//cobertura - Mark Doliner did nothing with the debug.
+	}
+	
+	public static Object getConstantObject()
+	{
+		return CONSTANT_OBJECT;
+	}
+	
 
 }

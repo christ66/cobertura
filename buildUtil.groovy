@@ -343,7 +343,14 @@ mergeJavancss = {
 	mergeDir(from:nonGeneratedSource, to:targetDir, mergedFiles:mergedFiles)
 	
 	lookForObsoleteFiles(targetDir:targetDir, mergedFiles:mergedFiles)
-	
+
+	//now do the parser package
+	mergedFiles = []
+	generatedSource = new File(javancssDir, 'target/generated-sources/javacc/javancss/parser')
+	targetDir = new File('src/net/sourceforge/cobertura/javancss/parser')
+	mergeDir(from:generatedSource, to:targetDir, mergedFiles:mergedFiles)
+
+	lookForObsoleteFiles(targetDir:targetDir, mergedFiles:mergedFiles)
 }
 
 /**
@@ -460,6 +467,9 @@ mergeFile = { map ->
 		} else if (line =~ /package javancss.test;/)
 		{
 			pw.println("package net.sourceforge.cobertura.javancss.test;")
+		} else if (line =~ /package javancss.parser;/)
+		{
+			pw.println("package net.sourceforge.cobertura.javancss.parser;")
 		} else if (line =~ /^import ccl.util.*;/)
 		{
 			def pattern = ~/^import ccl.util\.(.*);/

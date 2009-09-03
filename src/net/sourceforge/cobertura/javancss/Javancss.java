@@ -21,15 +21,58 @@
  * USA
  */
 
+
+/*
+ *
+ * WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING  
+ *
+ * WARNING TO COBERTURA DEVELOPERS
+ *
+ * DO NOT MODIFY THIS FILE!
+ *
+ * MODIFY THE FILES UNDER THE JAVANCSS DIRECTORY LOCATED AT THE ROOT OF THE COBERTURA PROJECT.
+ *
+ * FOLLOW THE PROCEDURE FOR MERGING THE LATEST JAVANCSS INTO COBERTURA LOCATED AT
+ * javancss/coberturaREADME.txt
+ *
+ * WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   
+ */
+
 package net.sourceforge.cobertura.javancss;
 
-import java.io.DataInputStream;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import net.sourceforge.cobertura.javancss.ccl.Exitable;
+import net.sourceforge.cobertura.javancss.ccl.FileUtil;
+import net.sourceforge.cobertura.javancss.ccl.Init;
+import net.sourceforge.cobertura.javancss.ccl.Util;
+
+import net.sourceforge.cobertura.javancss.parser.JavaParser;
+import net.sourceforge.cobertura.javancss.parser.JavaParserTokenManager;
+import net.sourceforge.cobertura.javancss.parser.ParseException;
+import net.sourceforge.cobertura.javancss.parser.TokenMgrError;
+import net.sourceforge.cobertura.javancss.test.JavancssTest;
 
 /**
  * While the Java parser class might be the heart of JavaNCSS,
@@ -37,15 +80,15 @@ import java.util.Vector;
  * invokes the Java parser.
  *
  * @author    Chr. Clemens Lee <clemens@kclee.com>
- *            , recursive feature by PÃ¤Ã¤kÃ¶ Hannu
+ *            , recursive feature by Pääkö Hannu
  *            , additional javadoc metrics by Emilio Gongora <emilio@sms.nl>
  *            , and Guillermo Rodriguez <guille@sms.nl>.
  * @version   $Id$
  */
-public class Javancss implements JavancssConstants
+public class Javancss implements Exitable,
+                                 JavancssConstants
 {
-    static final int LEN_NR = 3;
-    static final String S_INIT__FILE_CONTENT =
+    private static final String S_INIT__FILE_CONTENT =
         "[Init]\n" +
         "Author=Chr. Clemens Lee\n" +
         "\n" +
@@ -63,37 +106,42 @@ public class Javancss implements JavancssConstants
         "out=s,o,Output file name. By default output goes to standard out.\n"+
         "recursive=b,o,Recurse to subdirs.\n" +
         "check=b,o,Triggers a javancss self test.\n" +
+        "encoding=s,o,Encoding used while reading source files (default: platform encoding).\n" +
         "\n" +
         "[Colors]\n" +
         "UseSystemColors=true\n";
     
-    private int _ncss = 0;
-    private int _loc = 0;
-    private JavaParser _pJavaParser = null;
-    private Vector _vJavaSourceFiles = new Vector();
+    private boolean _bExit = false;
+
+    private List/*<File>*/ _vJavaSourceFiles = new ArrayList();
+    private String encoding = null;
+
     private String _sErrorMessage = null;
     private Throwable _thrwError = null;
-    private Vector _vFunctionMetrics = new Vector();
-    private Vector _vObjectMetrics = new Vector();
-    private Vector _vPackageMetrics = null;
-    private Vector _vImports = null;
-    private Hashtable _htPackages = null;
-    private Hashtable _htProcessedAtFiles = new Hashtable();
+
+    private JavaParser _pJavaParser = null;
+    private int _ncss = 0;
+    private int _loc = 0;
+    private List _vFunctionMetrics = new ArrayList();
+    private List _vObjectMetrics = new ArrayList();
+    private List/*<PackageMetric>*/ _vPackageMetrics = null;
+    private List _vImports = null;
+    private Map/*<String,PackageMetric>*/ _htPackages = null;
     private Object[] _aoPackage = null;
 
     /**
      * Just used for parseImports.
      */
-    private String _sJavaSourceFileName = null;
+    private File _sJavaSourceFile = null;
 
-    private DataInputStream createInputStream( String sSourceFileName_ )
+    private Reader createSourceReader( File sSourceFile_ )
     {
-        DataInputStream disSource = null;
-
-        try {
-            disSource = new DataInputStream
-                   (new FileInputStream(sSourceFileName_));
-        } catch(IOException pIOException) {
+        try
+        {
+            return newReader( sSourceFile_ );
+        }
+        catch ( IOException pIOException )
+        {
             if ( Util.isEmpty( _sErrorMessage ) )
             {
                 _sErrorMessage = "";
@@ -102,32 +150,23 @@ public class Javancss implements JavancssConstants
             {
                 _sErrorMessage += "\n";
             }
-            _sErrorMessage += "File not found: " + sSourceFileName_;
+            _sErrorMessage += "File not found: " + sSourceFile_.getAbsolutePath();
             _thrwError = pIOException;
 
             return null;
         }
-
-        return disSource;
     }
 
-    private void _measureSource(String sSourceFileName_)
-        throws IOException,
-               ParseException,
-               TokenMgrError
+    private void _measureSource( File sSourceFile_ ) throws IOException, ParseException, TokenMgrError
     {
-        // take user.dir property in account
-        sSourceFileName_ = FileUtil.normalizeFileName( sSourceFileName_ );
-
-        DataInputStream disSource = null;
+        Reader reader = null;
 
         // opens the file
-        try 
+        try
         {
-            disSource = new DataInputStream
-                   (new FileInputStream(sSourceFileName_));
+            reader = newReader( sSourceFile_ );
         }
-        catch(IOException pIOException) 
+        catch ( IOException pIOException ) 
         {
             if ( Util.isEmpty( _sErrorMessage ) )
             {
@@ -137,21 +176,25 @@ public class Javancss implements JavancssConstants
             {
                 _sErrorMessage += "\n";
             }
-            _sErrorMessage += "File not found: " + sSourceFileName_;
+            _sErrorMessage += "File not found: " + sSourceFile_.getAbsolutePath();
             _thrwError = pIOException;
 
             throw pIOException;
         }
 
         String sTempErrorMessage = _sErrorMessage;
-        try {
-            // the same method but with a DataInputSream
-            _measureSource(disSource);
-        } catch(ParseException pParseException) {
-            if (sTempErrorMessage == null) {
+        try
+        {
+            // the same method but with a Reader
+            _measureSource( reader );
+        }
+        catch ( ParseException pParseException )
+        {
+            if ( sTempErrorMessage == null )
+            {
                 sTempErrorMessage = "";
             }
-            sTempErrorMessage += "ParseException in " + sSourceFileName_ + 
+            sTempErrorMessage += "ParseException in " + sSourceFile_.getAbsolutePath() + 
                    "\nLast useful checkpoint: \"" + _pJavaParser.getLastFunction() + "\"\n";
             sTempErrorMessage += pParseException.getMessage() + "\n";
             
@@ -159,11 +202,14 @@ public class Javancss implements JavancssConstants
             _thrwError = pParseException;
             
             throw pParseException;
-        } catch(TokenMgrError pTokenMgrError) {
-            if (sTempErrorMessage == null) {
+        }
+        catch ( TokenMgrError pTokenMgrError )
+        {
+            if ( sTempErrorMessage == null )
+            {
                 sTempErrorMessage = "";
             }
-            sTempErrorMessage += "TokenMgrError in " + sSourceFileName_ + 
+            sTempErrorMessage += "TokenMgrError in " + sSourceFile_.getAbsolutePath() + 
                    "\n" + pTokenMgrError.getMessage() + "\n";
             _sErrorMessage = sTempErrorMessage;
             _thrwError = pTokenMgrError;
@@ -172,108 +218,82 @@ public class Javancss implements JavancssConstants
         }
     }
 
-    private void _measureSource(DataInputStream disSource_)
-        throws IOException,
-               ParseException,
-               TokenMgrError
+    private void _measureSource( Reader reader ) throws IOException, ParseException, TokenMgrError
     {
-        try {
+        try
+        {
             // create a parser object
-            _pJavaParser = new JavaParser(disSource_);
+            _pJavaParser = new JavaParser( reader );
+
             // execute the parser
             _pJavaParser.CompilationUnit();
-            _ncss += _pJavaParser.getNcss();       // increment the ncss
-            _loc  += _pJavaParser.getLOC();        // and loc
+            Util.debug( "Javancss._measureSource(DataInputStream).SUCCESSFULLY_PARSED" );
+
+            _ncss += _pJavaParser.getNcss(); // increment the ncss
+            _loc += _pJavaParser.getLOC(); // and loc
             // add new data to global vector
-            _vFunctionMetrics.addAll(_pJavaParser.getFunction());
-            _vObjectMetrics.addAll(_pJavaParser.getObject());
-            Hashtable htNewPackages = _pJavaParser.getPackage();
-            /*Vector vNewPackages = new Vector();*/
-            for(Enumeration ePackages = htNewPackages.keys();
-                ePackages.hasMoreElements(); )
+            _vFunctionMetrics.addAll( _pJavaParser.getFunction() );
+            _vObjectMetrics.addAll( _pJavaParser.getObject() );
+            Map htNewPackages = _pJavaParser.getPackage();
+
+            /* List vNewPackages = new Vector(); */
+            for ( Iterator ePackages = htNewPackages.keySet().iterator(); ePackages.hasNext(); )
             {
-                String sPackage = (String)ePackages.nextElement();
-                PackageMetric pckmNext = (PackageMetric)htNewPackages.
-                       get(sPackage);
+                String sPackage = (String) ePackages.next();
+
+                PackageMetric pckmNext = (PackageMetric) htNewPackages.get( sPackage );
                 pckmNext.name = sPackage;
-                PackageMetric pckmPrevious =
-                       (PackageMetric)_htPackages.get
-                       (sPackage);
-                pckmNext.add(pckmPrevious);
-                _htPackages.put(sPackage, pckmNext);
+
+                PackageMetric pckmPrevious = (PackageMetric) _htPackages.get( sPackage );
+                pckmNext.add( pckmPrevious );
+
+                _htPackages.put( sPackage, pckmNext );
             }
-        } catch(ParseException pParseException) {
-            if (_sErrorMessage == null) {
+        }
+        catch ( ParseException pParseException )
+        {
+            if ( _sErrorMessage == null )
+            {
                 _sErrorMessage = "";
             }
             _sErrorMessage += "ParseException in STDIN";
-            if (_pJavaParser != null) {
+            if ( _pJavaParser != null )
+            {
                 _sErrorMessage += "\nLast useful checkpoint: \"" + _pJavaParser.getLastFunction() + "\"\n";
             }
             _sErrorMessage += pParseException.getMessage() + "\n";
             _thrwError = pParseException;
-            
+
             throw pParseException;
-        } catch(TokenMgrError pTokenMgrError) {
-            if (_sErrorMessage == null) {
+        }
+        catch ( TokenMgrError pTokenMgrError )
+        {
+            if ( _sErrorMessage == null )
+            {
                 _sErrorMessage = "";
             }
             _sErrorMessage += "TokenMgrError in STDIN\n";
             _sErrorMessage += pTokenMgrError.getMessage() + "\n";
             _thrwError = pTokenMgrError;
-            
+
             throw pTokenMgrError;
         }
     }
 
-    private void _measureFiles(Vector vJavaSourceFiles_)
-        throws IOException,
-               ParseException,
-               TokenMgrError
+    private void _measureFiles( List/*<File>*/ vJavaSourceFiles_ ) throws IOException, ParseException, TokenMgrError
     {
         // for each file
-        for(Enumeration e = vJavaSourceFiles_.elements(); e.hasMoreElements(); ) 
+        for ( Iterator e = vJavaSourceFiles_.iterator(); e.hasNext(); )
         {
-            String sJavaFileName = (String)e.nextElement();
+            File file = (File) e.next();
 
-            // if the file specifies other files...
-            if (sJavaFileName.charAt(0) == '@') 
+            try
             {
-                if (sJavaFileName.length() > 1) 
-                {
-                    String sFileName = sJavaFileName.substring(1);
-                    sFileName = FileUtil.normalizeFileName( sFileName );
-                    if (_htProcessedAtFiles.get(sFileName) != null) 
-                    {
-                        continue;
-                    }
-                    _htProcessedAtFiles.put( sFileName, sFileName );
-                    String sJavaSourceFileNames = null;
-                    try 
-                    {
-                        sJavaSourceFileNames = FileUtil.readFile(sFileName);
-                    }
-                    catch(IOException pIOException) 
-                    {
-                        _sErrorMessage = "File Read Error: " + sFileName;
-                        _thrwError = pIOException;
-                        
-                        throw pIOException;
-                    }
-                    Vector vTheseJavaSourceFiles =
-                           Util.stringToLines(sJavaSourceFileNames);
-                    _measureFiles(vTheseJavaSourceFiles);
-                }
-            } 
-            else 
+                _measureSource( file );
+            }
+            catch ( Throwable pThrowable )
             {
-                try 
-                {
-                    _measureSource( sJavaFileName );
-                } catch( Throwable pThrowable ) 
-                {
-                    // hmm, do nothing? Use getLastError() or so to check for details.
-                }
+                // hmm, do nothing? Use getLastError() or so to check for details.
             }
         }
     }
@@ -282,34 +302,32 @@ public class Javancss implements JavancssConstants
      * If arguments were provided, they are used, otherwise
      * the input stream is used.
      */
-    private void _measureRoot(InputStream pInputStream_)
-        throws IOException,
-               ParseException,
-               TokenMgrError
+    private void _measureRoot( Reader reader ) throws IOException, ParseException, TokenMgrError
     {
-        _htPackages = new Hashtable();
-        
+        _htPackages = new HashMap();
+
         // either there are argument files, or stdin is used
-        if (_vJavaSourceFiles.size() == 0) {
-            DataInputStream disJava = new java.io.DataInputStream(pInputStream_);
-            _measureSource(disJava);
-        } else {
-            // the collection of files get measured
-            _measureFiles(_vJavaSourceFiles);
-        }
-        
-        _vPackageMetrics = new Vector();
-        for(Enumeration ePackages = _htPackages.keys();
-            ePackages.hasMoreElements(); )
+        if ( _vJavaSourceFiles.size() == 0 )
         {
-            String sPackage = (String)ePackages.nextElement();
-            PackageMetric pckmNext = (PackageMetric)_htPackages.
-                   get(sPackage);
-            _vPackageMetrics.addElement(pckmNext);
+            _measureSource( reader );
+        }
+        else
+        {
+            // the collection of files get measured
+            _measureFiles( _vJavaSourceFiles );
+        }
+
+        _vPackageMetrics = new ArrayList();
+        for ( Iterator ePackages = _htPackages.keySet().iterator(); ePackages.hasNext(); )
+        {
+            String sPackage = (String) ePackages.next();
+
+            PackageMetric pckmNext = (PackageMetric) _htPackages.get( sPackage );
+            _vPackageMetrics.add( pckmNext );
         }
     }
 
-    public Vector getImports() {
+    public List getImports() {
         return _vImports;
     }
 
@@ -325,42 +343,59 @@ public class Javancss implements JavancssConstants
     /**
      * The same as getFunctionMetrics?!
      */
-    public Vector getFunctions() {
+    public List getFunctions() {
         return _vFunctionMetrics;
     }
 
-    public Javancss(Vector vJavaSourceFiles_) {
+    public Javancss( List/*<File>*/ vJavaSourceFiles_ )
+    {
         _vJavaSourceFiles = vJavaSourceFiles_;
         try {
-            _measureRoot(System.in);
+            _measureRoot(newReader(System.in));
         } catch(Exception e) {
+            e.printStackTrace();
         } catch(TokenMgrError pError) {
+            pError.printStackTrace();
         }
     }
 
-    public Javancss(String sJavaSourceFile_) {
+    public Javancss( File sJavaSourceFile_ )
+    {
+        Util.debug( "Javancss.<init>(String).sJavaSourceFile_: " + sJavaSourceFile_ );
         _sErrorMessage = null;
-        _vJavaSourceFiles = new Vector();
-        _vJavaSourceFiles.addElement(sJavaSourceFile_);
+        _vJavaSourceFiles = new ArrayList();
+        _vJavaSourceFiles.add(sJavaSourceFile_);
         try {
-            _measureRoot(System.in);
+            _measureRoot(newReader(System.in));
         } catch(Exception e) {
-        	System.out.println( "Javancss.<init>(String).e: " + e );
+        	Util.debug( "Javancss.<init>(String).e: " + e );
+            e.printStackTrace();
         } catch(TokenMgrError pError) {
-        	System.out.println( "Javancss.<init>(String).pError: " + pError );
+        	Util.debug( "Javancss.<init>(String).pError: " + pError );
+            pError.printStackTrace();
         }
     }
-    
-    //cobertura:  add this next constructor so any input stream can be used.
+
+    /*
+     * cobertura:  add this next constructor so any input stream can be used.
+     * 
+     * It should be a copy of the Javancss(String) constructor, but just
+     * make sure _vJavaSourceFiles is empty.   _measureRoot will
+     * use the input stream if it is empty.
+     */
     public Javancss(InputStream isJavaSource_) {
+        Util.debug( "Javancss.<init>(InputStream).sJavaSourceFile_: " + isJavaSource_ );
         _sErrorMessage = null;
-        _vJavaSourceFiles = new Vector();
+        _vJavaSourceFiles = new ArrayList();
+
         try {
-            _measureRoot(isJavaSource_);
+            _measureRoot(newReader(isJavaSource_));
         } catch(Exception e) {
-        	System.out.println( "Javancss.<init>(InputStream).e: " + e );
+        	Util.debug( "Javancss.<init>(InputStream).e: " + e );
+            e.printStackTrace();
         } catch(TokenMgrError pError) {
-        	System.out.println( "Javancss.<init>(InputStream).pError: " + pError );
+        	Util.debug( "Javancss.<init>(InputStream).pError: " + pError );
+            pError.printStackTrace();
         }
     }
 
@@ -376,26 +411,27 @@ public class Javancss implements JavancssConstants
     }
 
     public boolean parseImports() {
-        if ( Util.isEmpty( _sJavaSourceFileName ) ) {
-        	System.out.println( "Javancss.parseImports().NO_FILE" );
+        if ( _sJavaSourceFile == null ) {
+        	Util.debug( "Javancss.parseImports().NO_FILE" );
 
             return true;
         }
-        DataInputStream disSource = createInputStream
-               ( _sJavaSourceFileName );
-        if ( disSource == null ) {
-        	System.out.println( "Javancss.parseImports().NO_DIS" );
+        Reader reader = createSourceReader( _sJavaSourceFile );
+        if ( reader == null ) {
+        	Util.debug( "Javancss.parseImports().NO_DIS" );
 
             return true;
         }
 
         try {
-            _pJavaParser = new JavaParser(disSource);
+            Util.debug( "Javancss.parseImports().START_PARSING" );
+            _pJavaParser = new JavaParser(reader);
             _pJavaParser.ImportUnit();
             _vImports = _pJavaParser.getImports();
             _aoPackage = _pJavaParser.getPackageObjects();
+            Util.debug( "Javancss.parseImports().END_PARSING" );
         } catch(ParseException pParseException) {
-        	System.out.println( "Javancss.parseImports().PARSE_EXCEPTION" );
+        	Util.debug( "Javancss.parseImports().PARSE_EXCEPTION" );
             if (_sErrorMessage == null) {
                 _sErrorMessage = "";
             }
@@ -408,7 +444,7 @@ public class Javancss implements JavancssConstants
 
             return true;
         } catch(TokenMgrError pTokenMgrError) {
-        	System.out.println( "Javancss.parseImports().TOKEN_ERROR" );
+        	Util.debug( "Javancss.parseImports().TOKEN_ERROR" );
             if (_sErrorMessage == null) {
                 _sErrorMessage = "";
             }
@@ -422,12 +458,12 @@ public class Javancss implements JavancssConstants
         return false;
     }
 
-    public void setSourceFile( String sJavaSourceFile_ ) {
-        _sJavaSourceFileName = sJavaSourceFile_;
-        _vJavaSourceFiles = new Vector();
-        _vJavaSourceFiles.addElement(sJavaSourceFile_);
+    public void setSourceFile( File javaSourceFile_ ) {
+        _sJavaSourceFile = javaSourceFile_;
+        _vJavaSourceFiles = new ArrayList();
+        _vJavaSourceFiles.add(javaSourceFile_);
     }
-
+    private Init _pInit = null;
     public int getNcss() {
         return _ncss;
     }
@@ -442,7 +478,7 @@ public class Javancss implements JavancssConstants
     }
 
     /**
-     * JDCL stands for javadoc coment lines (while jvdc stands
+     * JDCL stands for javadoc comment lines (while jvdc stands
      * for number of javadoc comments).
      */
     public int getJdcl() {
@@ -458,11 +494,11 @@ public class Javancss implements JavancssConstants
     }
     //
 
-    public Vector getFunctionMetrics() {
+    public List getFunctionMetrics() {
         return(_vFunctionMetrics);
     }
 
-    public Vector getObjectMetrics() {
+    public List getObjectMetrics() {
         return(_vObjectMetrics);
     }
 
@@ -470,7 +506,7 @@ public class Javancss implements JavancssConstants
      * Returns list of packages in the form
      * PackageMetric objects.
      */
-    public Vector getPackageMetrics() {
+    public List getPackageMetrics() {
         return(_vPackageMetrics);
     }
 
@@ -485,4 +521,28 @@ public class Javancss implements JavancssConstants
         return _thrwError;
     }
 
+    public void setExit() {
+        _bExit = true;
+    }
+
+
+    public String getEncoding()
+    {
+        return encoding;
+    }
+
+    public void setEncoding( String encoding )
+    {
+        this.encoding = encoding;
+    }
+
+    private Reader newReader( InputStream stream ) throws UnsupportedEncodingException
+    {
+        return ( encoding == null ) ? new InputStreamReader( stream ) : new InputStreamReader( stream, encoding );
+    }
+
+    private Reader newReader( File file ) throws FileNotFoundException, UnsupportedEncodingException
+    {
+        return newReader( new FileInputStream( file ) );
+    }
 }
