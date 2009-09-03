@@ -26,9 +26,9 @@ package javancss;
  * Basic data class to store all metrics attached to a package.
  *
  * @author  Chr. Clemens Lee <clemens@kclee.com>
- * @version $Id: PackageMetric.java 15 2008-08-04 22:00:07Z hboutemy $
+ * @version $Id: PackageMetric.java 51 2008-08-17 13:12:34Z hboutemy $
  */
-public class PackageMetric 
+public class PackageMetric implements Comparable
 {
     public String name    = ".";
     public int classes    = 0;
@@ -73,8 +73,13 @@ public class PackageMetric
         singleLn   += pPackageMetric_.singleLn;
         multiLn    += pPackageMetric_.multiLn;
     }
-    
+
     public String toString() {
         return name;
+    }
+
+    public int compareTo( Object o )
+    {
+        return name.compareTo( ((PackageMetric)o).name );
     }
 }

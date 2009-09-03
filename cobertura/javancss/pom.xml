@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>javancss</groupId>
@@ -107,16 +108,25 @@
           <encoding>${project.build.sourceEncoding}</encoding><!-- not needed for 2.1 -->
         </configuration>
       </plugin>
-      <!-- plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.1</version>
         <configuration>
           <descriptors>
-            <descriptor>src/main/assembly/full.xml</descriptor>
+            <descriptor>src/main/assembly/bin.xml</descriptor>
           </descriptors>
         </configuration>
-      </plugin-->
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -162,6 +172,27 @@
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.1</version>
+        <configuration>
+          <executable>java</executable>
+          <arguments>
+            <argument>-classpath</argument>
+            <classpath/>
+            <argument>javancss.test.JavancssTest</argument>
+          </arguments>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
         <version>2.4.1</version>
         <executions>
@@ -173,19 +204,71 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <downloadSources>true</downloadSources>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://svn.codehaus.org/javancss/tags</tagBase>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <configuration>
+              <tasks>
+                <path id="task.classpath">
+                  <pathelement path="lib/javancssanttask.jar"/>
+                  <path refid="maven.compile.classpath"/>
+                </path>
+                <taskdef name="javancss" classname="javancss.JavancssAntTask" classpathref="task.classpath"/>
+                <javancss srcdir="src/main/java" includes="**/*.java" generateReport="yes"
+                          abortOnFail="true" classMetrics="false" functionMetrics="false"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
   <dependencies>
-  	<dependency>
-  		<groupId>javancss</groupId>
-  		<artifactId>ccl</artifactId>
-  		<version>29.50</version>
-  	</dependency>
+    <dependency>
+      <groupId>javancss</groupId>
+      <artifactId>ccl</artifactId>
+      <version>29.50</version>
+    </dependency>
     <dependency>
       <groupId>javancss</groupId>
       <artifactId>jhbasic</artifactId>
       <version>29.50</version>
+      <scope>runtime</scope>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 
@@ -206,6 +289,7 @@
           <linksource>true</linksource>
           <links>
             <link>http://java.sun.com/j2se/1.4.2/docs/api</link>
+            <link>http://www.kclee.de/clemens/java/ccl/api</link>
           </links>
         </configuration>
       </plugin>

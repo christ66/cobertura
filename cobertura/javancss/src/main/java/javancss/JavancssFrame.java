@@ -22,22 +22,23 @@ Boston, MA 02111-1307, USA.  */
 
 package javancss;
 
-import ccl.swing.AboutDialog;
-import ccl.swing.AnimationPanel;
-import ccl.swing.AutoGridBagLayout;
-import ccl.swing.MainJFrame;
-import ccl.swing.SwingUtil;
-import ccl.util.*;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.text.*;
 import java.io.*;
-import java.net.*;
 
 import javax.swing.*;
 import javax.swing.border.*;
+
+import ccl.swing.AboutDialog;
+import ccl.swing.AnimationPanel;
+import ccl.swing.AutoGridBagLayout;
+import ccl.swing.MainJFrame;
+import ccl.swing.SwingUtil;
+import ccl.util.FileUtil;
+import ccl.util.Init;
+import ccl.util.Util;
 
 /**
  * Main class used to start JavaNCSS in GUI mode from other
@@ -45,7 +46,7 @@ import javax.swing.border.*;
  * gui mode or not, class 'Main' is used.
  *
  * @author  <a href="http://www.kclee.com/clemens/">Chr. Clemens Lee</a> (<a href="mailto:clemens@kclee.com"><i>clemens@kclee.com</i></a>)
- * @version $Id: JavancssFrame.java 15 2008-08-04 22:00:07Z hboutemy $
+ * @version $Id: JavancssFrame.java 56 2008-08-17 13:38:23Z hboutemy $
  */
 public class JavancssFrame extends MainJFrame {
     public static final String S_PACKAGES = "Packages";
@@ -300,41 +301,41 @@ public class JavancssFrame extends MainJFrame {
             }
             
             try {
-                Thread.currentThread().sleep(500);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
             }
         }
     }
 
-        public void setVisible(boolean bVisible_) {
-                if (bVisible_) {
-                        _oldThreadPriority = Thread.currentThread().getPriority();
-                        _pAnimationPanel.start();
-                        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-                } else {
-                        _pAnimationPanel.stop();
-                }
-
-                super.setVisible(bVisible_);
+    public void setVisible(boolean bVisible_) {
+        if (bVisible_) {
+            _oldThreadPriority = Thread.currentThread().getPriority();
+            _pAnimationPanel.start();
+            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        } else {
+            _pAnimationPanel.stop();
         }
 
-        public void setSelectedTab(String sTab_) {
-                Util.panicIf(Util.isEmpty(sTab_));
+        super.setVisible(bVisible_);
+    }
 
-                if (!_bNoError) {
-                        return;
-                }
-                if (sTab_.equals(S_METHODS)) {
-                        /*_pTabbedPane.setSelectedComponent(_txtFunction);*/
-                        _pTabbedPane.setSelectedIndex(2);
-                } else if (sTab_.equals(S_CLASSES)) {
-                        /*_pTabbedPane.setSelectedComponent(_txtObject);*/
-                        _pTabbedPane.setSelectedIndex(1);
-                } else {
-                        /*_pTabbedPane.setSelectedComponent(_txtPackage);*/
-                        _pTabbedPane.setSelectedIndex(0);
-                }
+    public void setSelectedTab(String sTab_) {
+        Util.panicIf(Util.isEmpty(sTab_));
+
+        if (!_bNoError) {
+            return;
         }
+        if (sTab_.equals(S_METHODS)) {
+            /*_pTabbedPane.setSelectedComponent(_txtFunction);*/
+            _pTabbedPane.setSelectedIndex(2);
+        } else if (sTab_.equals(S_CLASSES)) {
+            /*_pTabbedPane.setSelectedComponent(_txtObject);*/
+            _pTabbedPane.setSelectedIndex(1);
+        } else {
+            /*_pTabbedPane.setSelectedComponent(_txtPackage);*/
+            _pTabbedPane.setSelectedIndex(0);
+        }
+    }
 
     private boolean _bAboutSelected = false;
 
@@ -366,12 +367,12 @@ public class JavancssFrame extends MainJFrame {
                 }
                 sStartURL = "file:" + sStartURL;
                 Util.debug("JavancssFrame.actionPerformed(): sStartURL: " + sStartURL);
-                try {
+                /*try {
                     URL urlHelpDocument = new URL(sStartURL);
                     //HtmlViewer pHtmlViewer = new HtmlViewer(urlHelpDocument);
                 } catch(Exception pException) {
                     Util.debug("JavancssFrame.actionPerformed(..).pException: " + pException);
-                }
+                }*/
             }
         }
     }
