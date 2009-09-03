@@ -259,8 +259,7 @@ public class Javancss implements Exitable,
                     {
                         continue;
                     }
-                    //cobertura change - 2nd parm changed from Util.getConstantObject() to sFileName
-                    _htProcessedAtFiles.put( sFileName, sFileName );
+                    _htProcessedAtFiles.put( sFileName, Util.getConstantObject() );
                     String sJavaSourceFileNames = null;
                     try 
                     {
@@ -378,24 +377,30 @@ public class Javancss implements Exitable,
         try {
             _measureRoot(System.in);
         } catch(Exception e) {
-        	//cobertura - changed from Util.debug to System.out.println
-        	System.out.println( "Javancss.<init>(String).e: " + e );
+        	Util.debug( "Javancss.<init>(String).e: " + e );
         } catch(TokenMgrError pError) {
-        	//cobertura - changed from Util.debug to System.out.println
-        	System.out.println( "Javancss.<init>(String).pError: " + pError );
+        	Util.debug( "Javancss.<init>(String).pError: " + pError );
         }
     }
 
-    //cobertura:  add this next constructor so any input stream can be used.
+    /*
+     * cobertura:  add this next constructor so any input stream can be used.
+     * 
+     * It should be a copy of the Javancss(String) constructor, but just
+     * make sure _vJavaSourceFiles is empty.   _measureRoot will
+     * use the input stream if it is empty.
+     */
     public Javancss(InputStream isJavaSource_) {
+        Util.debug( "Javancss.<init>(InputStream).sJavaSourceFile_: " + isJavaSource_ );
         _sErrorMessage = null;
         _vJavaSourceFiles = new Vector();
+
         try {
             _measureRoot(isJavaSource_);
         } catch(Exception e) {
-        	System.out.println( "Javancss.<init>(InputStream).e: " + e );
+        	Util.debug( "Javancss.<init>(InputStream).e: " + e );
         } catch(TokenMgrError pError) {
-        	System.out.println( "Javancss.<init>(InputStream).pError: " + pError );
+        	Util.debug( "Javancss.<init>(InputStream).pError: " + pError );
         }
     }
 
@@ -412,16 +417,14 @@ public class Javancss implements Exitable,
 
     public boolean parseImports() {
         if ( Util.isEmpty( _sJavaSourceFileName ) ) {
-        	//cobertura - changed from Util.debug to System.out.println
-        	System.out.println( "Javancss.parseImports().NO_FILE" );
+        	Util.debug( "Javancss.parseImports().NO_FILE" );
 
             return true;
         }
         DataInputStream disSource = createInputStream
                ( _sJavaSourceFileName );
         if ( disSource == null ) {
-        	//cobertura - changed from Util.debug to System.out.println
-        	System.out.println( "Javancss.parseImports().NO_DIS" );
+        	Util.debug( "Javancss.parseImports().NO_DIS" );
 
             return true;
         }
@@ -434,8 +437,7 @@ public class Javancss implements Exitable,
             _aoPackage = _pJavaParser.getPackageObjects();
             Util.debug( "Javancss.parseImports().END_PARSING" );
         } catch(ParseException pParseException) {
-        	//cobertura - changed from Util.debug to System.out.println
-        	System.out.println( "Javancss.parseImports().PARSE_EXCEPTION" );
+        	Util.debug( "Javancss.parseImports().PARSE_EXCEPTION" );
             if (_sErrorMessage == null) {
                 _sErrorMessage = "";
             }
@@ -448,8 +450,7 @@ public class Javancss implements Exitable,
 
             return true;
         } catch(TokenMgrError pTokenMgrError) {
-        	//cobertura - changed from Util.debug to System.out.println
-        	System.out.println( "Javancss.parseImports().TOKEN_ERROR" );
+        	Util.debug( "Javancss.parseImports().TOKEN_ERROR" );
             if (_sErrorMessage == null) {
                 _sErrorMessage = "";
             }
