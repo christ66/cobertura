@@ -134,20 +134,8 @@ checkout (mentioned above) that created javancssCurrent.
 If you are using an IDE svn plugin, then you can probably skip to the 
 section entitled COMMITTING TO CURRENT.
 
-Now that the config file is ready, try doing this:
-
-cd javancssCurrent
-svn add *
-
-If this works you can skip down to the section entitled COMMITTING TO CURRENT.
-
-If it does not work, it might have aborted with something like this message:
-
-svn: File 'test\Test38.java' has inconsistent newlines
-svn: Inconsistent line ending style
-
-If so, create a file called cobertura.groovy in the javancssCurrent directory.  Make sure 
-the contents have this:
+Now that the config file is ready, create a file called cobertura.groovy 
+in the javancssCurrent directory.  Make sure the contents have this:
 
 def ant = new AntBuilder()
 
@@ -212,9 +200,15 @@ Then, commit it again:
 svn commit test/TestEncoding.java -m "This is a binary file in the javancss repository."
 
 
+
 Then, I deleted javancssCurrent, checked it out again, and compared 
 with javancssSource again.
 
+
+There may also be some files that were deleted.  You can delete the file, and execute:
+
+svn delete the/file
+svn commit the/file -m "the/file was deleted from Javancss version ???"
 
 
 
