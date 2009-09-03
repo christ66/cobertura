@@ -221,7 +221,7 @@
 		<delete dir="${test.work.dir}" failonerror="false" />
 		<mkdir dir="${build.reports.dir}/junit-xml" />
 
-		<junit fork="true" forkmode="once" haltonfailure="false" failureProperty="test.failed" printsummary="true" timeout="300000">
+		<junit fork="true" forkmode="once" haltonfailure="false" failureProperty="test.failed" printsummary="true" timeout="900000">
 			<sysproperty key="net.sourceforge.cobertura.datafile" file="${build.dir}/cobertura.ser" />
 			<sysproperty key="basedir" value="${basedir}"/>
 			<!--
