@@ -30,8 +30,8 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
@@ -111,12 +111,12 @@ public class ComplexityCalculator {
 						+ javancss.getLastErrorMessage());
 		}
 
-		Vector methodMetrics = javancss.getFunctionMetrics();
+		List methodMetrics = javancss.getFunctionMetrics();
 		int classCcn = 0;
-        for( Enumeration method = methodMetrics.elements(); method.hasMoreElements();)
+        for( Iterator method = methodMetrics.iterator(); method.hasNext();)
         {
-        	Vector singleMethodMetrics = (Vector)method.nextElement();
-        	classCcn += ((Integer)singleMethodMetrics.elementAt(JavancssConstants.FCT_CCN)).intValue();
+        	List singleMethodMetrics = (List)method.next();
+        	classCcn += ((Integer)singleMethodMetrics.get(JavancssConstants.FCT_CCN)).intValue();
         }
 		
 		return new Complexity( classCcn, methodMetrics.size());

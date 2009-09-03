@@ -21,6 +21,22 @@
  * USA
  */
 
+
+/*
+ *
+ * WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING  
+ *
+ * WARNING TO COBERTURA DEVELOPERS
+ *
+ * DO NOT MODIFY THIS FILE!
+ *
+ * MODIFY THE FILES UNDER THE JAVANCSS DIRECTORY LOCATED AT THE ROOT OF THE COBERTURA PROJECT.
+ *
+ * FOLLOW THE PROCEDURE FOR MERGING THE LATEST JAVANCSS INTO COBERTURA LOCATED AT
+ * javancss/coberturaREADME.txt
+ *
+ * WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   
+ */
 package net.sourceforge.cobertura.javancss;
 
 /**
@@ -28,7 +44,7 @@ package net.sourceforge.cobertura.javancss;
  * structures containing Java metric data.
  *
  * @author    Chr. Clemens Lee <clemens@kclee.com>
- * $Id: JavancssConstants.java,v 1.5 2006/04/16 11:42:20 clemens Exp clemens $
+ * $Id: JavancssConstants.java 15 2008-08-04 22:00:07Z hboutemy $
  */
 public interface JavancssConstants
 {
@@ -43,8 +59,11 @@ public interface JavancssConstants
   static final int FCT_MULTI_LINES  = 6;
 
   // specially added for Cobertura
-  static final int FCT_BEGIN_LINE_NUMBER  = 7;
-  static final int FCT_END_LINE_NUMBER  = 8;
+  // Commenting out for now until the rest of patch 2353196 is applied.
+  //static final int FCT_BEGIN_LINE_NUMBER  = 7;
+  // specially added for Cobertura
+  // Commenting out for now until the rest of patch 2353196 is applied.
+  //static final int FCT_END_LINE_NUMBER  = 8;
   
   static final int OBJ_NAME  = 0;
   static final int OBJ_NCSS  = 1;

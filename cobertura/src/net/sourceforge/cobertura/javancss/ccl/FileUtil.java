@@ -35,7 +35,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package net.sourceforge.cobertura.javancss;
+package net.sourceforge.cobertura.javancss.ccl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,12 +53,16 @@ import java.io.IOException;
  * Other less frequently used but still handy methods are:<br>
  * - {@link #normalizeFileName(java.lang.String) normalizeFileName} to take the current user directory into account via the 'user.dir' system property<br>
  *
- * @version  $Id$
+ * @version  $Id: FileUtil.java 384 2006-03-17 20:10:49Z thekingant $
  * @author <a href="http://www.kclee.com/clemens/">
  *         Chr. Clemens Lee</a>
  *         &lt;<a href="mailto:clemens@kclee.com">
  *         clemens@kclee.com
  *         </a>>
+ */
+/*
+ * cobertura - this file was moved from net.sourceforge.cobertura.javancss package.
+ * Mark Doliner apparently got the source from somewhere, but it is not available now.
  */
 public class FileUtil
 {
@@ -88,7 +92,7 @@ public class FileUtil
 	 *
 	 * @return            sPath_ if sFile_ is empty.
 	 */
-	private static String concatPath(String sPath_, String sFile_)
+	public static String concatPath(String sPath_, String sFile_)
 	{
 		Util.panicIf(sPath_ == null);
 		//System.out.println("ccl.util.FileUtil.concatPath(..).sPath_: --->" + sPath_ + "<---");
@@ -160,7 +164,7 @@ public class FileUtil
 	/**
 	 * @return It's the canonical path of sFileName_.
 	 */
-	private static String getAbsoluteFileName(String sFileName_)
+	public static String getAbsoluteFileName(String sFileName_)
 	{
 		String sRetVal = null;
 

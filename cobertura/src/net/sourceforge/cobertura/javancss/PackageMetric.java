@@ -21,9 +21,31 @@
  * USA
  */
 
+
+/*
+ *
+ * WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING  
+ *
+ * WARNING TO COBERTURA DEVELOPERS
+ *
+ * DO NOT MODIFY THIS FILE!
+ *
+ * MODIFY THE FILES UNDER THE JAVANCSS DIRECTORY LOCATED AT THE ROOT OF THE COBERTURA PROJECT.
+ *
+ * FOLLOW THE PROCEDURE FOR MERGING THE LATEST JAVANCSS INTO COBERTURA LOCATED AT
+ * javancss/coberturaREADME.txt
+ *
+ * WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   
+ */
 package net.sourceforge.cobertura.javancss;
 
-public class PackageMetric 
+/**
+ * Basic data class to store all metrics attached to a package.
+ *
+ * @author  Chr. Clemens Lee <clemens@kclee.com>
+ * @version $Id: PackageMetric.java 51 2008-08-17 13:12:34Z hboutemy $
+ */
+public class PackageMetric implements Comparable
 {
     public String name    = ".";
     public int classes    = 0;
@@ -68,8 +90,13 @@ public class PackageMetric
         singleLn   += pPackageMetric_.singleLn;
         multiLn    += pPackageMetric_.multiLn;
     }
-    
+
     public String toString() {
         return name;
+    }
+
+    public int compareTo( Object o )
+    {
+        return name.compareTo( ((PackageMetric)o).name );
     }
 }
