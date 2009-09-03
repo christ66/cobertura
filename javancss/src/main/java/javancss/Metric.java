@@ -1,4 +1,3 @@
-//COBERTURA REMOVE BEGIN
 /*
 Copyright (C) 2000 Chr. Clemens Lee <clemens@kclee.com>.
 
@@ -19,43 +18,56 @@ You should have received a copy of the GNU General Public License
 along with JavaNCSS; see the file COPYING.  If not, write to
 the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
-//COBERTURA REMOVE END
+
 package javancss;
 
 /**
- * Basic data class to store all metrics attached to a package.
+ * Base data class to store all metrics common to packages, objects and functions.
  *
- * @author  Chr. Clemens Lee <clemens@kclee.com>
- * @version $Id: PackageMetric.java 121 2009-01-17 22:19:45Z hboutemy $
+ * @author  Hervé Boutemy
+ * @version $Id: Metric.java 121 2009-01-17 22:19:45Z hboutemy $
  */
-public class PackageMetric extends Metric
+public abstract class Metric implements Comparable
 {
-    public int classes    = 0;
-    public int functions  = 0;
+    public String name = ".";
+    /** Non Commenting Source Statements (NCSS). */
+    public int ncss = 0;
+    public int javadocs = 0;
+    public int javadocsLn = 0;
+    public int singleLn = 0;
+    public int multiLn = 0;
 
-    public PackageMetric()
+    public Metric()
     {
         super();
     }
 
     public void clear()
     {
-        super.clear();
-        classes   = 0;
-        functions = 0;
+        name = ".";
+        ncss = 0;
+        javadocs = 0;
+        javadocsLn = 0;
+        singleLn = 0;
+        multiLn = 0;
     }
 
-    public void add(PackageMetric pPackageMetric_) {
-        if (pPackageMetric_ == null) {
-            return;
-        }
-        classes    += pPackageMetric_.classes;
-        functions  += pPackageMetric_.functions;
-        ncss       += pPackageMetric_.ncss;
+    public String toString() {
+        return name;
+    }
 
-        javadocs   += pPackageMetric_.javadocs;
-        javadocsLn += pPackageMetric_.javadocsLn;
-        singleLn   += pPackageMetric_.singleLn;
-        multiLn    += pPackageMetric_.multiLn;
+    public int compareTo( Object o )
+    {
+        return name.compareTo( ((Metric)o).name );
+    }
+
+    public boolean equals( Object o )
+    {
+        return compareTo( o ) == 0;
+    }
+
+    public int hashCode()
+    {
+        return name.hashCode();
     }
 }

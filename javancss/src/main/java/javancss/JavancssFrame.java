@@ -2,7 +2,7 @@
 /*
 Copyright (C) 2000 Chr. Clemens Lee <clemens@kclee.com>.
 
-This file is part of JavaNCSS 
+This file is part of JavaNCSS
 (http://www.kclee.com/clemens/java/javancss/).
 
 JavaNCSS is free software; you can redistribute it and/or modify it
@@ -46,33 +46,33 @@ import ccl.util.Util;
  * gui mode or not, class 'Main' is used.
  *
  * @author  <a href="http://www.kclee.com/clemens/">Chr. Clemens Lee</a> (<a href="mailto:clemens@kclee.com"><i>clemens@kclee.com</i></a>)
- * @version $Id: JavancssFrame.java 56 2008-08-17 13:38:23Z hboutemy $
+ * @version $Id: JavancssFrame.java 121 2009-01-17 22:19:45Z hboutemy $
  */
 public class JavancssFrame extends MainJFrame {
     public static final String S_PACKAGES = "Packages";
     public static final String S_CLASSES = "Classes";
     public static final String S_METHODS = "Methods";
-    
+
     private static final String S_MN_F_SAVE = "Save";
-    
-    private int _oldThreadPriority = -1; 
-    
+
+    private int _oldThreadPriority = -1;
+
     private AnimationPanel _pAnimationPanel = null;
-    
+
     private JTextArea _txtPackage;
     private JTextArea _txtObject;
     private JTextArea _txtFunction;
     private JTextArea _txtError;
-    
+
     private JTabbedPane _pTabbedPane = null;
-    
+
     private Font pFont = new Font("Monospaced", Font.PLAIN, 12);
-    
+
     private boolean _bNoError = true;
-    
+
     private String _sProjectName = null;
     private String _sProjectPath = null;
-    
+
     private Init _pInit = null;
 
     public void save() {
@@ -86,7 +86,7 @@ public class JavancssFrame extends MainJFrame {
                ".methods.txt";
 
         String sSuccessMessage = "Data appended successfully to the following files:";
-        
+
         try {
             FileUtil.appendFile(sPackagesFullFileName,
                                 _txtPackage.getText());
@@ -95,7 +95,7 @@ public class JavancssFrame extends MainJFrame {
             SwingUtil.showMessage(this, "Error: could not append to file '" +
                                 sPackagesFullFileName + "'.\n" + ePackages);
         }
-        
+
         try {
             FileUtil.appendFile(sClassesFullFileName,
                                 _txtObject.getText());
@@ -104,7 +104,7 @@ public class JavancssFrame extends MainJFrame {
             SwingUtil.showMessage(this, "Error: could not append to file '" +
                                 sClassesFullFileName + "'.\n" + eClasses);
         }
-        
+
         try {
             FileUtil.appendFile(sMethodsFullFileName,
                                 _txtFunction.getText());
@@ -113,16 +113,16 @@ public class JavancssFrame extends MainJFrame {
             SwingUtil.showMessage(this, "Error: could not append to file '" +
                                 sMethodsFullFileName + "'.\n" + eMethods);
         }
-        
+
         SwingUtil.showMessage(this, sSuccessMessage);
     }
 
     private void _setMenuBar() {
         Vector vMenus = new Vector();
-        
+
         Vector vFileMenu = new Vector();
         Vector vHelpMenu = new Vector();
-        
+
         vFileMenu.addElement("File");
         vFileMenu.addElement(S_MN_F_SAVE);
         vFileMenu.addElement("Exit");
@@ -134,7 +134,7 @@ public class JavancssFrame extends MainJFrame {
 
         vMenus.addElement(vFileMenu);
         vMenus.addElement(vHelpMenu);
-                
+
         setMenuBar(vMenus);
     }
 
@@ -147,7 +147,7 @@ public class JavancssFrame extends MainJFrame {
 
     public JavancssFrame(Init pInit_) {
         super( "JavaNCSS: " + pInit_.getFileName() );
-        
+
         _pInit = pInit_;
         getInit().setAuthor( "Chr. Clemens Lee" );
 
@@ -159,32 +159,32 @@ public class JavancssFrame extends MainJFrame {
             _sProjectName = pInit_.getApplicationName();
             _sProjectPath = pInit_.getApplicationPath();
         }
-        
+
         _setMenuBar();
-        
+
         _bAboutSelected = false;
-        
+
         AutoGridBagLayout pAutoGridBagLayout = new AutoGridBagLayout();
-        
+
         getContentPane().setLayout(pAutoGridBagLayout);
-        
+
         Image pImage = Toolkit.getDefaultToolkit().
                getImage( SwingUtil.createCCLBorder().getClass().getResource
                          ( "anim_recycle_brown.gif" ) );
         _pAnimationPanel = new AnimationPanel( pImage, 350 );
-        
+
         JPanel pPanel = new JPanel();
         pPanel.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
         pPanel.add(_pAnimationPanel, BorderLayout.CENTER);
-        
+
         getContentPane().add(pPanel);
-        
-        
+
+
         pack();
         setSize(640, 480);
         SwingUtil.centerComponent(this);
     }
-    
+
     public void showJavancss(Javancss pJavancss_) {
         _bStop = false;
         _bSave = false;
@@ -209,32 +209,32 @@ public class JavancssFrame extends MainJFrame {
             pPanel.setLayout(new BorderLayout());
             _pTabbedPane = new JTabbedPane();
             _pTabbedPane.setDoubleBuffered(true);
-            
+
             _txtPackage = new JTextArea();
             _txtPackage.setFont(pFont);
             JScrollPane jspPackage = new JScrollPane(_txtPackage);
             int inset = 5;
             jspPackage.setBorder( BorderFactory.
                                   createEmptyBorder
-                                  ( inset, inset, inset, inset ) ); 
+                                  ( inset, inset, inset, inset ) );
             _pTabbedPane.addTab("Packages", null, jspPackage);
-            
+
             _txtObject = new JTextArea();
             _txtObject.setFont(pFont);
             JScrollPane jspObject = new JScrollPane(_txtObject);
             jspObject.setBorder( BorderFactory.
                                   createEmptyBorder
-                                  ( inset, inset, inset, inset ) ); 
+                                  ( inset, inset, inset, inset ) );
             _pTabbedPane.addTab("Classes", null, jspObject);
-            
+
             _txtFunction = new JTextArea();
             _txtFunction.setFont(pFont);
             JScrollPane jspFunction = new JScrollPane(_txtFunction);
             jspFunction.setBorder( BorderFactory.
                                   createEmptyBorder
-                                  ( inset, inset, inset, inset ) ); 
+                                  ( inset, inset, inset, inset ) );
             _pTabbedPane.addTab("Methods", null, jspFunction);
-            
+
             // date and time
             String sTimeZoneID = System.getProperty("user.timezone");
             if (sTimeZoneID.equals("CET")) {
@@ -242,16 +242,16 @@ public class JavancssFrame extends MainJFrame {
             }
             TimeZone pTimeZone = TimeZone.getTimeZone(sTimeZoneID);
             Util.debug("JavancssFrame.showJavancss(..).pTimeZone.getID(): " + pTimeZone.getID());
-            
+
             SimpleDateFormat pSimpleDateFormat
                    = new SimpleDateFormat("EEE, MMM dd, yyyy  HH:mm:ss");//"yyyy.mm.dd e 'at' hh:mm:ss a z");
             pSimpleDateFormat.setTimeZone(pTimeZone);
             String sDate = pSimpleDateFormat.format(new Date()) + " " + pTimeZone.getID();
-            
+
             _txtPackage.setText(sDate + "\n\n" + pJavancss_.printPackageNcss());
             _txtObject.setText(sDate + "\n\n" + pJavancss_.printObjectNcss());
             _txtFunction.setText(sDate + "\n\n" + pJavancss_.printFunctionNcss());
-            
+
             if (pJavancss_.getLastErrorMessage() != null) {
                 _txtError = new JTextArea();
                 String sError = "Errors in Javancss:\n\n" +
@@ -260,15 +260,15 @@ public class JavancssFrame extends MainJFrame {
                 JScrollPane jspError = new JScrollPane(_txtError);
                 jspError.setBorder( BorderFactory.
                                   createEmptyBorder
-                                  ( inset, inset, inset, inset ) ); 
+                                  ( inset, inset, inset, inset ) );
                 getContentPane().add(jspError, BorderLayout.CENTER);
                 _pTabbedPane.addTab("Errors", null, jspError);
             }
-            
+
             pPanel.add(_pTabbedPane, BorderLayout.CENTER);
             getContentPane().add(pPanel, BorderLayout.CENTER);
         }
-        
+
         validate();
         repaint();
     }
@@ -283,13 +283,13 @@ public class JavancssFrame extends MainJFrame {
                 save();
                 _bSave = false;
             }
-            
+
             if (isExitSet()) {
                 exit();
                 _bStop = true;
                 break;
             }
-            
+
             if (_bAboutSelected) {
                 _bAboutSelected = false;
                 AboutDialog dlgAbout = new AboutDialog
@@ -299,7 +299,7 @@ public class JavancssFrame extends MainJFrame {
                 dlgAbout.dispose();
                 requestFocus();
             }
-            
+
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {

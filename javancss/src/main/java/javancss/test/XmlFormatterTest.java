@@ -14,17 +14,17 @@ import javancss.XmlFormatter;
  * This test class checks that the xml output feature is
  * working properly.
  *
- * @version $Id: XmlFormatterTest.java 66 2008-08-17 21:36:56Z hboutemy $
+ * @version $Id: XmlFormatterTest.java 121 2009-01-17 22:19:45Z hboutemy $
  * @author  Chr. Clemens Lee
  */
-public class XmlFormatterTest extends Test {
+public class XmlFormatterTest extends AbstractTest {
     /**
      * Is it at least possible to properly parse generated xml code?
      */
-    private void _checkParsing()
+    public void testParsing()
         throws Exception
     {
-        Javancss pJavancss = new Javancss( new File( testDir, "Test57.java" ) );
+        Javancss pJavancss = new Javancss( getTestFile( 57 ) );
         pJavancss.setXML( true );
 
         String sXML = XmlFormatter.printStart()
@@ -34,10 +34,9 @@ public class XmlFormatterTest extends Test {
                + pJavancss.printJavaNcss()
                + XmlFormatter.printEnd();
 
-        File xsltFile = new File( testDir, ".." + File.separator + "xslt" + File.separator + "xmltest.xsl" );
         try
         {
-            String sText = XMLUtil.getXML( sXML, xsltFile );
+            String sText = XMLUtil.getXML( sXML, getXslFile( "xmltest.xsl" ) );
             Assert( sText.equals( "79" ), sText );
         }
         catch( NoClassDefFoundError error )
@@ -45,7 +44,7 @@ public class XmlFormatterTest extends Test {
             Util.print( "skipped: 'xalan.jar' and or 'xerces.jar' library missing." );
         }
 
-        pJavancss = new Javancss( new File( testDir, "Test117.java" ) );
+        pJavancss = new Javancss( getTestFile( 117 ) );
         pJavancss.setXML( true );
 
         sXML = XmlFormatter.printStart()
@@ -56,7 +55,7 @@ public class XmlFormatterTest extends Test {
                + XmlFormatter.printEnd();
         Assert( Util.isEmpty( sXML ) == false );
 
-        pJavancss = new Javancss( new File( testDir, "Test118.java" ) );
+        pJavancss = new Javancss( getTestFile( 118 ) );
         pJavancss.setXML( true );
 
         sXML = XmlFormatter.printStart()
@@ -71,10 +70,10 @@ public class XmlFormatterTest extends Test {
     /**
      * Is the transformed XML output identical to the standard ASCI output?
      */
-    private void _checkXML2Text()
+    public void testXML2Text()
         throws Exception
     {
-        Javancss pJavancss = new Javancss( new File( testDir, "Test32.java" ) );
+        Javancss pJavancss = new Javancss( getTestFile( 32 ) );
         pJavancss.setXML( true );
 
         String sXML = XmlFormatter.printStart()
@@ -84,28 +83,32 @@ public class XmlFormatterTest extends Test {
                + pJavancss.printJavaNcss()
                + XmlFormatter.printEnd();
 
-        File xsltFile = new File( testDir, ".." + File.separator + "xslt" + File.separator + "javancss2text.xsl" );
-        try 
+        try
         {
-            String sText = XMLUtil.getXML( sXML, xsltFile );
+            String sText = XMLUtil.getXML( sXML, getXslFile( "javancss2text.xsl" ) );
             FileUtil.writeFile( "/tmp/t", sText );
-            String sCompare = FileUtil.readFile( new File( testDir, "Output32.txt" ).getAbsolutePath() );
+            String sCompare = FileUtil.readFile( getTestFile( "Output32.txt" ).getAbsolutePath() );
             Assert( sText.equals( sCompare ), sText );
-        } 
+        }
         catch( NoClassDefFoundError error )
         {
             Util.print( "skipped: 'xalan.jar' and or 'xerces.jar' library missing." );
         }
     }
 
-    public XmlFormatterTest() 
+    public XmlFormatterTest()
     {
         super();
     }
 
-    public XmlFormatterTest( Test pTest_ ) 
+    public XmlFormatterTest( Test pTest_ )
     {
         super( pTest_ );
+    }
+
+    private File getXslFile( String filename )
+    {
+        return new File( getTestDir(), ".." + File.separator + "xslt" + File.separator + filename );
     }
 
     /**
@@ -114,23 +117,12 @@ public class XmlFormatterTest extends Test {
     protected void _doIt()
         throws Exception
     {
-        _checkParsing ();
-        _checkXML2Text();
+        testParsing ();
+        testXML2Text();
     }
 
-    public static void main( String[] asArg_ ) 
+    public static void main( String[] asArg_ )
     {
-        XmlFormatterTest pTest = new XmlFormatterTest();
-        pTest.setTestDir( new File( "test" ) );
-        pTest.setVerbose( true );
-        pTest.setTiming ( true );
-        pTest.run();
-        pTest.printResult();
-    }
-
-    private File testDir = null;
-
-    public void setTestDir( File testDir_ ) {
-        testDir = testDir_;
+        new XmlFormatterTest().main();
     }
 }
