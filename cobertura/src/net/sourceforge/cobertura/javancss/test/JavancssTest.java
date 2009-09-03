@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * This file was taken from JavaNCSS

@@ -41,6 +41,8 @@
 package net.sourceforge.cobertura.javancss.parser;
 import java.util.*;
 import net.sourceforge.cobertura.javancss.ccl.Util;
+import net.sourceforge.cobertura.javancss.FunctionMetric;
+import net.sourceforge.cobertura.javancss.ObjectMetric;
 import net.sourceforge.cobertura.javancss.PackageMetric;
 
 public class JavaParserTokenManager implements JavaParserConstants

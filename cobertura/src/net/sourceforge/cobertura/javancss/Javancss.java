@@ -85,8 +85,7 @@ import net.sourceforge.cobertura.javancss.test.JavancssTest;
  *            , and Guillermo Rodriguez <guille@sms.nl>.
  * @version   $Id$
  */
-public class Javancss implements Exitable,
-                                 JavancssConstants
+public class Javancss implements Exitable
 {
     private static final String S_INIT__FILE_CONTENT =
         "[Init]\n" +
@@ -110,7 +109,7 @@ public class Javancss implements Exitable,
         "\n" +
         "[Colors]\n" +
         "UseSystemColors=true\n";
-    
+
     private boolean _bExit = false;
 
     private List/*<File>*/ _vJavaSourceFiles = new ArrayList();
@@ -122,8 +121,8 @@ public class Javancss implements Exitable,
     private JavaParser _pJavaParser = null;
     private int _ncss = 0;
     private int _loc = 0;
-    private List _vFunctionMetrics = new ArrayList();
-    private List _vObjectMetrics = new ArrayList();
+    private List/*<FunctionMetric>*/ _vFunctionMetrics = new ArrayList();
+    private List/*<ObjectMetric>*/ _vObjectMetrics = new ArrayList();
     private List/*<PackageMetric>*/ _vPackageMetrics = null;
     private List _vImports = null;
     private Map/*<String,PackageMetric>*/ _htPackages = null;
@@ -166,7 +165,7 @@ public class Javancss implements Exitable,
         {
             reader = newReader( sSourceFile_ );
         }
-        catch ( IOException pIOException ) 
+        catch ( IOException pIOException )
         {
             if ( Util.isEmpty( _sErrorMessage ) )
             {
@@ -194,13 +193,13 @@ public class Javancss implements Exitable,
             {
                 sTempErrorMessage = "";
             }
-            sTempErrorMessage += "ParseException in " + sSourceFile_.getAbsolutePath() + 
+            sTempErrorMessage += "ParseException in " + sSourceFile_.getAbsolutePath() +
                    "\nLast useful checkpoint: \"" + _pJavaParser.getLastFunction() + "\"\n";
             sTempErrorMessage += pParseException.getMessage() + "\n";
-            
+
             _sErrorMessage = sTempErrorMessage;
             _thrwError = pParseException;
-            
+
             throw pParseException;
         }
         catch ( TokenMgrError pTokenMgrError )
@@ -209,11 +208,11 @@ public class Javancss implements Exitable,
             {
                 sTempErrorMessage = "";
             }
-            sTempErrorMessage += "TokenMgrError in " + sSourceFile_.getAbsolutePath() + 
+            sTempErrorMessage += "TokenMgrError in " + sSourceFile_.getAbsolutePath() +
                    "\n" + pTokenMgrError.getMessage() + "\n";
             _sErrorMessage = sTempErrorMessage;
             _thrwError = pTokenMgrError;
-            
+
             throw pTokenMgrError;
         }
     }
@@ -237,9 +236,9 @@ public class Javancss implements Exitable,
             Map htNewPackages = _pJavaParser.getPackage();
 
             /* List vNewPackages = new Vector(); */
-            for ( Iterator ePackages = htNewPackages.keySet().iterator(); ePackages.hasNext(); )
+            for ( Iterator ePackages = htNewPackages.entrySet().iterator(); ePackages.hasNext(); )
             {
-                String sPackage = (String) ePackages.next();
+                String sPackage = (String) ( (Map.Entry) ePackages.next() ).getKey();
 
                 PackageMetric pckmNext = (PackageMetric) htNewPackages.get( sPackage );
                 pckmNext.name = sPackage;
@@ -343,7 +342,7 @@ public class Javancss implements Exitable,
     /**
      * The same as getFunctionMetrics?!
      */
-    public List getFunctions() {
+    public List/*<FunctionMetric>*/ getFunctions() {
         return _vFunctionMetrics;
     }
 
@@ -484,11 +483,11 @@ public class Javancss implements Exitable,
     public int getJdcl() {
         return JavaParserTokenManager._iFormalComments;
     }
-    
+
     public int getSl() {
         return JavaParserTokenManager._iSingleComments;
     }
-    
+
     public int getMl() {
         return JavaParserTokenManager._iMultiComments;
     }
@@ -498,7 +497,7 @@ public class Javancss implements Exitable,
         return(_vFunctionMetrics);
     }
 
-    public List getObjectMetrics() {
+    public List/*<ObjectMetric>*/ getObjectMetrics() {
         return(_vObjectMetrics);
     }
 
@@ -514,7 +513,7 @@ public class Javancss implements Exitable,
         if (_sErrorMessage == null) {
             return null;
         }
-        return(new String(_sErrorMessage));
+        return _sErrorMessage;
     }
 
     public Throwable getLastError() {
