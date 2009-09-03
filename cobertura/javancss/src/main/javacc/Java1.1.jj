@@ -1507,6 +1507,11 @@ void MethodDeclaration() :
              vFunctionMetrics.addElement( new Integer( 0 ) );//token_source._iMultiComments - oldMulti));
              // */
 
+             // specially added for Cobertura
+             // Commenting out for now until the rest of patch 2353196 is applied.
+             //vFunctionMetrics.add(new Integer(beginLine));
+             //vFunctionMetrics.add(new Integer(endLine));
+
              _vFunctions.addElement(vFunctionMetrics);
              _sFunction = sOldFunction;
              _functions = oldFunctions + 1;
@@ -1677,6 +1682,10 @@ void ConstructorDeclaration() :
                 vFunctionMetrics.addElement( new Integer(token_source._iSingleComments - oldSingle));
                 vFunctionMetrics.addElement( new Integer(token_source._iMultiComments - oldMulti));
                 //
+                // specially added for Cobertura
+                // Commenting out for now until the rest of patch 2353196 is applied.
+                //vFunctionMetrics.add(new Integer(beginLine));
+                //vFunctionMetrics.add(new Integer(endLine));
         
                 _vFunctions.addElement(vFunctionMetrics);
                 _sFunction = sOldFunction;

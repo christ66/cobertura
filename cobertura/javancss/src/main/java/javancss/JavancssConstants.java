@@ -42,9 +42,11 @@ public interface JavancssConstants
   static final int FCT_MULTI_LINES  = 6;
 
   // specially added for Cobertura
-  static final int FCT_BEGIN_LINE_NUMBER  = 7;
+  // Commenting out for now until the rest of patch 2353196 is applied.
+  //static final int FCT_BEGIN_LINE_NUMBER  = 7;
   // specially added for Cobertura
-  static final int FCT_END_LINE_NUMBER  = 8;
+  // Commenting out for now until the rest of patch 2353196 is applied.
+  //static final int FCT_END_LINE_NUMBER  = 8;
   
   static final int OBJ_NAME  = 0;
   static final int OBJ_NCSS  = 1;
