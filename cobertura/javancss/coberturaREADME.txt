@@ -341,7 +341,10 @@ If they do, you can commit the new cobertura javancss files:
 
 svn commit -m "Merge with https://svn.codehaus.org/javancss/tags/javancss-32.53"
 
-
+If this does not work it may be because a file has been added to the javancss package.
+I am seeing that I have to change the svn:mime-type for anything in net.sourceforge.cobertura.javancss
+to application/octet-stream.  I suppose the script that is copying the files over is doing
+something funny with newlines that svn does not like.
 
 
 
