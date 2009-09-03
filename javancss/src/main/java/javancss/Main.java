@@ -22,6 +22,7 @@ Boston, MA 02111-1307, USA.  */
 
 package javancss;
 
+import java.io.IOException;
 import java.util.Locale;
 
 /**
@@ -30,12 +31,12 @@ import java.util.Locale;
  * control to the Javancss class.
  *
  * @author    Chr. Clemens Lee <clemens@kclee.com>
- * @version   $Id: Main.java 15 2008-08-04 22:00:07Z hboutemy $
+ * @version   $Id: Main.java 64 2008-08-17 20:42:06Z hboutemy $
  */
 public class Main {
     public static final String S_RCS_HEADER = "$Header: /home/clemens/src/java/javancss/src/javancss/RCS/Main.java,v 29.50 2006/10/06 11:46:24 clemens Exp clemens $";
 
-    public static void main(String[] asArgs) {
+    public static void main(String[] asArgs) throws IOException {
         Locale.setDefault( Locale.US );
 
         Javancss pJavancss = new Javancss(asArgs, S_RCS_HEADER);

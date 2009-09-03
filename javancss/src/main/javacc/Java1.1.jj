@@ -35,10 +35,13 @@ options {
 
 PARSER_BEGIN(JavaParser)
 
-package javancss;
+package javancss.parser;
+
+import java.util.*;
 
 import ccl.util.Util;
-import java.util.*;
+
+import javancss.PackageMetric;
 
 /**
  * Java source code parser based on a grammar compiled by
@@ -61,7 +64,7 @@ import java.util.*;
  *              Emilio Gongora, <emilio@sms.nl> and
  *              Guillermo Rodriguez, <guille@sms.nl>.
  *            Anonymous class count patch by Vesa Karvonnen, <vesa_karvonen@hotmail.com> 2002-10-30.
- * @version   2000-01-31 $Id: Java1.1.jj 24 2008-08-06 22:07:07Z hboutemy $
+ * @version   2000-01-31 $Id: Java1.1.jj 60 2008-08-17 14:07:24Z hboutemy $
  */
 public class JavaParser 
 {
@@ -81,7 +84,7 @@ public class JavaParser
     private String  _sClass          = "";
     private String  _sFunction       = "";
     private int     _functions       = 0;     // number of functions in this class
-    private int     _topLevelClasses = 0;
+    //private int     _topLevelClasses = 0;
     private int     _classes         = 0;
     private int     _classLevel      = 0;
     private int     _anonClassCount  = 1;
@@ -105,13 +108,13 @@ public class JavaParser
     private Vector _vFunctions = new Vector();   // holds the statistics for each method
 
     /** 
-     * Metrices for each class/interface are stored in this
+     * Metrics for each class/interface are stored in this
      * vector.
      */
     private Vector _vClasses = new Vector();
     private Vector _vImports = new Vector();
     private Object[] _aoPackage = null;
-    private Hashtable _htPackage = new Hashtable();
+    private Map _htPackage = new HashMap();
     private PackageMetric _pPackageMetric;
 
     private Token _tmpToken = null;
@@ -157,7 +160,7 @@ public class JavaParser
     /**
      * @return The empty package consists of the name ".".
      */
-    public Hashtable getPackage() {
+    public Map getPackage() {
         return _htPackage;
     }
     
@@ -274,11 +277,11 @@ TOKEN_MGR_DECLS :
 {
     // added by SMS
 
-    static int  _iSingleComments = 0;
-    static int  _iMultiComments = 0;
-    static int  _iFormalComments = 0;
+    public static int  _iSingleComments = 0;
+    public static int  _iMultiComments = 0;
+    public static int  _iFormalComments = 0;
 
-    static int  _iMultiCommentsLast = 0;
+    public static int  _iMultiCommentsLast = 0;
 }
 
 /* WHITE SPACE */
@@ -585,11 +588,11 @@ void CompilationUnit() :
     int oldSingle = 0;
     int oldMulti  = 0;
 
-    token_source._iSingleComments = 0;
-    token_source._iMultiComments = 0;
-    token_source._iFormalComments = 0;
+    JavaParserTokenManager._iSingleComments = 0;
+    JavaParserTokenManager._iMultiComments = 0;
+    JavaParserTokenManager._iFormalComments = 0;
     
-    token_source._iMultiCommentsLast = 0;
+    JavaParserTokenManager._iMultiCommentsLast = 0;
 
     _bPrivate = true;//false;
 }
@@ -609,9 +612,9 @@ void CompilationUnit() :
              _pPackageMetric.ncss = _ncss;
              
              // added by SMS
-             _pPackageMetric.javadocsLn = token_source._iFormalComments;
-             _pPackageMetric.singleLn   = token_source._iSingleComments;
-             _pPackageMetric.multiLn    = token_source._iMultiComments;
+             _pPackageMetric.javadocsLn = JavaParserTokenManager._iFormalComments;
+             _pPackageMetric.singleLn   = JavaParserTokenManager._iSingleComments;
+             _pPackageMetric.multiLn    = JavaParserTokenManager._iMultiComments;
              //
              
              _htPackage.put(_formatPackage(_sPackage),
@@ -624,9 +627,9 @@ void CompilationUnit() :
       _pPackageMetric = new PackageMetric();
       
       // added by SMS
-      oldFormal = token_source._iFormalComments;
-      oldSingle = token_source._iSingleComments;
-      oldMulti  = token_source._iMultiComments;
+      oldFormal = JavaParserTokenManager._iFormalComments;
+      oldSingle = JavaParserTokenManager._iSingleComments;
+      oldMulti  = JavaParserTokenManager._iMultiComments;
   }
   (PackageDeclaration()
    |
@@ -640,9 +643,9 @@ void CompilationUnit() :
       _pPackageMetric.ncss = _ncss - oldNcss;
 
       // added by SMS
-      _pPackageMetric.javadocsLn = token_source._iFormalComments - oldFormal;
-      _pPackageMetric.singleLn   = token_source._iSingleComments - oldSingle;
-      _pPackageMetric.multiLn    = token_source._iMultiComments  - oldMulti;
+      _pPackageMetric.javadocsLn = JavaParserTokenManager._iFormalComments - oldFormal;
+      _pPackageMetric.singleLn   = JavaParserTokenManager._iSingleComments - oldSingle;
+      _pPackageMetric.multiLn    = JavaParserTokenManager._iMultiComments  - oldMulti;
       //
 
       PackageMetric pckmPrevious = (PackageMetric)_htPackage.
@@ -826,10 +829,10 @@ void ClassDeclaration() :
               if (_bPublic || _bPrivate) {
                   Util.debug( "_jvdc++" );
                   _jvdc++;
-                  _jvdcLines += token_source._iMultiCommentsLast;
-                  token_source._iFormalComments += token_source._iMultiCommentsLast;
+                  _jvdcLines += JavaParserTokenManager._iMultiCommentsLast;
+                  JavaParserTokenManager._iFormalComments += JavaParserTokenManager._iMultiCommentsLast;
               }
-              token_source._iMultiComments -= token_source._iMultiCommentsLast;
+              JavaParserTokenManager._iMultiComments -= JavaParserTokenManager._iMultiCommentsLast;
               break;
           }  else if ( tmpToken.specialToken.image.startsWith( "/*" ) ) {
               break;
@@ -840,8 +843,8 @@ void ClassDeclaration() :
           tmpToken = tmpToken.specialToken;
       }
       
-      oldSingle = token_source._iSingleComments;
-      oldMulti = token_source._iMultiComments;
+      oldSingle = JavaParserTokenManager._iSingleComments;
+      oldMulti = JavaParserTokenManager._iMultiComments;
   }
 
   UnmodifiedClassDeclaration()
@@ -859,8 +862,8 @@ void ClassDeclaration() :
 
              // added by SMS
              vMetric.addElement( new Integer(_jvdcLines));
-             vMetric.addElement( new Integer(token_source._iSingleComments - oldSingle));
-             vMetric.addElement( new Integer(token_source._iMultiComments - oldMulti));
+             vMetric.addElement( new Integer(JavaParserTokenManager._iSingleComments - oldSingle));
+             vMetric.addElement( new Integer(JavaParserTokenManager._iMultiComments - oldMulti));
              //
 
             // added by SMS
@@ -907,9 +910,9 @@ void UnmodifiedClassDeclaration() :
 
                         // added by SMS
                         _pPackageMetric.javadocs += _javadocs;
-                        //_pPackageMetric.javadocsLn += token_source._iFormalComments - oldFormal;
-                        //_pPackageMetric.singleLn += token_source._iSingleComments - oldSingle;
-                        //_pPackageMetric.multiLn += token_source._iMultiComments - oldMulti;
+                        //_pPackageMetric.javadocsLn += JavaParserTokenManager._iFormalComments - oldFormal;
+                        //_pPackageMetric.singleLn += JavaParserTokenManager._iSingleComments - oldSingle;
+                        //_pPackageMetric.multiLn += JavaParserTokenManager._iMultiComments - oldMulti;
                         //
                 }
                 _functions = oldFunctions;
@@ -951,10 +954,10 @@ void NestedClassDeclaration() :
                         if ((_bPublic && bPublic) || _bPrivate) {
                             Util.debug( "_jvdc++" );
                             _jvdc++;
-                            _jvdcLines += token_source._iMultiCommentsLast;
-                            token_source._iFormalComments += token_source._iMultiCommentsLast;
+                            _jvdcLines += JavaParserTokenManager._iMultiCommentsLast;
+                            JavaParserTokenManager._iFormalComments += JavaParserTokenManager._iMultiCommentsLast;
                         }
-                        token_source._iMultiComments -= token_source._iMultiCommentsLast;
+                        JavaParserTokenManager._iMultiComments -= JavaParserTokenManager._iMultiCommentsLast;
                         break;
                     }  else if ( tmpToken.specialToken.image.startsWith( "/*" ) ) {
                         break;
@@ -1022,7 +1025,7 @@ void InterfaceDeclaration() :
 {
         Token tmpToken = null;
         _javadocs = 0;
-        boolean bClassComment = false;
+        //boolean bClassComment = false;
         Vector vMetric = null;
 
         // added by SMS
@@ -1066,10 +1069,10 @@ void InterfaceDeclaration() :
                         if (_bPublic || _bPrivate) {
                             Util.debug( "_jvdc++" );
                             _jvdc++;
-                            _jvdcLines += token_source._iMultiCommentsLast;
-                            token_source._iFormalComments += token_source._iMultiCommentsLast;
+                            _jvdcLines += JavaParserTokenManager._iMultiCommentsLast;
+                            JavaParserTokenManager._iFormalComments += JavaParserTokenManager._iMultiCommentsLast;
                         }
-                        token_source._iMultiComments -= token_source._iMultiCommentsLast;
+                        JavaParserTokenManager._iMultiComments -= JavaParserTokenManager._iMultiCommentsLast;
                         break;
                     }  else if ( tmpToken.specialToken.image.startsWith( "/*" ) ) {
                         break;
@@ -1080,8 +1083,8 @@ void InterfaceDeclaration() :
                     tmpToken = tmpToken.specialToken;
                 }
                 
-                oldSingle = token_source._iSingleComments;
-                oldMulti = token_source._iMultiComments;
+                oldSingle = JavaParserTokenManager._iSingleComments;
+                oldMulti = JavaParserTokenManager._iMultiComments;
     }
 
   UnmodifiedInterfaceDeclaration()
@@ -1099,8 +1102,8 @@ void InterfaceDeclaration() :
 
              // added by SMS
              vMetric.addElement( new Integer(_jvdcLines));
-             vMetric.addElement( new Integer(token_source._iSingleComments - oldSingle));
-             vMetric.addElement( new Integer(token_source._iMultiComments - oldMulti));
+             vMetric.addElement( new Integer(JavaParserTokenManager._iSingleComments - oldSingle));
+             vMetric.addElement( new Integer(JavaParserTokenManager._iMultiComments - oldMulti));
              //
 
             // added by SMS
@@ -1134,10 +1137,10 @@ void NestedInterfaceDeclaration() :
                         if ((_bPublic && bPublic) || _bPrivate) {
                             Util.debug( "_jvdc++" );
                             _jvdc++;
-                            _jvdcLines += token_source._iMultiCommentsLast;
-                            token_source._iFormalComments += token_source._iMultiCommentsLast;
+                            _jvdcLines += JavaParserTokenManager._iMultiCommentsLast;
+                            JavaParserTokenManager._iFormalComments += JavaParserTokenManager._iMultiCommentsLast;
                         }
-                        token_source._iMultiComments -= token_source._iMultiCommentsLast;
+                        JavaParserTokenManager._iMultiComments -= JavaParserTokenManager._iMultiCommentsLast;
                         break;
                     }  else if ( tmpToken.specialToken.image.startsWith( "/*" ) ) {
                         break;
@@ -1195,9 +1198,9 @@ void UnmodifiedInterfaceDeclaration() :
 
                         // added by SMS
                         _pPackageMetric.javadocs += _javadocs;
-                        //_pPackageMetric.javadocsLn += token_source._iFormalComments - oldFormal;
-                        //_pPackageMetric.singleLn += token_source._iSingleComments - oldSingle;
-                        //_pPackageMetric.multiLn += token_source._iMultiComments - oldMulti;
+                        //_pPackageMetric.javadocsLn += JavaParserTokenManager._iFormalComments - oldFormal;
+                        //_pPackageMetric.singleLn += JavaParserTokenManager._iSingleComments - oldSingle;
+                        //_pPackageMetric.multiLn += JavaParserTokenManager._iMultiComments - oldMulti;
                         //
                 }
                 _functions = oldFunctions;
@@ -1255,10 +1258,10 @@ void FieldDeclaration() :
                             //_javadocs++;
                             Util.debug( "_jvdc++" );
                             _jvdc++;
-                            _jvdcLines += token_source._iMultiCommentsLast;
-                            token_source._iFormalComments += token_source._iMultiCommentsLast;
+                            _jvdcLines += JavaParserTokenManager._iMultiCommentsLast;
+                            JavaParserTokenManager._iFormalComments += JavaParserTokenManager._iMultiCommentsLast;
                         }
-                        token_source._iMultiComments -= token_source._iMultiCommentsLast;
+                        JavaParserTokenManager._iMultiComments -= JavaParserTokenManager._iMultiCommentsLast;
                         break;
                     }
                     else if ( tmpToken.specialToken.image.startsWith( "/*" ) ) 
@@ -1443,11 +1446,11 @@ void MethodDeclaration() :
               if ((bPublic && _bPublic) || _bPrivate) {
                   Util.debug( "_jvdc++" );
                   _jvdc++;
-                  jvdcLines = token_source._iMultiCommentsLast;
+                  jvdcLines = JavaParserTokenManager._iMultiCommentsLast;
                   _jvdcLines += jvdcLines;
-                  token_source._iFormalComments += jvdcLines;
+                  JavaParserTokenManager._iFormalComments += jvdcLines;
               }
-              token_source._iMultiComments -= jvdcLines;
+              JavaParserTokenManager._iMultiComments -= jvdcLines;
               break;
           }  else if ( tmpToken.specialToken.image.startsWith( "/*" ) ) {
               jvdcLines = 0;
@@ -1459,8 +1462,8 @@ void MethodDeclaration() :
           tmpToken = tmpToken.specialToken;
       }
 
-      oldSingle = token_source._iSingleComments;
-      oldMulti = token_source._iMultiComments;
+      oldSingle = JavaParserTokenManager._iSingleComments;
+      oldMulti = JavaParserTokenManager._iMultiComments;
   }
 
 
@@ -1503,8 +1506,8 @@ void MethodDeclaration() :
 
              //* added by SMS
              vFunctionMetrics.addElement( new Integer( 0 ) );//jvdcLines));
-             vFunctionMetrics.addElement( new Integer( 0 ) );//token_source._iSingleComments - oldSingle));
-             vFunctionMetrics.addElement( new Integer( 0 ) );//token_source._iMultiComments - oldMulti));
+             vFunctionMetrics.addElement( new Integer( 0 ) );//JavaParserTokenManager._iSingleComments - oldSingle));
+             vFunctionMetrics.addElement( new Integer( 0 ) );//JavaParserTokenManager._iMultiComments - oldMulti));
              // */
 
              // specially added for Cobertura
@@ -1626,11 +1629,11 @@ void ConstructorDeclaration() :
                         if ((bPublic && _bPublic) || _bPrivate) {
                             Util.debug( "_jvdc++" );
                             _jvdc++;
-                            jvdcLines = token_source._iMultiCommentsLast;
+                            jvdcLines = JavaParserTokenManager._iMultiCommentsLast;
                             _jvdcLines += jvdcLines;
-                            token_source._iFormalComments += jvdcLines;
+                            JavaParserTokenManager._iFormalComments += jvdcLines;
                         }
-                        token_source._iMultiComments -= jvdcLines;
+                        JavaParserTokenManager._iMultiComments -= jvdcLines;
                         break;
                     }  else if ( tmpToken.specialToken.image.startsWith( "/*" ) ) {
                         jvdcLines = 0;
@@ -1643,8 +1646,8 @@ void ConstructorDeclaration() :
                 }
                 
 
-                oldSingle = token_source._iSingleComments;
-                oldMulti = token_source._iMultiComments;
+                oldSingle = JavaParserTokenManager._iSingleComments;
+                oldMulti = JavaParserTokenManager._iMultiComments;
                 }
 
     ( BlockStatement() )*
@@ -1679,8 +1682,8 @@ void ConstructorDeclaration() :
 
                 // added by SMS
                 vFunctionMetrics.addElement( new Integer(jvdcLines));        
-                vFunctionMetrics.addElement( new Integer(token_source._iSingleComments - oldSingle));
-                vFunctionMetrics.addElement( new Integer(token_source._iMultiComments - oldMulti));
+                vFunctionMetrics.addElement( new Integer(JavaParserTokenManager._iSingleComments - oldSingle));
+                vFunctionMetrics.addElement( new Integer(JavaParserTokenManager._iMultiComments - oldMulti));
                 //
                 // specially added for Cobertura
                 // Commenting out for now until the rest of patch 2353196 is applied.
@@ -2128,7 +2131,7 @@ void ArgumentList() :
 void AllocationExpression() :
 {
         String sOldClass = _sClass;
-        int oldNcss = _ncss;
+        //int oldNcss = _ncss;
         int oldFunctions = _functions;
         int oldClasses = _classes;
         String sName;
@@ -2716,8 +2719,8 @@ void EnumDeclaration(int modifiers):
   [ ImplementsList(false) ]
 {
         // Chris Povirk
-      oldSingle = token_source._iSingleComments;
-      oldMulti = token_source._iMultiComments;
+      oldSingle = JavaParserTokenManager._iSingleComments;
+      oldMulti = JavaParserTokenManager._iMultiComments;
 }
   EnumBody()
          {
@@ -2736,8 +2739,8 @@ void EnumDeclaration(int modifiers):
 
                  // Chris Povirk
                  vMetrics.addElement( new Integer(_jvdcLines));
-                 vMetrics.addElement( new Integer(token_source._iSingleComments - oldSingle));
-                 vMetrics.addElement( new Integer(token_source._iMultiComments - oldMulti));
+                 vMetrics.addElement( new Integer(JavaParserTokenManager._iSingleComments - oldSingle));
+                 vMetrics.addElement( new Integer(JavaParserTokenManager._iMultiComments - oldMulti));
 
                  _vClasses.addElement(vMetrics);
                  _pPackageMetric.functions += _functions - oldFunctions;
@@ -2745,9 +2748,9 @@ void EnumDeclaration(int modifiers):
                  
                  // added by SMS
                  _pPackageMetric.javadocs += _javadocs;
-                 //_pPackageMetric.javadocsLn += token_source._iFormalComments - oldFormal;
-                 //_pPackageMetric.singleLn += token_source._iSingleComments - oldSingle;
-                 //_pPackageMetric.multiLn += token_source._iMultiComments - oldMulti;
+                 //_pPackageMetric.javadocsLn += JavaParserTokenManager._iFormalComments - oldFormal;
+                 //_pPackageMetric.singleLn += JavaParserTokenManager._iSingleComments - oldSingle;
+                 //_pPackageMetric.multiLn += Manager._iMultiComments - oldMulti;
                  //
              }
              _functions = oldFunctions;
@@ -2837,7 +2840,7 @@ void ClassOrInterfaceType():
 
 void ClassOrInterfaceBodyDeclaration(boolean isInterface):
 {
-   boolean isNestedInterface = false;
+   //boolean isNestedInterface = false;
    int modifiers;
 }
 {
