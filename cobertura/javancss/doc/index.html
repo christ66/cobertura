@@ -42,34 +42,27 @@ consists of 569'830 ncss).
 files for counting, <a href="http://www.kclee.de/clemens/jacob/">Jacob</a> (a Java class browser and project
 manager) can be used for this purpose.
 
-<p>JavaNCSS can also be used out of an Ant build.xml script as it
+<p>JavaNCSS can also be used out of an Ant <code>build.xml</code> script as it
 comes bundled with an Ant task written by Steve Jernigan.
 The JavaNCSS Ant Task is documented on a <a href="JavancssAntTask.html">separate page</a>.
 
-<P>You can always find the newest version of this page at: <A HREF="http://www.kclee.de/clemens/java/javancss/">http://www.kclee.de/clemens/java/javancss/</A>.
-<H2>
-Table of Contents</H2>
+<P>You can always find the newest version of this page at: <A HREF="http://www.kclee.de/clemens/java/javancss/">http://www.kclee.de/clemens/java/javancss/</A>
+
+<H2>Table of Contents</H2>
 
 <UL>
-<LI>
-<A HREF="#features">Features and Metrics' JavaNCSS Provides</A></LI>
+<LI><A HREF="#features">Features and Metrics' JavaNCSS Provides</A></LI>
 
-<LI>
-<A HREF="#system_requirements">System Requirements</A></LI>
+<LI><A HREF="#system_requirements">System Requirements</A></LI>
 
-<LI>
-<A HREF="#download">Downloading</A></LI>
+<LI><A HREF="#download">Downloading</A></LI>
 
-<LI>
-<A HREF="#usage">Usage</A>
-<ul><li><a href="#xslt">XSLT Stylesheets</a></li></ul>
-</LI>
+<LI><A HREF="#usage">Usage</A>
+<ul><li><a href="#xslt">XSLT Stylesheets</a></li></ul></LI>
 
-<LI>
-<A HREF="#specification">Specification</A></LI>
+<LI><A HREF="#specification">Specification</A></LI>
 
-<LI>
-<A HREF="#development">Development</A></LI>
+<LI><A HREF="#development">Development</A></LI>
 
 <LI>
 <A HREF="#release">Release History</A></LI>
@@ -128,22 +121,6 @@ easy selection of input source files.</LI>
 </td>
 <td> </td>
 <td>
-<script type="text/javascript"><!--
-google_ad_client = "pub-7370779389084862";
-google_ad_width = 120;
-google_ad_height = 240;
-google_ad_format = "120x240_as";
-google_ad_type = "text_image";
-google_ad_channel ="";
-google_color_border = "C0C0C0";
-google_color_bg = "374B5D";
-google_color_link = "C0C0C0";
-google_color_text = "C0C0C0";
-google_color_url = "FFBA51";
-//--></script>
-<script type="text/javascript"
-  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
 </td>
 </tr>
 </table>
@@ -155,7 +132,7 @@ google_color_url = "FFBA51";
 
 <H2>
 <A NAME="download"></A>Downloading</H2>
-<A HREF="javancss29.50.zip">JavaNCSS Version 29.50</A>
+<A HREF="javancss-30.51.zip">JavaNCSS Version 30.51</A>
 <!--&nbsp;<FORM ACTION="mailto:clemens@kclee.de?subject=JavaNCSS: please notify me for updates" METHOD="POST" enctype="text/plain">If
 you want to get notified when new updates for JavaNCSS are available please
 press the following button:
@@ -163,12 +140,12 @@ press the following button:
 your interest)</FORM></FONT>
 -->
 <h4>
-Downloading Java Development Kit and Swing</h4>
+Downloading Java Development Kit</h4>
 
-<P>JavaNCSS requires the Java Developer's Kit (JDK) Version 1.1.6 or above. Since you already seem to have Java source code
+<P>JavaNCSS requires the Java Developer's Kit (JDK) Version 1.4 or above. Since you already seem to have Java source code
 you want to measure, I assume you already have a JDK :).
 If not, you can download it
-via web from <A HREF="http://java.sun.com/nav/download/index.html">Javasoft</A>.
+via web from <A HREF="http://java.com/download/">Javasoft</A>.
 Follow the link to "JDK 1.4" and download the version applicable to your
 environment.
 <!--
@@ -182,7 +159,7 @@ you can get it for free there.-->
 <BR>&nbsp;
 <H2>
 <A NAME="usage"></A>Usage</H2>
-Make sure <tt>javancss29.50/lib/javancss.jar</tt>, <tt>javancss29.50/lib/ccl.jar</tt>, and <tt>javancss29.50/lib/ jhbasic.jar</tt> are added to your CLASSPATH.
+Make sure <tt>javancss-30.51/lib/javancss.jar</tt>, <tt>javancss-30.51/lib/ccl.jar</tt>, and <tt>javancss30.51/lib/ jhbasic.jar</tt> are added to your CLASSPATH.
 <p>
 Then to start JavaNCSS type: <TT><FONT COLOR="#FFFFFF">java javancss.Main</FONT></TT>.
 As an alternative you can edit and use either the <FONT COLOR="#FFFFFF"><tt>JAVANCSS.BAT</tt></FONT>
@@ -190,7 +167,7 @@ or <TT><FONT COLOR="#FFFFFF">javancss</FONT></TT> file. Just change the
 <TT><FONT COLOR="#FFFFFF">JAVA_HOME</FONT></TT> and <FONT COLOR="#FFFFFF"><tt>CLASSPATH</tt></FONT>
 variables according to your system. Make sure you did include the swingall.jar archive in the classpath.
 <p>
-Now for the first run type in (beeing in the <tt>javancss29.50</tt> directory itself):
+Now for the first run type in (beeing in the <tt>javancss-30.51</tt> directory itself):
 <p>
 <tt><FONT COLOR="#FFFFFF">./bin/javancss -gui test/*.java</FONT></TT>
 <p>
@@ -314,7 +291,7 @@ Prints out some basic information.</DD>
 
 <a name="xslt"></a><h3>XSLT Stylesheets</h3>
 
-JavaNCSS comes with some XSLT stylesheet (<tt>javancss29.50/xslt/javancss2text.xsl</tt> and <tt>javancss29.50/xslt/javancss2html.xsl</tt>). These stylesheets can be used to
+JavaNCSS comes with some XSLT stylesheet (<tt>javancss-30.51/xslt/javancss2text.xsl</tt> and <tt>javancss-30.51/xslt/javancss2html.xsl</tt>). These stylesheets can be used to
 convert XML output from JavaNCSS to ASCII or HTML output. In case of 
 the ASCII output this is of course
 quite boring and much slower as JavaNCSS creates the identical output
@@ -329,7 +306,7 @@ Assuming you have e.g. Xalan2 installed and somewhere in your
 path is a shell script named 'xslt' that knows how to invoke
 Java with the Xalan 2 main processor class (org.apache.xalan.xslt.Process),
 here is how you can make use of JavaNCSS' XSLT stylesheet:<p>
-<tt>cd javancss29.50</tt><br>
+<tt>cd javancss-30.51</tt><br>
 <tt>javancss -all -xml -recursive src > example.xml</tt><br>
 <tt>xslt -in example.xml -xsl xslt/javancss2text.xsl</tt><p>
 Have fun. If you create a useful new stylesheet for JavaNCSS,
@@ -372,7 +349,7 @@ Specification but include all kinds of declarations too.
 <TR>
 <TD>Package declaration</TD>
 
-<TD>package java.lang;</TD>
+<TD><code>package java.lang;</code></TD>
 
 <TD></TD>
 </TR>
@@ -380,7 +357,7 @@ Specification but include all kinds of declarations too.
 <TR>
 <TD>Import declaration</TD>
 
-<TD>import java.awt.*;</TD>
+<TD><code>import java.awt.*;</code></TD>
 
 <TD></TD>
 </TR>
@@ -388,8 +365,8 @@ Specification but include all kinds of declarations too.
 <TR NOSAVE>
 <TD VALIGN=TOP NOSAVE>Class declaration</TD>
 
-<TD>- public class Foo {&nbsp;
-<BR>- public class Foo extends Bla {</TD>
+<TD>- <code>public class Foo {</code>
+<BR>- <code>public class Foo extends Bla {</code></TD>
 
 <TD></TD>
 </TR>
@@ -397,7 +374,7 @@ Specification but include all kinds of declarations too.
 <TR NOSAVE>
 <TD VALIGN=TOP NOSAVE>Interface declaration</TD>
 
-<TD>public interface Able&nbsp; {</TD>
+<TD><code>public interface Able {</code></TD>
 
 <TD></TD>
 </TR>
@@ -405,8 +382,8 @@ Specification but include all kinds of declarations too.
 <TR NOSAVE>
 <TD VALIGN=TOP NOSAVE>Field declaration</TD>
 
-<TD VALIGN=TOP NOSAVE>- int a;&nbsp;
-<BR>- int a, b, c = 5, d = 6;</TD>
+<TD VALIGN=TOP NOSAVE>- <code>int a;</code>
+<BR>- <code>int a, b, c = 5, d = 6;</code></TD>
 
 <TD>No matter how many fields get actually declared through a comma separated
 list, and no matter if&nbsp; these fields get actually initialized, only
@@ -417,8 +394,8 @@ not four or even six (let me know if there is good reason to count it differentl
 <TR NOSAVE>
 <TD VALIGN=TOP NOSAVE>Method declaration</TD>
 
-<TD>- public void cry();&nbsp;
-<BR>- public void gib() throws DeadException {</TD>
+<TD>- <code>public void cry();</code>
+<BR>- <code>public void gib() throws DeadException {</code></TD>
 
 <TD></TD>
 </TR>
@@ -426,7 +403,7 @@ not four or even six (let me know if there is good reason to count it differentl
 <TR NOSAVE>
 <TD>Constructor declaration</TD>
 
-<TD VALIGN=TOP NOSAVE>public Foo() {</TD>
+<TD VALIGN=TOP NOSAVE><code>public Foo() {</code></TD>
 
 <TD></TD>
 </TR>
@@ -434,8 +411,8 @@ not four or even six (let me know if there is good reason to count it differentl
 <TR NOSAVE>
 <TD VALIGN=TOP NOSAVE>Constructor invocation</TD>
 
-<TD>- this();&nbsp;
-<BR>- super();</TD>
+<TD>- <code>this();</code>
+<BR>- <code>super();</code></TD>
 
 <TD></TD>
 </TR>
@@ -443,12 +420,12 @@ not four or even six (let me know if there is good reason to count it differentl
 <TR NOSAVE>
 <TD VALIGN=TOP NOSAVE>Statement</TD>
 
-<TD>- i = 0;&nbsp;
-<BR>- if (ok)&nbsp;
-<BR>- if (exit) {&nbsp;
-<BR>- if (3 == 4);&nbsp;
-<BR>- if (4 == 4) { ; }&nbsp;
-<BR>- } else {</TD>
+<TD>- <code>i = 0;</code>
+<BR>- <code>if (ok)</code>
+<BR>- <code>if (exit) {</code>
+<BR>- <code>if (3 == 4);</code>
+<BR>- <code>if (4 == 4) { ; }</code>
+<BR>- <code>} else {</code></TD>
 
 <TD VALIGN=TOP NOSAVE>expression, if, else, while, do, for, switch, break,
 continue, return, throw, synchronized, catch, finally</TD>
@@ -457,7 +434,7 @@ continue, return, throw, synchronized, catch, finally</TD>
 <TR>
 <TD>Label</TD>
 
-<TD>fine :</TD>
+<TD><code>fine :</code></TD>
 
 <TD>normal, case, default</TD>
 </TR>
@@ -524,8 +501,7 @@ to point out some basic shit and you are history. It seems just like a
 wonder that nobody was able to package Lines of Code in a more scientific
 manner. Now it's too late to label someone's name on it :).-->
 <BR>&nbsp;
-<H2>
-<A NAME="development"></A>Development</H2>
+<H2><A NAME="development"></A>Development</H2>
 JavaNCSS has been moved to Codehaus for a <a href="http://fisheye.codehaus.org/browse/javancss/trunk/">shared source code repository</a>.
 There is also a <a href="http://jira.codehaus.org/browse/JAVANCSS">bug tracking</a> tool.<p>
 
@@ -533,12 +509,17 @@ JavaNCSS can actually be built using Ant or Maven.
 
 To check out the latest development source code (and compile and run the regression test suite) type the following in your shell:
 <pre>svn co http://svn.codehaus.org/javancss/trunk javancss
-cd javancss
-ant all <i>or</i> mvn package</pre>
+cd javancss/trunk
+ant all<i> or </i>mvn package</pre>
+You can see more details on these Maven generated <a href="development.html">development pages</a>.<p>
 
-<BR>&nbsp;
-<H2>
-<A NAME="release"></A>Release History</H2>
+Furthermore there are a few <a href="http://xircles.codehaus.org/projects/javancss/lists">mailing lists</a> available for this project.
+&nbsp;
+<H2><A NAME="release"></A>Release History</H2>
+
+<h3>Version 30.51</h3>
+
+Version 30.51 has been released on February 7, 2009<p>Project has been moved to Codehaus using public Subversion repository and Maven project structure. Thanks to Herv&eacute; Boutemy and Simon Brandhof!
 
 <h3>Version 29.50</h3>
 Version 29.50 has been released on April 8, 2008<p>Fixed two Java 1.5 grammar parser bugs. Thanks to Don Kautz and Isabelle Guimiot!
@@ -773,7 +754,8 @@ JavaNCSS is free software distributed under the GNU General Public License.
 Copyright Chr. Clemens Lee.
 <H2>
 <A NAME="credits"></A>Credits</H2>
-<h3>Additional Authors</h3>
+<h3>Authors</h3>
+The currently active crew with permission to write into the source code repository can be found <a href="http://xircles.codehaus.org/projects/javancss/members">here</a> [2009-02-07].
 <ul>
 <li>Thanks to Metamata and Suntest for the JavaCC parser generator
 and especially the Java grammar on which JavaNCSS is based.</li>
@@ -807,6 +789,9 @@ HTML report of all metrics which exceed a certain limit
 [2003-05-11].</li>
 <li>Chris Povirk for a patch in the XML handling for enums [2006-06-12].</li>
 <li>David Chwalisz for enhancements to the ant build.xml script [2006-10-06].</li>
+<li>Simon Brandhof for opening and moving JavaNCSS to the Codhaus development infrastructure (and Jira for bug tracking) [2009-02-07]. This will open up development to better collaboration with other developers and possibly will lead to new talent contributing much needed updates.</li>
+<li>Herv&eacute; Boutemy for moving the whole project to Maven and cleaning up all kind of code areas (encoding etc.) [2009-02-07].</li>
+<li>Freddy Mallet for a draft version of a new Java parser, which will allow easier extension of JavaNCSS by traversing Java source code via the visitor pattern [2009-02-07]. Hopefully this might also lead to more people being able to fix grammar bugs or updating the grammar to Java language extensions.</li>
 </ul>
 
 <h3>Thanks To</h3>
@@ -850,6 +835,7 @@ HTML output style sheet [2004-08-08].</li>
 <li>Tom Mitchell for bug reports and test code in the Java 1.5 parser code [2006-06-12].</li>
 <li>Charles L, Anver Sotnikov, James Burton, Byron du Preez, Martin Lehofer, Darren M. Siegel, David Chwalisz for a bug reports and test code in the Java 1.5 parser code [2006-10-06].</li>
 <li>Don Kautz and Isabelle Guimiot for bug reports and test code for the Java 1.5 parser code [2008-04-08].</li>
+<li>Jean-Laurent de Morlhon for good morale when moving to Codehaus [2009-02-07]!</li>
 </ul>
 
 <H2>
@@ -937,11 +923,7 @@ These links are only for my private use and convenience and work only locally.
 -->
 <HR WIDTH="100%">
 <A HREF="http://www.kclee.de/clemens/">Chr.
-Clemens Lee</A>, email to: <i><A HREF="mailto:clemens@kclee.de">clemens@kclee.de</A></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-(here is my <A HREF="http://www.kclee.de/clemens/resume/">resume</A>)<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-430516-1";
-urchinTracker();
-</script></BODY>
+Clemens Lee</A>, email to: <i><A HREF="mailto:clemens@kclee.de">clemens@kclee.de</A></i>,
+&nbsp; also for JavaNCSS related communication feel free to use one of the appropriate <i><a href="http://xircles.codehaus.org/projects/javancss/lists">mailing lists</a></i>.
+</BODY>
 </HTML>

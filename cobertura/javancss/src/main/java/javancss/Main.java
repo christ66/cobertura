@@ -2,7 +2,7 @@
 /*
 Copyright (C) 2000 Chr. Clemens Lee <clemens@kclee.com>.
 
-This file is part of JavaNCSS 
+This file is part of JavaNCSS
 (http://www.kclee.com/clemens/java/javancss/).
 
 JavaNCSS is free software; you can redistribute it and/or modify it
@@ -31,20 +31,20 @@ import java.util.Locale;
  * control to the Javancss class.
  *
  * @author    Chr. Clemens Lee <clemens@kclee.com>
- * @version   $Id: Main.java 64 2008-08-17 20:42:06Z hboutemy $
+ * @version   $Id: Main.java 126 2009-02-07 21:18:52Z clemens $
  */
 public class Main {
-    public static final String S_RCS_HEADER = "$Header: /home/clemens/src/java/javancss/src/javancss/RCS/Main.java,v 29.50 2006/10/06 11:46:24 clemens Exp clemens $";
+    public static final String S_RCS_HEADER = "$Header: /home/clemens/src/java/javancss/src/javancss/RCS/Main.java,v 30.51 2009/02/07 22:10:00 clemens Exp clemens $";
 
     public static void main(String[] asArgs) throws IOException {
         Locale.setDefault( Locale.US );
 
         Javancss pJavancss = new Javancss(asArgs, S_RCS_HEADER);
-        
+
         if (pJavancss.getLastErrorMessage() != null) {
             System.exit(1);
         }
-        
+
         System.exit(0);
     }
 }
