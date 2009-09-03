@@ -24,10 +24,7 @@
  */
 package net.sourceforge.cobertura.reporting;
 
-import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,8 +34,8 @@ import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.PackageData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.coveragedata.SourceFileData;
+import net.sourceforge.cobertura.javancss.FunctionMetric;
 import net.sourceforge.cobertura.javancss.Javancss;
-import net.sourceforge.cobertura.javancss.JavancssConstants;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Source;
 
@@ -115,8 +112,8 @@ public class ComplexityCalculator {
 		int classCcn = 0;
         for( Iterator method = methodMetrics.iterator(); method.hasNext();)
         {
-        	List singleMethodMetrics = (List)method.next();
-        	classCcn += ((Integer)singleMethodMetrics.get(JavancssConstants.FCT_CCN)).intValue();
+        	FunctionMetric singleMethodMetrics = (FunctionMetric)method.next();
+        	classCcn += singleMethodMetrics.ccn;
         }
 		
 		return new Complexity( classCcn, methodMetrics.size());

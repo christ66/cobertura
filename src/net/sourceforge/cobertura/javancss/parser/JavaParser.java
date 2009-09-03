@@ -44,6 +44,8 @@ import java.util.*;
 
 import net.sourceforge.cobertura.javancss.ccl.Util;
 
+import net.sourceforge.cobertura.javancss.FunctionMetric;
+import net.sourceforge.cobertura.javancss.ObjectMetric;
 import net.sourceforge.cobertura.javancss.PackageMetric;
 
 /**
@@ -67,7 +69,7 @@ import net.sourceforge.cobertura.javancss.PackageMetric;
  *              Emilio Gongora, <emilio@sms.nl> and
  *              Guillermo Rodriguez, <guille@sms.nl>.
  *            Anonymous class count patch by Vesa Karvonnen, <vesa_karvonen@hotmail.com> 2002-10-30.
- * @version   2000-01-31 $Id: Java1.1.jj 60 2008-08-17 14:07:24Z hboutemy $
+ * @version   2000-01-31 $Id: Java1.1.jj 76 2008-08-19 21:33:19Z hboutemy $
  */
 public class JavaParser implements JavaParserConstants {
     {
@@ -107,16 +109,16 @@ public class JavaParser implements JavaParserConstants {
      * should instead put your copyright notice).
      */
     private int    _javadocs   = 0;              // global javadocs
-    private Vector _vFunctions = new Vector();   // holds the statistics for each method
+    private List/*<FunctionMetric>*/ _vFunctions = new ArrayList();   // holds the statistics for each method
 
     /** 
      * Metrics for each class/interface are stored in this
      * vector.
      */
-    private Vector _vClasses = new Vector();
-    private Vector _vImports = new Vector();
+    private List/*<ObjectMetric>*/ _vClasses = new ArrayList();
+    private List _vImports = new ArrayList();
     private Object[] _aoPackage = null;
-    private Map _htPackage = new HashMap();
+    private Map/*<String,PackageMetric>*/ _htPackage = new HashMap();
     private PackageMetric _pPackageMetric;
 
     private Token _tmpToken = null;
@@ -148,25 +150,26 @@ public class JavaParser implements JavaParserConstants {
       return _topLevelClasses;
       }*/
 
-    public Vector getFunction() {
+    public List/*<FunctionMetric>*/ getFunction() {
         return _vFunctions;
     }
 
     /**
      * @return Top level classes in sorted order
      */
-    public Vector getObject() {
-        return(Util.sort(_vClasses));
+    public List/*<ObjectMetric>*/ getObject() {
+        Collections.sort(_vClasses);
+        return _vClasses;
     }
 
     /**
      * @return The empty package consists of the name ".".
      */
-    public Map getPackage() {
+    public Map/*<String,PackageMetric>*/ getPackage() {
         return _htPackage;
     }
 
-    public Vector getImports() {
+    public List getImports() {
         return _vImports;
     }
 
@@ -549,7 +552,7 @@ public class JavaParser implements JavaParserConstants {
       _aoPackage[ 4 ] = new Integer( getToken( 0 ).endColumn );
       _ncss++;
       Util.debug( "_ncss++" );
-      _sPackage = (new String(_sName)) + ".";
+      _sPackage = _sName + ".";
   }
 
   final public void ImportDeclaration() throws ParseException {
@@ -586,7 +589,7 @@ public class JavaParser implements JavaParserConstants {
     jj_consume_token(SEMICOLON);
       aoImport[ 3 ] = new Integer( getToken( 0 ).endLine );
       aoImport[ 4 ] = new Integer( getToken( 0 ).endColumn );
-      _vImports.addElement( aoImport );
+      _vImports.add( aoImport );
       _ncss++;
       Util.debug( "_ncss++" );
   }
@@ -658,7 +661,7 @@ public class JavaParser implements JavaParserConstants {
   final public void ClassDeclaration() throws ParseException {
     Token tmpToken = null;
     _javadocs = 0;
-    Vector vMetric = null;
+    ObjectMetric metric = null;
 
     // added by SMS
     int oldSingle = 0;
@@ -754,13 +757,13 @@ public class JavaParser implements JavaParserConstants {
                  tmpToken = tmpToken.specialToken;
              }
              */
-             vMetric = (Vector)_vClasses.lastElement();
-             vMetric.addElement( new Integer( _javadocs ) );
+             metric = (ObjectMetric)_vClasses.get( _vClasses.size() - 1);
+             metric.javadocs = _javadocs;
 
              // added by SMS
-             vMetric.addElement( new Integer(_jvdcLines));
-             vMetric.addElement( new Integer(JavaParserTokenManager._iSingleComments - oldSingle));
-             vMetric.addElement( new Integer(JavaParserTokenManager._iMultiComments - oldMulti));
+             metric.javadocsLn = _jvdcLines;
+             metric.singleLn = JavaParserTokenManager._iSingleComments - oldSingle;
+             metric.multiLn = JavaParserTokenManager._iMultiComments - oldMulti;
              //
 
             // added by SMS
@@ -775,7 +778,7 @@ public class JavaParser implements JavaParserConstants {
                 if (!_sClass.equals("")) {
                         _sClass += ".";
                 }
-                _sClass += new String(getToken(2).image);
+                _sClass += getToken(2).image;
                 _classLevel ++;
     Modifiers();
     jj_consume_token(CLASS);
@@ -820,16 +823,16 @@ public class JavaParser implements JavaParserConstants {
                 _classLevel--;
                 if (_classLevel == 0) {
                         //_topLevelClasses++;
-                        Vector vMetrics = new Vector();
-                        vMetrics.addElement(new String(_sPackage + _sClass));
-                        vMetrics.addElement(new Integer(_ncss - oldNcss));
-                        vMetrics.addElement(new Integer(_functions - oldFunctions));
-                        vMetrics.addElement(new Integer(_classes - oldClasses));
+                        ObjectMetric metric = new ObjectMetric();
+                        metric.name = _sPackage + _sClass;
+                        metric.ncss = _ncss - oldNcss;
+                        metric.functions = _functions - oldFunctions;
+                        metric.classes = _classes - oldClasses;
                         Token lastToken = getToken( 0 );
-                        vMetrics.addElement( new Integer( lastToken.endLine ) );
-                        vMetrics.addElement( new Integer( lastToken.endColumn ) );
-                        //vMetrics.addElement( new Integer( _javadocs ) );
-                        _vClasses.addElement(vMetrics);
+                        //metric.add( new Integer( lastToken.endLine ) );
+                        //metric.add( new Integer( lastToken.endColumn ) );
+                        //metric.add( new Integer( _javadocs ) );
+                        _vClasses.add( metric );
                         _pPackageMetric.functions += _functions - oldFunctions;
                         _pPackageMetric.classes++;
 
@@ -1152,7 +1155,7 @@ public class JavaParser implements JavaParserConstants {
         Token tmpToken = null;
         _javadocs = 0;
         //boolean bClassComment = false;
-        Vector vMetric = null;
+        ObjectMetric metric = null;
 
         // added by SMS
         int oldSingle;
@@ -1231,13 +1234,13 @@ public class JavaParser implements JavaParserConstants {
                  }
                  tmpToken = tmpToken.specialToken;
                  }*/
-             vMetric = (Vector)_vClasses.lastElement();
-             vMetric.addElement( new Integer( _javadocs ) );
+             metric = (ObjectMetric)_vClasses.get( _vClasses.size() - 1 );
+             metric.javadocs = _javadocs;
 
              // added by SMS
-             vMetric.addElement( new Integer(_jvdcLines));
-             vMetric.addElement( new Integer(JavaParserTokenManager._iSingleComments - oldSingle));
-             vMetric.addElement( new Integer(JavaParserTokenManager._iMultiComments - oldMulti));
+             metric.javadocsLn = _jvdcLines;
+             metric.singleLn = JavaParserTokenManager._iSingleComments - oldSingle;
+             metric.multiLn = JavaParserTokenManager._iMultiComments - oldMulti;
              //
 
             // added by SMS
@@ -1331,7 +1334,7 @@ public class JavaParser implements JavaParserConstants {
                 if (!_sClass.equals("")) {
                         _sClass += ".";
                 }
-                _sClass += new String(getToken(2).image);
+                _sClass += getToken(2).image;
                 _classLevel ++;
     jj_consume_token(INTERFACE);
     Identifier();
@@ -1398,14 +1401,14 @@ public class JavaParser implements JavaParserConstants {
                 if (_classLevel == 0)
                 {
                         //_topLevelClasses++;
-                        Vector vMetrics = new Vector();
-                        vMetrics.addElement(new String(_sPackage + _sClass));
-                        vMetrics.addElement(new Integer(_ncss - oldNcss));
-                        vMetrics.addElement(new Integer(_functions - oldFunctions));
-                        vMetrics.addElement(new Integer(_classes - oldClasses));
-                        vMetrics.addElement( Util.getConstantObject() );
-                        vMetrics.addElement( Util.getConstantObject() );
-                        _vClasses.addElement(vMetrics);
+                        ObjectMetric metric = new ObjectMetric();
+                        metric.name = _sPackage + _sClass;
+                        metric.ncss = _ncss - oldNcss;
+                        metric.functions = _functions - oldFunctions;
+                        metric.classes = _classes - oldClasses;
+                        //metric.add( Util.getConstantObject() );
+                        //metric.add( Util.getConstantObject() );
+                        _vClasses.add( metric );
                         _pPackageMetric.functions += _functions - oldFunctions;
                         _pPackageMetric.classes++;
 
@@ -1955,25 +1958,24 @@ public class JavaParser implements JavaParserConstants {
              _ncss++;
              Util.debug( "MethodDeclaration()._ncss++" );
 
-             Vector vFunctionMetrics = new Vector();
-             vFunctionMetrics.addElement(new String(_sPackage + _sClass +
-                                                    _sFunction));
-             vFunctionMetrics.addElement(new Integer(_ncss - oldNcss));
-             vFunctionMetrics.addElement(new Integer(_cyc));
-             vFunctionMetrics.addElement( new Integer(jvdc) );
+             FunctionMetric functionMetrics = new FunctionMetric();
+             functionMetrics.name = _sPackage + _sClass + _sFunction;
+             functionMetrics.ncss = _ncss - oldNcss;
+             functionMetrics.ccn = _cyc;
+             functionMetrics.javadocs = jvdc;
 
-             //* added by SMS
-             vFunctionMetrics.addElement( new Integer( 0 ) );//jvdcLines));
-             vFunctionMetrics.addElement( new Integer( 0 ) );//JavaParserTokenManager._iSingleComments - oldSingle));
-             vFunctionMetrics.addElement( new Integer( 0 ) );//JavaParserTokenManager._iMultiComments - oldMulti));
-             // */
+             // added by SMS
+             functionMetrics.javadocsLn = 0; //jvdcLines;
+             functionMetrics.singleLn = 0; //JavaParserTokenManager._iSingleComments - oldSingle;
+             functionMetrics.multiLn = 0; //JavaParserTokenManager._iMultiComments - oldMulti;
+             //
 
              // specially added for Cobertura
              // Commenting out for now until the rest of patch 2353196 is applied.
-             //vFunctionMetrics.add(new Integer(beginLine));
-             //vFunctionMetrics.add(new Integer(endLine));
+             //functionMetrics.beginLine = (new Integer(beginLine));
+             //functionMetrics.endLine = (new Integer(endLine));
 
-             _vFunctions.addElement(vFunctionMetrics);
+             _vFunctions.add(functionMetrics);
              _sFunction = sOldFunction;
              _functions = oldFunctions + 1;
              _cyc = oldcyc;
@@ -1981,7 +1983,7 @@ public class JavaParser implements JavaParserConstants {
   }
 
   final public void MethodDeclarator() throws ParseException {
-                _sFunction = "." + new String(getToken(1).image);
+                _sFunction = "." + getToken(1).image;
     Identifier();
     FormalParameters();
                 _sFunction += _sParameter;
@@ -2255,23 +2257,23 @@ public class JavaParser implements JavaParserConstants {
                 _ncss++;
                 Util.debug( "_ncss++" );
 
-                Vector vFunctionMetrics = new Vector();
-                vFunctionMetrics.addElement(new String(_sFunction));
-                vFunctionMetrics.addElement(new Integer(_ncss - oldNcss));
-                vFunctionMetrics.addElement(new Integer(_cyc));
-                vFunctionMetrics.addElement( new Integer(jvdc) );
+                FunctionMetric functionMetrics = new FunctionMetric();
+                functionMetrics.name = _sFunction;
+                functionMetrics.ncss = _ncss - oldNcss;
+                functionMetrics.ccn = _cyc;
+                functionMetrics.javadocs = jvdc;
 
                 // added by SMS
-                vFunctionMetrics.addElement( new Integer(jvdcLines));
-                vFunctionMetrics.addElement( new Integer(JavaParserTokenManager._iSingleComments - oldSingle));
-                vFunctionMetrics.addElement( new Integer(JavaParserTokenManager._iMultiComments - oldMulti));
+                functionMetrics.javadocsLn = jvdcLines;
+                functionMetrics.singleLn = JavaParserTokenManager._iSingleComments - oldSingle;
+                functionMetrics.multiLn = JavaParserTokenManager._iMultiComments - oldMulti;
                 //
                 // specially added for Cobertura
                 // Commenting out for now until the rest of patch 2353196 is applied.
                 //vFunctionMetrics.add(new Integer(beginLine));
                 //vFunctionMetrics.add(new Integer(endLine));
 
-                _vFunctions.addElement(vFunctionMetrics);
+                _vFunctions.add(functionMetrics);
                 _sFunction = sOldFunction;
                 _functions = oldFunctions + 1;
                 _cyc = oldcyc;
@@ -2360,7 +2362,7 @@ public class JavaParser implements JavaParserConstants {
       case LONG:
       case SHORT:
         PrimitiveType();
-                  _sName = (new String(getToken(0).image));
+                  _sName = getToken(0).image;
         break;
       default:
         jj_la1[73] = jj_gen;
@@ -2375,7 +2377,7 @@ ccl 2008-01-24
 {
   ( PrimitiveType()
           {
-                  _sName = (new String(getToken(0).image));
+                  _sName = getToken(0).image;
           }
     | Name() 
     [TypeArguments() ["." Identifier()] ]
@@ -2491,7 +2493,7 @@ ccl 2008-01-24
       jj_consume_token(-1);
       throw new ParseException();
     }
-                _sName = new String(getToken(0).image);
+                _sName = getToken(0).image;
                 _tmpResultToken = getToken( 0 );
                 Util.debug( "Name._tmpResultToken: " + _tmpResultToken );
     label_35:
@@ -2515,7 +2517,7 @@ ccl 2008-01-24
         jj_consume_token(-1);
         throw new ParseException();
       }
-                _sName += "." + (new String(getToken(0).image));
+                _sName += "." + getToken(0).image;
     }
   }
 
@@ -4899,7 +4901,7 @@ ccl 2008-01-24
                 if (!_sClass.equals("")) {
                         _sClass += ".";
                 }
-                _sClass += new String(getToken(0).image);
+                _sClass += getToken(0).image;
                 _classLevel ++;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case IMPLEMENTS:
@@ -4916,22 +4918,22 @@ ccl 2008-01-24
              _classLevel--;
              if (_classLevel == 0) {
                  //_topLevelClasses++;
-                 Vector vMetrics = new Vector();
-                 vMetrics.addElement(new String(_sPackage + _sClass));
-                 vMetrics.addElement(new Integer(_ncss - oldNcss));
-                 vMetrics.addElement(new Integer(_functions - oldFunctions));
-                 vMetrics.addElement(new Integer(_classes - oldClasses));
+                 ObjectMetric metric = new ObjectMetric();
+                 metric.name = _sPackage + _sClass;
+                 metric.ncss = _ncss - oldNcss;
+                 metric.functions = _functions - oldFunctions;
+                 metric.classes = _classes - oldClasses;
                  Token lastToken = getToken( 0 );
-                 vMetrics.addElement( new Integer( lastToken.endLine ) );
-                 vMetrics.addElement( new Integer( lastToken.endColumn ) );
-                 vMetrics.addElement( new Integer( _javadocs ) );
+                 //metric.add( new Integer( lastToken.endLine ) );
+                 //metric.add( new Integer( lastToken.endColumn ) );
+                 metric.javadocs = _javadocs;
 
                  // Chris Povirk
-                 vMetrics.addElement( new Integer(_jvdcLines));
-                 vMetrics.addElement( new Integer(JavaParserTokenManager._iSingleComments - oldSingle));
-                 vMetrics.addElement( new Integer(JavaParserTokenManager._iMultiComments - oldMulti));
+                 metric.javadocsLn = _jvdcLines;
+                 metric.singleLn = JavaParserTokenManager._iSingleComments - oldSingle;
+                 metric.multiLn = JavaParserTokenManager._iMultiComments - oldMulti;
 
-                 _vClasses.addElement(vMetrics);
+                 _vClasses.add(metric);
                  _pPackageMetric.functions += _functions - oldFunctions;
                  _pPackageMetric.classes++;
 
@@ -5184,7 +5186,7 @@ ccl 2008-01-24
 
   final public void ClassOrInterfaceType() throws ParseException {
     jj_consume_token(IDENTIFIER);
-                _sName = new String(getToken(0).image);
+                _sName = getToken(0).image;
                 if ( _tmpResultToken == null )
                 {
                   _tmpResultToken = getToken( 0 );
@@ -5204,7 +5206,7 @@ ccl 2008-01-24
       }
       jj_consume_token(DOT);
       jj_consume_token(IDENTIFIER);
-                _sName += "." + (new String(getToken(0).image));
+                _sName += "." + getToken(0).image;
       if (jj_2_53(2)) {
         TypeArguments();
       } else {
@@ -6198,14 +6200,14 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_220() {
-    if (jj_3R_238()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_300() {
     if (jj_scan_token(THROWS)) return true;
     if (jj_3R_325()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_220() {
+    if (jj_3R_238()) return true;
     return false;
   }
 
@@ -6230,6 +6232,11 @@ ccl 2008-01-24
     return false;
   }
 
+  final private boolean jj_3R_301() {
+    if (jj_3R_132()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_216() {
     if (jj_3R_235()) return true;
     return false;
@@ -6237,11 +6244,6 @@ ccl 2008-01-24
 
   final private boolean jj_3_59() {
     if (jj_scan_token(RSIGNEDSHIFT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_301() {
-    if (jj_3R_132()) return true;
     return false;
   }
 
@@ -6417,6 +6419,11 @@ ccl 2008-01-24
     return false;
   }
 
+  final private boolean jj_3R_78() {
+    if (jj_3R_131()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_209() {
     if (jj_3R_175()) return true;
     Token xsp;
@@ -6425,13 +6432,18 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_78() {
-    if (jj_3R_131()) return true;
+  final private boolean jj_3R_363() {
+    if (jj_3R_372()) return true;
     return false;
   }
 
-  final private boolean jj_3R_363() {
-    if (jj_3R_372()) return true;
+  final private boolean jj_3_1() {
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_78()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(PACKAGE)) return true;
     return false;
   }
 
@@ -6446,24 +6458,14 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3_1() {
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_78()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(PACKAGE)) return true;
+  final private boolean jj_3R_334() {
+    if (jj_scan_token(SYNCHRONIZED)) return true;
     return false;
   }
 
   final private boolean jj_3R_204() {
     if (jj_scan_token(BIT_AND)) return true;
     if (jj_3R_172()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_334() {
-    if (jj_scan_token(SYNCHRONIZED)) return true;
     return false;
   }
 
@@ -6702,11 +6704,6 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_128() {
-    if (jj_3R_133()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_327() {
     if (jj_scan_token(PUBLIC)) return true;
     return false;
@@ -6740,6 +6737,11 @@ ccl 2008-01-24
     }
     }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_128() {
+    if (jj_3R_133()) return true;
     return false;
   }
 
@@ -6783,14 +6785,14 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_380() {
-    if (jj_3R_386()) return true;
-    return false;
-  }
-
   final private boolean jj_3_15() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_93()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_380() {
+    if (jj_3R_386()) return true;
     return false;
   }
 
@@ -6806,11 +6808,6 @@ ccl 2008-01-24
 
   final private boolean jj_3R_194() {
     if (jj_3R_205()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_377() {
-    if (jj_3R_385()) return true;
     return false;
   }
 
@@ -6842,9 +6839,20 @@ ccl 2008-01-24
     return false;
   }
 
+  final private boolean jj_3R_377() {
+    if (jj_3R_385()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_305() {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_304()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_354() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_scan_token(RBRACKET)) return true;
     return false;
   }
 
@@ -6887,12 +6895,6 @@ ccl 2008-01-24
     }
     }
     }
-    return false;
-  }
-
-  final private boolean jj_3R_354() {
-    if (jj_scan_token(LBRACKET)) return true;
-    if (jj_scan_token(RBRACKET)) return true;
     return false;
   }
 
@@ -6953,11 +6955,6 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3_53() {
-    if (jj_3R_127()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_353() {
     if (jj_3R_98()) return true;
     return false;
@@ -6971,6 +6968,11 @@ ccl 2008-01-24
     xsp = jj_scanpos;
     if (jj_scan_token(84)) jj_scanpos = xsp;
     if (jj_scan_token(RBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_53() {
+    if (jj_3R_127()) return true;
     return false;
   }
 
@@ -7035,13 +7037,13 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3_51() {
-    if (jj_3R_127()) return true;
+  final private boolean jj_3R_140() {
+    if (jj_3R_107()) return true;
     return false;
   }
 
-  final private boolean jj_3R_140() {
-    if (jj_3R_107()) return true;
+  final private boolean jj_3_51() {
+    if (jj_3R_127()) return true;
     return false;
   }
 
@@ -7150,6 +7152,11 @@ ccl 2008-01-24
     return false;
   }
 
+  final private boolean jj_3R_303() {
+    if (jj_3R_131()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_168() {
     if (jj_scan_token(LPAREN)) return true;
     if (jj_3R_107()) return true;
@@ -7177,11 +7184,6 @@ ccl 2008-01-24
       xsp = jj_scanpos;
       if (jj_3_50()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  final private boolean jj_3R_303() {
-    if (jj_3R_131()) return true;
     return false;
   }
 
@@ -7318,6 +7320,11 @@ ccl 2008-01-24
     return false;
   }
 
+  final private boolean jj_3R_338() {
+    if (jj_scan_token(PROTECTED)) return true;
+    return false;
+  }
+
   final private boolean jj_3_27() {
     if (jj_scan_token(LBRACKET)) return true;
     if (jj_scan_token(RBRACKET)) return true;
@@ -7339,11 +7346,6 @@ ccl 2008-01-24
     jj_scanpos = xsp;
     if (jj_3R_412()) return true;
     }
-    return false;
-  }
-
-  final private boolean jj_3R_338() {
-    if (jj_scan_token(PROTECTED)) return true;
     return false;
   }
 
@@ -7397,14 +7399,14 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_420() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_172()) return true;
+  final private boolean jj_3_14() {
+    if (jj_3R_90()) return true;
     return false;
   }
 
-  final private boolean jj_3_14() {
-    if (jj_3R_90()) return true;
+  final private boolean jj_3R_420() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_172()) return true;
     return false;
   }
 
@@ -7474,26 +7476,6 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3_26() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_102()) return true;
-    if (jj_scan_token(LBRACKET)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_133() {
-    if (jj_scan_token(LT)) return true;
-    if (jj_3R_163()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_164()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_3R_165()) jj_scanpos = xsp;
-    return false;
-  }
-
   final private boolean jj_3R_360() {
     if (jj_3R_279()) return true;
     return false;
@@ -7524,6 +7506,26 @@ ccl 2008-01-24
     return false;
   }
 
+  final private boolean jj_3_26() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_102()) return true;
+    if (jj_scan_token(LBRACKET)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_133() {
+    if (jj_scan_token(LT)) return true;
+    if (jj_3R_163()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_164()) { jj_scanpos = xsp; break; }
+    }
+    xsp = jj_scanpos;
+    if (jj_3R_165()) jj_scanpos = xsp;
+    return false;
+  }
+
   final private boolean jj_3_11() {
     Token xsp;
     while (true) {
@@ -7531,6 +7533,18 @@ ccl 2008-01-24
       if (jj_3R_91()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(CLASS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_359() {
+    if (jj_3R_81()) return true;
+    if (jj_3R_276()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_316() {
+    if (jj_scan_token(EXTENDS)) return true;
+    if (jj_3R_325()) return true;
     return false;
   }
 
@@ -7565,15 +7579,8 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_359() {
-    if (jj_3R_81()) return true;
-    if (jj_3R_276()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_316() {
-    if (jj_scan_token(EXTENDS)) return true;
-    if (jj_3R_325()) return true;
+  final private boolean jj_3R_358() {
+    if (jj_3R_275()) return true;
     return false;
   }
 
@@ -7582,11 +7589,6 @@ ccl 2008-01-24
     if (jj_3R_102()) return true;
     if (jj_scan_token(LBRACKET)) return true;
     if (jj_scan_token(RBRACKET)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_358() {
-    if (jj_3R_275()) return true;
     return false;
   }
 
@@ -7711,13 +7713,13 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_286() {
-    if (jj_3R_318()) return true;
+  final private boolean jj_3R_317() {
+    if (jj_3R_344()) return true;
     return false;
   }
 
-  final private boolean jj_3R_317() {
-    if (jj_3R_344()) return true;
+  final private boolean jj_3R_286() {
+    if (jj_3R_318()) return true;
     return false;
   }
 
@@ -7746,11 +7748,6 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_369() {
-    if (jj_3R_261()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_203() {
     if (jj_scan_token(INTERFACE)) return true;
     if (jj_3R_98()) return true;
@@ -7765,6 +7762,11 @@ ccl 2008-01-24
       if (jj_3R_317()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(RBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_369() {
+    if (jj_3R_261()) return true;
     return false;
   }
 
@@ -8000,16 +8002,16 @@ ccl 2008-01-24
     return false;
   }
 
+  final private boolean jj_3R_313() {
+    if (jj_scan_token(PUBLIC)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_197() {
     if (jj_scan_token(HOOK)) return true;
     if (jj_3R_107()) return true;
     if (jj_scan_token(COLON)) return true;
     if (jj_3R_177()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_313() {
-    if (jj_scan_token(PUBLIC)) return true;
     return false;
   }
 
@@ -8268,13 +8270,13 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_349() {
-    if (jj_3R_127()) return true;
+  final private boolean jj_3R_88() {
+    if (jj_3R_133()) return true;
     return false;
   }
 
-  final private boolean jj_3R_88() {
-    if (jj_3R_133()) return true;
+  final private boolean jj_3R_349() {
+    if (jj_3R_127()) return true;
     return false;
   }
 
@@ -8376,16 +8378,6 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_104() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(63)) {
-    jj_scanpos = xsp;
-    if (jj_3R_150()) return true;
-    }
-    return false;
-  }
-
   final private boolean jj_3R_138() {
     if (jj_3R_133()) return true;
     return false;
@@ -8418,6 +8410,16 @@ ccl 2008-01-24
     }
     }
     }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_104() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(63)) {
+    jj_scanpos = xsp;
+    if (jj_3R_150()) return true;
     }
     return false;
   }
@@ -8524,21 +8526,6 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_178() {
-    if (jj_scan_token(LBRACE)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_234()) jj_scanpos = xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_47()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_scan_token(84)) jj_scanpos = xsp;
-    if (jj_scan_token(RBRACE)) return true;
-    return false;
-  }
-
   final private boolean jj_3_8() {
     if (jj_3R_81()) return true;
     if (jj_scan_token(ENUM)) return true;
@@ -8552,6 +8539,21 @@ ccl 2008-01-24
       if (jj_3R_277()) { jj_scanpos = xsp; break; }
     }
     if (jj_3R_278()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_178() {
+    if (jj_scan_token(LBRACE)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_234()) jj_scanpos = xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3_47()) { jj_scanpos = xsp; break; }
+    }
+    xsp = jj_scanpos;
+    if (jj_scan_token(84)) jj_scanpos = xsp;
+    if (jj_scan_token(RBRACE)) return true;
     return false;
   }
 
@@ -8634,13 +8636,13 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_155() {
-    if (jj_3R_178()) return true;
+  final private boolean jj_3R_83() {
+    if (jj_3R_131()) return true;
     return false;
   }
 
-  final private boolean jj_3R_83() {
-    if (jj_3R_131()) return true;
+  final private boolean jj_3R_155() {
+    if (jj_3R_178()) return true;
     return false;
   }
 
@@ -8719,13 +8721,13 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_188() {
-    if (jj_3R_199()) return true;
+  final private boolean jj_3_5() {
+    if (jj_3R_82()) return true;
     return false;
   }
 
-  final private boolean jj_3_5() {
-    if (jj_3R_82()) return true;
+  final private boolean jj_3R_188() {
+    if (jj_3R_199()) return true;
     return false;
   }
 
@@ -8778,16 +8780,16 @@ ccl 2008-01-24
     return false;
   }
 
+  final private boolean jj_3R_312() {
+    if (jj_scan_token(IMPLEMENTS)) return true;
+    if (jj_3R_325()) return true;
+    return false;
+  }
+
   final private boolean jj_3_46() {
     if (jj_scan_token(AT)) return true;
     if (jj_3R_89()) return true;
     if (jj_scan_token(LPAREN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_312() {
-    if (jj_scan_token(IMPLEMENTS)) return true;
-    if (jj_3R_325()) return true;
     return false;
   }
 
@@ -8898,29 +8900,19 @@ ccl 2008-01-24
     return false;
   }
 
+  final private boolean jj_3R_309() {
+    if (jj_scan_token(PROTECTED)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_366() {
     if (jj_3R_95()) return true;
     if (jj_scan_token(DOT)) return true;
     return false;
   }
 
-  final private boolean jj_3R_309() {
-    if (jj_scan_token(PROTECTED)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_308() {
     if (jj_scan_token(PUBLIC)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_352() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_366()) jj_scanpos = xsp;
-    if (jj_scan_token(SUPER)) return true;
-    if (jj_3R_175()) return true;
-    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
@@ -8949,17 +8941,18 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_397() {
-    if (jj_scan_token(FINALLY)) return true;
-    if (jj_3R_132()) return true;
+  final private boolean jj_3R_352() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_366()) jj_scanpos = xsp;
+    if (jj_scan_token(SUPER)) return true;
+    if (jj_3R_175()) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
-  final private boolean jj_3R_396() {
-    if (jj_scan_token(CATCH)) return true;
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_347()) return true;
-    if (jj_scan_token(RPAREN)) return true;
+  final private boolean jj_3R_397() {
+    if (jj_scan_token(FINALLY)) return true;
     if (jj_3R_132()) return true;
     return false;
   }
@@ -8971,6 +8964,15 @@ ccl 2008-01-24
       if (jj_3R_284()) { jj_scanpos = xsp; break; }
     }
     if (jj_3R_202()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_396() {
+    if (jj_scan_token(CATCH)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_347()) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    if (jj_3R_132()) return true;
     return false;
   }
 
@@ -9018,15 +9020,6 @@ ccl 2008-01-24
     return false;
   }
 
-  final private boolean jj_3R_246() {
-    if (jj_scan_token(SYNCHRONIZED)) return true;
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_107()) return true;
-    if (jj_scan_token(RPAREN)) return true;
-    if (jj_3R_132()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_249() {
     if (jj_scan_token(LBRACE)) return true;
     Token xsp;
@@ -9035,6 +9028,15 @@ ccl 2008-01-24
       if (jj_3R_257()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(RBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_246() {
+    if (jj_scan_token(SYNCHRONIZED)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_107()) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    if (jj_3R_132()) return true;
     return false;
   }
 
