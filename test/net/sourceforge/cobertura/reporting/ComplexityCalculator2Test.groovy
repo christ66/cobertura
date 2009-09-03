@@ -84,4 +84,35 @@ public class ComplexityCalculator2Test extends TestCase {
 		}
     }
 	
+	public void testAnnotatedSource() {
+		/*
+		 * Test for bug #2818738.
+		 */
+		TestUtil.withTempDir { tempDir ->
+			def filename = "TBSException.java"
+			def sourceFile = new File(tempDir, filename)
+			sourceFile.write('''
+public class TBSException extends Exception {
+   public TBSException (ErrorHandler handler, Exception wrap) {
+		super(wrap);
+        @SuppressWarnings("unchecked")
+        final Iterator<Exception> iter = handler.getExceptions().iterator();  // LINE 27
+		for (; iter.hasNext();) 
+        {
+			Exception exception = iter.next();
+			this.errors.add(exception.getMessage());
+		}
+	}
+}
+''')
+			//create a ComplexityCalculator that will use the archive
+			def fileFinder = new FileFinder();
+			fileFinder.addSourceDirectory(tempDir.absolutePath);
+			def complexity = new ComplexityCalculator( fileFinder)
+			
+			double ccn1 = complexity.getCCNForSourceFile( new SourceFileData(filename));
+			assertNotNull(ccn1)
+			assertEquals( 2.0, ccn1 as Double, 0.01);
+		}
+	}
 }
