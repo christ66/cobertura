@@ -7,7 +7,7 @@
 
 <project name="javancss" default="javac" basedir=".">
 
-   <property name="DESTINATION" value="classes"/>
+   <property name="DESTINATION" value="target/classes"/>
    <property name="CLASSPATH"   value="${DESTINATION}:lib/ccl.jar:lib/jhbasic.jar:lib/javancss.jar"/>
    <!-- overwrite with e.g. ant -DJAVACC_HOME=/sbcimp/run/tp/sun/JavaCC/2.0/ javacc -->
    <property name="JAVACC_HOME" value="/usr/local/java/javacc"/>
@@ -19,6 +19,7 @@
       <javac srcdir     ="src"
              destdir    ="${DESTINATION}"
              classpath  ="${CLASSPATH}"
+      	     encoding   ="ISO-8859-1"
              debug      ="on"
              deprecation="on"
              optimize   ="off"
@@ -61,14 +62,15 @@
    </target>
 
    <target name="taskdef">
-      <taskdef name="javancss" 
+      <taskdef name="javancss"
                classname="javancss.JavancssAntTask"
-               classpath="${CLASSPATH}:lib/javancssanttask.jar"/>
+               classpath="${CLASSPATH}"/>
   </target>
 
    <target name="javancss" depends="taskdef">
       <javancss srcdir="src"
                 includes="**/*.java"
+      	        ccnPerFuncMax="100"
                 generateReport="yes"/>
    </target>
 
@@ -86,11 +88,18 @@
      </java>
    </target>
 
-   <target name="jar" >
+   <target name="jar" depends="javac">
+     <xmlproperty file="pom.xml" prefix="pom.xml" />
      <jar destfile="lib/javancss.jar" basedir="target/classes">
        <manifest>
          <attribute name="Main-Class" value="javancss.Main" />
          <attribute name="Class-Path" value="jhbasic.jar ccl.jar" />
+      	 <attribute name="Specification-Title" value="${pom.xml.project.name}" />
+       	 <attribute name="Specification-Version" value="${pom.xml.project.version}" />
+      	 <attribute name="Specification-Vendor" value="${pom.xml.project.organization.name}" />
+     	 <attribute name="Implementation-Title" value="${pom.xml.project.name}" />
+      	 <attribute name="Implementation-Version" value="${pom.xml.project.version}" />
+     	 <attribute name="Implementation-Vendor" value="${pom.xml.project.organization.name}" />
        </manifest>
      </jar>
    </target>

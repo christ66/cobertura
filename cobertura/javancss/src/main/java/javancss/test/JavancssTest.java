@@ -41,7 +41,7 @@ import javancss.PackageMetric;
 /**
  * Test class for the JavaNCSS application.
  *
- *   $Id: JavancssTest.java 121 2009-01-17 22:19:45Z hboutemy $
+ *   $Id: JavancssTest.java 171 2009-05-31 20:12:01Z hboutemy $
  *   3. 9. 1996
  */
 public class JavancssTest extends AbstractTest
@@ -107,6 +107,12 @@ public class JavancssTest extends AbstractTest
         _checkJvdcs( 68, 2 );
         _checkJvdcs( 121, 2 );
         _checkJvdcs( 122, 1 );
+
+        //Added by REYNAUD Sebastien (LOGICA) for JAVANCSS-20
+        _checkJvdcs( 139 , 3 );
+        _checkJvdcs( 140 , 2 );
+        _checkJvdcs( 141 , 1 );
+        //
 
         _exitSubTest();
     }
@@ -179,6 +185,12 @@ public class JavancssTest extends AbstractTest
                 , "pmJacob.javadocsLn: " + pmPackage + ": " + pmPackage.javadocsLn );
     }
 
+    private void _checkParse( int testFile )
+    {
+        Javancss pJavancss = measureTestFile( testFile );
+        bugIf( pJavancss.getNcss() <= 0, "Parsing file Test" + testFile + ".java failed!" );
+    }
+
     public JavancssTest() {
         super();
     }
@@ -203,6 +215,10 @@ public class JavancssTest extends AbstractTest
         testCCN();
 
         testEncoding();
+
+        testVersion();
+
+        testRecursive();
 
         XmlFormatterTest xmlTest = new XmlFormatterTest( this );
         xmlTest.setTestDir( getTestDir() );
@@ -317,13 +333,11 @@ public class JavancssTest extends AbstractTest
 
         // Bug reported by .. .
         // Test48.java should be parsed.
-        pJavancss = measureTestFile( 48 );
-        bugIf( pJavancss.getNcss() <= 0, "Parsing file Test48.java failed!" );
+        _checkParse( 48 );
 
         _checkNcss( 49, 3 );
 
-        pJavancss = measureTestFile( 50 );
-        bugIf( pJavancss.getNcss() <= 0, "Parsing file Test50.java failed!" );
+        _checkParse( 50 );
 
         _checkNcss( 51, 8 );
         _checkNcss( 52, 12 );
@@ -429,6 +443,13 @@ public class JavancssTest extends AbstractTest
         _checkNcss( 131, 6 );
         _checkNcss( 132, 12 );
         _checkNcss( 134, 4 );
+        _checkNcss( 136, 2 );
+        _checkNcss( 138, 3 );
+        _checkParse( 142 ); // JAVANCSS-12
+        _checkParse( 143 ); // JAVANCSS-9
+        _checkParse( 144 ); // JAVANCSS-13
+        _checkParse( 145 ); // JAVANCSS-14
+        _checkParse( 146 ); // JAVANCSS-17
 
         _exitSubTest();
     }
@@ -597,7 +618,7 @@ public class JavancssTest extends AbstractTest
         try
         {
             System.setOut( new PrintStream( new ByteArrayOutputStream() ) );
-            return new Javancss(args, "$Header: /home/clemens/src/java/javancss/src/javancss/test/RCS/JavancssTest.java,v 1.34 2006/10/06 11:46:43 clemens Exp clemens $");
+            return new Javancss(args);
         }
         finally
         {
@@ -618,6 +639,26 @@ public class JavancssTest extends AbstractTest
 
         bugIf( ncss != expectedNcss,
                "Parsing file TestEncoding.java failed. Ncss is " + ncss + " and not " + expectedNcss + "." );
+
+        _exitSubTest();
+    }
+
+    public void testVersion() throws IOException
+    {
+        _enterSubTest( "version" );
+
+        String[] args = new String[] { "-version" };
+        measureWithArgs( args );
+
+        _exitSubTest();
+    }
+
+    public void testRecursive() throws IOException
+    {
+        _enterSubTest( "recursive" );
+
+        String[] args = new String[] { "-recursive", getTestFile( "../lib" ).getAbsolutePath()  };
+        measureWithArgs( args );
 
         _exitSubTest();
     }
