@@ -35,7 +35,10 @@ options {
 
 PARSER_BEGIN(JavaParserDebug)
 
-package javancss.parser.debug; import javancss.parser.JavaParserInterface;
+//cobertura - put the import on its own line - otherwise, it messes up the script that changes the package.
+package javancss.parser.debug;
+
+import javancss.parser.JavaParserInterface;
 
 import java.util.*;
 
