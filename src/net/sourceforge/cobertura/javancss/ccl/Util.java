@@ -232,14 +232,66 @@ public class Util
 		return input;
 	}
 	
-	public static void debug(String obj) {
-		//cobertura - Mark Doliner did nothing with the debug.
-	}
+	// cobertura - gotten from decompile of ccl.jar.
+    public static void debug(Object oMessage_)
+    {
+        if(_bDebug)
+            printlnErr(oMessage_.toString());
+    }
+
 	
 	public static Object getConstantObject()
 	{
 		return CONSTANT_OBJECT;
 	}
 	
+	// cobertura - gotten from decompile of ccl.jar.
+    public static void setDebug(boolean bDebug_)
+    {
+        _bDebug = bDebug_;
+    }
+
+    // cobertura = gotten from decompile of ccl.jar.
+    public static boolean isDebug()
+    {
+        return _bDebug;
+    }
+    
+    // cobertura = gotten from decompile of ccl.jar.
+    public static void println(String pString_)
+    {
+        System.out.println(pString_);
+        System.out.flush();
+    }
+
+    // cobertura = gotten from decompile of ccl.jar.
+    public static void printErr(char c_)
+    {
+        System.err.print(c_);
+        System.err.flush();
+    }
+
+    // cobertura = gotten from decompile of ccl.jar.
+    public static void printErr(String pString_)
+    {
+        System.err.print(pString_);
+        System.err.flush();
+    }
+
+    // cobertura = gotten from decompile of ccl.jar.
+    public static void printlnErr()
+    {
+        printErr('\n');
+    }
+
+    // cobertura = gotten from decompile of ccl.jar.
+    public static void printlnErr(String sMessage_)
+    {
+        printErr(sMessage_);
+        printlnErr();
+    }
+
+    // cobertura = gotten from decompile of ccl.jar.
+    private static boolean _bDebug = false;
 
 }
