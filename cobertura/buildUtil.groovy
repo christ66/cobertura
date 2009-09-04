@@ -351,6 +351,31 @@ mergeJavancss = {
 	mergeDir(from:generatedSource, to:targetDir, mergedFiles:mergedFiles)
 
 	lookForObsoleteFiles(targetDir:targetDir, mergedFiles:mergedFiles)
+
+	//now do the parser.debug package
+	mergedFiles = []
+	generatedSource = new File(javancssDir, 'target/generated-sources/javacc/javancss/parser/debug')
+	targetDir = new File('src/net/sourceforge/cobertura/javancss/parser/debug')
+	mergeDir(from:generatedSource, to:targetDir, mergedFiles:mergedFiles)
+
+	lookForObsoleteFiles(targetDir:targetDir, mergedFiles:mergedFiles)
+
+	//now do the parser.java15 package
+	mergedFiles = []
+	generatedSource = new File(javancssDir, 'target/generated-sources/javacc/javancss/parser/java15')
+	targetDir = new File('src/net/sourceforge/cobertura/javancss/parser/java15')
+	mergeDir(from:generatedSource, to:targetDir, mergedFiles:mergedFiles)
+
+	lookForObsoleteFiles(targetDir:targetDir, mergedFiles:mergedFiles)
+
+	//now do the parser.java15.debug package
+	mergedFiles = []
+	generatedSource = new File(javancssDir, 'target/generated-sources/javacc/javancss/parser/java15/debug')
+	targetDir = new File('src/net/sourceforge/cobertura/javancss/parser/java15/debug')
+	mergeDir(from:generatedSource, to:targetDir, mergedFiles:mergedFiles)
+
+	lookForObsoleteFiles(targetDir:targetDir, mergedFiles:mergedFiles)
+
 }
 
 /**
@@ -470,6 +495,15 @@ mergeFile = { map ->
 		} else if (line =~ /package javancss.parser;/)
 		{
 			pw.println("package net.sourceforge.cobertura.javancss.parser;")
+		} else if (line =~ /package javancss.parser.debug;/)
+		{
+			pw.println("package net.sourceforge.cobertura.javancss.parser.debug;")
+		} else if (line =~ /package javancss.parser.java15;/)
+		{
+			pw.println("package net.sourceforge.cobertura.javancss.parser.java15;")
+		} else if (line =~ /package javancss.parser.java15.debug;/)
+		{
+			pw.println("package net.sourceforge.cobertura.javancss.parser.java15.debug;")
 		} else if (line =~ /^import ccl.util.*;/)
 		{
 			def pattern = ~/^import ccl.util\.(.*);/
