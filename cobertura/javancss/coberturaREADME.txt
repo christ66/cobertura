@@ -346,5 +346,29 @@ I am seeing that I have to change the svn:mime-type for anything in net.sourcefo
 to application/octet-stream.  I suppose the script that is copying the files over is doing
 something funny with newlines that svn does not like.
 
+To faciitate this, you can use the following script.  Put it at the root of cobertura.
+If you call it cobertura.groovy, you can exectue it with 'groovy cobertura.groovy'
+
+def ant = new AntBuilder()
+
+new File("src/net/sourceforge/cobertura/javancss").eachFileRecurse() { file ->
+            
+	if (file.absolutePath =~ /\.svn/) {
+		//don't change svn metadata files
+	} else {
+		ant.exec(executable:'svn', vmlauncher:false) {
+			arg(value:'add')
+			arg(value:'--force')
+			arg(value:'--non-recursive')
+			arg(value:file.absolutePath)
+		}
+		ant.exec(executable:'svn', vmlauncher:false) {
+			arg(value:'propset')
+			arg(value:'svn:mime-type')
+			arg(value:'application/octet-stream')
+			arg(value:file.absolutePath)
+		}
+	}
+}
 
 
