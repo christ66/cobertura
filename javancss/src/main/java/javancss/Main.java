@@ -31,15 +31,17 @@ import java.util.Locale;
  * control to the Javancss class.
  *
  * @author    Chr. Clemens Lee <clemens@kclee.com>
- * @version   $Id: Main.java 126 2009-02-07 21:18:52Z clemens $
+ * @version   $Id: Main.java 151 2009-05-22 21:41:33Z hboutemy $
  */
 public class Main {
-    public static final String S_RCS_HEADER = "$Header: /home/clemens/src/java/javancss/src/javancss/RCS/Main.java,v 30.51 2009/02/07 22:10:00 clemens Exp clemens $";
+    private static final String IMPL_VERSION = Main.class.getPackage().getImplementationVersion();
+    public static final String S_RCS_HEADER = "$Header: /javancss/Main.java,v "
+        + ((IMPL_VERSION == null) ? "0.0 2001/01/01 00:00:00" : IMPL_VERSION) + " clemens Exp clemens $";
 
     public static void main(String[] asArgs) throws IOException {
         Locale.setDefault( Locale.US );
 
-        Javancss pJavancss = new Javancss(asArgs, S_RCS_HEADER);
+        Javancss pJavancss = new Javancss(asArgs);
 
         if (pJavancss.getLastErrorMessage() != null) {
             System.exit(1);

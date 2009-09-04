@@ -52,9 +52,13 @@ import ccl.util.Init;
 import ccl.util.Util;
 
 import javancss.parser.JavaParser;
+import javancss.parser.JavaParserInterface;
 import javancss.parser.JavaParserTokenManager;
 import javancss.parser.ParseException;
 import javancss.parser.TokenMgrError;
+import javancss.parser.debug.JavaParserDebug;
+import javancss.parser.java15.JavaParser15;
+import javancss.parser.java15.debug.JavaParser15Debug;
 import javancss.test.JavancssTest;
 
 /**
@@ -66,7 +70,7 @@ import javancss.test.JavancssTest;
  *            , recursive feature by Pääkö Hannu
  *            , additional javadoc metrics by Emilio Gongora <emilio@sms.nl>
  *            , and Guillermo Rodriguez <guille@sms.nl>.
- * @version   $Id: Javancss.java 121 2009-01-17 22:19:45Z hboutemy $
+ * @version   $Id: Javancss.java 157 2009-05-24 06:59:58Z hboutemy $
  */
 public class Javancss implements Exitable
 {
@@ -77,7 +81,7 @@ public class Javancss implements Exitable
         "[Help]\n"+
         "; Please do not edit the Help section\n"+
         "HelpUsage=@srcfiles.txt | *.java | <stdin>\n" +
-        "Options=ncss,package,object,function,all,gui,xml,out,recursive,check\n" +
+        "Options=ncss,package,object,function,all,gui,xml,out,recursive,check,encoding,parser15\n" +
         "ncss=b,o,Counts the program NCSS (default).\n" +
         "package=b,o,Assembles a statistic on package level.\n" +
         "object=b,o,Counts the object NCSS.\n" +
@@ -89,19 +93,20 @@ public class Javancss implements Exitable
         "recursive=b,o,Recurse to subdirs.\n" +
         "check=b,o,Triggers a javancss self test.\n" +
         "encoding=s,o,Encoding used while reading source files (default: platform encoding).\n" +
+        "parser15=b,o,Use new experimental Java 1.5 parser.\n" +
         "\n" +
         "[Colors]\n" +
         "UseSystemColors=true\n";
 
     private boolean _bExit = false;
 
-    private List/*<File>*/ _vJavaSourceFiles = new ArrayList();
+    private List/*<File>*/ _vJavaSourceFiles = null;
     private String encoding = null;
 
     private String _sErrorMessage = null;
     private Throwable _thrwError = null;
 
-    private JavaParser _pJavaParser = null;
+    private JavaParserInterface _pJavaParser = null;
     private int _ncss = 0;
     private int _loc = 0;
     private List/*<FunctionMetric>*/ _vFunctionMetrics = new ArrayList();
@@ -139,7 +144,7 @@ public class Javancss implements Exitable
         }
     }
 
-    private void _measureSource( File sSourceFile_ ) throws IOException, ParseException, TokenMgrError
+    private void _measureSource( File sSourceFile_ ) throws IOException, Exception, Error
     {
         Reader reader = null;
 
@@ -170,7 +175,7 @@ public class Javancss implements Exitable
             // the same method but with a Reader
             _measureSource( reader );
         }
-        catch ( ParseException pParseException )
+        catch ( Exception pParseException )
         {
             if ( sTempErrorMessage == null )
             {
@@ -185,7 +190,7 @@ public class Javancss implements Exitable
 
             throw pParseException;
         }
-        catch ( TokenMgrError pTokenMgrError )
+        catch ( Error pTokenMgrError )
         {
             if ( sTempErrorMessage == null )
             {
@@ -200,15 +205,38 @@ public class Javancss implements Exitable
         }
     }
 
-    private void _measureSource( Reader reader ) throws IOException, ParseException, TokenMgrError
+    private void _measureSource( Reader reader ) throws IOException, Exception, Error
     {
-        try
+      Util.debug( "_measureSource(Reader).ENTER" );
+      //Util.debug( "_measureSource(Reader).parser15: -->" + (_pInit.getOptions().get( "parser15" ) + "<--" );
+      //Util.panicIf( _pInit == null );
+      //Util.panicIf( _pInit.getOptions() == null );
+      Util.debug( "_measureSource(Reader).ENTER2" );
+      try
+      {
+        // create a parser object
+        if ( Util.isDebug() == false )
         {
-            // create a parser object
-            _pJavaParser = new JavaParser( reader );
+          if ( _pInit == null || _pInit.getOptions() == null || _pInit.getOptions().get( "parser15" ) == null ) {
+            Util.debug( "creating JavaParser" );
+            _pJavaParser = (JavaParserInterface)(new JavaParser( reader ));
+          } else {
+            Util.debug( "creating JavaParser15" );
+            _pJavaParser = (JavaParserInterface)(new JavaParser15( reader ));
+          }
+        } else {
+          if ( _pInit == null || _pInit.getOptions() == null || _pInit.getOptions().get( "parser15" ) == null ) {
+            Util.debug( "creating JavaParserDebug" );
+            Util.println( "creating JavaParserDebug" );
+            _pJavaParser = (JavaParserInterface)(new JavaParserDebug( reader ));
+          } else {
+            Util.debug( "creating JavaParser15Debug" );
+            _pJavaParser = (JavaParserInterface)(new JavaParser15Debug( reader ));
+          }
+        }
 
             // execute the parser
-            _pJavaParser.CompilationUnit();
+            _pJavaParser.parse();
             Util.debug( "Javancss._measureSource(DataInputStream).SUCCESSFULLY_PARSED" );
 
             _ncss += _pJavaParser.getNcss(); // increment the ncss
@@ -232,7 +260,7 @@ public class Javancss implements Exitable
                 _htPackages.put( sPackage, pckmNext );
             }
         }
-        catch ( ParseException pParseException )
+        catch ( Exception pParseException )
         {
             if ( _sErrorMessage == null )
             {
@@ -248,7 +276,7 @@ public class Javancss implements Exitable
 
             throw pParseException;
         }
-        catch ( TokenMgrError pTokenMgrError )
+        catch ( Error pTokenMgrError )
         {
             if ( _sErrorMessage == null )
             {
@@ -284,12 +312,12 @@ public class Javancss implements Exitable
      * If arguments were provided, they are used, otherwise
      * the input stream is used.
      */
-    private void _measureRoot( Reader reader ) throws IOException, ParseException, TokenMgrError
+    private void _measureRoot( Reader reader ) throws IOException, Exception, Error
     {
         _htPackages = new HashMap();
 
         // either there are argument files, or stdin is used
-        if ( _vJavaSourceFiles.size() == 0 )
+        if ( _vJavaSourceFiles == null )
         {
             _measureSource( reader );
         }
@@ -428,12 +456,16 @@ public class Javancss implements Exitable
 
         try {
             Util.debug( "Javancss.parseImports().START_PARSING" );
-            _pJavaParser = new JavaParser(reader);
-            _pJavaParser.ImportUnit();
+            if ( Util.isDebug() == false ) {
+              _pJavaParser = (JavaParserInterface)(new JavaParser(reader));
+            } else {
+              _pJavaParser = (JavaParserInterface)(new JavaParserDebug(reader));
+            }
+            _pJavaParser.parseImportUnit();
             _vImports = _pJavaParser.getImports();
             _aoPackage = _pJavaParser.getPackageObjects();
             Util.debug( "Javancss.parseImports().END_PARSING" );
-        } catch(ParseException pParseException) {
+        } catch(Exception pParseException) {
         	Util.debug( "Javancss.parseImports().PARSE_EXCEPTION" );
             if (_sErrorMessage == null) {
                 _sErrorMessage = "";
@@ -446,7 +478,7 @@ public class Javancss implements Exitable
             _thrwError = pParseException;
 
             return true;
-        } catch(TokenMgrError pTokenMgrError) {
+        } catch(Error pTokenMgrError) {
         	Util.debug( "Javancss.parseImports().TOKEN_ERROR" );
             if (_sErrorMessage == null) {
                 _sErrorMessage = "";
@@ -514,10 +546,17 @@ public class Javancss implements Exitable
         {
             Util.debug( "filenames: " + Util.toString( filenames ) );
         }
-        if ( recursive && ( filenames.size() == 0 ) )
+        if ( filenames.size() == 0 )
         {
-            // If no files then add current directory!
-            filenames.add( "." );
+            if ( recursive )
+            {
+                // If no files then add current directory!
+                filenames.add( "." );
+            }
+            else
+            {
+                return null;
+            }
         }
 
         Set _processedAtFiles = new HashSet();
@@ -580,13 +619,20 @@ public class Javancss implements Exitable
     private Init _pInit = null;
 //COBERTURA REMOVE BEGIN
     /**
+     * @deprecated use Javancss(String[]) instead, since the sRcsHeader_ parameter is not useful
+     */
+    public Javancss(String[] asArgs_, String sRcsHeader_) throws IOException {
+        this(asArgs_);
+    }
+
+    /**
      * This is the constructor used in the main routine in
      * javancss.Main.
      * Other constructors might be helpful to use Javancss out
      * of other programs.
      */
-    public Javancss(String[] asArgs_, String sRcsHeader_) throws IOException {
-        _pInit = new Init(this, asArgs_, sRcsHeader_, S_INIT__FILE_CONTENT);
+    public Javancss(String[] asArgs_) throws IOException {
+        _pInit = new Init(this, asArgs_, Main.S_RCS_HEADER, S_INIT__FILE_CONTENT);
         if (_bExit) {
             return;
         }
