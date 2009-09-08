@@ -1,4 +1,6 @@
-version 1.9.2.1:
+version 1.9.3:
+	* Update to the latest Javancss (32.53) to fix some complexity calculation
+	  problems.  Bug #2824425. (John Lewis)
 	* Non-Java source files (like Groovy) no longer show the JavaNCSS warnings
 	  during cobertura-report.  Fix of bug #2819844.
 	* Support the case where multiple classloaders each load the Cobertura 
