@@ -63,6 +63,32 @@ Cobertura with Appfuse</a></li>
 
 <h1>News</h1>
 
+<div class="newsitem">
+<span class="date">17 Sept 2009</span>
+<div class="text">
+<p>
+We've released Cobertura 1.9.3.   See below for the full list of changes.
+</p>
+
+<ul>
+<li>
+Update to the latest Javancss (32.53) to fix some complexity calculation 
+problems.  Bug #2824425. (John Lewis)
+</li>
+<li>
+Non-Java source files (like Groovy) no longer show the JavaNCSS warnings 
+during cobertura-report.  Fix of bug #2819844.</li>
+<li>
+Support the case where multiple classloaders each load the Cobertura classes.  (Ed Randall)
+</li>
+<li>
+Fixed bug added with 1.9.2 where a NullPointerException is thrown if 
+ProjectData.saveGlobalProjectData() is called before any instrumented code is executed.
+</li>
+</ul>
+</div>
+</div>
+
 
 <div class="newsitem">
 <span class="date">25 June 2009</span>
