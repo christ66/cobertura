@@ -110,7 +110,7 @@ public class WebappServer
 	private static final LOCALHOST = "127.0.0.1"
 	
 	def dir = "."
-	def msecNeededToStop = 3000
+	def msecNeededToStop = 10000
 	def coberturaAnt
 	def modifyMainCoberturaDataFile
 
