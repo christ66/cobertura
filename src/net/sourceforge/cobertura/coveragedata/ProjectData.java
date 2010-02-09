@@ -8,6 +8,7 @@
  * Copyright (C) 2006 John Lewis
  * Copyright (C) 2009 Chris van Es
  * Copyright (C) 2009 Ed Randall
+ * Copyright (C) 2010 Charlie Squires
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -29,7 +30,6 @@ package net.sourceforge.cobertura.coveragedata;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -195,7 +195,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 			while (iter.hasNext())
 			{
 				PackageData packageData = (PackageData)iter.next();
-				if (packageData.getName().startsWith(packageName))
+				if (packageData.getName().startsWith(packageName + ".") || packageData.getName().equals(packageName) || packageName.equals(""))
 					subPackages.add(packageData);
 			}
 		}

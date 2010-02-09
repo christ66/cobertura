@@ -1,3 +1,7 @@
+version 1.9.4:
+	* Fixed "Some packages are included more then once" bug (#2875576) that
+	  caused some counts on the HTML report to be incorrect.  (Charlie Squires)
+
 version 1.9.3:
 	* Update to the latest Javancss (32.53) to fix some complexity calculation
 	  problems.  Bug #2824425. (John Lewis)
