@@ -2,6 +2,7 @@
  * Cobertura - http://cobertura.sourceforge.net/
  *
  * Copyright (C) 2005 Mark Doliner
+ * Copyright (C) 2010 Charlie Squires
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -20,6 +21,9 @@
  */
 
 package net.sourceforge.cobertura.coveragedata;
+
+import java.util.Iterator;
+import java.util.SortedSet;
 
 import junit.framework.TestCase;
 
@@ -146,6 +150,20 @@ public class ProjectDataTest extends TestCase
 
 		b.addClassData(classData3);
 		assertEquals(a.hashCode(), b.hashCode());
+	}
+	
+	public void testGetSubPackages()
+	{
+		coverageData.addClassData(new ClassData("com.example.HelloWorld"));
+		coverageData.addClassData(new ClassData("com.example.test.HelloWorldTest"));
+		coverageData.addClassData(new ClassData("com.examplesomething.HelloWorld"));
+		
+		SortedSet subPackagesSet = coverageData.getSubPackages("com.example");
+		assertEquals(2, subPackagesSet.size());
+		
+		Iterator subPackages = subPackagesSet.iterator();
+		assertEquals("com.example", ((PackageData)subPackages.next()).getName());
+		assertEquals("com.example.test", ((PackageData)subPackages.next()).getName());
 	}
 
 }
