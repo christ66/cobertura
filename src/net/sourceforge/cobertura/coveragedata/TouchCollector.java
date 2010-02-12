@@ -37,7 +37,7 @@ import net.sourceforge.cobertura.coveragedata.countermaps.CounterMap;
 public class TouchCollector implements HasBeenInstrumented{
 	
 	static{
-		ProjectData.getGlobalProjectData(); //To call ProjectData.initialize();
+		ProjectData.initialize();
 	}
 	
 	private static final CounterMap<LineTouchData> touchedLines=new AtomicCounterMap<LineTouchData>();	
@@ -59,14 +59,26 @@ public class TouchCollector implements HasBeenInstrumented{
 		return res;
 	}
 	
+	/**
+	 * This method is only called by code that has been instrumented.  It
+	 * is not called by any of the Cobertura code or ant tasks.
+	 */
 	public static final void touchSwitch(String classId,int lineNumber, int switchNumber, int branch) {
 		switchTouchData.incrementValue(new SwitchTouchData(registerClassData(classId),lineNumber, switchNumber, branch));
 	}
 	
+	/**
+	 * This method is only called by code that has been instrumented.  It
+	 * is not called by any of the Cobertura code or ant tasks.
+	 */
 	public static final void touch(String classId,int lineNumber) {
 		touchedLines.incrementValue(new LineTouchData(registerClassData(classId), lineNumber));
 	}
 	
+	/**
+	 * This method is only called by code that has been instrumented.  It
+	 * is not called by any of the Cobertura code or ant tasks.
+	 */
 	public static final void touchJump(String classId,int lineNumber, int branchNumber, boolean branch) {
 		jumpTouchData.incrementValue(new JumpTouchData(registerClassData(classId),lineNumber, branchNumber, branch));
 	}	
