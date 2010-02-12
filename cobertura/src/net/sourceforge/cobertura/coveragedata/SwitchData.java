@@ -91,7 +91,7 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 		return this.switchNumber - ((SwitchData) o).switchNumber;
 	}
 	
-	void touchBranch(int branch) 
+	void touchBranch(int branch,int new_hits) 
 	{
 		lock.lock();
 		try
@@ -107,7 +107,7 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 					System.arraycopy(old, 0, hits, 0, old.length);
 					Arrays.fill(hits, old.length, hits.length - 1, 0);
 				}
-				hits[branch]++;
+				hits[branch]+=new_hits;
 			}
 		}
 		finally

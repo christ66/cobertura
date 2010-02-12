@@ -66,28 +66,28 @@ public class SwitchDataTest extends TestCase
 
 		for (int i = 0; i < 5; i++)
 		{
-			a.touchBranch(1);
+			a.touchBranch(1,1);
 			assertEquals(0.2, a.getBranchCoverageRate(), 0);
 			assertEquals(5, a.getNumberOfValidBranches(), 0);
 			assertEquals(1, a.getNumberOfCoveredBranches(), 0);
 		}
 
-		a.touchBranch(-1);
+		a.touchBranch(-1,1);
 		assertEquals(0.4, a.getBranchCoverageRate(), 0);
 		assertEquals(5, a.getNumberOfValidBranches(), 0);
 		assertEquals(2, a.getNumberOfCoveredBranches(), 0);
 
-		a.touchBranch(0);
+		a.touchBranch(0,1);
 		assertEquals(0.6, a.getBranchCoverageRate(), 0);
 		assertEquals(5, a.getNumberOfValidBranches(), 0);
 		assertEquals(3, a.getNumberOfCoveredBranches(), 0);
 
-		a.touchBranch(2);
+		a.touchBranch(2,1);
 		assertEquals(0.8, a.getBranchCoverageRate(), 0);
 		assertEquals(5, a.getNumberOfValidBranches(), 0);
 		assertEquals(4, a.getNumberOfCoveredBranches(), 0);
 
-		a.touchBranch(3);
+		a.touchBranch(3,1);
 		assertEquals(1, a.getBranchCoverageRate(), 0);
 		assertEquals(5, a.getNumberOfValidBranches(), 0);
 		assertEquals(5, a.getNumberOfCoveredBranches(), 0);
@@ -97,39 +97,39 @@ public class SwitchDataTest extends TestCase
 	{
 		assertEquals(0, a.getHits(0));
 		for (int i = 0; i < 400; i++)
-			a.touchBranch(0);
+			a.touchBranch(0,1);
 		assertEquals(400, a.getHits(0));
 
 		assertEquals(0, a.getHits(1));
 		for (int i = 0; i < 4500; i++)
-			a.touchBranch(1);
+			a.touchBranch(1,1);
 		assertEquals(4500, a.getHits(1));
 
 		assertEquals(0, a.getHits(2));
 		for (int i = 0; i < 300; i++)
-			a.touchBranch(2);
+			a.touchBranch(2,1);
 		assertEquals(300, a.getHits(2));
 
 		assertEquals(0, a.getHits(3));
 		for (int i = 0; i < 800; i++)
-			a.touchBranch(3);
+			a.touchBranch(3,1);
 		assertEquals(800, a.getHits(3));
 
 		assertEquals(0, a.getDefaultHits());
 		for (int i = 0; i < 200; i++)
-			a.touchBranch(-1);
+			a.touchBranch(-1,1);
 		assertEquals(200, a.getDefaultHits());
 	}
 
 	public void testMerge()
 	{
-		a.touchBranch(0);
-		a.touchBranch(0);
-		a.touchBranch(2);
-		a.touchBranch(-1);
+		a.touchBranch(0,1);
+		a.touchBranch(0,1);
+		a.touchBranch(2,1);
+		a.touchBranch(-1,1);
 		SwitchData x = new SwitchData(0);
-		x.touchBranch(3);
-		x.touchBranch(3);
+		x.touchBranch(3,1);
+		x.touchBranch(3,1);
 		a.merge(x);
 		assertEquals(2, a.getHits(0));
 		assertEquals(0, a.getHits(1));
@@ -138,8 +138,8 @@ public class SwitchDataTest extends TestCase
 		assertEquals(1, a.getDefaultHits());
 
 		x = new SwitchData(0);
-		x.touchBranch(5);
-		x.touchBranch(-1);
+		x.touchBranch(5,1);
+		x.touchBranch(-1,1);
 		a.merge(x);
 		assertEquals(2, a.getHits(0));
 		assertEquals(0, a.getHits(1));
@@ -166,7 +166,7 @@ public class SwitchDataTest extends TestCase
 			 */
 			Thread.yield(); 
 			
-			data.touchBranch(i);
+			data.touchBranch(i,1);
 		}
 	}
 	

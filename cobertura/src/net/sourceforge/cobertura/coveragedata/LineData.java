@@ -359,12 +359,12 @@ public class LineData
 		}
 	}
 
-	void touch()
+	void touch(int new_hits)
 	{
 		lock.lock();
 		try
 		{
-			this.hits++;
+			this.hits+=new_hits;
 		}
 		finally
 		{
@@ -372,14 +372,14 @@ public class LineData
 		}
 	}
 	
-	void touchJump(int jumpNumber, boolean branch) 
+	void touchJump(int jumpNumber, boolean branch,int hits) 
 	{
-		getJumpData(jumpNumber).touchBranch(branch);
+		getJumpData(jumpNumber).touchBranch(branch,hits);
 	}
 	
-	void touchSwitch(int switchNumber, int branch) 
+	void touchSwitch(int switchNumber, int branch,int hits) 
 	{
-		getSwitchData(switchNumber, null).touchBranch(branch);
+		getSwitchData(switchNumber, null).touchBranch(branch,hits);
 	}
 	
 	public int getConditionSize() {

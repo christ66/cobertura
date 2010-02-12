@@ -1,4 +1,7 @@
 version 1.9.4:
+	* Cobertura is now up to 10x faster. Aggregates changes in
+	  temporary TouchCollector class (thread-safe, but lock-free) and after that
+	  applies it on real model (ProjectData) as a batch operation. (Piotr Tabor)
 	* Fixed "Some packages are included more then once" bug (#2875576) that
 	  caused some counts on the HTML report to be incorrect.  (Charlie Squires)
 

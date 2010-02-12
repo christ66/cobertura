@@ -101,13 +101,13 @@ public class PackageDataTest extends TestCase
 		assertEquals(12, packageData.getNumberOfValidBranches());
 		assertEquals(0.00d, packageData.getBranchCoverageRate(), 0d);
 
-		classData.touch(1);
-		classData.touchJump(1, 0, true);
-		classData.touch(1);
-		classData.touchJump(1, 0, false);
-		classData.touchSwitch(1, 1, 0);
-		classData.touch(2);
-		classData.touchJump(2, 0, false);
+		classData.touch(1,1);
+		classData.touchJump(1, 0, true,1);
+		classData.touch(1,1);
+		classData.touchJump(1, 0, false,1);
+		classData.touchSwitch(1, 1, 0,1);
+		classData.touch(2,1);
+		classData.touchJump(2, 0, false,1);
       
 		assertEquals(4, packageData.getNumberOfCoveredBranches());
 		assertEquals(12, packageData.getNumberOfValidBranches());

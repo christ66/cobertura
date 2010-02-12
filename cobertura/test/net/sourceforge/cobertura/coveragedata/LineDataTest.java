@@ -90,7 +90,7 @@ public class LineDataTest extends TestCase
 
 		for (int i = 0; i < 5; i++)
 		{
-			a.touch();
+			a.touch(1);
 			assertEquals(0, a.getBranchCoverageRate(), 0);
 			assertEquals(1, a.getLineCoverageRate(), 0);
 			assertEquals(1, a.getNumberOfCoveredLines());
@@ -99,7 +99,7 @@ public class LineDataTest extends TestCase
 			assertEquals(1, a.getNumberOfValidLines());
 		}
 
-		a.touchJump(0, true);
+		a.touchJump(0, true,1);
 		assertEquals(0.25, a.getBranchCoverageRate(), 0);
 		assertEquals(1, a.getLineCoverageRate(), 0);
 		assertEquals(1, a.getNumberOfCoveredLines());
@@ -107,7 +107,7 @@ public class LineDataTest extends TestCase
 		assertEquals(4, a.getNumberOfValidBranches());
 		assertEquals(1, a.getNumberOfValidLines());
 
-		a.touchJump(1, false);
+		a.touchJump(1, false,1);
 		assertEquals(0.5, a.getBranchCoverageRate(), 0);
 		assertEquals(1, a.getLineCoverageRate(), 0);
 		assertEquals(1, a.getNumberOfCoveredLines());
@@ -115,7 +115,7 @@ public class LineDataTest extends TestCase
 		assertEquals(4, a.getNumberOfValidBranches());
 		assertEquals(1, a.getNumberOfValidLines());
 
-		a.touchJump(1, true);
+		a.touchJump(1, true,1);
 		assertEquals(0.75, a.getBranchCoverageRate(), 0);
 		assertEquals(1, a.getLineCoverageRate(), 0);
 		assertEquals(1, a.getNumberOfCoveredLines());
@@ -123,7 +123,7 @@ public class LineDataTest extends TestCase
 		assertEquals(4, a.getNumberOfValidBranches());
 		assertEquals(1, a.getNumberOfValidLines());
 
-		a.touchJump(0, false);
+		a.touchJump(0, false,1);
 		assertEquals(1, a.getBranchCoverageRate(), 0);
 		assertEquals(1, a.getLineCoverageRate(), 0);
 		assertEquals(1, a.getNumberOfCoveredLines());
@@ -156,8 +156,8 @@ public class LineDataTest extends TestCase
 	{
 		assertEquals(0, a.getHits());
 		for (int i = 0; i < 400; i++)
-			a.touch();
-		assertEquals(400, a.getHits());
+			a.touch(2);
+		assertEquals(800, a.getHits());
 	}
 
 	private static void getSwitchDataIteratively(LineData data)

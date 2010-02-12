@@ -616,8 +616,9 @@ public class ClassData extends CoverageDataContainer
 	 * Increment the number of hits for a particular line of code.
 	 *
 	 * @param lineNumber the line of code to increment the number of hits.
+	 * @param hits how many times the piece was called
 	 */
-	public void touch(int lineNumber)
+	public void touch(int lineNumber,int hits)
 	{
 		lock.lock();
 		try
@@ -625,7 +626,7 @@ public class ClassData extends CoverageDataContainer
 			LineData lineData = getLineData(lineNumber);
 			if (lineData == null)
 				lineData = addLine(lineNumber, null, null);
-			lineData.touch();
+			lineData.touch(hits);
 		}
 		finally
 		{
@@ -639,15 +640,16 @@ public class ClassData extends CoverageDataContainer
 	 * @param lineNumber The line of code where the branch is
 	 * @param branchNumber  The branch on the line to change the hit counter
 	 * @param branch The hit counter (true or false)
+	 * @param hits how many times the piece was called
 	 */
-	public void touchJump(int lineNumber, int branchNumber, boolean branch) {
+	public void touchJump(int lineNumber, int branchNumber, boolean branch,int hits) {
 		lock.lock();
 		try
 		{
 			LineData lineData = getLineData(lineNumber);
 			if (lineData == null)
 				lineData = addLine(lineNumber, null, null);
-			lineData.touchJump(branchNumber, branch);
+			lineData.touchJump(branchNumber, branch,hits);
 		}
 		finally
 		{
@@ -661,15 +663,16 @@ public class ClassData extends CoverageDataContainer
 	 * @param lineNumber The line of code where the branch is
 	 * @param switchNumber  The switch on the line to change the hit counter
 	 * @param branch The hit counter 
+	 * @param hits how many times the piece was called  
 	 */
-	public void touchSwitch(int lineNumber, int switchNumber, int branch) {
+	public void touchSwitch(int lineNumber, int switchNumber, int branch,int hits) {
 		lock.lock();
 		try
 		{
 			LineData lineData = getLineData(lineNumber);
 			if (lineData == null)
 				lineData = addLine(lineNumber, null, null);
-			lineData.touchSwitch(switchNumber, branch);
+			lineData.touchSwitch(switchNumber, branch,hits);
 		}
 		finally
 		{
