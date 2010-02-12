@@ -28,6 +28,8 @@ package net.sourceforge.cobertura.coveragedata;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sourceforge.cobertura.coveragedata.countermaps.AtomicCounterMap;
 import net.sourceforge.cobertura.coveragedata.countermaps.CounterMap;
@@ -42,16 +44,17 @@ public class TouchCollector implements HasBeenInstrumented{
 	private static final CounterMap<SwitchTouchData> switchTouchData=new AtomicCounterMap<SwitchTouchData>();	
 	private static final CounterMap<JumpTouchData> jumpTouchData=new AtomicCounterMap<JumpTouchData>();
 	
-	private static int lastClassId=0;
-	private static final Map<String,Integer> class2classId=new HashMap<String, Integer>();
-	private static final Map<Integer,String> classId2class=new HashMap<Integer,String>();
+	private static AtomicInteger lastClassId=new AtomicInteger(1);
+	private static final Map<String,Integer> class2classId=new ConcurrentHashMap<String, Integer>();
+	private static final Map<Integer,String> classId2class=new ConcurrentHashMap<Integer,String>();
 
 	private static final int registerClassData(String name){		
 		Integer res=class2classId.get(name);
 		if (res==null){
-			class2classId.put(name, ++lastClassId);
-			classId2class.put(lastClassId, name);
-			return lastClassId;
+			int new_id=lastClassId.incrementAndGet();
+			class2classId.put(name, new_id);
+			classId2class.put(new_id, name);
+			return new_id;
 		}
 		return res;
 	}
