@@ -46,9 +46,6 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	private static final long serialVersionUID = 6;
 
-	private static ProjectData globalProjectData = null;
-	private static final transient Lock globalProjectDataLock = new ReentrantLock();
-
 	/** This collection is used for quicker access to the list of classes. */
 	private Map classes = new HashMap();
 
@@ -232,33 +229,8 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		}
 	}
 
-	/**
-	 * Get a reference to a ProjectData object in order to increase the
-	 * coverage count for a specific line.
-	 *
-	 * This method is only called by code that has been instrumented.  It
-	 * is not called by any of the Cobertura code or ant tasks.
-	 */
-	public static ProjectData getGlobalProjectData()
-	{
-		globalProjectDataLock.lock();
-		try
-		{
-			if (globalProjectData != null)
-				return globalProjectData;
-	
-			globalProjectData = new ProjectData();
-			initialize();
-			return globalProjectData;
-		}
-		finally
-		{
-			globalProjectDataLock.unlock();
-		}
-	}
-
 	// TODO: Is it possible to do this as a static initializer?
-	private static void initialize()
+	public static void initialize()
 	{
 		// Hack for Tomcat - by saving project data right now we force loading
 		// of classes involved in this process (like ObjectOutputStream)
@@ -290,37 +262,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	public static void saveGlobalProjectData()
 	{
-		ProjectData projectDataToSave = null;
-		
-		globalProjectDataLock.lock();
-		try
-		{
-			projectDataToSave = globalProjectData;
-	
-			/*
-			 * The next statement is not necessary at the moment, because this method is only called
-			 * either at the very beginning or at the very end of a test.  If the code is changed
-			 * to save more frequently, then this will become important.
-			 */
-			globalProjectData = new ProjectData();
-		}
-		finally
-		{
-			globalProjectDataLock.unlock();
-		}
-
-		/*
-		 * Now sleep a bit in case there is a thread still holding a reference to the "old"
-		 * globalProjectData (now referenced with projectDataToSave).  
-		 * We want it to finish its updates.  I assume 1 second is plenty of time.
-		 */
-		try
-		{
-			Thread.sleep(1000);
-		}
-		catch (InterruptedException e)
-		{
-		}
+		ProjectData projectDataToSave = new ProjectData();
 		
 		TouchCollector.applyTouchesOnProjectData(projectDataToSave);
 
