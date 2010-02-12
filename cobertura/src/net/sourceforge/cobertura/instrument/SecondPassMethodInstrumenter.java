@@ -23,10 +23,6 @@
 
 package net.sourceforge.cobertura.instrument;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
-import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.util.RegexUtil;
 
 import org.objectweb.asm.Label;
@@ -94,7 +90,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 		currentLine = line;
 		currentJump = 0;
 
-		instrumentGetClassData();
+		instrumentOwnerClass();
 
 		// Mark the current line number as covered:
 		// classData.touch(line)
@@ -178,7 +174,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 			if (lastJump != null) 
 			{ //this is also label after jump - we have to check the branch number whether this is the true or false branch
 				Label newLabelX = instrumentIsLastJump();
-				instrumentGetClassData();
+				instrumentOwnerClass();
 				instrumentPutLineAndBranchNumbers();
 				mv.visitInsn(BOOLEAN_FALSE);
 				instrumentInvokeTouchJump();
@@ -187,7 +183,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 				mv.visitLabel(newLabelX);
 				mv.visitVarInsn(ILOAD, myVariableIndex + 1);
 				mv.visitJumpInsn(IFLT, newLabelY);
-				instrumentGetClassData();
+				instrumentOwnerClass();
 				instrumentPutLineAndBranchNumbers();
 				mv.visitInsn(BOOLEAN_TRUE);
 				instrumentInvokeTouchJump();
@@ -294,31 +290,15 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 		}
 	}
 
-	//PTAB: Czemu nie pobierać informacji o klasie do której należy metoda na początku każdej metody (
-	//		albo nawet jako statyczne pole klasy
-	//)
-	private void instrumentGetClassData()
+	private void instrumentOwnerClass()
 	{
-		// Get an instance of ProjectData:
-		// ProjectData.getGlobalProjectData()
-//		mv.visitMethodInsn(INVOKESTATIC,
-//				"net/sourceforge/cobertura/coveragedata/ProjectData",
-//				"getGlobalProjectData",
-//				"()Lnet/sourceforge/cobertura/coveragedata/ProjectData;");
-
-		// Get the ClassData object for this class:
-		// projectData.getClassData("name.of.this.class")
+		// OwnerClass is the name of the class being instrumented
 		mv.visitLdcInsn(firstPass.getOwnerClass());
-//		mv
-//			.visitMethodInsn(INVOKEVIRTUAL,
-//					"net/sourceforge/cobertura/coveragedata/ProjectData",
-//					"getOrCreateClassData",
-//					"(Ljava/lang/String;)Lnet/sourceforge/cobertura/coveragedata/ClassData;");
 	}
 	
 	private void instrumentSwitchHit(int lineNumber, int switchNumber, int branch)
 	{
-		instrumentGetClassData();
+		instrumentOwnerClass();
 		
 		//Invoke the touchSwitch(lineNumber, switchNumber, branch)
 		mv.visitIntInsn(SIPUSH, lineNumber);
@@ -329,7 +309,7 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 	
 	private void instrumentJumpHit(boolean branch)
 	{
-		instrumentGetClassData();
+		instrumentOwnerClass();
 		
 		//Invoke the touchJump(lineNumber, branchNumber, branch)
 		instrumentPutLineAndBranchNumbers();
