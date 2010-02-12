@@ -180,17 +180,17 @@ public class MergeTest extends TestCase {
 
 	public void testMergeSimillarLineNumbers() {
 		firstClass.addLine( 2, "helloWorld","()V");
-		firstClass.touch(2);
-		firstClass.touch(2);
+		firstClass.touch(2,1);
+		firstClass.touch(2,1);
 		firstClass.addLine( 3, "helloWorld","()V");
 		greenProject.addClassData( firstClass);
 		
 		firstClassB.addLine( 2, "helloWorld","()V");
-		firstClassB.touch(2);
-		firstClassB.touch(2);
-		firstClassB.touch(2);
+		firstClassB.touch(2,1);
+		firstClassB.touch(2,1);
+		firstClassB.touch(2,1);
 		firstClassB.addLine( 3, "helloWorld","()V");
-		firstClassB.touch(3);
+		firstClassB.touch(3,1);
 		firstClassB.addLine( 7, "helloWorld","()V");
 		redProject.addClassData( firstClassB);
 		

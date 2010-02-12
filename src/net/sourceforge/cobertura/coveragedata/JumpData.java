@@ -68,18 +68,18 @@ public class JumpData implements BranchCoverageData, Comparable, Serializable,
 		return this.conditionNumber - ((JumpData) o).conditionNumber;
 	}
 
-	void touchBranch(boolean branch)
+	void touchBranch(boolean branch,int new_hits)
 	{
 		lock.lock();
 		try
 		{
 			if (branch)
 			{
-				this.trueHits++;
+				this.trueHits+=new_hits;
 			}
 			else
 			{
-				this.falseHits++;
+				this.falseHits+=new_hits;
 			}
 		}
 		finally

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2005 Mark Doliner
  * Copyright (C) 2006 Jiri Mares
+ * Copyright (C) 2010 Piotr Tabor
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -22,6 +23,10 @@
 
 package net.sourceforge.cobertura.instrument;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
+import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.util.RegexUtil;
 
 import org.objectweb.asm.Label;
@@ -32,6 +37,8 @@ import org.objectweb.asm.Opcodes;
  */
 public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter implements Opcodes
 {
+	private String TOUCH_COLLECTOR_CLASS="net/sourceforge/cobertura/coveragedata/TouchCollector";
+	
 	private int currentLine;
    
 	private int currentJump;
@@ -92,9 +99,9 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 		// Mark the current line number as covered:
 		// classData.touch(line)
 		mv.visitIntInsn(SIPUSH, line);
-		mv.visitMethodInsn(INVOKEVIRTUAL,
-				"net/sourceforge/cobertura/coveragedata/ClassData", "touch",
-				"(I)V");
+		mv.visitMethodInsn(INVOKESTATIC,
+				TOUCH_COLLECTOR_CLASS, "touch",
+				"(Ljava/lang/String;I)V");
 
 		super.visitLineNumber(line, start);
 	}
@@ -287,23 +294,26 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 		}
 	}
 
+	//PTAB: Czemu nie pobierać informacji o klasie do której należy metoda na początku każdej metody (
+	//		albo nawet jako statyczne pole klasy
+	//)
 	private void instrumentGetClassData()
 	{
 		// Get an instance of ProjectData:
 		// ProjectData.getGlobalProjectData()
-		mv.visitMethodInsn(INVOKESTATIC,
-				"net/sourceforge/cobertura/coveragedata/ProjectData",
-				"getGlobalProjectData",
-				"()Lnet/sourceforge/cobertura/coveragedata/ProjectData;");
+//		mv.visitMethodInsn(INVOKESTATIC,
+//				"net/sourceforge/cobertura/coveragedata/ProjectData",
+//				"getGlobalProjectData",
+//				"()Lnet/sourceforge/cobertura/coveragedata/ProjectData;");
 
 		// Get the ClassData object for this class:
 		// projectData.getClassData("name.of.this.class")
 		mv.visitLdcInsn(firstPass.getOwnerClass());
-		mv
-			.visitMethodInsn(INVOKEVIRTUAL,
-					"net/sourceforge/cobertura/coveragedata/ProjectData",
-					"getOrCreateClassData",
-					"(Ljava/lang/String;)Lnet/sourceforge/cobertura/coveragedata/ClassData;");
+//		mv
+//			.visitMethodInsn(INVOKEVIRTUAL,
+//					"net/sourceforge/cobertura/coveragedata/ProjectData",
+//					"getOrCreateClassData",
+//					"(Ljava/lang/String;)Lnet/sourceforge/cobertura/coveragedata/ClassData;");
 	}
 	
 	private void instrumentSwitchHit(int lineNumber, int switchNumber, int branch)
@@ -329,14 +339,14 @@ public class SecondPassMethodInstrumenter extends NewLocalVariableMethodAdapter 
 
 	private void instrumentInvokeTouchJump()
 	{
-		mv.visitMethodInsn(INVOKEVIRTUAL, "net/sourceforge/cobertura/coveragedata/ClassData", "touchJump", "(IIZ)V");
+		mv.visitMethodInsn(INVOKESTATIC, TOUCH_COLLECTOR_CLASS, "touchJump", "(Ljava/lang/String;IIZ)V");
 		mv.visitIntInsn(SIPUSH, -1); //is important to reset current branch, because we have to know that the branch info on stack has already been used and can't be used
 		mv.visitVarInsn(ISTORE, myVariableIndex + 1);
 	}
 
 	private void instrumentInvokeTouchSwitch()
 	{
-		mv.visitMethodInsn(INVOKEVIRTUAL, "net/sourceforge/cobertura/coveragedata/ClassData", "touchSwitch", "(III)V");
+		mv.visitMethodInsn(INVOKESTATIC, TOUCH_COLLECTOR_CLASS, "touchSwitch", "(Ljava/lang/String;III)V");
 	}
 
 	private void instrumentPutLineAndBranchNumbers()

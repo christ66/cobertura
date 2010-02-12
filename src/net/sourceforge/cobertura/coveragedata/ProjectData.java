@@ -9,6 +9,7 @@
  * Copyright (C) 2009 Chris van Es
  * Copyright (C) 2009 Ed Randall
  * Copyright (C) 2010 Charlie Squires
+ * Copyright (C) 2010 Piotr Tabor
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -47,8 +48,6 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	private static ProjectData globalProjectData = null;
 	private static final transient Lock globalProjectDataLock = new ReentrantLock();
-
-	private static SaveTimer saveTimer = null;
 
 	/** This collection is used for quicker access to the list of classes. */
 	private Map classes = new HashMap();
@@ -282,8 +281,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		}
 
 		// Add a hook to save the data when the JVM exits
-		saveTimer = new SaveTimer();
-		Runtime.getRuntime().addShutdownHook(new Thread(saveTimer));
+		Runtime.getRuntime().addShutdownHook(new Thread(new SaveTimer()));
 
 		// Possibly also save the coverage data every x seconds?
 		//Timer timer = new Timer(true);
@@ -323,6 +321,9 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		catch (InterruptedException e)
 		{
 		}
+		
+		TouchCollector.applyTouchesOnProjectData(projectDataToSave);
+
 
 		// Get a file lock
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();

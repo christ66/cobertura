@@ -63,13 +63,13 @@ public class JumpDataTest extends TestCase
 
 		for (int i = 0; i < 5; i++)
 		{
-			a.touchBranch(true);
+			a.touchBranch(true,1);
 			assertEquals(0.5, a.getBranchCoverageRate(), 0);
 			assertEquals(2, a.getNumberOfValidBranches());
 			assertEquals(1, a.getNumberOfCoveredBranches());
 		}
 
-		a.touchBranch(false);
+		a.touchBranch(false,1);
 		assertEquals(1, a.getBranchCoverageRate(), 0);
 		assertEquals(2, a.getNumberOfValidBranches());
 		assertEquals(2, a.getNumberOfCoveredBranches());
@@ -79,12 +79,12 @@ public class JumpDataTest extends TestCase
 	{
 		assertEquals(0, a.getTrueHits());
 		for (int i = 0; i < 400; i++)
-			a.touchBranch(true);
+			a.touchBranch(true,1);
 		assertEquals(400, a.getTrueHits());
 		
 		assertEquals(0, a.getFalseHits());
 		for (int i = 0; i < 200; i++)
-			a.touchBranch(false);
+			a.touchBranch(false,1);
 		assertEquals(200, a.getFalseHits());
 	}
 

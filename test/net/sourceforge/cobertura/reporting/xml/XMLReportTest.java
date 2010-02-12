@@ -59,7 +59,7 @@ public class XMLReportTest extends TestCase
 
 		// Adding line to the project data that hasn't been yet marked as source line 
 		ClassData cd = projectData.getOrCreateClassData(XMLReport.class.getName());
-		cd.touch(7777);
+		cd.touch(7777,1);
 
 		File reportDir = File.createTempFile("XMLReportTest", "");
 		reportDir.delete();

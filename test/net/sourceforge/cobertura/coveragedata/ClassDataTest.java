@@ -49,8 +49,8 @@ public class ClassDataTest extends TestCase
 		for (int i = 1; i <= 5; i++)
 			defPckg.addLine(i, "test", "(I)B");
 
-		b.touch(1);
-		b.touch(2);
+		b.touch(1,1);
+		b.touch(2,1);
 	}
 
 	public void testBranch()
@@ -101,20 +101,20 @@ public class ClassDataTest extends TestCase
 		assertEquals(0.00d, c.getBranchCoverageRate(), 0d);
 		assertEquals(0.00d, c.getBranchCoverageRate("test(I)B"), 0d);
 
-		c.touchJump(1, 0, true);
-		c.touchJump(1, 0, false);
-		c.touchJump(2, 0, true);
-		c.touchJump(2, 0, false);
+		c.touchJump(1, 0, true,1);
+		c.touchJump(1, 0, false,1);
+		c.touchJump(2, 0, true,1);
+		c.touchJump(2, 0, false,1);
 
 		assertEquals(12, c.getNumberOfValidBranches());
 		assertEquals(4, c.getNumberOfCoveredBranches());
 		assertEquals(0.33d, c.getBranchCoverageRate(), 0.01d);
 		assertEquals(0.33d, c.getBranchCoverageRate("test(I)B"), 0.01d);
 
-		c.touchSwitch(3, 0, 0);
-		c.touchSwitch(3, 0, 1);
-		c.touchSwitch(4, 0, 2);
-		c.touchSwitch(4, 0, -1);
+		c.touchSwitch(3, 0, 0,1);
+		c.touchSwitch(3, 0, 1,1);
+		c.touchSwitch(4, 0, 2,1);
+		c.touchSwitch(4, 0, -1,1);
 		
 		assertEquals(12, c.getNumberOfValidBranches());
 		assertEquals(8, c.getNumberOfCoveredBranches());
@@ -167,8 +167,8 @@ public class ClassDataTest extends TestCase
 		assertTrue(defPckg.equals(defPckg));
 		
 
-		c.touch(1);
-		c.touch(2);
+		c.touch(1,1);
+		c.touch(2,1);
 		assertTrue(b.equals(c));
 	}
 
@@ -248,15 +248,15 @@ public class ClassDataTest extends TestCase
 		int line = 3;
 
 		assertFalse(a.isValidSourceLineNumber(line));
-		a.touch(line);
+		a.touch(line,1);
 		assertTrue(a.isValidSourceLineNumber(line));
 
 		assertTrue(b.isValidSourceLineNumber(line));
 		assertEquals(0, b.getLineCoverage(line).getHits());
-		b.touch(line);
+		b.touch(line,1);
 		assertTrue(b.isValidSourceLineNumber(line));
 		assertEquals(1, b.getLineCoverage(line).getHits());
-		b.touch(line);
+		b.touch(line,1);
 		assertEquals(2, b.getLineCoverage(line).getHits());
 		assertTrue(b.isValidSourceLineNumber(line));
 	}
