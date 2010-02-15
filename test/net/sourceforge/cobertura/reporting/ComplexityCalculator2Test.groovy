@@ -115,4 +115,44 @@ public class TBSException extends Exception {
 			assertEquals( 2.0, ccn1 as Double, 0.01);
 		}
 	}
+
+	/**
+	 * This test highlights an issue with Javancss.
+	 * 
+	 * http://jira.codehaus.org/browse/JAVANCSS-37
+	 * 
+	 */
+	public void testGenericsProblem() {
+		TestUtil.withTempDir { tempDir ->
+			def filename = "UserAudit.java"
+			def sourceFile = new File(tempDir, filename)
+			sourceFile.write('''
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class UserAudit extends UserAuditParent {
+	void postCopyOnDestination(String str) throws InstantiationException, IllegalAccessException {
+		List<AllowedMMProduct> listToReset = new ArrayList<AllowedMMProduct>();
+		
+		List<AllowedMMProductAudit> auditProducts;
+		auditProducts = this.<AllowedMMProduct,AllowedMMProductAudit>copyListFromParent(AllowedMMProductAudit.class, getMmAuthorisedProducts_());
+	}
+	
+	List<AllowedMMProduct> getMmAuthorisedProducts_() {
+		return null;
+	}
+}
+''')
+			//create a ComplexityCalculator that will use the archive
+			def fileFinder = new FileFinder();
+			fileFinder.addSourceDirectory(tempDir.absolutePath);
+			def complexity = new ComplexityCalculator( fileFinder)
+			
+			double ccn1 = complexity.getCCNForSourceFile( new SourceFileData(filename));
+			assertNotNull(ccn1)
+			assertEquals( "Javancss issue has been fixed: http://jira.codehaus.org/browse/JAVANCSS-37.   Now fix this test.", 0.0/*should be 2.0?*/, ccn1 as Double, 0.01);
+		}
+	}
+
 }
