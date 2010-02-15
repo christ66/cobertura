@@ -418,14 +418,14 @@ public class Javancss implements Exitable
     /*
      * cobertura:  add this next constructor so any input stream can be used.
      * 
-     * It should be a copy of the Javancss(String) constructor, but just
-     * make sure _vJavaSourceFiles is empty.   _measureRoot will
-     * use the input stream if it is empty.
+     * It should (more or less) be a copy of the Javancss(File) constructor, but just
+     * make sure _vJavaSourceFiles is null.   _measureRoot will
+     * use the input stream if it is null.
      */
     public Javancss(InputStream isJavaSource_) {
         Util.debug( "Javancss.<init>(InputStream).sJavaSourceFile_: " + isJavaSource_ );
         _sErrorMessage = null;
-        _vJavaSourceFiles = new ArrayList();
+        _vJavaSourceFiles = null;
 
         try {
             _measureRoot(newReader(isJavaSource_));
