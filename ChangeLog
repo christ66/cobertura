@@ -4,6 +4,8 @@ version 1.9.4:
 	  applies it on real model (ProjectData) as a batch operation. (Piotr Tabor)
 	* Fixed "Some packages are included more then once" bug (#2875576) that
 	  caused some counts on the HTML report to be incorrect.  (Charlie Squires)
+	* Fixed "Inner classes not counted in coverage report total" bug (#2943320)
+	  (Charlie Squires)
 
 version 1.9.3:
 	* Update to the latest Javancss (32.53) to fix some complexity calculation
