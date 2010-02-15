@@ -4,6 +4,8 @@ free until you run the maven build.  At a command line, go to the root of the pr
 
 mvn clean test
 
+Note: you may need to configure a proxy for maven:  http://maven.apache.org/guides/mini/guide-proxies.html
+
 
 
 PROCEDURE FOR MERGING NEW JAVANCSS VERSIONS INTO COBERTURA
