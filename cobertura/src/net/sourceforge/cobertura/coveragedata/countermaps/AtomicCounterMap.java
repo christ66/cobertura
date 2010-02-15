@@ -74,15 +74,13 @@ public class AtomicCounterMap<T> implements CounterMap<T>,HasBeenInstrumented{
 	public synchronized  Map<T,Integer> getFinalStateAndCleanIt(){		
 		Map<T,Integer> res=new LinkedHashMap<T, Integer>();
 		Iterator<Map.Entry<T, AtomicInteger>> iterator=counters.entrySet().iterator();
-		int i=0;
 		while (iterator.hasNext()) {
-			i++;
 			Map.Entry<T, AtomicInteger> entry=iterator.next();
 			T key=entry.getKey();
-			AtomicInteger old=entry.getValue();
+			int old=entry.getValue().get();
 			iterator.remove();
-			if(old.get()>0){
-				res.put(key, old.get());
+			if(old>0){
+				res.put(key, old);
 			}
 		}		
 		return res;		
