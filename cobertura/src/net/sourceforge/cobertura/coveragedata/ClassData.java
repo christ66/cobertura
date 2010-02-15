@@ -49,7 +49,7 @@ import java.util.TreeSet;
  */
 
 public class ClassData extends CoverageDataContainer
-	implements Comparable, HasBeenInstrumented 
+	implements Comparable<ClassData>, HasBeenInstrumented 
 {
 
 	private static final long serialVersionUID = 5;
@@ -58,11 +58,11 @@ public class ClassData extends CoverageDataContainer
 	 * Each key is a line number in this class, stored as an Integer object.
 	 * Each value is information about the line, stored as a LineData object.
 	 */
-	private Map branches = new HashMap();
+	private Map<Integer,LineData> branches = new HashMap<Integer,LineData>();
 
 	private boolean containsInstrumentationInfo = false;
 
-	private Set methodNamesAndDescriptors = new HashSet();
+	private Set<String> methodNamesAndDescriptors = new HashSet<String>();
 
 	private String name = null;
 
@@ -110,7 +110,7 @@ public class ClassData extends CoverageDataContainer
 	/**
 	 * This is required because we implement Comparable.
 	 */
-	public int compareTo(Object o)
+	public int compareTo(ClassData o)
 	{
 		if (!o.getClass().equals(ClassData.class))
 			return Integer.MAX_VALUE;
@@ -181,7 +181,7 @@ public class ClassData extends CoverageDataContainer
 		lock.lock();
 		try
 		{
-			for (Iterator iter = branches.values().iterator(); iter.hasNext();) {
+			for (Iterator<LineData> iter = branches.values().iterator(); iter.hasNext();) {
 				LineData next = (LineData) iter.next();
 				if (methodNameAndDescriptor.equals(next.getMethodName() + next.getMethodDescriptor()))
 				{
@@ -198,7 +198,7 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	public Collection getBranches() 
+	public Collection<Integer> getBranches() 
 	{
 		lock.lock();
 		try
@@ -245,7 +245,7 @@ public class ClassData extends CoverageDataContainer
 		lock.lock();
 		try
 		{
-			Iterator iter = children.values().iterator();
+			Iterator<CoverageData> iter = children.values().iterator();
 			while (iter.hasNext()) 
 			{
 				LineData next = (LineData) iter.next();
@@ -279,12 +279,12 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	public SortedSet getLines()
+	public SortedSet<CoverageData> getLines()
 	{
 		lock.lock();
 		try
 		{
-			return new TreeSet(this.children.values());
+			return new TreeSet<CoverageData>(this.children.values());
 		}
 		finally
 		{
@@ -292,13 +292,13 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	public Collection getLines(String methodNameAndDescriptor)
+	public Collection<CoverageData> getLines(String methodNameAndDescriptor)
 	{
-		Collection lines = new HashSet();
+		Collection<CoverageData> lines = new HashSet<CoverageData>();
 		lock.lock();
 		try
 		{
-			Iterator iter = children.values().iterator();
+			Iterator<CoverageData> iter = children.values().iterator();
 			while (iter.hasNext())
 			{
 				LineData next = (LineData)iter.next();
@@ -320,7 +320,7 @@ public class ClassData extends CoverageDataContainer
 	 * @return The method name and descriptor of each method found in the
 	 *         class represented by this instrumentation.
 	 */
-	public Set getMethodNamesAndDescriptors() 
+	public Set<String> getMethodNamesAndDescriptors() 
 	{
 		lock.lock();
 		try
@@ -347,7 +347,7 @@ public class ClassData extends CoverageDataContainer
 		lock.lock();
 		try
 		{
-			for (Iterator i = branches.values().iterator(); 
+			for (Iterator<LineData> i = branches.values().iterator(); 
 				i.hasNext(); 
 				number += ((LineData) i.next()).getNumberOfValidBranches())
 				;
@@ -368,7 +368,7 @@ public class ClassData extends CoverageDataContainer
 		lock.lock();
 		try
 		{
-			for (Iterator i = branches.values().iterator(); 
+			for (Iterator<LineData> i = branches.values().iterator(); 
 				i.hasNext(); 
 				number += ((LineData) i.next()).getNumberOfCoveredBranches())
 				;
@@ -549,9 +549,9 @@ public class ClassData extends CoverageDataContainer
 			// because they are shared between this.branches and this.children,
 			// so the object hit counts will be moved when we called
 			// super.merge() above.
-			for (Iterator iter = classData.branches.keySet().iterator(); iter.hasNext();)
+			for (Iterator<Integer> iter = classData.branches.keySet().iterator(); iter.hasNext();)
 			{
-				Object key = iter.next();
+				Integer key = iter.next();
 				if (!this.branches.containsKey(key))
 				{
 					this.branches.put(key, classData.branches.get(key));

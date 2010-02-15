@@ -30,7 +30,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Collections;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -59,7 +58,7 @@ public abstract class CoverageDataContainer
 	 * an Integer object.  Each value is information about the child,
 	 * stored as an object that implements the CoverageData interface.
 	 */
-	Map children = new HashMap();
+	Map<Object,CoverageData> children = new HashMap<Object,CoverageData>();
 
 	public CoverageDataContainer()
 	{
@@ -109,7 +108,7 @@ public abstract class CoverageDataContainer
 		lock.lock();
 		try
 		{
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
 				CoverageData coverageContainer = (CoverageData)iter.next();
@@ -161,7 +160,7 @@ public abstract class CoverageDataContainer
 		lock.lock();
 		try
 		{
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
 				CoverageData coverageContainer = (CoverageData)iter.next();
@@ -203,7 +202,7 @@ public abstract class CoverageDataContainer
 		lock.lock();
 		try
 		{
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
 				CoverageData coverageContainer = (CoverageData)iter.next();
@@ -223,7 +222,7 @@ public abstract class CoverageDataContainer
 		lock.lock();
 		try
 		{
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
 				CoverageData coverageContainer = (CoverageData)iter.next();
@@ -243,7 +242,7 @@ public abstract class CoverageDataContainer
 		lock.lock();
 		try
 		{
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
 				CoverageData coverageContainer = (CoverageData)iter.next();
@@ -263,7 +262,7 @@ public abstract class CoverageDataContainer
 		lock.lock();
 		try
 		{
-			Iterator iter = this.children.values().iterator();
+			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
 				CoverageData coverageContainer = (CoverageData)iter.next();
@@ -306,7 +305,7 @@ public abstract class CoverageDataContainer
 		getBothLocks(container);
 		try
 		{
-			Iterator iter = container.children.keySet().iterator();
+			Iterator<Object> iter = container.children.keySet().iterator();
 			while (iter.hasNext())
 			{
 				Object key = iter.next();
