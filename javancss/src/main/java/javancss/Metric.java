@@ -25,13 +25,14 @@ package javancss;
  * Base data class to store all metrics common to packages, objects and functions.
  *
  * @author  Hervé Boutemy
- * @version $Id: Metric.java 121 2009-01-17 22:19:45Z hboutemy $
+ * @version $Id: Metric.java 195 2009-06-23 21:57:59Z hboutemy $
  */
 public abstract class Metric implements Comparable
 {
     public String name = ".";
     /** Non Commenting Source Statements (NCSS). */
     public int ncss = 0;
+    public int firstLine = 0;
     public int javadocs = 0;
     public int javadocsLn = 0;
     public int singleLn = 0;
