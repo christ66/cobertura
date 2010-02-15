@@ -21,7 +21,7 @@ some historical context.   You will not need to do the following steps.
 I followed the procedure and created a vendor/javancss/current directory in the
 repository:
 
-https://svn.sourceforge.net/svnroot/cobertura/vendor/javancss
+https://cobertura.svn.sourceforge.net/svnroot/cobertura/vendor/javancss
 
 Then, I copied it over into the cobertura project under a directory
 called javancss.  This file (the one you are reading) is at the root of that
@@ -45,7 +45,7 @@ https://svn.codehaus.org/javancss/tags/javancss-32.53
 If you can't tell from the history, you can try doing comparisons between "current"
 and the version directories that are also at this location:
 
-https://svn.sourceforge.net/svnroot/cobertura/vendor/javancss
+https://cobertura.svn.sourceforge.net/svnroot/cobertura/vendor/javancss
 
 You can do the comparisons with commands like (with REVISION changed appropriately):
 
@@ -57,7 +57,7 @@ If the command exits without printing anything, they are the same.
 If you don't see a directory under vendor/javancss that looks like the revision (ex. rev25)
 or tag (ex. javancss-32.53), then execute (with REVISION changed appropriately):
 
-svn copy https://svn.sourceforge.net/svnroot/cobertura/vendor/javancss/current https://svn.sourceforge.net/svnroot/cobertura/vendor/javancss/REVISION -m "tagging REVISION"
+svn copy https://cobertura.svn.sourceforge.net/svnroot/cobertura/vendor/javancss/current https://cobertura.svn.sourceforge.net/svnroot/cobertura/vendor/javancss/REVISION -m "tagging REVISION"
 
 If instead a directory already exists, you can make sure they are the same with:
 
@@ -219,7 +219,7 @@ directories if you want to.
 Now, go ahead and tag "current" with the revision (ex. rev25)
 or tag (ex. javancss-32.53) by executing (with REVISION changed appropriately):
 
-svn copy https://svn.sourceforge.net/svnroot/cobertura/vendor/javancss/current https://svn.sourceforge.net/svnroot/cobertura/vendor/javancss/REVISION -m "tagging REVISION"
+svn copy https://cobertura.svn.sourceforge.net/svnroot/cobertura/vendor/javancss/current https://cobertura.svn.sourceforge.net/svnroot/cobertura/vendor/javancss/REVISION -m "tagging REVISION"
 
 
 
@@ -229,7 +229,7 @@ svn copy https://svn.sourceforge.net/svnroot/cobertura/vendor/javancss/current h
 Now, we need to checkout the javancss directory under the cobertura project (note we do not
 want to checkout the whole cobertura project yet):
 
-svn checkout https://svn.sourceforge.net/svnroot/cobertura/trunk/cobertura/javancss javancssInCobertura
+svn checkout https://cobertura.svn.sourceforge.net/svnroot/cobertura/trunk/cobertura/javancss javancssInCobertura
 
 The project will not be problem free until you run the maven build.  At a
 command line, go to the root of the project, and execute:
@@ -258,7 +258,7 @@ Now I'll show the merge command.   The first url is the vendor version that you 
 url is the vendor version that you are merging with now.  Here is what it looks like when you last
 merged with rev25, and you are merging with javancss-32.53 (assuming you are in the javancssInCobertura directory):
 
-svn merge https://svn.sourceforge.net/svnroot/cobertura/vendor/javancss/rev25@HEAD https://svn.sourceforge.net/svnroot/cobertura/vendor/javancss/javancss-32.53@HEAD .
+svn merge https://cobertura.svn.sourceforge.net/svnroot/cobertura/vendor/javancss/rev25@HEAD https://cobertura.svn.sourceforge.net/svnroot/cobertura/vendor/javancss/javancss-32.53@HEAD .
 
 
 RESOLVING CONFLICTS
