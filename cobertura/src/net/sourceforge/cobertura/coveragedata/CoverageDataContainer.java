@@ -111,7 +111,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = (CoverageData)iter.next();
+				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfValidBranches();
 				numberCovered += coverageContainer.getNumberOfCoveredBranches();
 			}
@@ -163,7 +163,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = (CoverageData)iter.next();
+				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfValidLines();
 				numberCovered += coverageContainer.getNumberOfCoveredLines();
 			}
@@ -205,7 +205,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = (CoverageData)iter.next();
+				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfCoveredBranches();
 			}
 		}
@@ -225,7 +225,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = (CoverageData)iter.next();
+				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfCoveredLines();
 			}
 		}
@@ -245,7 +245,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = (CoverageData)iter.next();
+				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfValidBranches();
 			}
 		}
@@ -265,7 +265,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = (CoverageData)iter.next();
+				CoverageData coverageContainer = iter.next();
 				number += coverageContainer.getNumberOfValidLines();
 			}
 		}

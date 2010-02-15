@@ -112,9 +112,7 @@ public class ClassData extends CoverageDataContainer
 	 */
 	public int compareTo(ClassData o)
 	{
-		if (!o.getClass().equals(ClassData.class))
-			return Integer.MAX_VALUE;
-		return this.name.compareTo(((ClassData)o).name);
+		return this.name.compareTo(o.name);
 	}
 
 	public boolean containsInstrumentationInfo()
@@ -349,7 +347,7 @@ public class ClassData extends CoverageDataContainer
 		{
 			for (Iterator<LineData> i = branches.values().iterator(); 
 				i.hasNext(); 
-				number += ((LineData) i.next()).getNumberOfValidBranches())
+				number += (i.next()).getNumberOfValidBranches())
 				;
 			return number;
 		}
@@ -370,7 +368,7 @@ public class ClassData extends CoverageDataContainer
 		{
 			for (Iterator<LineData> i = branches.values().iterator(); 
 				i.hasNext(); 
-				number += ((LineData) i.next()).getNumberOfCoveredBranches())
+				number += (i.next()).getNumberOfCoveredBranches())
 				;
 			return number;
 		}
