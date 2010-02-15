@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.codehaus.javancss</groupId>
   <artifactId>javancss</artifactId>
-  <version>32.53</version>
+  <version>33.54-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>JavaNCSS</name>
@@ -59,9 +59,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/javancss/tags/javancss-32.53</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/javancss/tags/javancss-32.53</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/javancss/tags/javancss-32.53</url>
+    <connection>scm:svn:http://svn.codehaus.org/javancss/trunk/</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/javancss/trunk/</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/javancss/trunk/</url>
   </scm>
 
   <developers>
@@ -89,16 +89,15 @@
       <email>simon.brandhof@codehaus.org</email>
       <timezone>+1</timezone>
     </developer>
-  </developers>
-  <contributors>
-    <contributor>
+    <developer>
+      <id>reynaud_seb</id>
       <name>Sébastien Reynaud</name>
       <email>sebastien.reynaud@logica.com</email>
       <organization>Logica</organization>
       <organizationUrl>http://www.logica.com/</organizationUrl>
       <timezone>+1</timezone>
-    </contributor>
-  </contributors>
+    </developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
