@@ -251,7 +251,7 @@ public class TestUtil {
 		{
 			return 0
 		}
-		def lines = method.lines.line.collect {[number:it.'@number', hits:it.'@hits'.toInteger()]}
+		def lines = method.lines.line.collect {[number:it.'@number', hits:it.'@hits'.toInteger(), conditionCoverage:it.'@condition-coverage']}
 		return lines
 	}
 	
@@ -275,4 +275,24 @@ public class TestUtil {
 		}
 		return ret
 	}
+
+	public compileSource(ant, srcDir)
+	{
+		ant.groovyc(srcdir:srcDir, destDir:srcDir) {
+			javac(debug:'true')
+		}
+	}
+
+	public instrumentClasses(ant, srcDir, datafile, todir)
+	{
+		ant.'cobertura-instrument'(datafile:datafile, todir:todir) {
+			includeClasses(regex:'mypackage.*')
+			fileset(dir:srcDir) {
+				include(name:'**/*.class')
+			}
+		}
+	}
+
+	
+
 }

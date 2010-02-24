@@ -81,6 +81,7 @@ public class MultipleClassloaderFunctionalTest {
 	 */
 
 	def ant = TestUtil.getCoberturaAntBuilder(TestUtil.getCoberturaClassDir())
+	def testUtil = new TestUtil()
 
 	private static CALLED_CODE = """
 package mypackage;
@@ -170,9 +171,9 @@ public class Main {
 			def calledSourceFile = new File(srcDir, "mypackage/Called.java")
 			calledSourceFile.write(CALLED_CODE)
 			
-			compileSource(srcDir)
+			testUtil.compileSource(ant, srcDir)
 			
-			instrumentClasses(srcDir, datafile, instrumentDir)
+			testUtil.instrumentClasses(ant, srcDir, datafile, instrumentDir)
 			
 			/*
 			 * Kick off the Main class.   I'll use the non-instrumented classes, but
@@ -202,20 +203,4 @@ public class Main {
 		}
 	}
 	
-	def compileSource(srcDir)
-	{
-		ant.groovyc(srcdir:srcDir, destDir:srcDir) {
-			javac(debug:'true')
-		}
-	}
-	
-	def instrumentClasses(srcDir, datafile, todir)
-	{
-		ant.'cobertura-instrument'(datafile:datafile, todir:todir) {
-			includeClasses(regex:'mypackage.*')
-			fileset(dir:srcDir) {
-				include(name:'**/*.class')
-			}
-		}
-	}
 }
