@@ -64,6 +64,31 @@ Cobertura with Appfuse</a></li>
 <h1>News</h1>
 
 <div class="newsitem">
+<span class="date">1 March 2010</span>
+<div class="text">
+<p>
+We've released Cobertura 1.9.4.   See below for the full list of changes.
+</p>
+
+<ul>
+<li>
+Cobertura is now up to 10x faster. Aggregates changes in
+temporary TouchCollector class (thread-safe, but lock-free) and after that
+applies it on real model (ProjectData) as a batch operation. (Piotr Tabor)
+</li>
+<li>
+Fixed "Some packages are included more then once" bug (#2875576) that
+caused some counts on the HTML report to be incorrect.  (Charlie Squires)
+<li>
+Fixed "Inner classes not counted in coverage report total" bug (#2943320)
+(Charlie Squires)
+</li>
+</ul>
+</div>
+</div>
+
+
+<div class="newsitem">
 <span class="date">17 Sept 2009</span>
 <div class="text">
 <p>
