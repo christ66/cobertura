@@ -64,6 +64,29 @@ Cobertura with Appfuse</a></li>
 <h1>News</h1>
 
 <div class="newsitem">
+<span class="date">3 March 2010</span>
+<div class="text">
+<p>
+We've released Cobertura 1.9.4.1 to fix two problems with 1.9.4:
+</p>
+
+<ul>
+<li>
+Fix a problem that occurs in Tomcat.   When TouchCollector 
+initializes, it calls ProjectData.initialize() which (with 
+Tomcat only) eventually calls TouchCollector.   However, 
+TouchCollector's static members have not been initialized.   
+Added a test that highlights this problem.   (Thanks to Jack Cobb
+for suggesting the fix).
+</li>
+<li>
+Runs on Java 5.  (Fix for Bug 2962599).
+</ul>
+</div>
+</div>
+
+
+<div class="newsitem">
 <span class="date">1 March 2010</span>
 <div class="text">
 <p>
