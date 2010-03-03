@@ -1,3 +1,13 @@
+version 1.9.4.1:
+	* Fix a problem that occurs in Tomcat.   When TouchCollector 
+	  initializes, it calls ProjectData.initialize() which (with 
+	  Tomcat only) eventually calls TouchCollector.   However, 
+	  TouchCollector's static members have not been initialized.   
+	  Added a test that highlights this problem.   (Thanks to Jack Cobb
+	  for suggesting the fix).
+	* Runs on Java 5.  (Fix for Bug 2962599).
+	
+
 version 1.9.4:
 	* Cobertura is now up to 10x faster. Aggregates changes in
 	  temporary TouchCollector class (thread-safe, but lock-free) and after that

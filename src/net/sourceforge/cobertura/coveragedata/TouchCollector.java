@@ -25,7 +25,6 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,10 +35,6 @@ import net.sourceforge.cobertura.coveragedata.countermaps.CounterMap;
 
 public class TouchCollector implements HasBeenInstrumented{
 	
-	static{
-		ProjectData.initialize();
-	}
-	
 	private static final CounterMap<LineTouchData> touchedLines=new AtomicCounterMap<LineTouchData>();	
 	private static final CounterMap<SwitchTouchData> switchTouchData=new AtomicCounterMap<SwitchTouchData>();	
 	private static final CounterMap<JumpTouchData> jumpTouchData=new AtomicCounterMap<JumpTouchData>();
@@ -48,6 +43,10 @@ public class TouchCollector implements HasBeenInstrumented{
 	private static final Map<String,Integer> class2classId=new ConcurrentHashMap<String, Integer>();
 	private static final Map<Integer,String> classId2class=new ConcurrentHashMap<Integer,String>();
 
+	static{
+		ProjectData.initialize();
+	}
+	
 	private static final int registerClassData(String name){		
 		Integer res=class2classId.get(name);
 		if (res==null){
