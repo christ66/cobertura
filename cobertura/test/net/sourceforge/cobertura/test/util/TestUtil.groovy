@@ -135,7 +135,7 @@ public class TestUtil {
 		{
 			coberturaClassDir = new File("build/test/cobertura_classes")
 			coberturaClassDir.mkdirs()
-			antBuilder.javac(srcdir:'src', destdir:coberturaClassDir, debug:true) {
+			antBuilder.javac(srcdir:'src', destdir:coberturaClassDir, debug:true, target:"1.5") {
 				classpath {
 					fileset(dir:'lib') {
 						include(name:'**/*.jar')

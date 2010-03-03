@@ -73,7 +73,7 @@ public class WebAppFunctionalTest {
 	 */
 	private static final SAVE_DATA_CLASSNAME = "net.sourceforge.cobertura.webapp.FlushCoberturaServlet"
 	private static final SAVE_DATA_METHOD_NAME = "doGet"
-
+	private static final boolean TOMCAT = true
 		
 	def ant = TestUtil.antBuilder
 	
@@ -84,6 +84,15 @@ public class WebAppFunctionalTest {
 	
 	@Test
 	void basicStartAndStopOfWebApp() {
+		basicStartAndStopOfWebApp(!TOMCAT)
+	}
+
+	@Test
+	void basicStartAndStopOfWebAppInTomcat() {
+		basicStartAndStopOfWebApp(TOMCAT)
+	}	
+
+	void basicStartAndStopOfWebApp(tomcat) {
 		TestUtil.withTempDir { tempDir ->
 			def webappServerDir = new File(tempDir, "webserver")
 			def srcDir = new File(tempDir, "src")
@@ -92,7 +101,7 @@ public class WebAppFunctionalTest {
 			
 			def appName = "simple"
 
-			def webappServer = new WebappServer(dir:webappServerDir)
+			def webappServer = new WebappServer(dir:webappServerDir, tomcat:tomcat)
 
 			webappServer.deployApp(
 					webInfText:WebappServer.SIMPLE_SERVLET_WEB_XML_TEXT,

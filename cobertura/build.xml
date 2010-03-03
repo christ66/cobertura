@@ -59,21 +59,24 @@
 
 	<target name="compile" depends="init">
 		<mkdir dir="${build.classes.dir}" />
-		<javac fork="true" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true" encoding="UTF-8">
+		<javac fork="true" srcdir="${src.dir}" destdir="${build.classes.dir}" debug="true" encoding="UTF-8"
+			target="${javac.target}">
 			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
 			<classpath refid="base.path" />
 		</javac>
 
 		<mkdir dir="${build.otherclasses.dir}" />
-		<javac fork="true" srcdir="${othersrc.dir}" destdir="${build.otherclasses.dir}" debug="true" encoding="UTF-8">
+		<javac fork="true" srcdir="${othersrc.dir}" destdir="${build.otherclasses.dir}" debug="true" encoding="UTF-8"
+			target="${javac.target}">
 			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
 			<classpath refid="base.path" />
 		</javac>
 
 		<mkdir dir="${build.functionalconditiontest.dir}" />
-		<javac fork="true" srcdir="${examples.functionalconditiontest.dir}" destdir="${build.functionalconditiontest.dir}" debug="true" encoding="UTF-8">
+		<javac fork="true" srcdir="${examples.functionalconditiontest.dir}" destdir="${build.functionalconditiontest.dir}" debug="true" encoding="UTF-8"
+			target="${javac.target}">
 			<compilerarg value="-Xlint:unchecked" compiler="javac1.5"/>
 			<classpath location="${build.classes.dir}" />
 			<classpath refid="base.path" />

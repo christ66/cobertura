@@ -113,6 +113,7 @@ public class WebappServer
 	def msecNeededToStop = 10000
 	def coberturaAnt
 	def modifyMainCoberturaDataFile
+	boolean tomcat
 
 	/**
 	 * Copies a web server installation into dir and deploys a webapp to it.
@@ -168,7 +169,7 @@ public class WebappServer
 	private compileSourceFiles(srcDir, classesDir)
 	{
 		ant.mkdir(dir:classesDir)
-		ant.javac(srcdir:srcDir, destdir:classesDir, debug:'true') {
+		ant.javac(srcdir:srcDir, destdir:classesDir, debug:'true', target:'1.5') {
 			classpath {
 				fileset(dir:"jetty") {
 					include(name:"**/*.jar")
@@ -363,6 +364,11 @@ public class WebappServer
 			sysproperty(key:'jetty.port', value:freePorts.webapp)
 			sysproperty(key:'STOP.PORT', value:freePorts.stop)
 			sysproperty(key:'STOP.KEY', value:'cobertura')
+			
+			// fool Cobertura into thinking it is running in Tomcat
+			if (tomcat) {
+				sysproperty(key:'catalina.home', value:dir.absolutePath)
+			}
 			if (modifyMainCoberturaDataFile)
 			{
 				sysproperty(key:'net.sourceforge.cobertura.datafile', value:getDatafileToUse().getAbsolutePath())
