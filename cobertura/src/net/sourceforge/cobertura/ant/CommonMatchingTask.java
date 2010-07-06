@@ -93,6 +93,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 	private Java java = null;
 	private String maxMemory = null;
 	private int forkedJVMDebugPort;
+	protected boolean failOnError = false;
 
 	public CommonMatchingTask(String className)
 	{
@@ -112,6 +113,7 @@ public abstract class CommonMatchingTask extends MatchingTask
 			java.setTaskName(getTaskName());
 			java.setClassname(getClassName());
 			java.setFork(true);
+			java.setFailonerror(failOnError);
 			java.setDir(getProject().getBaseDir());
 			if (maxMemory != null)
 				java.setJvmargs("-Xmx" + maxMemory);
@@ -264,5 +266,15 @@ public abstract class CommonMatchingTask extends MatchingTask
 		this.forkedJVMDebugPort = forkedJVMDebugPort;
 	}
 
+    /**
+     * If true, then fail if the command exits with a
+     * returncode other than zero.
+     *
+     * @param fail if true fail the build when the command exits with a
+     * nonzero returncode.
+     */
+    public void setFailonerror(boolean fail) {
+        failOnError = fail;
+    }
 
 }

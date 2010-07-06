@@ -87,7 +87,7 @@ import org.objectweb.asm.ClassWriter;
 public class Main
 {
 
-	private static final Logger logger = Logger.getLogger(Main.class);
+	private static final LoggerWrapper logger = new LoggerWrapper();
 
 	private File destinationDirectory = null;
 
@@ -110,7 +110,7 @@ public class Main
 	}
 
 	private boolean addInstrumentationToArchive(CoberturaFile file, InputStream archive,
-			OutputStream output) throws Exception
+			OutputStream output) throws Throwable
 	{
 		ZipInputStream zis = null;
 		ZipOutputStream zos = null;
@@ -129,7 +129,7 @@ public class Main
 	}
 
 	private boolean addInstrumentationToArchive(CoberturaFile file, ZipInputStream archive,
-			ZipOutputStream output) throws Exception
+			ZipOutputStream output) throws Throwable
 	{
 		/*
 		 * "modified" is returned and indicates that something was instrumented.
@@ -230,7 +230,7 @@ public class Main
 		return modified;
 	}
 
-	private void addInstrumentationToArchive(Archive archive) throws Exception
+	private void addInstrumentationToArchive(Archive archive) throws Throwable
 	{
 		InputStream in = null;
 		ByteArrayOutputStream out = null;
@@ -254,7 +254,7 @@ public class Main
 		}
 	}
 
-	private void addInstrumentationToArchive(CoberturaFile archive)
+	private void addInstrumentationToArchive(CoberturaFile archive) throws Throwable
 	{
 		logger.debug("Instrumenting archive " + archive.getAbsolutePath());
 
@@ -342,7 +342,7 @@ public class Main
 		}
 	}
 
-	private void addInstrumentationToSingleClass(File file)
+	private void addInstrumentationToSingleClass(File file) throws Throwable
 	{
 		logger.debug("Instrumenting class " + file.getAbsolutePath());
 
@@ -409,7 +409,7 @@ public class Main
 	// TODO: Don't attempt to instrument a file if the outputFile already
 	//       exists and is newer than the input file, and the output and
 	//       input file are in different locations?
-	private void addInstrumentation(CoberturaFile coberturaFile)
+	private void addInstrumentation(CoberturaFile coberturaFile) throws Throwable
 	{
 		if (coberturaFile.isClass() && classPattern.matches(coberturaFile.getPathname()))
 		{
@@ -429,7 +429,7 @@ public class Main
 		}
 	}
 
-	private void parseArguments(String[] args)
+	private void parseArguments(String[] args) throws Throwable
 	{
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 
@@ -459,6 +459,9 @@ public class Main
 			else if (args[i].equals("--excludeClasses"))
 			{
 				classPattern.addExcludeClassesRegex(args[++i]);
+			}
+			else if (args[i].equals("--failOnError")) {
+				logger.setFailOnError(true);
 			}
 			else
 			{
@@ -497,7 +500,7 @@ public class Main
 		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
 	}
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws Throwable
 	{
 		Header.print(System.out);
 
@@ -517,4 +520,33 @@ public class Main
 		System.out.println("Instrument time: " + (stopTime - startTime) + "ms");
 	}
 
+	private static class LoggerWrapper {
+		private final Logger logger = Logger.getLogger(Main.class);
+
+		private boolean failOnError = false;
+
+		public void setFailOnError(boolean failOnError)
+		{
+			this.failOnError = failOnError;
+		}
+
+		public void debug(String message)
+		{
+			logger.debug(message);
+		}
+
+		public void debug(String message, Throwable t)
+		{
+			logger.debug(message, t);
+		}
+
+		public void warn(String message, Throwable t) throws Throwable
+		{
+			logger.warn(message, t);
+			if (failOnError) 
+			{
+				throw t;
+			}
+		}
+	}
 }

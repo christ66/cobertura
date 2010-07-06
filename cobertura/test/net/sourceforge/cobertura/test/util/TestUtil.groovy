@@ -285,7 +285,7 @@ public class TestUtil {
 
 	public instrumentClasses(ant, srcDir, datafile, todir)
 	{
-		ant.'cobertura-instrument'(datafile:datafile, todir:todir) {
+		ant.'cobertura-instrument'(datafile:datafile, todir:todir, failonerror:true) {
 			includeClasses(regex:'mypackage.*')
 			fileset(dir:srcDir) {
 				include(name:'**/*.class')

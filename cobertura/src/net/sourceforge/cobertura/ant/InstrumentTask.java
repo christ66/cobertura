@@ -177,6 +177,9 @@ public class InstrumentTask extends CommonMatchingTask
 				builder.addArg("--excludeClasses", excludeClassesRegex.getRegex());
 			}
 
+			if (failOnError)
+				builder.addArg("--failOnError");
+
 			if (instrumentationClasspath != null) {
 				processInstrumentationClasspath();
 			}
