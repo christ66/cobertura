@@ -237,19 +237,24 @@ public class TestUtil {
 		return hitCount.toInteger()
 	}
 	
-	public static getLineCounts(dom, className, methodName)
+	public static getLineCounts(dom, className, methodName, signature=null)
 	{
 		def classes = dom.packages.'package'.classes.'class'
-		def clazz = classes.grep { it.'@name' == className }[0]
+		def clazz = classes.find { it.'@name' == className }
 		if (clazz == null)
 		{
-			return 0
+			return []
 		}
 		def methods = clazz.methods.method
-		def method = methods.grep { it.'@name' == methodName }[0]
+		def method = methods.find {
+			/*
+			 * methodName matches and if a signature was given, it matches too
+			 */
+			(it.'@name' == methodName) && ((!signature) || (it.'@signature' == signature))
+		}
 		if (method == null)
 		{
-			return 0
+			return []
 		}
 		def lines = method.lines.line.collect {[number:it.'@number', hits:it.'@hits'.toInteger(), conditionCoverage:it.'@condition-coverage']}
 		return lines
@@ -283,9 +288,13 @@ public class TestUtil {
 		}
 	}
 
-	public instrumentClasses(ant, srcDir, datafile, todir)
+	public instrumentClasses(ant, srcDir, datafile, todir, map=null)
 	{
-		ant.'cobertura-instrument'(datafile:datafile, todir:todir, failonerror:true) {
+		def attributes = [datafile:datafile, todir:todir, failonerror:true]
+  		if (map) {
+  			attributes.putAll(map)
+  		}
+  		ant.'cobertura-instrument'(attributes) {
 			includeClasses(regex:'mypackage.*')
 			fileset(dir:srcDir) {
 				include(name:'**/*.class')
