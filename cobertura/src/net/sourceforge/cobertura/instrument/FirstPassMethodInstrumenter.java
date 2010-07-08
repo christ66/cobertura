@@ -32,6 +32,7 @@ import java.util.Map;
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.util.RegexUtil;
 
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
@@ -55,6 +56,8 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 	private Collection ignoreRegexs;
    
 	private Collection ignoreBranchesRegexs;
+
+	private Collection ignoreMethodAnnotations;
 
 	private boolean ignoreTrivial = false;
 	private boolean ignored = false;
@@ -84,7 +87,7 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 	public FirstPassMethodInstrumenter(ClassData classData, final MethodVisitor mv,
 			final String owner, final String superOwner, final int access, final String name, final String desc, 
 			final String signature, final String[] exceptions, final Collection ignoreRegexs,
-			final Collection ignoreBranchesRegexs, 
+			final Collection ignoreBranchesRegexs, final Collection ignoreMethodAnnotations,
 			final boolean ignoreTrivial)
 	{
 		super(new MethodNode(access, name, desc, signature, exceptions));
@@ -98,6 +101,7 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		this.myDescriptor = desc;
 		this.ignoreRegexs = ignoreRegexs;
 		this.ignoreBranchesRegexs = ignoreBranchesRegexs;
+		this.ignoreMethodAnnotations = ignoreMethodAnnotations;
 		this.ignoreTrivial = ignoreTrivial;
 		this.jumpTargetLabels = new HashMap();
 		this.switchTargetLabels = new HashMap();
@@ -314,6 +318,26 @@ public class FirstPassMethodInstrumenter extends MethodAdapter implements Opcode
 		}
 		
 		markNonTrivial();
+	}
+
+	@Override
+	public AnnotationVisitor visitAnnotation(String desc, boolean visible)
+	{
+		// We need to convert desc to a fully-qualified classname.  Example:
+		//   java.lang.Override --> passed in as this: "Ljava/lang/Override;"
+		if(desc.charAt(0) == 'L' && desc.charAt(desc.length() - 1) == ';')
+		{
+			desc = desc.substring(1, desc.length() - 1).replace('/', '.');
+		}
+		
+		// Check to see if this annotation is one of the ones that we use to 
+		// trigger us to ignore this method
+		if(ignoreMethodAnnotations.contains(desc))
+		{
+			ignored = true;
+		}
+			
+		return super.visitAnnotation(desc, visible);
 	}
 
 	public void visitTableSwitchInsn(int min, int max, Label dflt, Label[] labels)

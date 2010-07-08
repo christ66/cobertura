@@ -291,17 +291,20 @@ public class TestUtil {
 	public instrumentClasses(ant, srcDir, datafile, todir, map=null)
 	{
 		def attributes = [datafile:datafile, todir:todir, failonerror:true]
-  		if (map) {
-  			attributes.putAll(map)
-  		}
+		                  
+		map.each { key, value ->
+			if (key == 'ignoreAnnotationNames') return
+			attributes.put(key, value)
+		}
+		
   		ant.'cobertura-instrument'(attributes) {
 			includeClasses(regex:'mypackage.*')
 			fileset(dir:srcDir) {
 				include(name:'**/*.class')
 			}
+			map?.ignoreAnnotationNames.each {
+				ignoreMethodAnnotation(annotationName:it)
+			}
 		}
 	}
-
-	
-
 }

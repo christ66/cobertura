@@ -47,6 +47,8 @@ class ClassInstrumenter extends ClassAdapter
 
 	private Collection ignoreBranchesRegexs;
 
+	private Collection ignoreMethodAnnotations;
+	 
 	private boolean ignoreTrivial;
 
 	private ProjectData projectData;
@@ -70,12 +72,13 @@ class ClassInstrumenter extends ClassAdapter
 
 	public ClassInstrumenter(ProjectData projectData, final ClassVisitor cv,
 			final Collection ignoreRegexs, final Collection ignoreBranchesRegexes,
-			boolean ignoreTrivial)
+			final Collection ignoreMethodAnnotations, boolean ignoreTrivial)
 	{
 		super(cv);
 		this.projectData = projectData;
 		this.ignoreRegexs = ignoreRegexs;
 		this.ignoreBranchesRegexs = ignoreBranchesRegexs;
+		this.ignoreMethodAnnotations = ignoreMethodAnnotations;
 		this.ignoreTrivial = ignoreTrivial;
 	}
 
@@ -146,7 +149,7 @@ class ClassInstrumenter extends ClassAdapter
 
 		return mv == null ? null : new FirstPassMethodInstrumenter(classData, mv,
 				this.myName, this.superName, access, name, desc, signature, exceptions, 
-				ignoreRegexs, ignoreBranchesRegexs,  ignoreTrivial);
+				ignoreRegexs, ignoreBranchesRegexs, ignoreMethodAnnotations, ignoreTrivial);
 	}
 
 	public void visitEnd()

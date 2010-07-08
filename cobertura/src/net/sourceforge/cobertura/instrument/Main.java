@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -96,6 +97,8 @@ public class Main
 	private Collection ignoreRegexes = new Vector();
 
 	private Collection ignoreBranchesRegexes = new Vector();
+
+	private Collection ignoreMethodAnnotations = new HashSet();
 
 	private ClassPattern classPattern = new ClassPattern();
 
@@ -189,7 +192,7 @@ public class Main
 						ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 						ClassInstrumenter cv = new ClassInstrumenter(projectData,
 								cw, ignoreRegexes, ignoreBranchesRegexes,
-								ignoreTrivial);
+								ignoreMethodAnnotations, ignoreTrivial);
 						cr.accept(cv, 0);
 	
 						// If class was instrumented, get bytes that define the
@@ -360,7 +363,7 @@ public class Main
 			ClassReader cr = new ClassReader(inputStream);
 			cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes, ignoreBranchesRegexes,
-	                   ignoreTrivial);
+	                   ignoreMethodAnnotations, ignoreTrivial);
 			cr.accept(cv, 0);
 		}
 		catch (Throwable t)
@@ -457,6 +460,9 @@ public class Main
 			else if (args[i].equals("--ignoreBranches"))
 			{
 				RegexUtil.addRegex(ignoreBranchesRegexes, args[++i]);
+			}
+			else if (args[i].equals("--ignoreMethodAnnotation")) {
+				ignoreMethodAnnotations.add(args[++i]);
 			}
 			else if (args[i].equals("--ignoreTrivial")) {
 				ignoreTrivial = true;

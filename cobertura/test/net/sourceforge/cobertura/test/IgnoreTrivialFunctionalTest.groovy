@@ -66,6 +66,7 @@ public class IgnoreTrivialFunctionalTest {
 	def ant = TestUtil.getCoberturaAntBuilder(TestUtil.getCoberturaClassDir())
 	def testUtil = new TestUtil()
 	def dom
+	def ignoreUtil
 
 	@Test
 	void ignoreTrivialTest() {
@@ -367,6 +368,8 @@ public class Main extends Thread {
 			 */
 			ant.'cobertura-report'(datafile:datafile, format:'xml', destdir:srcDir)
 			dom = TestUtil.getXMLReportDOM("${srcDir}/coverage.xml")
+			
+			ignoreUtil = new IgnoreUtil(className:'mypackage.Main', dom:dom)
 				
 			// trivial empty constructor
 			assertIgnored('<init>', '()V')
@@ -448,15 +451,10 @@ public class Main extends Thread {
 	}
 
 	def assertIgnored(methodName, signature=null) {
-		def lines = TestUtil.getLineCounts(dom, 'mypackage.Main', methodName, signature)
-		def methodDesc = "$methodName${signature ? '(' + signature + ')' : ''}"
-		assertEquals("$methodDesc not ignored", 0, lines.size);
+		ignoreUtil.assertIgnored(methodName, signature)
 	}
 
 	def assertNotIgnored(methodName, signature=null) {
-		def lines = TestUtil.getLineCounts(dom, 'mypackage.Main', methodName, signature)
-		def methodDesc = "$methodName${signature ? '(' + signature + ')' : ''}"
-		assertTrue("$methodDesc should not be ignored", lines.size > 0);
-		assertTrue("$methodDesc should not be ignored", lines[0].hits > 0)
+		ignoreUtil.assertNotIgnored(methodName, signature)
 	}
 }

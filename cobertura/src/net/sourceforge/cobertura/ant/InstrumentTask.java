@@ -87,6 +87,8 @@ public class InstrumentTask extends CommonMatchingTask
 
 	List ignoreBranchesRegexs = new ArrayList();
 	
+	List ignoreMethodAnnotations = new ArrayList();
+
 	List includeClassesRegexs = new ArrayList();
 
 	List excludeClassesRegexs = new ArrayList();
@@ -118,6 +120,15 @@ public class InstrumentTask extends CommonMatchingTask
 		return ignoreBranchesRegex;
 	}
 
+	
+	public IgnoreMethodAnnotation createIgnoreMethodAnnotation()
+	{
+		IgnoreMethodAnnotation ignoreAnnotation = new IgnoreMethodAnnotation();
+		ignoreMethodAnnotations.add(ignoreAnnotation);
+		return ignoreAnnotation;
+	}
+	
+	
 	public IncludeClasses createIncludeClasses()
 	{
 		IncludeClasses includeClassesRegex = new IncludeClasses();
@@ -171,6 +182,11 @@ public class InstrumentTask extends CommonMatchingTask
 				builder.addArg("--ignoreBranches", ignoreBranchesRegex.getRegex());
 			}
 
+			for (int i = 0; i < ignoreMethodAnnotations.size(); i++) {
+				IgnoreMethodAnnotation ignoreMethodAnn = (IgnoreMethodAnnotation)ignoreMethodAnnotations.get(i);
+				builder.addArg("--ignoreMethodAnnotation", ignoreMethodAnn.getAnnotationName());
+			}
+			
 			for (int i = 0; i < includeClassesRegexs.size(); i++) {
 				IncludeClasses includeClassesRegex = (IncludeClasses)includeClassesRegexs.get(i);
 				builder.addArg("--includeClasses", includeClassesRegex.getRegex());

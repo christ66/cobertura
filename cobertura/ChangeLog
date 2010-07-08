@@ -3,8 +3,12 @@ version 1.9.5:
 	  following in the coverage report: Getter methods that simply 
 	  read a class field; Setter methods that set a class field;
 	  Constructors that only set class fields and call a super 
-	  class constructor 
-	  (Patch 3010530 (partial) from 2035169 (partial)) (Scott Frederick/Ted Smith)
+	  class constructor.
+	  (Patch 3010530 from 1576631) (Scott Frederick/Tad Smith)
+	* New --ignoreMethodAnnotation switch used to specify an annotation that, 
+	  when present on a method, will cause Cobertura to ignore the 
+	  method in the coverage report.
+	  (Patch 3010530) (Tad Smith)
 	
 
 version 1.9.4.1:
