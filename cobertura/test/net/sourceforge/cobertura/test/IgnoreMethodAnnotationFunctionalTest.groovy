@@ -80,6 +80,7 @@ public class IgnoreMethodAnnotationFunctionalTest {
 			
 			def mainSourceFile = new File(srcDir, "mypackage/Main.java")
 			def annotationSourceFile = new File(srcDir, "mypackage/IgnoreAnnotation.java")
+			def annotation2SourceFile = new File(srcDir, "mypackage/IgnoreAnnotation2.java")
 			
 			def datafile = new File(srcDir, "cobertura.ser")
 			mainSourceFile.parentFile.mkdirs()
@@ -88,6 +89,12 @@ public class IgnoreMethodAnnotationFunctionalTest {
 package mypackage;
 			
 public @interface IgnoreAnnotation {}
+"""
+			
+			annotation2SourceFile.write """
+package mypackage;
+			
+public @interface IgnoreAnnotation2 {}
 """
 			
 			mainSourceFile.write """
@@ -117,6 +124,11 @@ public class Main
 	public void ignore()
 	{
 	}
+
+	@IgnoreAnnotation2
+	public void ignore2()
+	{
+	}
 }
 			"""
 
@@ -124,7 +136,7 @@ public class Main
 			
 			testUtil.instrumentClasses(ant, srcDir, datafile, instrumentDir, 
 					[
-					 ignoreAnnotationNames:['mypackage.IgnoreAnnotation'],
+					 ignoreAnnotationNames:['mypackage.IgnoreAnnotation', 'mypackage.IgnoreAnnotation2'],
 					])
 			
 			/*
@@ -150,6 +162,7 @@ public class Main
 
 			assertIgnored('ignore')
 
+			assertIgnored('ignore2')
 		}
 	}
 
