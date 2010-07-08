@@ -7,6 +7,8 @@
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2006 John Lewis
  * Copyright (C) 2006 Jiri Mares 
+ * Copyright (C) 2008 Scott Frederick
+ * Copyright (C) 2010 Tad Smith 
  * Contact information for the above is given in the COPYRIGHT file.
  *
  * Cobertura is free software; you can redistribute it and/or modify
@@ -97,6 +99,8 @@ public class Main
 
 	private ClassPattern classPattern = new ClassPattern();
 
+	private boolean ignoreTrivial = false;
+	
 	private ProjectData projectData = null;
 
 	/**
@@ -184,7 +188,8 @@ public class Main
 						ClassReader cr = new ClassReader(entryBytes);
 						ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 						ClassInstrumenter cv = new ClassInstrumenter(projectData,
-								cw, ignoreRegexes, ignoreBranchesRegexes);
+								cw, ignoreRegexes, ignoreBranchesRegexes,
+								ignoreTrivial);
 						cr.accept(cv, 0);
 	
 						// If class was instrumented, get bytes that define the
@@ -354,7 +359,8 @@ public class Main
 			inputStream = new FileInputStream(file);
 			ClassReader cr = new ClassReader(inputStream);
 			cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes, ignoreBranchesRegexes);
+			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes, ignoreBranchesRegexes,
+	                   ignoreTrivial);
 			cr.accept(cv, 0);
 		}
 		catch (Throwable t)
@@ -452,6 +458,9 @@ public class Main
 			{
 				RegexUtil.addRegex(ignoreBranchesRegexes, args[++i]);
 			}
+			else if (args[i].equals("--ignoreTrivial")) {
+				ignoreTrivial = true;
+			}
 			else if (args[i].equals("--includeClasses"))
 			{
 				classPattern.addIncludeClassesRegex(args[++i]);
@@ -460,7 +469,8 @@ public class Main
 			{
 				classPattern.addExcludeClassesRegex(args[++i]);
 			}
-			else if (args[i].equals("--failOnError")) {
+			else if (args[i].equals("--failOnError"))
+			{
 				logger.setFailOnError(true);
 			}
 			else

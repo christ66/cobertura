@@ -1,3 +1,12 @@
+version 1.9.5:
+	* New --ignoreTrivial switch that tells Cobertura to ignore the 
+	  following in the coverage report: Getter methods that simply 
+	  read a class field; Setter methods that set a class field;
+	  Constructors that only set class fields and call a super 
+	  class constructor 
+	  (Patch 3010530 (partial) from 2035169 (partial)) (Scott Frederick/Ted Smith)
+	
+
 version 1.9.4.1:
 	* Fix a problem that occurs in Tomcat.   When TouchCollector 
 	  initializes, it calls ProjectData.initialize() which (with 

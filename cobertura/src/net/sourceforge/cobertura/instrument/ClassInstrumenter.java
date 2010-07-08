@@ -3,6 +3,8 @@
  *
  * Copyright (C) 2005 Mark Doliner 
  * Copyright (C) 2006 Jiri Mares 
+ * Copyright (C) 2008 Scott Frederick
+ * Copyright (C) 2010 Tad Smith 
  * 
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -45,11 +47,14 @@ class ClassInstrumenter extends ClassAdapter
 
 	private Collection ignoreBranchesRegexs;
 
+	private boolean ignoreTrivial;
+
 	private ProjectData projectData;
 
 	private ClassData classData;
 
 	private String myName;
+	private String superName;
 
 	private boolean instrument = false;
 
@@ -64,12 +69,14 @@ class ClassInstrumenter extends ClassAdapter
 	}
 
 	public ClassInstrumenter(ProjectData projectData, final ClassVisitor cv,
-			final Collection ignoreRegexs, final Collection ignoreBranchesRegexes)
+			final Collection ignoreRegexs, final Collection ignoreBranchesRegexes,
+			boolean ignoreTrivial)
 	{
 		super(cv);
 		this.projectData = projectData;
 		this.ignoreRegexs = ignoreRegexs;
 		this.ignoreBranchesRegexs = ignoreBranchesRegexs;
+		this.ignoreTrivial = ignoreTrivial;
 	}
 
 	private boolean arrayContains(Object[] array, Object key)
@@ -92,6 +99,7 @@ class ClassInstrumenter extends ClassAdapter
 	{
 		this.myName = name.replace('/', '.');
 		this.classData = this.projectData.getOrCreateClassData(this.myName);
+		this.superName = superName;
 		this.classData.setContainsInstrumentationInfo();
 
 		// Do not attempt to instrument interfaces or classes that
@@ -137,8 +145,8 @@ class ClassInstrumenter extends ClassAdapter
 			return mv;
 
 		return mv == null ? null : new FirstPassMethodInstrumenter(classData, mv,
-				this.myName, access, name, desc, signature, exceptions, ignoreRegexs, 
-				ignoreBranchesRegexs);
+				this.myName, this.superName, access, name, desc, signature, exceptions, 
+				ignoreRegexs, ignoreBranchesRegexs,  ignoreTrivial);
 	}
 
 	public void visitEnd()

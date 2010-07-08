@@ -10,6 +10,8 @@
  * Copyright (C) 2005 Alexei Yudichev
  * Copyright (C) 2006 John Lewis
  * Copyright (C) 2006 Jiri Mares 
+ * Copyright (C) 2008 Scott Frederick
+ * Copyright (C) 2010 Tad Smith 
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -88,6 +90,8 @@ public class InstrumentTask extends CommonMatchingTask
 	List includeClassesRegexs = new ArrayList();
 
 	List excludeClassesRegexs = new ArrayList();
+
+	boolean ignoreTrivial = false;
 
 	private Integer forkedJVMDebugPort;
 	
@@ -177,6 +181,9 @@ public class InstrumentTask extends CommonMatchingTask
 				builder.addArg("--excludeClasses", excludeClassesRegex.getRegex());
 			}
 
+			if (ignoreTrivial)
+				builder.addArg("--ignoreTrivial");
+			
 			if (failOnError)
 				builder.addArg("--failOnError");
 
@@ -269,6 +276,11 @@ public class InstrumentTask extends CommonMatchingTask
 		this.toDir = toDir;
 	}
 
+	public void setIgnoreTrivial(boolean ignoreTrivial)
+	{
+		this.ignoreTrivial = ignoreTrivial;
+	}
+	
 	public void setForkedJVMDebugPort(Integer forkedJVMDebugPort)
 	{
 		this.forkedJVMDebugPort = forkedJVMDebugPort;
