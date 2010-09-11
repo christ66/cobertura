@@ -54,6 +54,8 @@ public class ClassData extends CoverageDataContainer
 
 	private static final long serialVersionUID = 5;
 
+	
+
 	/**
 	 * Each key is a line number in this class, stored as an Integer object.
 	 * Each value is information about the line, stored as a LineData object.
@@ -68,6 +70,8 @@ public class ClassData extends CoverageDataContainer
 
 	private String sourceFileName = null;
 
+	public ClassData() {}
+	
 	/**
 	 * @param name In the format "net.sourceforge.cobertura.coveragedata.ClassData"
 	 */
@@ -112,7 +116,9 @@ public class ClassData extends CoverageDataContainer
 	 */
 	public int compareTo(ClassData o)
 	{
-		return this.name.compareTo(o.name);
+		if (!o.getClass().equals(ClassData.class))
+			return Integer.MAX_VALUE;
+		return this.name.compareTo(((ClassData)o).name);
 	}
 
 	public boolean containsInstrumentationInfo()
@@ -264,8 +270,8 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	private LineData getLineData(int lineNumber)
-	{
+	public LineData getLineData(int lineNumber)
+	{		
 		lock.lock();
 		try
 		{
@@ -347,7 +353,7 @@ public class ClassData extends CoverageDataContainer
 		{
 			for (Iterator<LineData> i = branches.values().iterator(); 
 				i.hasNext(); 
-				number += (i.next()).getNumberOfValidBranches())
+				number += ((LineData) i.next()).getNumberOfValidBranches())
 				;
 			return number;
 		}
@@ -368,7 +374,7 @@ public class ClassData extends CoverageDataContainer
 		{
 			for (Iterator<LineData> i = branches.values().iterator(); 
 				i.hasNext(); 
-				number += (i.next()).getNumberOfCoveredBranches())
+				number += ((LineData) i.next()).getNumberOfCoveredBranches())
 				;
 			return number;
 		}
@@ -660,7 +666,7 @@ public class ClassData extends CoverageDataContainer
 	 * 
 	 * @param lineNumber The line of code where the branch is
 	 * @param switchNumber  The switch on the line to change the hit counter
-	 * @param branch The hit counter 
+	 * @param branch The hit counter
 	 * @param hits how many times the piece was called  
 	 */
 	public void touchSwitch(int lineNumber, int switchNumber, int branch,int hits) {
@@ -677,5 +683,6 @@ public class ClassData extends CoverageDataContainer
 			lock.unlock();
 		}
 	}
+
 
 }

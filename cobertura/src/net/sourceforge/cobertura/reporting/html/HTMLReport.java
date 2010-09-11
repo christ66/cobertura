@@ -706,7 +706,7 @@ public class HTMLReport
 		ret.append("  <tr>");
 		ret.append("<td><b>All Packages</b></td>");
 		ret.append("<td class=\"value\">"
-				+ projectData.getNumberOfClasses() + "</td>");
+				+ projectData.getNumberOfSourceFiles() + "</td>");
 		ret.append(generateTableColumnsFromData(projectData, ccn));
 		ret.append("</tr>");
 		return ret.toString();

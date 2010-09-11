@@ -97,7 +97,7 @@ public class SwitchData implements BranchCoverageData, Comparable, Serializable,
 		try
 		{
 			if (branch == -1)
-				defaultHits++;
+				defaultHits+=new_hits;
 			else 
 			{
 				if (hits.length <= branch)

@@ -7,8 +7,6 @@
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2006 John Lewis
  * Copyright (C) 2006 Jiri Mares 
- * Copyright (C) 2008 Scott Frederick
- * Copyright (C) 2010 Tad Smith 
  * Contact information for the above is given in the COPYRIGHT file.
  *
  * Cobertura is free software; you can redistribute it and/or modify
@@ -29,6 +27,7 @@
 
 package net.sourceforge.cobertura.instrument;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,16 +38,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.instrument.CoberturaInstrumenter.InstrumentationResult;
 import net.sourceforge.cobertura.util.ArchiveUtil;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Header;
@@ -56,8 +56,6 @@ import net.sourceforge.cobertura.util.IOUtil;
 import net.sourceforge.cobertura.util.RegexUtil;
 
 import org.apache.log4j.Logger;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 
 /**
  * <p>
@@ -90,21 +88,13 @@ import org.objectweb.asm.ClassWriter;
 public class Main
 {
 
-	private static final LoggerWrapper logger = new LoggerWrapper();
+	private static final Logger logger = Logger.getLogger(Main.class);
 
 	private File destinationDirectory = null;
 
-	private Collection ignoreRegexes = new Vector();
-
-	private Collection ignoreBranchesRegexes = new Vector();
-
-	private Collection ignoreMethodAnnotations = new HashSet();
-
 	private ClassPattern classPattern = new ClassPattern();
-
-	private boolean ignoreTrivial = false;
 	
-	private ProjectData projectData = null;
+	private CoberturaInstrumenter coberturaInstrumenter=new CoberturaInstrumenter();
 
 	/**
 	 * @param entry A zip entry.
@@ -117,7 +107,7 @@ public class Main
 	}
 
 	private boolean addInstrumentationToArchive(CoberturaFile file, InputStream archive,
-			OutputStream output) throws Throwable
+			OutputStream output) throws Exception
 	{
 		ZipInputStream zis = null;
 		ZipOutputStream zos = null;
@@ -136,7 +126,7 @@ public class Main
 	}
 
 	private boolean addInstrumentationToArchive(CoberturaFile file, ZipInputStream archive,
-			ZipOutputStream output) throws Throwable
+			ZipOutputStream output) throws Exception
 	{
 		/*
 		 * "modified" is returned and indicates that something was instrumented.
@@ -185,24 +175,12 @@ public class Main
 				}
 				else if (isClass(entry) && classPattern.matches(entryName))
 				{
-					try
-					{
-						// Instrument class
-						ClassReader cr = new ClassReader(entryBytes);
-						ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-						ClassInstrumenter cv = new ClassInstrumenter(projectData,
-								cw, ignoreRegexes, ignoreBranchesRegexes,
-								ignoreMethodAnnotations, ignoreTrivial);
-						cr.accept(cv, 0);
-	
-						// If class was instrumented, get bytes that define the
-						// class
-						if (cv.isInstrumented())
-						{
-							logger.debug("Putting instrumented entry: "
-									+ entry.getName());
-							entryBytes = cw.toByteArray();
-							modified = true;
+					try	{
+						InstrumentationResult res=coberturaInstrumenter.instrumentClass(new ByteArrayInputStream(entryBytes));
+						if(res!=null){
+							logger.debug("Putting instrumented entry: "	+ entry.getName());
+							entryBytes=res.getContent();
+							modified=true;
 							outputEntry.setTime(System.currentTimeMillis());
 						}
 					}
@@ -238,7 +216,7 @@ public class Main
 		return modified;
 	}
 
-	private void addInstrumentationToArchive(Archive archive) throws Throwable
+	private void addInstrumentationToArchive(Archive archive) throws Exception
 	{
 		InputStream in = null;
 		ByteArrayOutputStream out = null;
@@ -262,7 +240,7 @@ public class Main
 		}
 	}
 
-	private void addInstrumentationToArchive(CoberturaFile archive) throws Throwable
+	private void addInstrumentationToArchive(CoberturaFile archive)
 	{
 		logger.debug("Instrumenting archive " + archive.getAbsolutePath());
 
@@ -349,76 +327,82 @@ public class Main
 			outputFile.delete();
 		}
 	}
-
-	private void addInstrumentationToSingleClass(File file) throws Throwable
-	{
-		logger.debug("Instrumenting class " + file.getAbsolutePath());
-
-		InputStream inputStream = null;
-		ClassWriter cw;
-		ClassInstrumenter cv;
-		try
-		{
-			inputStream = new FileInputStream(file);
-			ClassReader cr = new ClassReader(inputStream);
-			cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes, ignoreBranchesRegexes,
-	                   ignoreMethodAnnotations, ignoreTrivial);
-			cr.accept(cv, 0);
-		}
-		catch (Throwable t)
-		{
-			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
-					t);
-			return;
-		}
-		finally
-		{
-			inputStream = IOUtil.closeInputStream(inputStream);
-		}
-
-		OutputStream outputStream = null;
-		try
-		{
-			if (cv.isInstrumented())
-			{
-				// If destinationDirectory is null, then overwrite
-				// the original, uninstrumented file.
-				File outputFile;
-				if (destinationDirectory == null)
-					outputFile = file;
-				else
-					outputFile = new File(destinationDirectory, cv
-							.getClassName().replace('.', File.separatorChar)
-							+ ".class");
-
-				File parentFile = outputFile.getParentFile();
-				if (parentFile != null)
-				{
-					parentFile.mkdirs();
-				}
-
-				byte[] instrumentedClass = cw.toByteArray();
-				outputStream = new FileOutputStream(outputFile);
-				outputStream.write(instrumentedClass);
-			}
-		}
-		catch (Throwable t)
-		{
-			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
-					t);
-			return;
-		}
-		finally
-		{
-			outputStream = IOUtil.closeOutputStream(outputStream);
-		}
+	
+	
+	
+	private void addInstrumentationToSingleClass(File file){
+		logger.info("Instrumenting: "+file.getAbsolutePath()+" to "+destinationDirectory);
+		coberturaInstrumenter.addInstrumentationToSingleClass(file);
 	}
+
+//	private void addInstrumentationToSingleClass(File file)
+//	{
+//		logger.debug("Instrumenting class " + file.getAbsolutePath());
+//
+//		InputStream inputStream = null;
+//		ClassWriter cw;
+//		ClassInstrumenter cv;
+//		try
+//		{
+//			inputStream = new FileInputStream(file);
+//			ClassReader cr = new ClassReader(inputStream);
+//			cw = new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
+//			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes, ignoreBranchesRegexes);
+//			cr.accept(cv, 0);
+//		}
+//		catch (Throwable t)
+//		{
+//			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
+//					t);
+//			return;
+//		}
+//		finally
+//		{
+//			inputStream = IOUtil.closeInputStream(inputStream);
+//		}
+//
+//		OutputStream outputStream = null;
+//		try
+//		{
+//			if (cv.isInstrumented())
+//			{
+//				// If destinationDirectory is null, then overwrite
+//				// the original, uninstrumented file.
+//				File outputFile;
+//				if (destinationDirectory == null)
+//					outputFile = file;
+//				else
+//					outputFile = new File(destinationDirectory, cv
+//							.getClassName().replace('.', File.separatorChar)
+//							+ ".class");
+//
+//				File parentFile = outputFile.getParentFile();
+//				if (parentFile != null)
+//				{
+//					parentFile.mkdirs();
+//				}
+//
+//				byte[] instrumentedClass = cw.toByteArray();
+//				outputStream = new FileOutputStream(outputFile);
+//				outputStream.write(instrumentedClass);
+//			}
+//		}
+//		catch (Throwable t)
+//		{
+//			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
+//					t);
+//			return;
+//		}
+//		finally
+//		{
+//			outputStream = IOUtil.closeOutputStream(outputStream);
+//		}
+//	}
 
 	// TODO: Don't attempt to instrument a file if the outputFile already
 	//       exists and is newer than the input file, and the output and
 	//       input file are in different locations?
-	private void addInstrumentation(CoberturaFile coberturaFile) throws Throwable
+	private void addInstrumentation(CoberturaFile coberturaFile)
 	{
 		if (coberturaFile.isClass() && classPattern.matches(coberturaFile.getPathname()))
 		{
@@ -438,12 +422,15 @@ public class Main
 		}
 	}
 
-	private void parseArguments(String[] args) throws Throwable
-	{
+	private void parseArguments(String[] args){
+		Collection<Pattern> ignoreRegexes = new Vector<Pattern>();
+		coberturaInstrumenter.setIgnoreRegexes(ignoreRegexes);
+		
+		
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 
 		// Parse our parameters
-		List filePaths = new ArrayList();
+		List<CoberturaFile> filePaths = new ArrayList<CoberturaFile>();
 		String baseDir = null;
 		for (int i = 0; i < args.length; i++)
 		{
@@ -451,22 +438,17 @@ public class Main
 				baseDir = args[++i];
 			else if (args[i].equals("--datafile"))
 				dataFile = new File(args[++i]);
-			else if (args[i].equals("--destination"))
+			else if (args[i].equals("--destination")){
 				destinationDirectory = new File(args[++i]);
-			else if (args[i].equals("--ignore"))
+				coberturaInstrumenter.setDestinationDirectory(destinationDirectory);
+			}else if (args[i].equals("--ignore"))
 			{
 				RegexUtil.addRegex(ignoreRegexes, args[++i]);
 			}
-			else if (args[i].equals("--ignoreBranches"))
+			/*else if (args[i].equals("--ignoreBranches"))
 			{
 				RegexUtil.addRegex(ignoreBranchesRegexes, args[++i]);
-			}
-			else if (args[i].equals("--ignoreMethodAnnotation")) {
-				ignoreMethodAnnotations.add(args[++i]);
-			}
-			else if (args[i].equals("--ignoreTrivial")) {
-				ignoreTrivial = true;
-			}
+			}*/
 			else if (args[i].equals("--includeClasses"))
 			{
 				classPattern.addIncludeClassesRegex(args[++i]);
@@ -475,33 +457,35 @@ public class Main
 			{
 				classPattern.addExcludeClassesRegex(args[++i]);
 			}
-			else if (args[i].equals("--failOnError"))
-			{
-				logger.setFailOnError(true);
-			}
 			else
 			{
 				CoberturaFile coberturaFile = new CoberturaFile(baseDir, args[i]);
 				filePaths.add(coberturaFile);
 			}
 		}
+		
+		ProjectData projectData;
 
 		// Load coverage data
-		if (dataFile.isFile())
+		if (dataFile.isFile()){
 			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-		if (projectData == null)
+		}else{
 			projectData = new ProjectData();
+		};
+		coberturaInstrumenter.setProjectData(projectData);
 		
 		// Instrument classes
 		System.out.println("Instrumenting "	+ filePaths.size() + " "
 				+ (filePaths.size() == 1 ? "file" : "files")
 				+ (destinationDirectory != null ? " to "
 						+ destinationDirectory.getAbsoluteFile() : ""));
+		
+		
 
-		Iterator iter = filePaths.iterator();
+		Iterator<CoberturaFile> iter = filePaths.iterator();
 		while (iter.hasNext())
 		{
-			CoberturaFile coberturaFile = (CoberturaFile)iter.next();
+			CoberturaFile coberturaFile = iter.next();
 			if (coberturaFile.isArchive())
 			{
 				addInstrumentationToArchive(coberturaFile);
@@ -511,12 +495,13 @@ public class Main
 				addInstrumentation(coberturaFile);
 			}
 		}
-
+		
 		// Save coverage data
 		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
+//		ProjectData.turnOffAutoSave();
 	}
 
-	public static void main(String[] args) throws Throwable
+	public static void main(String[] args)
 	{
 		Header.print(System.out);
 
@@ -536,33 +521,4 @@ public class Main
 		System.out.println("Instrument time: " + (stopTime - startTime) + "ms");
 	}
 
-	private static class LoggerWrapper {
-		private final Logger logger = Logger.getLogger(Main.class);
-
-		private boolean failOnError = false;
-
-		public void setFailOnError(boolean failOnError)
-		{
-			this.failOnError = failOnError;
-		}
-
-		public void debug(String message)
-		{
-			logger.debug(message);
-		}
-
-		public void debug(String message, Throwable t)
-		{
-			logger.debug(message, t);
-		}
-
-		public void warn(String message, Throwable t) throws Throwable
-		{
-			logger.warn(message, t);
-			if (failOnError) 
-			{
-				throw t;
-			}
-		}
-	}
 }

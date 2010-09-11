@@ -85,7 +85,9 @@ public abstract class CoverageDataContainer
 		if ((obj == null) || !(obj.getClass().equals(this.getClass())))
 			return false;
 
+		synchronizeState();
 		CoverageDataContainer coverageDataContainer = (CoverageDataContainer)obj;
+		coverageDataContainer.synchronizeState();
 		lock.lock();
 		try
 		{
@@ -103,6 +105,7 @@ public abstract class CoverageDataContainer
 	 */
 	public double getBranchCoverageRate()
 	{
+		synchronizeState();
 		int number = 0;
 		int numberCovered = 0;
 		lock.lock();
@@ -111,7 +114,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = iter.next();
+				CoverageData coverageContainer = (CoverageData)iter.next();
 				number += coverageContainer.getNumberOfValidBranches();
 				numberCovered += coverageContainer.getNumberOfCoveredBranches();
 			}
@@ -155,6 +158,7 @@ public abstract class CoverageDataContainer
 	 */
 	public double getLineCoverageRate()
 	{
+		synchronizeState();
 		int number = 0;
 		int numberCovered = 0;
 		lock.lock();
@@ -163,7 +167,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = iter.next();
+				CoverageData coverageContainer = (CoverageData)iter.next();
 				number += coverageContainer.getNumberOfValidLines();
 				numberCovered += coverageContainer.getNumberOfCoveredLines();
 			}
@@ -185,6 +189,7 @@ public abstract class CoverageDataContainer
 	 */
 	public int getNumberOfChildren()
 	{
+		synchronizeState();
 		lock.lock();
 		try
 		{
@@ -198,6 +203,7 @@ public abstract class CoverageDataContainer
 
 	public int getNumberOfCoveredBranches()
 	{
+		synchronizeState();
 		int number = 0;
 		lock.lock();
 		try
@@ -205,7 +211,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = iter.next();
+				CoverageData coverageContainer = (CoverageData)iter.next();
 				number += coverageContainer.getNumberOfCoveredBranches();
 			}
 		}
@@ -217,7 +223,8 @@ public abstract class CoverageDataContainer
 	}
 
 	public int getNumberOfCoveredLines()
-	{
+	{		
+		synchronizeState();
 		int number = 0;
 		lock.lock();
 		try
@@ -225,7 +232,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = iter.next();
+				CoverageData coverageContainer = (CoverageData)iter.next();
 				number += coverageContainer.getNumberOfCoveredLines();
 			}
 		}
@@ -238,6 +245,7 @@ public abstract class CoverageDataContainer
 
 	public int getNumberOfValidBranches()
 	{
+		synchronizeState();
 		int number = 0;
 		lock.lock();
 		try
@@ -245,7 +253,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = iter.next();
+				CoverageData coverageContainer = (CoverageData)iter.next();
 				number += coverageContainer.getNumberOfValidBranches();
 			}
 		}
@@ -258,6 +266,7 @@ public abstract class CoverageDataContainer
 
 	public int getNumberOfValidLines()
 	{
+		synchronizeState();
 		int number = 0;
 		lock.lock();
 		try
@@ -265,7 +274,7 @@ public abstract class CoverageDataContainer
 			Iterator<CoverageData> iter = this.children.values().iterator();
 			while (iter.hasNext())
 			{
-				CoverageData coverageContainer = iter.next();
+				CoverageData coverageContainer = (CoverageData)iter.next();
 				number += coverageContainer.getNumberOfValidLines();
 			}
 		}
@@ -283,6 +292,7 @@ public abstract class CoverageDataContainer
 	 */
 	public int hashCode()
 	{
+		synchronizeState();
 		lock.lock();
 		try
 		{
@@ -301,7 +311,9 @@ public abstract class CoverageDataContainer
 	 */
 	public void merge(CoverageData coverageData)
 	{
+		synchronizeState();
 		CoverageDataContainer container = (CoverageDataContainer)coverageData;
+		container.synchronizeState();
 		getBothLocks(container);
 		try
 		{
@@ -371,5 +383,9 @@ public abstract class CoverageDataContainer
 	{
 		in.defaultReadObject();
 		initLock();
+	}
+	
+	public void synchronizeState(){
+		
 	}
 }

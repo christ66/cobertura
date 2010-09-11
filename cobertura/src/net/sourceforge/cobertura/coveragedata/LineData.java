@@ -29,8 +29,8 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+//import java.util.concurrent.locks.Lock;
+//import java.util.concurrent.locks.ReentrantLock;
 
 import net.sourceforge.cobertura.util.StringUtil;
 
@@ -47,7 +47,7 @@ public class LineData
 {
 	private static final long serialVersionUID = 4;
 
-	private transient Lock lock;
+	//private transient Lock lock;
 
 	private long hits;
 	private List jumps;
@@ -73,20 +73,20 @@ public class LineData
 	
 	private void initLock()
 	{
-		 lock = new ReentrantLock();
+		// lock = new ReentrantLock();
 	}
 
 	/**
 	 * This is required because we implement Comparable.
 	 */
-	public int compareTo(Object o)
+	synchronized public int compareTo(Object o)
 	{
 		if (!o.getClass().equals(LineData.class))
 			return Integer.MAX_VALUE;
 		return this.lineNumber - ((LineData)o).lineNumber;
 	}
 
-	public boolean equals(Object obj)
+	synchronized public boolean equals(Object obj)
 	{
 		if (this == obj)
 			return true;
@@ -94,7 +94,7 @@ public class LineData
 			return false;
 
 		LineData lineData = (LineData)obj;
-		getBothLocks(lineData);
+//		getBothLocks(lineData);
 		try
 		{
 			return (this.hits == lineData.hits)
@@ -106,27 +106,27 @@ public class LineData
 		}
 		finally
 		{
-			lock.unlock();
-			lineData.lock.unlock();
+//			lock.unlock();
+//			lineData.lock.unlock();
 		}
 	}
 
-	public double getBranchCoverageRate()
+	synchronized public double getBranchCoverageRate()
 	{
 		if (getNumberOfValidBranches() == 0)
 			return 1d;
-		lock.lock();
+//		lock.lock();
 		try
 		{
 			return ((double) getNumberOfCoveredBranches()) / getNumberOfValidBranches();
 		}
 		finally
 		{
-			lock.unlock();
+//			lock.unlock();
 		}
 	}
 
-	public String getConditionCoverage()
+	synchronized public String getConditionCoverage()
 	{
 		StringBuffer ret = new StringBuffer();
 		if (getNumberOfValidBranches() == 0)
@@ -135,7 +135,7 @@ public class LineData
 		}
 		else
 		{
-			lock.lock();
+//			lock.lock();
 			try
 			{
 				ret.append(StringUtil.getPercentValue(getBranchCoverageRate()));
@@ -143,35 +143,35 @@ public class LineData
 			}
 			finally
 			{
-				lock.unlock();
+//				lock.unlock();
 			}
 		}
 		return ret.toString();
 	}
 	
-	public long getHits()
+	synchronized public long getHits()
 	{
-		lock.lock();
+//		lock.lock();
 		try
 		{
 			return hits;
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 
-	public boolean isCovered()
+	synchronized public boolean isCovered()
 	{
-		lock.lock();
+		//locklock();
 		try
 		{
 			return (getHits() > 0) && ((getNumberOfValidBranches() == 0) || ((1.0 - getBranchCoverageRate()) < 0.0001));
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 	
@@ -187,27 +187,27 @@ public class LineData
 
 	public String getMethodDescriptor()
 	{
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			return methodDescriptor;
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 
 	public String getMethodName()
 	{
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			return methodName;
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 
@@ -223,15 +223,15 @@ public class LineData
 		return covered;
 	}*/
 
-	public int getNumberOfCoveredLines()
+	synchronized public int getNumberOfCoveredLines()
 	{
 		return (getHits() > 0) ? 1 : 0;
 	}
 
-	public int getNumberOfValidBranches()
+	synchronized public int getNumberOfValidBranches()
 	{
 		int ret = 0;
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			if (jumps != null)
@@ -244,14 +244,14 @@ public class LineData
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 	
-	public int getNumberOfCoveredBranches()
+	synchronized public int getNumberOfCoveredBranches()
 	{
 		int ret = 0;
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			if (jumps != null)
@@ -264,11 +264,11 @@ public class LineData
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 
-	public int getNumberOfValidLines()
+	synchronized public int getNumberOfValidLines()
 	{
 		return 1;
 	}
@@ -278,23 +278,23 @@ public class LineData
 		return this.lineNumber;
 	}
 
-	public boolean hasBranch()
+	synchronized public boolean hasBranch()
 	{
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			return (jumps != null) || (switches != null);
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 
-	public void merge(CoverageData coverageData)
+	synchronized public void merge(CoverageData coverageData)
 	{
 		LineData lineData = (LineData)coverageData;
-		getBothLocks(lineData);
+//		getBothLocks(lineData);
 		try
 		{
 			this.hits += lineData.hits;
@@ -325,8 +325,8 @@ public class LineData
 		}
 		finally
 		{
-			lock.unlock();
-			lineData.lock.unlock();
+			//lock.unlock();
+//			lineData.//lock.unlock();
 		}
 	}
 
@@ -339,15 +339,16 @@ public class LineData
 	{
 		getSwitchData(switchNumber, new SwitchData(switchNumber, keys));
 	}
+	
 
 	void addSwitch(int switchNumber, int min, int max)
 	{
 		getSwitchData(switchNumber, new SwitchData(switchNumber, min, max));
 	}
 
-	void setMethodNameAndDescriptor(String name, String descriptor)
+	synchronized  void setMethodNameAndDescriptor(String name, String descriptor)
 	{
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			this.methodName = name;
@@ -355,49 +356,49 @@ public class LineData
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 
-	void touch(int new_hits)
+	synchronized void touch(int new_hits)
 	{
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			this.hits+=new_hits;
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 	
-	void touchJump(int jumpNumber, boolean branch,int hits) 
+	synchronized void touchJump(int jumpNumber, boolean branch,int hits) 
 	{
 		getJumpData(jumpNumber).touchBranch(branch,hits);
 	}
 	
-	void touchSwitch(int switchNumber, int branch,int hits) 
+	synchronized void touchSwitch(int switchNumber, int branch,int hits) 
 	{
 		getSwitchData(switchNumber, null).touchBranch(branch,hits);
 	}
 	
-	public int getConditionSize() {
-		lock.lock();
+	synchronized public int getConditionSize() {
+		//lock.lock();
 		try
 		{
 			return ((jumps == null) ? 0 : jumps.size()) + ((switches == null) ? 0 :switches.size());
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 	
-	public Object getConditionData(int index)
+	synchronized public Object getConditionData(int index)
 	{
 		Object branchData = null;
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			int jumpsSize = (jumps == null) ? 0 : jumps.size();
@@ -414,11 +415,11 @@ public class LineData
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 	
-	public String getConditionCoverage(int index) {
+	synchronized public String getConditionCoverage(int index) {
 		Object branchData = getConditionData(index);
 		if (branchData == null)
 		{
@@ -437,9 +438,9 @@ public class LineData
 		}
 	}
 	
-	JumpData getJumpData(int jumpNumber) 
+	synchronized JumpData getJumpData(int jumpNumber) 
 	{
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			if (jumps == null) 
@@ -454,13 +455,13 @@ public class LineData
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 	
-	SwitchData getSwitchData(int switchNumber, SwitchData data) 
+	synchronized SwitchData getSwitchData(int switchNumber, SwitchData data) 
 	{
-		lock.lock();
+		//lock.lock();
 		try
 		{
 			if (switches == null) 
@@ -480,49 +481,57 @@ public class LineData
 		}
 		finally
 		{
-			lock.unlock();
+			//lock.unlock();
 		}
 	}
 
-	private void getBothLocks(LineData other) {
-		/*
-		 * To prevent deadlock, we need to get both locks or none at all.
-		 * 
-		 * When this method returns, the thread will have both locks.
-		 * Make sure you unlock them!
-		 */
-		boolean myLock = false;
-		boolean otherLock = false;
-		while ((!myLock) || (!otherLock))
-		{
-			try
-			{
-				myLock = lock.tryLock();
-				otherLock = other.lock.tryLock();
-			}
-			finally
-			{
-				if ((!myLock) || (!otherLock))
-				{
-					//could not obtain both locks - so unlock the one we got.
-					if (myLock)
-					{
-						lock.unlock();
-					}
-					if (otherLock)
-					{
-						other.lock.unlock();
-					}
-					//do a yield so the other threads will get to work.
-					Thread.yield();
-				}
-			}
-		}
-	}
+//	private void getBothLocks(LineData other) {
+//		/*
+//		 * To prevent deadlock, we need to get both locks or none at all.
+//		 * 
+//		 * When this method returns, the thread will have both locks.
+//		 * Make sure you unlock them!
+//		 */
+//		boolean myLock = false;
+//		boolean otherLock = false;
+//		while ((!myLock) || (!otherLock))
+//		{
+//			try
+//			{
+//				myLock = //lock.tryLock();
+//				otherLock = other.//lock.tryLock();
+//			}
+//			finally
+//			{
+//				if ((!myLock) || (!otherLock))
+//				{
+//					//could not obtain both locks - so unlock the one we got.
+//					if (myLock)
+//					{
+//						//lock.unlock();
+//					}
+//					if (otherLock)
+//					{
+//						other.//lock.unlock();
+//					}
+//					//do a yield so the other threads will get to work.
+//					Thread.yield();
+//				}
+//			}
+//		}
+//	}
 
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
 		in.defaultReadObject();
 		initLock();
+	}
+
+	public int getNumberOfSwitches() {		
+		return switches==null?0:switches.size();
+	}
+
+	public int getNumberOfJumps() {
+		return jumps==null?0:jumps.size();
 	}
 }

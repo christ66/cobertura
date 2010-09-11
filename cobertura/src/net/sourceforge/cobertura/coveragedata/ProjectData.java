@@ -8,8 +8,6 @@
  * Copyright (C) 2006 John Lewis
  * Copyright (C) 2009 Chris van Es
  * Copyright (C) 2009 Ed Randall
- * Copyright (C) 2010 Charlie Squires
- * Copyright (C) 2010 Piotr Tabor
  *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
@@ -31,6 +29,7 @@ package net.sourceforge.cobertura.coveragedata;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -45,6 +44,11 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 {
 
 	private static final long serialVersionUID = 6;
+
+	private static ProjectData globalProjectData = null;
+
+	private static Thread shutdownHook;
+	private static final transient Lock globalProjectDataLock = new ReentrantLock();
 
 	/** This collection is used for quicker access to the list of classes. */
 	private Map classes = new HashMap();
@@ -74,15 +78,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	public ClassData getClassData(String name)
 	{
-		lock.lock();
-		try
-		{
-			return (ClassData)this.classes.get(name);
-		}
-		finally
-		{
-			lock.unlock();
-		}
+		return (ClassData)this.classes.get(name);
 	}
 
 	/**
@@ -191,8 +187,11 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 			while (iter.hasNext())
 			{
 				PackageData packageData = (PackageData)iter.next();
-				if (packageData.getName().startsWith(packageName + ".") || packageData.getName().equals(packageName) || packageName.equals(""))
-					subPackages.add(packageData);
+				if (packageData.getName().startsWith(packageName + ".") 
+					|| packageData.getName().equals(packageName)
+					|| packageName.isEmpty()) {
+				  subPackages.add(packageData);
+				}
 			}
 		}
 		finally
@@ -229,8 +228,33 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		}
 	}
 
+	/**
+	 * Get a reference to a ProjectData object in order to increase the
+	 * coverage count for a specific line.
+	 *
+	 * This method is only called by code that has been instrumented.  It
+	 * is not called by any of the Cobertura code or ant tasks.
+	 */
+	public static ProjectData getGlobalProjectData()
+	{
+		globalProjectDataLock.lock();
+		try
+		{
+			if (globalProjectData != null)
+				return globalProjectData;
+	
+			globalProjectData = new ProjectData();
+			initialize();
+			return globalProjectData;
+		}
+		finally
+		{
+			globalProjectDataLock.unlock();
+		}
+	}
+
 	// TODO: Is it possible to do this as a static initializer?
-	public static void initialize()
+	private static void initialize()
 	{
 		// Hack for Tomcat - by saving project data right now we force loading
 		// of classes involved in this process (like ObjectOutputStream)
@@ -253,8 +277,8 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		}
 
 		// Add a hook to save the data when the JVM exits
-		Runtime.getRuntime().addShutdownHook(new Thread(new SaveTimer()));
-
+		shutdownHook=new Thread(new SaveTimer());
+		Runtime.getRuntime().addShutdownHook(shutdownHook);	
 		// Possibly also save the coverage data every x seconds?
 		//Timer timer = new Timer(true);
 		//timer.schedule(saveTimer, 100);
@@ -262,14 +286,43 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 
 	public static void saveGlobalProjectData()
 	{
-		ProjectData projectDataToSave = new ProjectData();
+		ProjectData projectDataToSave = null;
+		
+		globalProjectDataLock.lock();
+		try
+		{
+			projectDataToSave = getGlobalProjectData();						
+	
+			/*
+			 * The next statement is not necessary at the moment, because this method is only called
+			 * either at the very beginning or at the very end of a test.  If the code is changed
+			 * to save more frequently, then this will become important.
+			 */
+			globalProjectData = new ProjectData();
+		}
+		finally
+		{
+			globalProjectDataLock.unlock();
+		}
+
+		/*
+		 * Now sleep a bit in case there is a thread still holding a reference to the "old"
+		 * globalProjectData (now referenced with projectDataToSave).  
+		 * We want it to finish its updates.  I assume 1 second is plenty of time.
+		 */
+		try
+		{
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e)
+		{
+		}
 		
 		TouchCollector.applyTouchesOnProjectData(projectDataToSave);
 
 
 		// Get a file lock
-		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
-		
+		File dataFile = CoverageDataFileHandler.getDefaultDataFile();		
 		/*
 		 * A note about the next synchronized block:  Cobertura uses static fields to
 		 * hold the data.   When there are multiple classloaders, each classloader
@@ -314,6 +367,12 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 				// Release the file lock
 				fileLocker.release();
 			}
+		}
+	}
+	
+	public static void turnOffAutoSave(){
+		if (shutdownHook!=null){
+			Runtime.getRuntime().removeShutdownHook(shutdownHook);
 		}
 	}
 

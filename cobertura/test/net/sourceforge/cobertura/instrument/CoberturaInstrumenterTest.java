@@ -1,8 +1,6 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
- * Copyright (C) 2006 Jiri Mares
- *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License,
@@ -21,20 +19,23 @@
 
 package net.sourceforge.cobertura.instrument;
 
-public class SwitchHolder extends JumpHolder {
-   protected int branch;
+import java.io.File;
 
-   public SwitchHolder(int lineNumber, int switchNumber, int branch) {
-      super(lineNumber, switchNumber);
-      this.branch = branch;
-   }
+import org.junit.Test;
 
-   public int getSwitchNumber() {
-      return jumpNumber;
-   }
 
-   public int getBranch() {
-      return branch;
-   }
-
+public class CoberturaInstrumenterTest {
+	private final CoberturaInstrumenter coberturaInstrumenter = new CoberturaInstrumenter();
+	
+	@Test
+	public void instrumentNotExisting() {
+		coberturaInstrumenter.setDestinationDirectory(new File(System.getProperty("java.io.tmpdir")));
+		coberturaInstrumenter.addInstrumentationToSingleClass(new File("test/net/sourceforge/cobertura/instrument/notExisting.class"));
+	}
+	
+	@Test
+	public void instrumentExisting() throws ClassNotFoundException {
+		coberturaInstrumenter.setDestinationDirectory(new File("build"));
+		coberturaInstrumenter.addInstrumentationToSingleClass(new File("test/net/sourceforge/cobertura/instrument/Test1.class"));
+	}
 }
