@@ -57,7 +57,7 @@ public class BuildClassMapTouchPointListener implements TouchPointListener{
 		classmap.unregisterLine(eventId,currentLine);		
 	}
 	
-//--------------- Not interesting events --------------------------------------------
+// --------------- Not interesting events for analysis ---------------------------
 	public void afterJump(int eventId,Label label, int currentLine,	MethodVisitor nextMethodVisitor) {}	
 	public void afterLabel(int eventId,Label label, int currentLine, MethodVisitor mv) {}	
 	public void afterMethodStart(MethodVisitor nextMethodVisitor) {};

@@ -39,7 +39,17 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
 /**
- * Class that is responsible for the whole process of instrumentation of a single class 
+ * Class that is responsible for the whole process of instrumentation of a single class.
+ * 
+ * The class is instrumented in tree passes:
+ * <ol>
+ *  <li>Read only: {@link DetectDuplicatedCodeClassVisitor} - we look for the same ASM code snippets 
+ *  rendered in different places of destination code</li> 
+ *  <li>Read only: {@link BuildClassMapClassInstrumenter} - finds all touch-points and other interesting
+ *  information that are in the class and store it in {@link ClassMap}.
+ *  <li>Real instrumentation: {@link InjectCodeClassInstrumenter}. Uses {#link ClassMap} to inject
+ *  code into the class</li> 
+ * </ol>
  * 
  * @author piotr.tabor@gmail.com
  */
@@ -79,7 +89,7 @@ public class CoberturaInstrumenter {
 	public InstrumentationResult instrumentClass(File file){
 		InputStream inputStream = null;
 		try{
-			logger.debug("Working on file:"+file.getAbsolutePath());
+			logger.debug("Working on file:" + file.getAbsolutePath());
 			inputStream = new FileInputStream(file);
 			return instrumentClass(inputStream);
 		}catch (Throwable t){
@@ -108,7 +118,7 @@ public class CoberturaInstrumenter {
 		ClassReader cr = new ClassReader(cw0.toByteArray());
 		ClassWriter cw = new ClassWriter(0);
 		BuildClassMapClassInstrumenter cv = new BuildClassMapClassInstrumenter(cw, ignoreRegexes,cv0.getDuplicatesLinesCollector());
-			//new ClassInstrumenter(projectData, cw, ignoreRegexes, ignoreBranchesRegexes);
+
 		cr.accept(cv, 0);
 				
 		if(logger.isDebugEnabled()){
@@ -124,18 +134,17 @@ public class CoberturaInstrumenter {
 			logger.debug("=============== End of detected duplicated code ======");
 		}
 
-
-		//XXX Don't like the idea, but we have to be compatible (hope to remove the line in future release)
-		logger.debug("Puting in projectData to store in file: "+cv.getClassMap().getClassName());
+		//TODO(ptab): Don't like the idea, but we have to be compatible (hope to remove the line in future release)
+		logger.debug("Migrating classmap in projectData to store in *.ser file: "+cv.getClassMap().getClassName());
 		cv.getClassMap().applyOnProjectData(projectData,cv.shouldBeInstrumented());
 		
 		if (cv.shouldBeInstrumented()){					
 			/*
-			 *  BuildClassMapClassInstrumenter and DetectDuplicatedCodeClassVisitor don't modificate bytecode, 
-			 *  so we can use any bytecode representation of the class
+			 *  BuildClassMapClassInstrumenter and DetectDuplicatedCodeClassVisitor has not modificated bytecode, 
+			 *  so we can use any bytecode representation of that class. 
 			 */
 			ClassReader cr2= new ClassReader(cw0.toByteArray()); 			
-			ClassWriter cw2= new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
+			ClassWriter cw2= new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
 			cv.getClassMap().assignCounterIds();
 			logger.debug("Assigned "+ cv.getClassMap().getMaxCounterId()+" counters for class:"+cv.getClassMap().getClassName());
 			InjectCodeClassInstrumenter cv2 = new InjectCodeClassInstrumenter(cw2, ignoreRegexes, cv.getClassMap(),cv0.getDuplicatesLinesCollector());

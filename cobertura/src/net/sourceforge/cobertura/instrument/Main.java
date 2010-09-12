@@ -85,16 +85,15 @@ import org.apache.log4j.Logger;
  * as not to instrument the same class twice.
  * </p>
  */
-public class Main
-{
-
+// TODO(ptab): Change adding implements net.sourceforge.cobertura.coveragedata.HasBeenInstrumented into Annotation. The effect on code will be smaller. 
+public class Main {
 	private static final Logger logger = Logger.getLogger(Main.class);
 
 	private File destinationDirectory = null;
 
 	private ClassPattern classPattern = new ClassPattern();
 	
-	private CoberturaInstrumenter coberturaInstrumenter=new CoberturaInstrumenter();
+	private CoberturaInstrumenter coberturaInstrumenter = new CoberturaInstrumenter();
 
 	/**
 	 * @param entry A zip entry.
@@ -335,70 +334,6 @@ public class Main
 		coberturaInstrumenter.addInstrumentationToSingleClass(file);
 	}
 
-//	private void addInstrumentationToSingleClass(File file)
-//	{
-//		logger.debug("Instrumenting class " + file.getAbsolutePath());
-//
-//		InputStream inputStream = null;
-//		ClassWriter cw;
-//		ClassInstrumenter cv;
-//		try
-//		{
-//			inputStream = new FileInputStream(file);
-//			ClassReader cr = new ClassReader(inputStream);
-//			cw = new ClassWriter(ClassWriter.COMPUTE_MAXS|ClassWriter.COMPUTE_FRAMES);
-//			cv = new ClassInstrumenter(projectData, cw, ignoreRegexes, ignoreBranchesRegexes);
-//			cr.accept(cv, 0);
-//		}
-//		catch (Throwable t)
-//		{
-//			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
-//					t);
-//			return;
-//		}
-//		finally
-//		{
-//			inputStream = IOUtil.closeInputStream(inputStream);
-//		}
-//
-//		OutputStream outputStream = null;
-//		try
-//		{
-//			if (cv.isInstrumented())
-//			{
-//				// If destinationDirectory is null, then overwrite
-//				// the original, uninstrumented file.
-//				File outputFile;
-//				if (destinationDirectory == null)
-//					outputFile = file;
-//				else
-//					outputFile = new File(destinationDirectory, cv
-//							.getClassName().replace('.', File.separatorChar)
-//							+ ".class");
-//
-//				File parentFile = outputFile.getParentFile();
-//				if (parentFile != null)
-//				{
-//					parentFile.mkdirs();
-//				}
-//
-//				byte[] instrumentedClass = cw.toByteArray();
-//				outputStream = new FileOutputStream(outputFile);
-//				outputStream.write(instrumentedClass);
-//			}
-//		}
-//		catch (Throwable t)
-//		{
-//			logger.warn("Unable to instrument file " + file.getAbsolutePath(),
-//					t);
-//			return;
-//		}
-//		finally
-//		{
-//			outputStream = IOUtil.closeOutputStream(outputStream);
-//		}
-//	}
-
 	// TODO: Don't attempt to instrument a file if the outputFile already
 	//       exists and is newer than the input file, and the output and
 	//       input file are in different locations?
@@ -424,8 +359,7 @@ public class Main
 
 	private void parseArguments(String[] args){
 		Collection<Pattern> ignoreRegexes = new Vector<Pattern>();
-		coberturaInstrumenter.setIgnoreRegexes(ignoreRegexes);
-		
+		coberturaInstrumenter.setIgnoreRegexes(ignoreRegexes);		
 		
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 
@@ -438,67 +372,50 @@ public class Main
 				baseDir = args[++i];
 			else if (args[i].equals("--datafile"))
 				dataFile = new File(args[++i]);
-			else if (args[i].equals("--destination")){
+			else if (args[i].equals("--destination")) {
 				destinationDirectory = new File(args[++i]);
 				coberturaInstrumenter.setDestinationDirectory(destinationDirectory);
-			}else if (args[i].equals("--ignore"))
-			{
+			} else if (args[i].equals("--ignore")) {
 				RegexUtil.addRegex(ignoreRegexes, args[++i]);
 			}
 			/*else if (args[i].equals("--ignoreBranches"))
 			{
 				RegexUtil.addRegex(ignoreBranchesRegexes, args[++i]);
 			}*/
-			else if (args[i].equals("--includeClasses"))
-			{
+			else if (args[i].equals("--includeClasses")) {
 				classPattern.addIncludeClassesRegex(args[++i]);
-			}
-			else if (args[i].equals("--excludeClasses"))
-			{
+			} else if (args[i].equals("--excludeClasses")) {
 				classPattern.addExcludeClassesRegex(args[++i]);
-			}
-			else
-			{
-				CoberturaFile coberturaFile = new CoberturaFile(baseDir, args[i]);
-				filePaths.add(coberturaFile);
+			} else {
+				filePaths.add(new CoberturaFile(baseDir, args[i]));
 			}
 		}
 		
 		ProjectData projectData;
 
-		// Load coverage data
-		if (dataFile.isFile()){
-			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-		}else{
-			projectData = new ProjectData();
-		};
-		coberturaInstrumenter.setProjectData(projectData);
+		// Load previous coverage data (if exists)
+		projectData = dataFile.isFile() ?
+		    CoverageDataFileHandler.loadCoverageData(dataFile) : new ProjectData();
+        coberturaInstrumenter.setProjectData(projectData);
 		
 		// Instrument classes
 		System.out.println("Instrumenting "	+ filePaths.size() + " "
 				+ (filePaths.size() == 1 ? "file" : "files")
 				+ (destinationDirectory != null ? " to "
 						+ destinationDirectory.getAbsoluteFile() : ""));
-		
-		
 
 		Iterator<CoberturaFile> iter = filePaths.iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()) {
 			CoberturaFile coberturaFile = iter.next();
-			if (coberturaFile.isArchive())
-			{
+			if (coberturaFile.isArchive()) {
 				addInstrumentationToArchive(coberturaFile);
-			}
-			else
-			{
+			} else {
 				addInstrumentation(coberturaFile);
 			}
 		}
 		
-		// Save coverage data
+		// Save coverage data (ser file with list of touch points, but not hits registered). 
 		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
-//		ProjectData.turnOffAutoSave();
 	}
 
 	public static void main(String[] args)

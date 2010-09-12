@@ -36,7 +36,7 @@ import org.objectweb.asm.MethodVisitor;
  * Detects duplicates in a single analyzed method of ASM code. Applies found information about
  * duplicates into {@link #duplicatesCollector} structure.
  * 
- * Look at {@link DetectDuplicatedCodeClassVisitor} about reasons for the class.
+ * See {@link DetectDuplicatedCodeClassVisitor} about reasons for the class.
  * 
  * @author piotr.tabor@gmail.com
  */
@@ -54,8 +54,6 @@ public class DetectDuplicatedCodeMethodVisitor extends ContextMethodAwareMethodA
 
 	/**
 	 * Represents pair of lineId and {@link CodeFootstamp} connected with that {@link #lineId} 
-	 * 
-	 * @author piotr.tabor@gmail.com
 	 */
 	private static class LineIdWithCodeFootstamp{
 		private Integer lineId;
@@ -218,20 +216,20 @@ public class DetectDuplicatedCodeMethodVisitor extends ContextMethodAwareMethodA
 	 *  if no such duplicates has been found. 
 	 */
 	private Map<Integer, Integer> putDuplicates(List<LineIdWithCodeFootstamp> listOfFootstamps) {
-		Map<CodeFootstamp,Integer> revertedMap=new HashMap<CodeFootstamp, Integer>();
-		Map<Integer,Integer> result=new HashMap<Integer, Integer>();
-		for(LineIdWithCodeFootstamp lcf:listOfFootstamps){
+		Map<CodeFootstamp,Integer> reversedMap = new HashMap<CodeFootstamp, Integer>();
+		Map<Integer,Integer> result = new HashMap<Integer, Integer>();
+		for (LineIdWithCodeFootstamp lcf : listOfFootstamps){
 			lcf.footstamp.finalize();
-			if(lcf.footstamp.isMeaningful()){
-				Integer found=revertedMap.get(lcf.footstamp);
-				if(found!=null){
-					result.put(lcf.lineId,found);
-				}else{
-					revertedMap.put(lcf.footstamp, lcf.lineId);
+			if (lcf.footstamp.isMeaningful()) {
+				Integer found = reversedMap.get(lcf.footstamp);
+				if (found != null){
+					result.put(lcf.lineId, found);
+				} else {
+					reversedMap.put(lcf.footstamp, lcf.lineId);
 				}
 			}
 		}		
-		return result.size()>0?result:null;
+		return result.size() > 0 ? result : null;
 	}
 
 }

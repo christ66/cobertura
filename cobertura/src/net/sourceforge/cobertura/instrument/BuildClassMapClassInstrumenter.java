@@ -19,6 +19,7 @@
 
 package net.sourceforge.cobertura.instrument;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -45,7 +46,7 @@ public class BuildClassMapClassInstrumenter extends AbstractFindTouchPointsClass
 	/**
 	 * {@link ClassMap} for the currently analyzed class. 
 	 */
-	private final ClassMap classMap=new ClassMap();
+	private final ClassMap classMap = new ClassMap();
 	
 	/**
 	 * Information about important 'events' (instructions) are sent into the listener that is internally
@@ -77,8 +78,8 @@ public class BuildClassMapClassInstrumenter extends AbstractFindTouchPointsClass
 		classMap.setClassName(name);
 		
 		if (((access & Opcodes.ACC_INTERFACE) != 0)
-				|| arrayContains(interfaces, Type.getInternalName(HasBeenInstrumented.class))){
-			toInstrument=false;
+				|| Arrays.asList(interfaces).contains(Type.getInternalName(HasBeenInstrumented.class))){
+			toInstrument = false;
 		}
 		super.visit(version, access, name, signature, parent, interfaces);		
 	}
@@ -92,21 +93,6 @@ public class BuildClassMapClassInstrumenter extends AbstractFindTouchPointsClass
 		super.visitSource(file, debug);
 	}
 	
-	/**
-	 * Searches given array and checks if it contains given key. 
-	 * 
-	 * @param array - arrays to check
-	 * @param key   - we are looking for it
-	 * @return true if array contains given key
-	 */
-	private static <T> boolean arrayContains(T[] array, T key){
-		for (int i = 0; i < array.length; i++){
-			if (array[i].equals(key))
-			   return true;
-		}
-		return false;
-	}
-
 	/**
 	 * Analyzes given method and stores  information about all found important places into {@link #classMap} 
 	 */

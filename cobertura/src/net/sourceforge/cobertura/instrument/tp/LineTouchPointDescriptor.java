@@ -31,8 +31,7 @@ import net.sourceforge.cobertura.coveragedata.LineData;
  * 
  * <p>We also storing a {@link #methodName} and a {@link #methodSignature} (consider to move this fields into {@link TouchPointDescriptor}).
  * Those fields are needed to properly create instance of {@link LineData}. </p> 
- *   
- *  
+ *    
  * @author piotr.tabor@gmail.com
  */
 public class LineTouchPointDescriptor extends TouchPointDescriptor{	

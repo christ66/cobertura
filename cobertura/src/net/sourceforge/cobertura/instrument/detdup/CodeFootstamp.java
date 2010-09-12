@@ -26,19 +26,19 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 
 /**
- * <p>This class represents a 'footstamp' of some piece of ASM code. Is used to detect if two
+ * <p>Represents a single 'footprint' of some piece of ASM code. Is used to detect if two
  * code pieces are (nearly) the same or different.</p>
  * 
- * <p>During duplicate-detection we create {@link CodeFootstamp} for every found block starting with LINENUMBER directive.<br/>
- * 	We appends the the {@link CodeFootstamp} all found 'asm' instructions. When we found the end of the block we need to 
+ * <p>During duplicate-detection we create {@link CodeFootstamp} for every block found starting with LINENUMBER directive.<br/>
+ * We appends to the {@link CodeFootstamp} all found 'jvm asm' instructions. When we found the end of the block (start of next line) we need to 
  * call {@link #finalize()}.  After that we are allowed to use {@link #hashCode()}, {@link #equals(Object)} and {@link #isMeaningful()} methods
  * to compare two blocks and decide if they are duplicates or not.  
  * </p>
  *   
- * We find two {@link CodeFootstamp} duplicates not only when they are completely identical, but also if: 
+ * We find two {@link CodeFootstamp} as duplicates not only when they are completely identical, but also if: 
  * <ul>
  * 	  <li> They start with another number of 'LABEL' instructions (see {@link #trimableIfFirst(String)})</li>
- *    <li> They differs in last instructions being  'LABEL', 'GOTO', 'RETURN' or 'ATHROW'  (see {@link #trimableIfLast(String)})</li>
+ *    <li> They differs in last instruction being  'LABEL', 'GOTO', 'RETURN' or 'ATHROW'  (see {@link #trimableIfLast(String)})</li>
  * 	  <li> They use different destination labels for JUMPs and SWITCHES</li> 
  * </ul>
  * 
@@ -50,6 +50,7 @@ import org.objectweb.asm.Opcodes;
  * 	  It's not beautiful design - but its simple and works. 
  * </p> 
  * 
+ * <p>This class implements {@link #equals(Object)} and {@link #hashCode()} so might be used as key in maps</p>
  */
 public class CodeFootstamp {
 	private final LinkedList<String> events=new LinkedList<String>();
@@ -152,18 +153,23 @@ public class CodeFootstamp {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		CodeFootstamp other = (CodeFootstamp) obj;
 		if (events == null) {
-			if (other.events != null)
+			if (other.events != null) {
 				return false;
-		} else if (!events.equals(other.events))
+			}
+		} else if (!events.equals(other.events)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -171,10 +177,10 @@ public class CodeFootstamp {
 	 * Some signatures are to simple (empty) and generates false positive duplicates. To avoid
 	 * that we filter here lines that are shorter then 3 jvm asm instruction.    
 	 * 
-	 * @return true if the signature is long enought
+	 * @return true if the signature is long enough to make sense comparing it
 	 */
 	public boolean isMeaningful() {
-		if(!finalized){
+		if (!finalized){
 			throw new IllegalStateException("The signature should been already finalized");
 		}	
 		return events.size()>2;

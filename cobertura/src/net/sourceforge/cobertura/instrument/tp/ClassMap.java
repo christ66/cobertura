@@ -60,17 +60,30 @@ public class ClassMap {
 	 * Contains map of label into set of {@link JumpTouchPointDescriptor} or {@link SwitchTouchPointDescriptor} that the label could be destination of
 	 * 
 	 * <p>The labels used here are {@link Label} created during {@link BuildClassMapClassInstrumenter} pass. Don't try to compare it with labels created by other instrumentation passes.
-	 * Instead use eventId and {@link #eventId2label} to get the label created in the first pass and lookup using the label.</p>  
+	 * Instead you should use eventId and {@link #eventId2label} to get the label created in the first pass and lookup using the label.</p>  
 	 */
 	private final Map<Label, Set<TouchPointDescriptor>> label2sourcePoints=new HashMap<Label, Set<TouchPointDescriptor>>();
 	
 	/**
-	 * Maps eventIds to    
+	 * Maps eventId to code label from BuildClassMapClassInstrumenter pass     
 	 */
-	private final Map<Integer,Label> eventId2label=new HashMap<Integer, Label>();
-	private final Set<Integer> blockedLines=new HashSet<Integer>();
-	private final SortedMap<Integer, List<TouchPointDescriptor>> currentLine2touchPoints=new TreeMap<Integer, List<TouchPointDescriptor>>();
-	private final Set<Integer> alreadyRegisteredEvents=new HashSet<Integer>();
+	private final Map<Integer,Label> eventId2label = new HashMap<Integer, Label>();
+	
+	/**
+	 * List of line numbers (not lineIds) of lines that are not allowed to contain touch-point. This
+	 * lines was probably excluded from coverage using 'ignore' stuff.  
+	 */
+	private final Set<Integer> blockedLines = new HashSet<Integer>();
+
+	/**
+	 * List of touch-points stored in given line. 
+	 */
+	private final SortedMap<Integer, List<TouchPointDescriptor>> line2touchPoints=new TreeMap<Integer, List<TouchPointDescriptor>>();	
+	
+	/**
+	 * Set of eventIds that has bean already registered.  
+	 */
+	private final Set<Integer> alreadyRegisteredEvents = new HashSet<Integer>();
 	
 	/*from duplicate to origin*/
 	private final Map<Label,Label> labelDuplicates2orginMap=new HashMap<Label, Label>();
@@ -97,10 +110,10 @@ public class ClassMap {
 	}
 
 	private List<TouchPointDescriptor>  getOrCreateLineTouchPoints(int currentLine) {
-		List<TouchPointDescriptor> res=currentLine2touchPoints.get(currentLine);
+		List<TouchPointDescriptor> res=line2touchPoints.get(currentLine);
 		if (res==null){
 			res=new LinkedList<TouchPointDescriptor>();
-			currentLine2touchPoints.put(currentLine,res);
+			line2touchPoints.put(currentLine,res);
 		}
 		return res;		
 	}
@@ -149,7 +162,7 @@ public class ClassMap {
 	public void unregisterLine(int eventId,int currentLine) {
 		if (alreadyRegisteredEvents.add(eventId)){
 			blockedLines.add(currentLine);
-			List<TouchPointDescriptor> res=currentLine2touchPoints.get(currentLine);
+			List<TouchPointDescriptor> res=line2touchPoints.get(currentLine);
 			if(res!=null){
 				Iterator<TouchPointDescriptor> iter=res.iterator();
 				while(iter.hasNext()){
@@ -260,9 +273,17 @@ public class ClassMap {
 		return null;
 	}	
 	
+	/**
+	 * Iterates over all touch-points created during class analysis and assigns
+	 * hit-counter identifiers to each of the touchpoint (some of them needs mode then one
+	 * hit-counter).
+	 * 
+	 * <p>This class assign hit-counter ids to each touch-point and upgrades maxCounterId to
+	 * reflect the greatest assigned Id. 
+	 */
 	public void assignCounterIds(){
 		AtomicInteger idGenerator=new AtomicInteger(0);
-		for(List<TouchPointDescriptor> tpd:currentLine2touchPoints.values()){
+		for(List<TouchPointDescriptor> tpd:line2touchPoints.values()){
 			for(TouchPointDescriptor t:tpd){
 				t.assignCounters(idGenerator);
 			}
@@ -288,7 +309,7 @@ public class ClassMap {
 
 	public List<TouchPointDescriptor> getTouchPointsInLineOrder() {
 		LinkedList<TouchPointDescriptor> res=new LinkedList<TouchPointDescriptor>();
-		for(List<TouchPointDescriptor> tpd:currentLine2touchPoints.values()){
+		for(List<TouchPointDescriptor> tpd:line2touchPoints.values()){
 			for(TouchPointDescriptor t:tpd){
 				if(tpd instanceof LineTouchPointDescriptor){
 					res.add(t);
@@ -304,11 +325,13 @@ public class ClassMap {
 	}
 	
 	/**
-	 * I don't like the idea o creating sar file during the instrumentation, but we need to do it, 
-	 * to be compatible with tools that expact that (such a cobertura-maven-plugin)
+	 * Upgrades {@link ProjectData} to contain all information fount in class during class instrumentation.
+	 * 
+	 * <p>I don't like the idea o creating sar file during the instrumentation, but we need to do it, 
+	 * to be compatible with tools that expact that (such a cobertura-maven-plugin)</p>
 	 * @param projectData
 	 */
-	public ClassData applyOnProjectData(ProjectData projectData,boolean instrumented){
+	public ClassData applyOnProjectData(ProjectData projectData, boolean instrumented){
 		ClassData classData=projectData.getOrCreateClassData(className.replace('/','.'));
 		if (instrumented){
 			classData.setContainsInstrumentationInfo();
