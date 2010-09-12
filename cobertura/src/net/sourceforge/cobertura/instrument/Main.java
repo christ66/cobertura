@@ -6,7 +6,8 @@
  * Copyright (C) 2005 Joakim Erdfelt
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2006 John Lewis
- * Copyright (C) 2006 Jiri Mares 
+ * Copyright (C) 2006 Jiri Mares
+ * Copyright (C) 2010 Piotr Tabor  
  * Contact information for the above is given in the COPYRIGHT file.
  *
  * Cobertura is free software; you can redistribute it and/or modify
@@ -87,7 +88,7 @@ import org.apache.log4j.Logger;
  */
 // TODO(ptab): Change adding implements net.sourceforge.cobertura.coveragedata.HasBeenInstrumented into Annotation. The effect on code will be smaller. 
 public class Main {
-	private static final Logger logger = Logger.getLogger(Main.class);
+	private static final LoggerWrapper logger = new LoggerWrapper();
 
 	private File destinationDirectory = null;
 
@@ -386,6 +387,8 @@ public class Main {
 				classPattern.addIncludeClassesRegex(args[++i]);
 			} else if (args[i].equals("--excludeClasses")) {
 				classPattern.addExcludeClassesRegex(args[++i]);
+			} else if (args[i].equals("--failOnError")) {
+			    logger.setFailOnError(true);
 			} else {
 				filePaths.add(new CoberturaFile(baseDir, args[i]));
 			}
@@ -437,5 +440,34 @@ public class Main {
 		long stopTime = System.currentTimeMillis();
 		System.out.println("Instrument time: " + (stopTime - startTime) + "ms");
 	}
+	
+	// TODO: Preserved current behaviour, but this code is failing on WARN, not error
+    private static class LoggerWrapper {
+      private final Logger logger = Logger.getLogger(Main.class);
+      private boolean failOnError = false;
+    
+      public void setFailOnError(boolean failOnError){
+    	this.failOnError = failOnError;
+      }
+      
+      public void debug(String message) {
+        logger.debug(message);
+      }
+    
+      public void debug(String message, Throwable t){
+        logger.debug(message, t);
+      }
+      
+      public void info(String message){
+          logger.debug(message);
+      }
+      
+      public void warn(String message, Throwable t) {
+    	logger.warn(message, t);
+    	if (failOnError) {
+    	  throw new RuntimeException("Warning detected and failOnError is true", t);
+    	}
+      }
+    }
 
 }
