@@ -17,7 +17,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.instrument;
+package net.sourceforge.cobertura.instrument.pass3;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;

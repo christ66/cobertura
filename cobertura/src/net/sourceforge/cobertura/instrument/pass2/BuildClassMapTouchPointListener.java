@@ -17,8 +17,9 @@
  * USA
  */
 
-package net.sourceforge.cobertura.instrument;
+package net.sourceforge.cobertura.instrument.pass2;
 
+import net.sourceforge.cobertura.instrument.TouchPointListener;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
 
 import org.objectweb.asm.Label;

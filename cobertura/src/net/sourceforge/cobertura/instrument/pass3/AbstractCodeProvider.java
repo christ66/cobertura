@@ -17,7 +17,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.instrument;
+package net.sourceforge.cobertura.instrument.pass3;
 
 import java.util.Collection;
 import java.util.List;

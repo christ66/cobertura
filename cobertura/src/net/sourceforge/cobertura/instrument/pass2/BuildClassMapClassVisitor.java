@@ -17,7 +17,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.instrument;
+package net.sourceforge.cobertura.instrument.pass2;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,7 +25,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coveragedata.HasBeenInstrumented;
-import net.sourceforge.cobertura.instrument.detdup.DetectDuplicatedCodeClassVisitor;
+import net.sourceforge.cobertura.instrument.AbstractFindTouchPointsClassInstrumenter;
+import net.sourceforge.cobertura.instrument.FindTouchPointsMethodAdapter;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
 
 import org.objectweb.asm.ClassReader;
@@ -42,7 +43,7 @@ import org.objectweb.asm.Type;
  * 
  * @author piotr.tabor@gmail.com
  */
-public class BuildClassMapClassInstrumenter extends AbstractFindTouchPointsClassInstrumenter{
+public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstrumenter{
 	/**
 	 * {@link ClassMap} for the currently analyzed class. 
 	 */
@@ -65,7 +66,7 @@ public class BuildClassMapClassInstrumenter extends AbstractFindTouchPointsClass
 	 * @param ignoreRegexp       - list of patters of method calls that should be ignored from line-coverage-measurement 
 	 * @param duplicatedLinesMap - map of found duplicates in the class. You should use {@link DetectDuplicatedCodeClassVisitor} to find the duplicated lines. 
 	 */
-	public BuildClassMapClassInstrumenter(ClassVisitor cv, Collection<Pattern> ignoreRegexes,Map<Integer, Map<Integer, Integer>> duplicatedLinesMap) {
+	public BuildClassMapClassVisitor(ClassVisitor cv, Collection<Pattern> ignoreRegexes,Map<Integer, Map<Integer, Integer>> duplicatedLinesMap) {
 		super(cv,ignoreRegexes,duplicatedLinesMap);
 	}
 
@@ -99,7 +100,7 @@ public class BuildClassMapClassInstrumenter extends AbstractFindTouchPointsClass
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {		
 		MethodVisitor mv = super.visitMethod(access, name, desc, signature,	exceptions);
-		FindTouchPointsMethodInstrumenter instrumenter=new FindTouchPointsMethodInstrumenter(mv,classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
+		FindTouchPointsMethodAdapter instrumenter=new FindTouchPointsMethodAdapter(mv,classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
 		instrumenter.setTouchPointListener(touchPointListener);
 		instrumenter.setIgnoreRegexp(getIgnoreRegexp());
 		return instrumenter;

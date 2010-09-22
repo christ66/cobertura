@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-import net.sourceforge.cobertura.instrument.AbstractCodeProvider;
+import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
 
 public class TouchCollector implements HasBeenInstrumented {
 

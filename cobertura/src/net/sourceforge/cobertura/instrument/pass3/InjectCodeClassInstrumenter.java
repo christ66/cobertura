@@ -17,14 +17,15 @@
  * USA
  */
 
-package net.sourceforge.cobertura.instrument;
+package net.sourceforge.cobertura.instrument.pass3;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coveragedata.HasBeenInstrumented;
-import net.sourceforge.cobertura.instrument.detdup.DetectDuplicatedCodeClassVisitor;
+import net.sourceforge.cobertura.instrument.AbstractFindTouchPointsClassInstrumenter;
+import net.sourceforge.cobertura.instrument.FindTouchPointsMethodAdapter;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
 
 import org.objectweb.asm.ClassVisitor;
@@ -37,7 +38,7 @@ import org.objectweb.asm.Type;
  * <p>This class is responsible for real instrumentation of the user's class.</p> 
  * 
  * <p>It uses information acquired 
- * by {@link BuildClassMapClassInstrumenter} ( {@link #classMap} ) and 
+ * by {@link BuildClassMapClassVisitor} ( {@link #classMap} ) and 
  * {@link DetectDuplicatedCodeClassVisitor} and injects 
  * code snippet provided by {@link CodeProvider} ( {@link #codeProvider} ).</p>  
  * 
@@ -50,7 +51,7 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	private final InjectCodeTouchPointListener touchPointListener;
 
 	/**
-	 * {@link ClassMap} generated in previous instrumentation pass by {@link BuildClassMapClassInstrumenter}
+	 * {@link ClassMap} generated in previous instrumentation pass by {@link BuildClassMapClassVisitor}
 	 */
 	private final ClassMap classMap;
 	
@@ -72,7 +73,7 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	/**
 	 * @param cv                 - a listener for code-instrumentation events 
 	 * @param ignoreRegexp       - list of patters of method calls that should be ignored from line-coverage-measurement
-	 * @param classMap           - map of all interesting places in the class. You should acquire it by {@link BuildClassMapClassInstrumenter} and remember to 
+	 * @param classMap           - map of all interesting places in the class. You should acquire it by {@link BuildClassMapClassVisitor} and remember to 
 	 * prepare it using {@link ClassMap#assignCounterIds()} before using it with {@link InjectCodeClassInstrumenter}  
 	 * @param duplicatedLinesMap - map of found duplicates in the class. You should use {@link DetectDuplicatedCodeClassVisitor} to find the duplicated lines. 
 	 */
@@ -133,7 +134,7 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 			mv=new GenerateCLINITMethodVisitor(mv,  classMap.getClassName(),classMap.getMaxCounterId()+1);
 			wasStaticInitMethodVisited=true;
 		}
-		FindTouchPointsMethodInstrumenter instrumenter=new FindTouchPointsMethodInstrumenter(mv,classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
+		FindTouchPointsMethodAdapter instrumenter=new FindTouchPointsMethodAdapter(mv,classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
 		instrumenter.setTouchPointListener(touchPointListener);
 		instrumenter.setIgnoreRegexp(getIgnoreRegexp());
 		touchPointListener.setLastJumpIdVariableIndex(ShiftVariableMethodAdapter.calculateFirstStackVariable(access, desc));

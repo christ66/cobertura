@@ -25,4 +25,4 @@
  * This package contains {@link DetectDuplicatedCodeClassVisitor} that is responsible for
  * detecting such a duplicates. It does not change class but only provide analysis. 
  */
-package net.sourceforge.cobertura.instrument.detdup;
+package net.sourceforge.cobertura.instrument.pass1;

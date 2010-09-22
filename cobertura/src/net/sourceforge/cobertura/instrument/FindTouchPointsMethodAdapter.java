@@ -38,7 +38,7 @@ import org.objectweb.asm.Opcodes;
  * 
  * @author ptab
  */
-class FindTouchPointsMethodInstrumenter extends ContextMethodAwareMethodAdapter {
+public class FindTouchPointsMethodAdapter extends ContextMethodAwareMethodAdapter {
 	/**
 	 * Source of identifiers for events.
 	 * 
@@ -89,7 +89,7 @@ class FindTouchPointsMethodInstrumenter extends ContextMethodAwareMethodAdapter 
 	 */
 	private LinkedList<Integer> replyEventIdList = null;
 
-	public FindTouchPointsMethodInstrumenter(MethodVisitor arg0,
+	public FindTouchPointsMethodAdapter(MethodVisitor arg0,
 			String className, String methodName, String methodSignature,
 			AtomicInteger eventIdGenerator,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,

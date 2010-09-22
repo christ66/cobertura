@@ -31,7 +31,9 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.instrument.detdup.DetectDuplicatedCodeClassVisitor;
+import net.sourceforge.cobertura.instrument.pass1.DetectDuplicatedCodeClassVisitor;
+import net.sourceforge.cobertura.instrument.pass2.BuildClassMapClassVisitor;
+import net.sourceforge.cobertura.instrument.pass3.InjectCodeClassInstrumenter;
 import net.sourceforge.cobertura.util.IOUtil;
 
 import org.apache.log4j.Logger;
@@ -45,7 +47,7 @@ import org.objectweb.asm.ClassWriter;
  * <ol>
  *  <li>Read only: {@link DetectDuplicatedCodeClassVisitor} - we look for the same ASM code snippets 
  *  rendered in different places of destination code</li> 
- *  <li>Read only: {@link BuildClassMapClassInstrumenter} - finds all touch-points and other interesting
+ *  <li>Read only: {@link BuildClassMapClassVisitor} - finds all touch-points and other interesting
  *  information that are in the class and store it in {@link ClassMap}.
  *  <li>Real instrumentation: {@link InjectCodeClassInstrumenter}. Uses {#link ClassMap} to inject
  *  code into the class</li> 
@@ -117,7 +119,7 @@ public class CoberturaInstrumenter {
 		
 		ClassReader cr = new ClassReader(cw0.toByteArray());
 		ClassWriter cw = new ClassWriter(0);
-		BuildClassMapClassInstrumenter cv = new BuildClassMapClassInstrumenter(cw, ignoreRegexes,cv0.getDuplicatesLinesCollector());
+		BuildClassMapClassVisitor cv = new BuildClassMapClassVisitor(cw, ignoreRegexes,cv0.getDuplicatesLinesCollector());
 
 		cr.accept(cv, 0);
 				

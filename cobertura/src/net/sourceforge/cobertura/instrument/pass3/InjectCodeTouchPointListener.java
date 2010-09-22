@@ -17,10 +17,11 @@
  * USA
  */
 
-package net.sourceforge.cobertura.instrument;
+package net.sourceforge.cobertura.instrument.pass3;
 
 import java.util.Map;
 
+import net.sourceforge.cobertura.instrument.TouchPointListener;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
 
 import org.apache.log4j.Logger;

@@ -19,7 +19,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.instrument;
+package net.sourceforge.cobertura.instrument.pass3;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodAdapter;

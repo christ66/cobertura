@@ -33,13 +33,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sourceforge.cobertura.coveragedata.ClassData;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
-import net.sourceforge.cobertura.instrument.BuildClassMapClassInstrumenter;
+import net.sourceforge.cobertura.instrument.pass2.BuildClassMapClassVisitor;
 
 import org.apache.log4j.Logger;
 import org.objectweb.asm.Label;
 
 /**
- * <p>This class is a container for informations gathered during class analyzing done by {@link BuildClassMapClassInstrumenter}.</p>
+ * <p>This class is a container for informations gathered during class analyzing done by {@link BuildClassMapClassVisitor}.</p>
  * 
  * 
  * @author piotr.tabor@gmail.com
@@ -59,7 +59,7 @@ public class ClassMap {
 	/**
 	 * Contains map of label into set of {@link JumpTouchPointDescriptor} or {@link SwitchTouchPointDescriptor} that the label could be destination of
 	 * 
-	 * <p>The labels used here are {@link Label} created during {@link BuildClassMapClassInstrumenter} pass. Don't try to compare it with labels created by other instrumentation passes.
+	 * <p>The labels used here are {@link Label} created during {@link BuildClassMapClassVisitor} pass. Don't try to compare it with labels created by other instrumentation passes.
 	 * Instead you should use eventId and {@link #eventId2label} to get the label created in the first pass and lookup using the label.</p>  
 	 */
 	private final Map<Label, Set<TouchPointDescriptor>> label2sourcePoints=new HashMap<Label, Set<TouchPointDescriptor>>();

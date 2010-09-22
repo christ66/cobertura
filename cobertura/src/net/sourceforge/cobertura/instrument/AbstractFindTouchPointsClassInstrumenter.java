@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
-import net.sourceforge.cobertura.instrument.detdup.DetectDuplicatedCodeClassVisitor;
+import net.sourceforge.cobertura.instrument.pass1.DetectDuplicatedCodeClassVisitor;
 
 import org.objectweb.asm.ClassAdapter;
 import org.objectweb.asm.ClassVisitor;

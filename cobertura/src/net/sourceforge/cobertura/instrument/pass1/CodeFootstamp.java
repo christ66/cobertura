@@ -17,7 +17,7 @@
  * USA
  */
 
-package net.sourceforge.cobertura.instrument.detdup;
+package net.sourceforge.cobertura.instrument.pass1;
 
 import java.util.Arrays;
 import java.util.LinkedList;
