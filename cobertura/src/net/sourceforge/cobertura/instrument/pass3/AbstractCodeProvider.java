@@ -43,7 +43,7 @@ import org.objectweb.asm.Type;
  * 
  * @author piotr.tabor@gmail.com
  */
-public abstract class AbstractCodeProvider implements CodeProvider{
+public abstract class AbstractCodeProvider implements CodeProvider {
 
 	/**
 	 * CounterId used to store unnecessary events to avoid fake jump counting in
@@ -51,17 +51,6 @@ public abstract class AbstractCodeProvider implements CodeProvider{
 	 */
 	public static final int FAKE_COUNTER_ID = 0;
 	
-	/**
-	 * Name of a field that have to be injected into instrumented class that is responsible for storing counters  
-	 */
-	public static final String COBERTURA_COUNTERS_FIELD_NAME  = "__cobertura_counters";
-	
-	/**
-	 * Name of a method that will to be injected into instrumented class that is responsible for storing
-	 * class-map (information on mapping of counter identifiers into lines, jumps and switch-touches). 
-	 */
-	public static final String COBERTURA_CLASSMAP_METHOD_NAME = "__cobertura_classmap";
-
 	public AbstractCodeProvider() {
 		super();
 	}

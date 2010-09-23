@@ -61,7 +61,8 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	 * We are strictly recommending here using {@link FastArrayCodeProvider} instead of {@link AtomicArrayCodeProvider} because 
 	 * of performance. 
 	 */
-	private final static CodeProvider codeProvider=new FastArrayCodeProvider();//new AtomicArrayCodeProvider();
+	//private final static CodeProvider codeProvider = new FastArrayCodeProvider();
+	private final static CodeProvider codeProvider = new AtomicArrayCodeProvider();
 	
 	/**
 	 * When we processing the class we want to now if we processed 'static initialization block' (clinit method). 
@@ -181,7 +182,8 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 			wasStaticInitMethodVisited=true;
 		}
 		
-		codeProvider.generateCoberturaClassMapMethod(cv,classMap);
+		codeProvider.generateCoberturaClassMapMethod(cv, classMap);
+		codeProvider.generateCoberturaGetAndResetCountersMethod(cv, classMap.getClassName());
 		
 		super.visitEnd();
 	}

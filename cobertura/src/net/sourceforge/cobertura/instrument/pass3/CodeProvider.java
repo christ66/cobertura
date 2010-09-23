@@ -35,7 +35,27 @@ import org.objectweb.asm.MethodVisitor;
  * @author piotr.tabor@gmail.com
  *
  */
-public interface CodeProvider {
+public interface CodeProvider {	
+	/**
+	 * Name of a field that have to be injected into instrumented class that is responsible for storing counters  
+	 */
+	public static final String COBERTURA_COUNTERS_FIELD_NAME  = "__cobertura_counters";
+	
+	/**
+	 * Name of a method that will to be injected into instrumented class that is responsible for storing
+	 * class-map (information on mapping of counter identifiers into lines, jumps and switch-touches). 
+	 */
+	public static final String COBERTURA_CLASSMAP_METHOD_NAME = "__cobertura_classmap";
+	
+	/**
+	 * Name of a method that have to be injected into instrumented class that is responsible for reading
+	 * value of given counter.
+	 * 
+	 * Signature of this method is: int[] __cobertura_counter(int counterId);
+	 */
+	public static final String COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME  = "__cobertura_get_and_reset_counters";
+
+	
 	/**
 	 * Generates fields injected into  instrumented class  by cobertura. 
 	 * 
@@ -73,7 +93,7 @@ public interface CodeProvider {
 	 * Injects code that increments counter given by internal variable. 
 	 * The id of the variable is identified by lastJumpIdVariableIndex. The variable is in most cases set (by {@link #generateCodeThatSetsJumpCounterIdVariable(MethodVisitor, int, int)} 
 	 * to some counterId and in the target label, the counter identified by the variable is incremented.    
-	 * 
+	 * long
 	 * @param nextMethodVisitor          - {@link MethodVisitor} that is listener of code-generation events
 	 * @param lastJumpIdVariableIndex    - id of the variable used to store counterId that have to be incremented 
 	 * @param className                  - internal name (asm) of class being instrumented
@@ -123,11 +143,19 @@ public interface CodeProvider {
 	 * The version of cobertura prior to 1.10 used *.ser file to store information of lines, jumps, switches and other
 	 * constructions used in the class. It was difficult to user to transfer the files after instrumentation into 
 	 * 'production' directory. To avoid that we are now creating the class-map as a special injected method that is responsible
-	 * for keeping such a informations. 	 *     
+	 * for keeping such a informations.     
 	 * 
-	 * @param cv - listener used to incject the code
+	 * @param cv - listener used to inject the code
 	 * @param classMap - structure that is keeping all collected information about the class. The information from the structure will be stored as
 	 * 					 method body. 
 	 */
-	public void generateCoberturaClassMapMethod(ClassVisitor cv,ClassMap classMap);
+	public void generateCoberturaClassMapMethod(ClassVisitor cv, ClassMap classMap);
+
+	/**
+	 * Generate method {@value #COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME} that is accessor to couters. 
+	 * Signature of this method is: static int __cobertura_counter(int counterId); 
+	 * 
+	 * @param cv - listener used to inject the code
+	 */
+	public abstract void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv, String className);
 }

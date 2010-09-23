@@ -33,59 +33,14 @@ public class TouchCollector implements HasBeenInstrumented {
 		System.out
 				.println("===================  END OF RAPORT  ======================== ");
 
-		// System.out.println("Flushing results...");
-		// Map<LineTouchData,Integer>
-		// touches=touchedLines.getFinalStateAndCleanIt();
-		// for(Entry<LineTouchData, Integer> touch:touches.entrySet()){
-		// if(touch.getValue()>0){
-		// getClassFor(touch.getKey(),projectData).touch(touch.getKey().lineNumber,touch.getValue());
-		// }
-		// }
-		//		
-		// Map<SwitchTouchData,Integer>
-		// switchTouches=switchTouchData.getFinalStateAndCleanIt();
-		// for(Entry<SwitchTouchData, Integer> touch:switchTouches.entrySet()){
-		// if(touch.getValue()>0){
-		// getClassFor(touch.getKey(),projectData).touchSwitch(
-		// touch.getKey().lineNumber,
-		// touch.getKey().switchNumber,
-		// touch.getKey().branch,touch.getValue());
-		// }
-		// }
-		//		
-		// Map<JumpTouchData,Integer>
-		// jumpTouches=jumpTouchData.getFinalStateAndCleanIt();
-		// for(Entry<JumpTouchData, Integer> touch:jumpTouches.entrySet()){
-		// if(touch.getValue()>0){
-		// getClassFor(touch.getKey(),projectData).touchJump(
-		// touch.getKey().lineNumber,
-		// touch.getKey().branchNumber,
-		// touch.getKey().branch,touch.getValue());
-		// }
-		// }
-		// System.out.println("Flushing results done");
-		// }
-
-		// private static ClassData getClassFor(LineTouchData key,ProjectData
-		// projectData) {
-		// System.out.println("\nLooking for:"+key.classId+"\n");
-		// return
-		// projectData.getOrCreateClassData(classId2class.get(key.classId));
 	}
 
 	private static void applyTouchesToSingleClassOnProjectData(final ClassData classData,final Class<?> c) {
 		System.out.println("----------- "+ c.getCanonicalName() + " ---------------- ");
 		try {
-			Field f = c.getDeclaredField(AbstractCodeProvider.COBERTURA_COUNTERS_FIELD_NAME);
-			f.setAccessible(true);
-			final int[] res_src = (int[]) f.get(null);
-			final int[] res=new int[res_src.length];
-			for(int i=0; i<res.length; i++){
-				res[i]=res_src[i];
-				res_src[i]=0;
-			}
-			
-//			System.out.println("Counters:"	+ Arrays.toString(res));
+			Method m0 = c.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
+			m0.setAccessible(true);
+			final int[] res=(int[])m0.invoke(null, new Object[]{});
 			
 			LightClassmapListener lightClassmap=new ApplyToClassDataLightClassmapListener(classData,res);			
 			Method m = c.getDeclaredMethod(AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,LightClassmapListener.class);
