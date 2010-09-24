@@ -161,8 +161,11 @@ public class CoberturaInstrumenter {
 		}
 
 		//TODO(ptab): Don't like the idea, but we have to be compatible (hope to remove the line in future release)
-		logger.debug("Migrating classmap in projectData to store in *.ser file: "+cv.getClassMap().getClassName());
-		cv.getClassMap().applyOnProjectData(projectData,cv.shouldBeInstrumented());
+		logger.debug("Migrating classmap in projectData to store in *.ser file: " + cv.getClassMap().getClassName());
+		
+		if (cv.shouldBeInstrumented()) { //Not instrumented classes should be not included into the report
+		 cv.getClassMap().applyOnProjectData(projectData,cv.shouldBeInstrumented());
+		}
 		
 		if (cv.shouldBeInstrumented()){					
 			/*
