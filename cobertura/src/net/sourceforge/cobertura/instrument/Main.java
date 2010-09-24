@@ -39,8 +39,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -92,9 +94,9 @@ public class Main {
 
 	private File destinationDirectory = null;
 
-	private ClassPattern classPattern = new ClassPattern();
+	private final ClassPattern classPattern = new ClassPattern();
 	
-	private CoberturaInstrumenter coberturaInstrumenter = new CoberturaInstrumenter();
+	private final CoberturaInstrumenter coberturaInstrumenter = new CoberturaInstrumenter();
 
 	/**
 	 * @param entry A zip entry.
@@ -367,6 +369,11 @@ public class Main {
 		// Parse our parameters
 		List<CoberturaFile> filePaths = new ArrayList<CoberturaFile>();
 		String baseDir = null;
+		
+		boolean threadsafeRigorous = false;
+		boolean ignoreTrivial = false;
+		Set<String> ignoreMethodAnnotations = new HashSet<String>();
+		
 		for (int i = 0; i < args.length; i++)
 		{
 			if (args[i].equals("--basedir"))
@@ -383,16 +390,26 @@ public class Main {
 			{
 				RegexUtil.addRegex(ignoreBranchesRegexes, args[++i]);
 			}*/
-			else if (args[i].equals("--includeClasses")) {
+			else if (args[i].equals("--ignoreMethodAnnotation")) {
+			    ignoreMethodAnnotations.add(args[++i]);
+		    } else if (args[i].equals("--ignoreTrivial")) {
+                ignoreTrivial = true;
+			} else if (args[i].equals("--includeClasses")) {
 				classPattern.addIncludeClassesRegex(args[++i]);
 			} else if (args[i].equals("--excludeClasses")) {
 				classPattern.addExcludeClassesRegex(args[++i]);
 			} else if (args[i].equals("--failOnError")) {
 			    logger.setFailOnError(true);
+			} else if (args[i].equals("--threadsafeRigorous")) {
+			    threadsafeRigorous = true;
 			} else {
 				filePaths.add(new CoberturaFile(baseDir, args[i]));
 			}
 		}
+		
+		coberturaInstrumenter.setIgnoreTrivial(ignoreTrivial);
+		coberturaInstrumenter.setIgnoreMethodAnnotations(ignoreMethodAnnotations);
+		coberturaInstrumenter.setThreadsafeRigorous(threadsafeRigorous);
 		
 		ProjectData projectData;
 

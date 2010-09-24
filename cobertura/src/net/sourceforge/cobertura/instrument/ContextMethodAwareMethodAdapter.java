@@ -36,7 +36,7 @@ import org.objectweb.asm.MethodVisitor;
  *
  */
 public abstract class ContextMethodAwareMethodAdapter extends MethodAdapter{
-	protected final String className;
+    protected final String className;
 	protected final String methodName;
 	protected final String methodSignature;
 	

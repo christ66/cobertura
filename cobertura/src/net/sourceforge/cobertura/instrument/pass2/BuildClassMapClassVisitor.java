@@ -22,6 +22,7 @@ package net.sourceforge.cobertura.instrument.pass2;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coveragedata.HasBeenInstrumented;
@@ -60,14 +61,18 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 	 * After analyzing the class you can check the field using {@link #shouldBeInstrumented()}.
 	 */
 	private boolean toInstrument=true;
+	
+	private final Set<String> ignoredMethods;
 
 	/**
 	 * @param cv                 - a listener for code-instrumentation events 
 	 * @param ignoreRegexp       - list of patters of method calls that should be ignored from line-coverage-measurement 
 	 * @param duplicatedLinesMap - map of found duplicates in the class. You should use {@link DetectDuplicatedCodeClassVisitor} to find the duplicated lines. 
 	 */
-	public BuildClassMapClassVisitor(ClassVisitor cv, Collection<Pattern> ignoreRegexes,Map<Integer, Map<Integer, Integer>> duplicatedLinesMap) {
+	public BuildClassMapClassVisitor(ClassVisitor cv, Collection<Pattern> ignoreRegexes,Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
+			Set<String> ignoredMethods) {
 		super(cv,ignoreRegexes,duplicatedLinesMap);
+		this.ignoredMethods = ignoredMethods;
 	}
 
 	/**
@@ -100,6 +105,9 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {		
 		MethodVisitor mv = super.visitMethod(access, name, desc, signature,	exceptions);
+		if (ignoredMethods.contains(name + desc)) {
+			return mv;
+		}
 		FindTouchPointsMethodAdapter instrumenter=new FindTouchPointsMethodAdapter(mv,classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
 		instrumenter.setTouchPointListener(touchPointListener);
 		instrumenter.setIgnoreRegexp(getIgnoreRegexp());

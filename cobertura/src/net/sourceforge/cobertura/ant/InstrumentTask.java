@@ -100,6 +100,8 @@ public class InstrumentTask extends CommonMatchingTask
 	private Integer forkedJVMDebugPort;
 	
 	private Path instrumentationClasspath = null;
+	
+	boolean threadsafeRigorous = false;
 
 	final private HashMap<String, FileSet> fileSetMap = new HashMap<String, FileSet>();
 
@@ -194,6 +196,9 @@ public class InstrumentTask extends CommonMatchingTask
 			if (ignoreTrivial)
 				builder.addArg("--ignoreTrivial");
 			
+			if (threadsafeRigorous)
+				builder.addArg("--threadsafeRigorous");
+			
 			if (failOnError)
 				builder.addArg("--failOnError");
 
@@ -280,6 +285,10 @@ public class InstrumentTask extends CommonMatchingTask
 
 	public void setIgnoreTrivial(boolean ignoreTrivial) {
 		this.ignoreTrivial = ignoreTrivial;
+	}
+	
+	public void setThreadsafeRigorous(boolean threadsafeRigorous) {
+		this.threadsafeRigorous = threadsafeRigorous;
 	}
 	
 	public void setForkedJVMDebugPort(Integer forkedJVMDebugPort) {

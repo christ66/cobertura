@@ -175,6 +175,7 @@ public class DetectDuplicatedCodeClassVisitor extends ClassAdapter{
 	 *  map of (line number -> (duplicated lineId -> origin lineId))
 	 */ 
 	private Map<Integer,Map<Integer,Integer>> duplicatedLinesCollector=new HashMap<Integer, Map<Integer,Integer>>();
+	
 	/**
 	 * Name (internal asm) of currently processed class  
 	 **/
@@ -189,6 +190,13 @@ public class DetectDuplicatedCodeClassVisitor extends ClassAdapter{
 		
 	public  DetectDuplicatedCodeClassVisitor(ClassVisitor cv) {
 		super(cv);
+	}
+	
+	@Override
+	public void visit(int version, int access,
+			String name, String signature, String superName, String[] interfaces)  {	
+		super.visit(version, access, name, signature, superName, interfaces);
+		this.className = name;
 	}
 	
 	@Override

@@ -26,12 +26,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.instrument.pass1.DetectDuplicatedCodeClassVisitor;
+import net.sourceforge.cobertura.instrument.pass1.DetectIgnoredCodeClassVisitor;
 import net.sourceforge.cobertura.instrument.pass2.BuildClassMapClassVisitor;
 import net.sourceforge.cobertura.instrument.pass3.InjectCodeClassInstrumenter;
 import net.sourceforge.cobertura.util.IOUtil;
@@ -78,6 +81,25 @@ public class CoberturaInstrumenter {
 	 */
 	private Collection<Pattern> ignoreRegexes = new Vector<Pattern>();
 	
+	/**
+	 * Methods annotated by this annotations will be ignored during coverage measurement
+	 */
+	private Set<String> ignoreMethodAnnotations = new HashSet<String>();
+	
+	/**
+	 * If true: Getters, Setters and simple initialization will be ignored by coverage measurement
+	 */
+	private boolean ignoreTrivial;
+	
+	/**
+	 * Setting to true causes cobertura to use more strict threadsafe model that is significantly 
+	 * slower, but guarantees that number of hits counted for each line will be precise in multithread-environment.
+	 * 
+	 * The option does not change measured coverage. 
+	 * 
+	 * In implementation it means that AtomicIntegerArray will be used instead of int[].  
+	 */
+	private boolean threadsafeRigorous;
 	
 	/**
 	 * Analyzes and instruments class given by path. 
@@ -113,13 +135,15 @@ public class CoberturaInstrumenter {
 	public InstrumentationResult instrumentClass(InputStream inputStream) throws IOException{
 		ClassReader cr0 = new ClassReader(inputStream);
 		ClassWriter cw0 = new ClassWriter(0);
-		DetectDuplicatedCodeClassVisitor cv0=new DetectDuplicatedCodeClassVisitor(cw0);
+		DetectIgnoredCodeClassVisitor detectIgnoredCv =
+			new DetectIgnoredCodeClassVisitor(cw0, ignoreTrivial, ignoreMethodAnnotations);
+		DetectDuplicatedCodeClassVisitor cv0=new DetectDuplicatedCodeClassVisitor(detectIgnoredCv);
 		cr0.accept(cv0,0);		
-		
 		
 		ClassReader cr = new ClassReader(cw0.toByteArray());
 		ClassWriter cw = new ClassWriter(0);
-		BuildClassMapClassVisitor cv = new BuildClassMapClassVisitor(cw, ignoreRegexes,cv0.getDuplicatesLinesCollector());
+		BuildClassMapClassVisitor cv = new BuildClassMapClassVisitor(cw, ignoreRegexes,cv0.getDuplicatesLinesCollector(),
+				detectIgnoredCv.getIgnoredMethodNamesAndSignatures());
 
 		cr.accept(cv, 0);
 				
@@ -149,7 +173,8 @@ public class CoberturaInstrumenter {
 			ClassWriter cw2= new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
 			cv.getClassMap().assignCounterIds();
 			logger.debug("Assigned "+ cv.getClassMap().getMaxCounterId()+" counters for class:"+cv.getClassMap().getClassName());
-			InjectCodeClassInstrumenter cv2 = new InjectCodeClassInstrumenter(cw2, ignoreRegexes, cv.getClassMap(),cv0.getDuplicatesLinesCollector());
+			InjectCodeClassInstrumenter cv2 = new InjectCodeClassInstrumenter(cw2, ignoreRegexes,
+					threadsafeRigorous, cv.getClassMap(), cv0.getDuplicatesLinesCollector(), detectIgnoredCv.getIgnoredMethodNamesAndSignatures());
 			cr2.accept(cv2, 0);			
 			return new InstrumentationResult(cv.getClassMap().getClassName(), cw2.toByteArray());
 		}else{
@@ -227,6 +252,18 @@ public class CoberturaInstrumenter {
 	public void setIgnoreRegexes(Collection<Pattern> ignoreRegexes) {
 		this.ignoreRegexes = ignoreRegexes;
 	}
+	
+	public void setIgnoreTrivial(boolean ignoreTrivial) {
+	  this.ignoreTrivial = ignoreTrivial;		
+	}
+
+	public void setIgnoreMethodAnnotations(Set<String> ignoreMethodAnnotations) {
+	  this.ignoreMethodAnnotations = ignoreMethodAnnotations;		
+	}
+
+	public void setThreadsafeRigorous(boolean threadsafeRigorous) {
+	  this.threadsafeRigorous = threadsafeRigorous;
+	}	
 
 	/**
 	 * Sets {@link ProjectData} that will be filled with information about touch points inside instrumented classes 
@@ -258,4 +295,5 @@ public class CoberturaInstrumenter {
 			return content;
 		}
 	}
+
 }

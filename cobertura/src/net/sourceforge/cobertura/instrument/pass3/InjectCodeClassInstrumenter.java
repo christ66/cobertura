@@ -21,6 +21,7 @@ package net.sourceforge.cobertura.instrument.pass3;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import net.sourceforge.cobertura.coveragedata.HasBeenInstrumented;
@@ -61,8 +62,7 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	 * We are strictly recommending here using {@link FastArrayCodeProvider} instead of {@link AtomicArrayCodeProvider} because 
 	 * of performance. 
 	 */
-	//private final static CodeProvider codeProvider = new FastArrayCodeProvider();
-	private final static CodeProvider codeProvider = new AtomicArrayCodeProvider();
+	private final CodeProvider codeProvider;
 	
 	/**
 	 * When we processing the class we want to now if we processed 'static initialization block' (clinit method). 
@@ -71,6 +71,8 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	 */
 	private boolean wasStaticInitMethodVisited=false;
 
+	private final Set<String> ignoredMethods;
+	
 	/**
 	 * @param cv                 - a listener for code-instrumentation events 
 	 * @param ignoreRegexp       - list of patters of method calls that should be ignored from line-coverage-measurement
@@ -78,10 +80,14 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	 * prepare it using {@link ClassMap#assignCounterIds()} before using it with {@link InjectCodeClassInstrumenter}  
 	 * @param duplicatedLinesMap - map of found duplicates in the class. You should use {@link DetectDuplicatedCodeClassVisitor} to find the duplicated lines. 
 	 */
-	public InjectCodeClassInstrumenter(ClassVisitor cv, Collection<Pattern> ignoreRegexes,ClassMap classMap,Map<Integer, Map<Integer, Integer>> duplicatedLinesMap) {
+	public InjectCodeClassInstrumenter(ClassVisitor cv, Collection<Pattern> ignoreRegexes, boolean threadsafeRigorous,
+			ClassMap classMap,Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
+			Set<String> ignoredMethods) {
 		super(cv,ignoreRegexes,duplicatedLinesMap);		
 		this.classMap=classMap;
-		touchPointListener=new InjectCodeTouchPointListener(classMap,codeProvider);
+		this.ignoredMethods = ignoredMethods;
+		codeProvider = threadsafeRigorous ?  new AtomicArrayCodeProvider() : new FastArrayCodeProvider();
+		touchPointListener=new InjectCodeTouchPointListener(classMap, codeProvider);		
 	}
 	
 	/**
@@ -127,6 +133,9 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	public MethodVisitor visitMethod(int access, String name, String desc,
 			String signature, String[] exceptions) {			
 		MethodVisitor mv = super.visitMethod(access, name, desc, signature,	exceptions);
+		if (ignoredMethods.contains(name + desc)) {
+			return mv;
+		}
 		if ("<clinit>".equals(name)){
 			/*
 			 * It is static initialization method, so we have to inject 'static initialization code'
@@ -148,7 +157,7 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	 * 
 	 * @author piotr.tabor@gmail.com
 	 */
-	private static class GenerateCLINITMethodVisitor extends MethodAdapter{
+	private class GenerateCLINITMethodVisitor extends MethodAdapter{
 		private String className;
 		private int counter_cnt;
 		public GenerateCLINITMethodVisitor(MethodVisitor arg0,String className,int counter_cnt) {
