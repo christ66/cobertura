@@ -20,6 +20,7 @@
 package net.sourceforge.cobertura.instrument.pass3;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.sourceforge.cobertura.coveragedata.LightClassmapListener;
@@ -96,6 +97,8 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(TouchCollector.class), "registerClass","(Ljava/lang/Class;)V");		
 	}	
 	
+	final String CLASSMAP_LISTENER_INTERNALNAME = Type.getInternalName(LightClassmapListener.class);
+	
 	/** 
 	 * {@inheritDoc}<br/><br/>
 	 * 
@@ -105,8 +108,18 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	 *  The method informs the listener about all lines, jumps and switches found, and about all counters tracking 
 	 *  the constructions.   
 	 */
-	public void generateCoberturaClassMapMethod(ClassVisitor cv,ClassMap classMap){
-		final String CLASSMAP_LISTENER_INTERNALNAME=Type.getInternalName(LightClassmapListener.class);
+	public void generateCoberturaClassMapMethod(ClassVisitor cv, ClassMap classMap) {
+		
+		LinkedList<TouchPointDescriptor> touchPointDescriptors = new LinkedList<TouchPointDescriptor>(classMap.getTouchPointsInLineOrder());
+		int parts = 0;
+		for(int j=0; touchPointDescriptors.size() > 0; j++) {
+			List<TouchPointDescriptor> bufor = new LinkedList<TouchPointDescriptor>(); 
+			for (int i = 0; i < 1000 && touchPointDescriptors.size() > 0; i++){
+			  bufor.add(touchPointDescriptors.pollFirst());
+			}
+			classMapContent(cv, j, bufor);
+			parts++;
+		}
 		
 		MethodVisitor mv=cv.visitMethod(
 				Opcodes.ACC_PUBLIC|Opcodes.ACC_STATIC, 
@@ -125,9 +138,28 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 			mv.visitLdcInsn(classMap.getSource());
 			mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,CLASSMAP_LISTENER_INTERNALNAME, "setSource", "(Ljava/lang/String;)V");			
 		}
+			
+		for (int i=0; i < parts; i++) {
+			mv.visitInsn(Opcodes.DUP);
+			mv.visitMethodInsn(Opcodes.INVOKESTATIC, classMap.getClassName(), 
+					COBERTURA_CLASSMAP_METHOD_NAME+"_"+i, "("+Type.getType(LightClassmapListener.class).toString()+")V");
+		}	
+
+		mv.visitInsn(Opcodes.POP);
+		mv.visitInsn(Opcodes.RETURN);
+		mv.visitMaxs(0, 0);//will be recalculated by writer
+		mv.visitEnd();		
+	}
 		
-		List<TouchPointDescriptor> touchPointDescriptors=classMap.getTouchPointsInLineOrder();
-		for (TouchPointDescriptor tpd:touchPointDescriptors){
+	private void classMapContent(ClassVisitor cv, int nr, List<TouchPointDescriptor> touchPointDescriptors){
+		MethodVisitor mv=cv.visitMethod(
+				Opcodes.ACC_PUBLIC|Opcodes.ACC_STATIC, 
+				COBERTURA_CLASSMAP_METHOD_NAME + "_" + nr, 
+				"("+Type.getType(LightClassmapListener.class).toString()+")V",
+				null,null);
+		mv.visitCode();
+		mv.visitVarInsn(Opcodes.ALOAD,0);		
+		for (TouchPointDescriptor tpd : touchPointDescriptors){
 			mv.visitInsn(Opcodes.DUP);
 			mv.visitLdcInsn(tpd.getLineNumber());			
 			if (tpd instanceof LineTouchPointDescriptor){
@@ -154,12 +186,10 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 				}
 				mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, CLASSMAP_LISTENER_INTERNALNAME,"putSwitchTouchPoint","(I[I)V");				
 			}
-		}		
+		}
 		mv.visitInsn(Opcodes.POP);
 		mv.visitInsn(Opcodes.RETURN);
 		mv.visitMaxs(0, 0);//will be recalculated by writer
 		mv.visitEnd();		
 	}
-		
-
 }
