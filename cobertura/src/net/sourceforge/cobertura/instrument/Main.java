@@ -419,7 +419,7 @@ public class Main {
         coberturaInstrumenter.setProjectData(projectData);
 		
 		// Instrument classes
-		System.out.println("Instrumenting "	+ filePaths.size() + " "
+		logger.info("Instrumenting "	+ filePaths.size() + " "
 				+ (filePaths.size() == 1 ? "file" : "files")
 				+ (destinationDirectory != null ? " to "
 						+ destinationDirectory.getAbsoluteFile() : ""));
@@ -455,7 +455,7 @@ public class Main {
 		main.parseArguments(args);
 
 		long stopTime = System.currentTimeMillis();
-		System.out.println("Instrument time: " + (stopTime - startTime) + "ms");
+		logger.info("Instrument time: " + (stopTime - startTime) + "ms");
 	}
 	
 	// TODO: Preserved current behaviour, but this code is failing on WARN, not error

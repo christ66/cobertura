@@ -3,12 +3,14 @@ package net.sourceforge.cobertura.coveragedata;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
 
 public class TouchCollector implements HasBeenInstrumented {
-
+	private static final Logger logger = Logger.getLogger(TouchCollector.class.getCanonicalName());
 	/*In fact - concurrentHashset*/
 	private static Map<Class<?>,Integer> registeredClasses = new ConcurrentHashMap<Class<?>,Integer>();
 
@@ -22,20 +24,17 @@ public class TouchCollector implements HasBeenInstrumented {
 
 	public static synchronized void applyTouchesOnProjectData(
 			ProjectData projectData) {
-		System.out
-				.println("=================== START OF RAPORT ======================== ");
+		logger.fine("=================== START OF RAPORT ======================== ");
 		for (Class<?> c : registeredClasses.keySet()) {
-			System.out.println("Report: "+c.getName());
+			logger.fine("Report: "+c.getName());
 			ClassData cd=projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData(cd, c);
 		}
-		System.out
-				.println("===================  END OF RAPORT  ======================== ");
-
+		logger.fine("===================  END OF RAPORT  ======================== ");
 	}
 
 	private static void applyTouchesToSingleClassOnProjectData(final ClassData classData,final Class<?> c) {
-		System.out.println("----------- "+ c.getCanonicalName() + " ---------------- ");
+		logger.finer("----------- "+ c.getCanonicalName() + " ---------------- ");
 		try {
 			Method m0 = c.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
 			m0.setAccessible(true);
@@ -46,11 +45,9 @@ public class TouchCollector implements HasBeenInstrumented {
 			m.setAccessible(true);
 			m.invoke(null, lightClassmap);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.SEVERE, "Cannot apply touches", e);
 		}
-
 	}
-	
 	
 	private static class ApplyToClassDataLightClassmapListener implements LightClassmapListener, HasBeenInstrumented  {
 		//private AtomicInteger idProvider=new AtomicInteger(0);
@@ -76,30 +73,22 @@ public class TouchCollector implements HasBeenInstrumented {
 		}
 		
 		public void setSource(String source) {
-			System.out.println("source: "+source);
+			logger.fine("source: "+source);
 			classData.setSourceFileName(source);
 			
 		}
 		
-		public void setClazz(Class<?> clazz) {
-//			System.out.println("class: "+clazz.getCanonicalName());					
+		public void setClazz(Class<?> clazz) {					
 		}
 		
 		public void putLineTouchPoint(int classLine, int counterId, String methodName, String methodDescription) {
-			updateLine(classLine);
-//			System.out.println("Line: "+methodName+":"+methodDescription+":"+classLine+":"+counterId +" = "+res[counterId]);				
+			updateLine(classLine);				
 			LineData ld=classData.addLine(classLine, methodName,methodDescription);
 			ld.touch(res[counterId]);
 		}
 		
 		public void putSwitchTouchPoint(int classLine,int... counterIds) {
-			updateLine(classLine);
-//			System.out.print("Switch in line: "+classLine+":"+Arrays.toString(counterIds)+" {");
-//			for(int i=0; i<counterIds.length; i++){
-//				System.out.print(res[counterIds[i]]+",");
-//			}
-//			System.out.println("}");
-			
+			updateLine(classLine);			
 			LineData ld=getOrCreateLine(classLine);
 			int switchId=switchesInLine++;
 			classData.addLineSwitch(classLine,switchId , 0, counterIds.length-2);
@@ -111,8 +100,7 @@ public class TouchCollector implements HasBeenInstrumented {
 		
 		
 		public void putJumpTouchPoint(int classLine, int trueCounterId,	int falseCounterId) {
-			updateLine(classLine);
-			//System.out.println("classData:"+classData.getBaseName()+" Jump in line: "+classLine+":"+trueCounterId+"[="+res[trueCounterId]+"], "+falseCounterId+"[="+res[falseCounterId]+"]");					
+			updateLine(classLine);					
 			LineData ld=getOrCreateLine(classLine);
 			int branchId=jumpsInLine++;
 			classData.addLineJump(classLine, branchId);
@@ -128,6 +116,4 @@ public class TouchCollector implements HasBeenInstrumented {
 			return ld;
 		}
 	};
-
-
 }

@@ -29,7 +29,6 @@ package net.sourceforge.cobertura.coveragedata;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -37,12 +36,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 import net.sourceforge.cobertura.util.FileLocker;
 
-public class ProjectData extends CoverageDataContainer implements HasBeenInstrumented
-{
-
+public class ProjectData extends CoverageDataContainer implements HasBeenInstrumented {
+    private static final Logger logger = Logger.getLogger(ProjectData.class.getCanonicalName());
 	private static final long serialVersionUID = 6;
 
 	private static ProjectData globalProjectData = null;
@@ -389,7 +388,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 		if (projectData == null)
 		{
 			// We could not read from the serialized file, so use a new object.
-			System.out.println("Cobertura: Coverage data file " + dataFile.getAbsolutePath()
+			logger.info("Cobertura: Coverage data file " + dataFile.getAbsolutePath()
 					+ " either does not exist or is not readable.  Creating a new data file.");
 		}
 
