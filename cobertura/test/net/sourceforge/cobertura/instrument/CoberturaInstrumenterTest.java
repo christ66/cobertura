@@ -30,7 +30,7 @@ public class CoberturaInstrumenterTest {
 	@Test
 	public void instrumentNotExisting() {
 		coberturaInstrumenter.setDestinationDirectory(new File(System.getProperty("java.io.tmpdir")));
-		coberturaInstrumenter.addInstrumentationToSingleClass(new File("test/net/sourceforge/cobertura/instrument/notExisting.class"));
+		coberturaInstrumenter.addInstrumentationToSingleClass(new File("test/net/sourceforge/cobertura/instrument/notExisting.class"));		
 	}
 	
 	@Test
