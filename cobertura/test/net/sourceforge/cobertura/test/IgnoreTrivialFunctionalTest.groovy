@@ -76,20 +76,27 @@ public class IgnoreTrivialFunctionalTest {
 		 */
 		TestUtil.withTempDir { tempDir ->
 			def srcDir = new File(tempDir, "src")
+			def reportDir = new File(tempDir, "report")
 			def instrumentDir = new File(tempDir, "instrument")
 			
 			def mainSourceFile = new File(srcDir, "mypackage/Main.java")
+			def interfaceSourceFile = new File(srcDir, "mypackage/MyInterface.java")
 			def datafile = new File(srcDir, "cobertura.ser")
 			mainSourceFile.parentFile.mkdirs()
+			
+			interfaceSourceFile.write """
+package mypackage;
+
+public interface MyInterface {
+	public void myInterfaceMethod();
+}
+"""
 			
 			mainSourceFile.write """
 package mypackage;
 
 public class Main extends Thread {
 			
-	public static interface MyInterface {
-		public void myInterfaceMethod();
-	}
 	public static class MyObject implements MyInterface
 	{
 		public void myInterfaceMethod()
@@ -447,6 +454,14 @@ public class Main extends Thread {
 			assertNotIgnored('<init>', '(Ljava/lang/String;Ljava/lang/String;)V') // Main(String, String)
 			assertNotIgnored('<init>', '(Ljava/lang/String;I)V') // Main(String, int)
 			assertNotIgnored('<init>', '(Ljava/lang/String;Z)V') // Main(String, boolean)
+			
+			/*
+			* Now create a cobertura html report and make sure the files are created.
+			*/
+			ant.'cobertura-report'(datafile:datafile, format:'html', destdir:reportDir, srcdir:srcDir)
+			assertTrue(new File(reportDir, "index.html").exists())
+			assertTrue(new File(reportDir, "mypackage.Main.html").exists())
+			assertTrue(new File(reportDir, "mypackage.MyInterface.html").exists())
 		}
 	}
 
