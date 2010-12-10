@@ -188,7 +188,7 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 				PackageData packageData = (PackageData)iter.next();
 				if (packageData.getName().startsWith(packageName + ".") 
 					|| packageData.getName().equals(packageName)
-					|| packageName.isEmpty()) {
+					|| (packageName.length() > 0)) {					
 				  subPackages.add(packageData);
 				}
 			}
