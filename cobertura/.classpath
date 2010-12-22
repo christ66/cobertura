@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="**/*.html" kind="src" path="src"/>
+	<classpathentry including="**/*.css|**/*.html|**/*.java|**/*.js|**/*.png|**/*.txt|**/*.xml" kind="src" path="src"/>
 	<classpathentry kind="src" path="examples/functionaltest1/src"/>
 	<classpathentry kind="src" path="examples/basic/src"/>
 	<classpathentry kind="src" path="src-2"/>
