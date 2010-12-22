@@ -115,7 +115,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		for(int j=0; touchPointDescriptors.size() > 0; j++) {
 			List<TouchPointDescriptor> bufor = new LinkedList<TouchPointDescriptor>(); 
 			for (int i = 0; i < 1000 && touchPointDescriptors.size() > 0; i++){
-			  bufor.add(touchPointDescriptors.pop());
+			  bufor.add(touchPointDescriptors.removeFirst());
 			}
 			classMapContent(cv, j, bufor);
 			parts++;
