@@ -372,6 +372,7 @@ public class Main {
 		
 		boolean threadsafeRigorous = false;
 		boolean ignoreTrivial = false;
+		boolean failOnError = false;
 		Set<String> ignoreMethodAnnotations = new HashSet<String>();
 		
 		for (int i = 0; i < args.length; i++)
@@ -399,6 +400,7 @@ public class Main {
 			} else if (args[i].equals("--excludeClasses")) {
 				classPattern.addExcludeClassesRegex(args[++i]);
 			} else if (args[i].equals("--failOnError")) {
+				failOnError = true;
 			    logger.setFailOnError(true);
 			} else if (args[i].equals("--threadsafeRigorous")) {
 			    threadsafeRigorous = true;
@@ -410,6 +412,7 @@ public class Main {
 		coberturaInstrumenter.setIgnoreTrivial(ignoreTrivial);
 		coberturaInstrumenter.setIgnoreMethodAnnotations(ignoreMethodAnnotations);
 		coberturaInstrumenter.setThreadsafeRigorous(threadsafeRigorous);
+		coberturaInstrumenter.setFailOnError(failOnError);
 		
 		ProjectData projectData;
 

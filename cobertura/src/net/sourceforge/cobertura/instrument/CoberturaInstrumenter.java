@@ -92,6 +92,11 @@ public class CoberturaInstrumenter {
 	private boolean ignoreTrivial;
 	
 	/**
+	 * If true: The process is interrupted when first error occured.  
+	 */
+	private boolean failOnError;
+	
+	/**
 	 * Setting to true causes cobertura to use more strict threadsafe model that is significantly 
 	 * slower, but guarantees that number of hits counted for each line will be precise in multithread-environment.
 	 * 
@@ -118,7 +123,11 @@ public class CoberturaInstrumenter {
 			return instrumentClass(inputStream);
 		}catch (Throwable t){
 			logger.warn("Unable to instrument file " + file.getAbsolutePath(),t);
-			return null;
+			if (failOnError) {
+			  throw new RuntimeException("Warning detected and failOnError is true", t); 
+			} else {
+			  return null;
+			}
 		}finally{
 			IOUtil.closeInputStream(inputStream);
 		}
@@ -173,7 +182,7 @@ public class CoberturaInstrumenter {
 			 *  so we can use any bytecode representation of that class. 
 			 */
 			ClassReader cr2= new ClassReader(cw0.toByteArray()); 			
-			ClassWriter cw2= new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+			ClassWriter cw2= new ClassWriter(/*ClassWriter.COMPUTE_MAXS |*/ ClassWriter.COMPUTE_FRAMES);
 			cv.getClassMap().assignCounterIds();
 			logger.debug("Assigned "+ cv.getClassMap().getMaxCounterId()+" counters for class:"+cv.getClassMap().getClassName());
 			InjectCodeClassInstrumenter cv2 = new InjectCodeClassInstrumenter(cw2, ignoreRegexes,
@@ -266,7 +275,12 @@ public class CoberturaInstrumenter {
 
 	public void setThreadsafeRigorous(boolean threadsafeRigorous) {
 	  this.threadsafeRigorous = threadsafeRigorous;
-	}	
+	}
+
+	public void setFailOnError(boolean failOnError) {
+	  this.failOnError = failOnError;
+	}
+	
 
 	/**
 	 * Sets {@link ProjectData} that will be filled with information about touch points inside instrumented classes 
@@ -298,5 +312,4 @@ public class CoberturaInstrumenter {
 			return content;
 		}
 	}
-
 }
