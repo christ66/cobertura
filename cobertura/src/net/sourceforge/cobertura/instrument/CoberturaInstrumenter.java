@@ -182,7 +182,7 @@ public class CoberturaInstrumenter {
 			 *  so we can use any bytecode representation of that class. 
 			 */
 			ClassReader cr2= new ClassReader(cw0.toByteArray()); 			
-			ClassWriter cw2= new ClassWriter(/*ClassWriter.COMPUTE_MAXS |*/ ClassWriter.COMPUTE_FRAMES);
+			ClassWriter cw2= new ClassWriter(ClassWriter.COMPUTE_MAXS);
 			cv.getClassMap().assignCounterIds();
 			logger.debug("Assigned "+ cv.getClassMap().getMaxCounterId()+" counters for class:"+cv.getClassMap().getClassName());
 			InjectCodeClassInstrumenter cv2 = new InjectCodeClassInstrumenter(cw2, ignoreRegexes,
