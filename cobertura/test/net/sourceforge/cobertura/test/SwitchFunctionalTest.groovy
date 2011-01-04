@@ -84,12 +84,6 @@ public class SwitchFunctionalTest {
 package mypackage;
 
 public class Main {
-	public static void main(String[] args) {
-		Main main = new Main();
-		main.callNoDefaultSwitch();
-		main.callSwitchFallThrough();
-	}
-	
 	public void callNoDefaultSwitch() {
         int i=2;
         switch (i) {
@@ -119,6 +113,46 @@ public class Main {
              System.out.println("1 or default");
         }
     }
+    
+	public void callSwitchWithDefault() {
+		switchWithDefault(15);
+	}
+
+	private void switchWithDefault(int i) {
+		switch (i) {
+		case 15:
+			System.out.println("1");
+			break;
+		case 16:
+			System.out.println("2");
+			break;
+		case 17:
+			System.out.println("3");
+			break;
+		case 18:
+			System.out.println("4");
+			break;
+		// intentionally skip 19 and 20
+		case 21:
+			System.out.println("5");
+			break;
+		/*
+		 * The compiler will add cases for any numbers that are skipped.
+		 * Note the next two cases are commented out, but the compiler
+		 * adds them to the default case.
+		 */
+		//case 19:
+		//case 20:
+        default:
+			System.out.println("default");
+        }
+    }
+	public static void main(String[] args) {
+		Main main = new Main();
+		main.callNoDefaultSwitch();
+		main.callSwitchFallThrough();
+		main.callSwitchWithDefault();
+	}	
 }
 			"""
 
@@ -144,13 +178,18 @@ public class Main {
 				
 			def lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'callNoDefaultSwitch')
 			
-			def noDefaultSwitchLine = lines.grep {it.number == '13'}[0]
+			def noDefaultSwitchLine = lines.grep {it.number == '7'}[0]
 			assertEquals('33% (1/3)', noDefaultSwitchLine.conditionCoverage)
 
 			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchFallThrough')
 			
-			def fallThroughSwitchLine = lines.grep {it.number == '29'}[0]
+			def fallThroughSwitchLine = lines.grep {it.number == '25'}[0]
    			assertEquals('33% (1/3)', fallThroughSwitchLine.conditionCoverage)
+
+			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchWithDefault')
+			
+			def withDefaultSwitchLine = lines.grep {it.number == '42'}[0]
+			assertEquals('16% (1/6)', withDefaultSwitchLine.conditionCoverage)
 		}
 	}
 
