@@ -462,9 +462,14 @@ public class Main extends Thread {
 			assertTrue(new File(reportDir, "index.html").exists())
 			assertTrue(new File(reportDir, "mypackage.Main.html").exists())
 			assertTrue(new File(reportDir, "mypackage.MyInterface.html").exists())
+			
+			def frameSummaryFile = new File(reportDir, "frame-summary.html")
+			assertTrue(frameSummaryFile.exists())
+			
+			testUtil.checkFrameSummaryHtmlFile(frameSummaryFile)
 		}
 	}
-
+	
 	def assertIgnored(methodName, signature=null) {
 		ignoreUtil.assertIgnored(methodName, signature)
 	}
