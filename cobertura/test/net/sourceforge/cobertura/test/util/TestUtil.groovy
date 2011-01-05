@@ -55,6 +55,7 @@
 package net.sourceforge.cobertura.test.util
 
 import junit.framework.Assert
+import static org.junit.Assert.*
 
 public class TestUtil {
 
@@ -92,7 +93,7 @@ public class TestUtil {
 			savedThrowable = t
 		} finally {
 			try {
-				antBuilder.delete(dir:tempSubdir, failonerror:false)
+				//antBuilder.delete(dir:tempSubdir, failonerror:false)
 			} catch (Throwable t) {
 				if (savedThrowable) {
 					//something went wrong with the delete, but the savedThrowable is more important
@@ -307,4 +308,42 @@ public class TestUtil {
 			}
 		}
 	}
+	
+	/**
+	 * Makes sure the HTML report's frame-summary.html file is accurate.
+	 * 
+	 * Specifically, it makes sure the class count in the "All Packages" row equals
+	 * the sum of the individual package rows.
+	 * 
+	 * @param frameSummaryFile File object that points to the HTML report's frame-summary.html
+	 */
+	public checkFrameSummaryHtmlFile(frameSummaryFile) {
+		def parser = new XmlParser()
+		// the next line is to suppress loading the dtd
+		parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",false)
+		
+		def doc = parser.parse(frameSummaryFile)
+		def reportTable = doc.depthFirst().table.find {
+			it.'@class' == 'report'
+		}
+		assertNotNull(reportTable)
+		def tbody = reportTable.tbody[0]
+		assertNotNull(tbody)
+		
+		def rows = tbody.tr
+		// the top row is entitled "All Packages"
+		def allPackagesRow = rows[0]
+		// the classes count is the second column in the row
+		def expectedTotalNumberOfClasses = allPackagesRow.td[1].text().toInteger()
+		
+		def packageRowList = rows[1..-1]
+		def numberOfClassesList = packageRowList.collect {
+			it.td[1].text().toInteger()
+		}
+		def totalClasses = numberOfClassesList.sum()
+		assertEquals("Class count in All Packages of frame-summary.html does not match the sum of the package class counts", 
+			expectedTotalNumberOfClasses, totalClasses)
+	}
+
+
 }
