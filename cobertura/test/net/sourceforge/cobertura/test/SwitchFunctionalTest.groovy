@@ -80,6 +80,10 @@ public class SwitchFunctionalTest {
 			def datafile = new File(srcDir, "cobertura.ser")
 			mainSourceFile.parentFile.mkdirs()
 			
+			/*
+			 * Note that if the code below is changed, the line numbers in the
+			 * asserts at the bottom of this method will likely need to be adjusted.
+			 */
 			mainSourceFile.write """
 package mypackage;
 
@@ -183,12 +187,12 @@ public class Main {
 
 			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchFallThrough')
 			
-			def fallThroughSwitchLine = lines.grep {it.number == '25'}[0]
+			def fallThroughSwitchLine = lines.grep {it.number == '23'}[0]
    			assertEquals('33% (1/3)', fallThroughSwitchLine.conditionCoverage)
 
 			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchWithDefault')
 			
-			def withDefaultSwitchLine = lines.grep {it.number == '42'}[0]
+			def withDefaultSwitchLine = lines.grep {it.number == '40'}[0]
 			assertEquals('16% (1/6)', withDefaultSwitchLine.conditionCoverage)
 		}
 	}
