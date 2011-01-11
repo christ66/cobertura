@@ -48,7 +48,10 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider implements Cod
 	}
 	
 	public void generateCINITmethod(MethodVisitor mv,String className,int counters_cnt){
-		super.generateCINITmethod(mv,className,counters_cnt);
+		mv.visitFieldInsn(Opcodes.GETSTATIC, className, COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
+		Label l1 = new Label();
+		mv.visitJumpInsn(Opcodes.IFNONNULL, l1);
+
 		mv.visitTypeInsn(Opcodes.NEW, Type.getInternalName(AtomicIntegerArray.class));
 		mv.visitInsn(Opcodes.DUP);
 		mv.visitLdcInsn(counters_cnt);
@@ -57,7 +60,16 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider implements Cod
 	    mv.visitFieldInsn(Opcodes.PUTSTATIC, className,
 	    		COBERTURA_COUNTERS_FIELD_NAME,
 	    		COBERTURA_COUNTERS_FIELD_TYPE);
+	    generateRegisterClass(mv, className);
+	    mv.visitLabel(l1);
 	}
+	
+//	int[] abc;
+//	void method() {
+//		if (abc==null) {
+//			abc = new int[4];
+//		}
+//	}
 	
 	public void generateCodeThatIncrementsCoberturaCounter(MethodVisitor nextMethodVisitor, Integer counterId,String className) {
 		/*cobertura_counters.incrementAndGet(i);*/
@@ -122,4 +134,5 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider implements Cod
       mv.visitMaxs(0, 0);//will be recalculated by writer
 	  mv.visitEnd();	
 	}	
+	
 }

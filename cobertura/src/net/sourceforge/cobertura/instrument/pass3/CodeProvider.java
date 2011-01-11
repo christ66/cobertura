@@ -19,7 +19,6 @@
 
 package net.sourceforge.cobertura.instrument.pass3;
 
-import net.sourceforge.cobertura.coveragedata.TouchCollector;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
 
 import org.objectweb.asm.ClassVisitor;
@@ -48,6 +47,11 @@ public interface CodeProvider {
 	public static final String COBERTURA_CLASSMAP_METHOD_NAME = "__cobertura_classmap";
 	
 	/**
+	 * Name of method that will initialize internal counters variable.
+	 */
+	public static final String COBERTURA_INIT_METHOD_NAME = "__cobertura_init";
+	
+	/**
 	 * Name of a method that have to be injected into instrumented class that is responsible for reading
 	 * value of given counter.
 	 * 
@@ -63,22 +67,6 @@ public interface CodeProvider {
 	 */
 	public abstract void generateCountersField(ClassVisitor cv);
 	
-	/**
-	 * Generates code that is injected into static constructor of an instrumented class.  
-	 * 
-	 * It is good place to initiate static fields inserted into a class ({@link #generateCountersField(ClassVisitor)}), 
-	 * or execute other code that should be executed when the class it used for the first time. Registering the class in 
-	 * {@link TouchCollector} would be a bright idea.
-	 * 
-	 * It is expected that all counter will be set to zero after that operation. 	   
-	 * 
-	 * @param mv           - {@link MethodVisitor} that is listener of code-generation events 
-	 * @param className    - internal name (asm) of class being instrumented  
-	 * @param counters_cnt - information about how many counters are expected to be used by instrumentation code. 
-	 *                       In most cases the method is responsible for allocating objects that will be used to store counters.  
-	 */
-	public abstract void generateCINITmethod(MethodVisitor mv, String className, int counters_cnt);
-
 	/**
 	 * Injects code that increments counter given by parameter.     
 	 * 
@@ -158,4 +146,10 @@ public interface CodeProvider {
 	 * @param cv - listener used to inject the code
 	 */
 	public abstract void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv, String className);
+	
+	 
+	public void generateCoberturaInitMethod(ClassVisitor cv,  String className, int countersCnt);
+
+	public abstract void generateCallCoberturaInitMethod(MethodVisitor mv,
+			String className);
 }

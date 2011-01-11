@@ -92,7 +92,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	 * The code injected by this implementation just registers the class using {@link TouchCollector#registerClass(Class)}. This way, during the  
 	 * execution, touch collector knows that is responsible to ask the class after execution about a current status of the counters.  
 	 */
-	public void generateCINITmethod(MethodVisitor mv, String className,int countersCnt) {
+	protected void generateRegisterClass(MethodVisitor mv, String className) {
 		mv.visitLdcInsn(Type.getObjectType(className));
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type.getInternalName(TouchCollector.class), "registerClass","(Ljava/lang/Class;)V");		
 	}	
@@ -191,5 +191,35 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		mv.visitInsn(Opcodes.RETURN);
 		mv.visitMaxs(0, 0);//will be recalculated by writer
 		mv.visitEnd();		
+	}
+	
+	/**
+	 * Generates code that is injected into static constructor of an instrumented class.  
+	 * 
+	 * It is good place to initiate static fields inserted into a class ({@link #generateCountersField(ClassVisitor)}), 
+	 * or execute other code that should be executed when the class it used for the first time. Registering the class in 
+	 * {@link TouchCollector} would be a bright idea.
+	 * 
+	 * It is expected that all counter will be set to zero after that operation. 	   
+	 * 
+	 * @param mv           - {@link MethodVisitor} that is listener of code-generation events 
+	 * @param className    - internal name (asm) of class being instrumented  
+	 * @param counters_cnt - information about how many counters are expected to be used by instrumentation code. 
+	 *                       In most cases the method is responsible for allocating objects that will be used to store counters.  
+	 */
+	protected abstract void generateCINITmethod(MethodVisitor mv, String className, int counters_cnt);
+	
+	public void generateCoberturaInitMethod(ClassVisitor cv, String className, int countersCnt) {
+		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC, 
+			COBERTURA_INIT_METHOD_NAME, "()V", null, null);
+		mv.visitCode();
+		generateCINITmethod(mv, className, countersCnt);		
+		mv.visitInsn(Opcodes.RETURN);
+		mv.visitMaxs(0, 0); //will be recalculated by writer
+		mv.visitEnd();
+	}
+		
+	public void generateCallCoberturaInitMethod(MethodVisitor mv, String className) {
+		mv.visitMethodInsn(Opcodes.INVOKESTATIC, className, COBERTURA_INIT_METHOD_NAME, "()V");
 	}
 }

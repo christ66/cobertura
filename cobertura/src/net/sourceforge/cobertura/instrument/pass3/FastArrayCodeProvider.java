@@ -21,6 +21,7 @@ package net.sourceforge.cobertura.instrument.pass3;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
@@ -87,13 +88,25 @@ public class FastArrayCodeProvider extends AbstractCodeProvider implements CodeP
 		fv.visitEnd();		
 	}
 	
-	public void generateCINITmethod(MethodVisitor mv,String className,int counters_cnt){
-		super.generateCINITmethod(mv,className,counters_cnt);
+//	static int x[];
+//	
+//	static void abc() {
+//		if (x == null) {
+//			x = new int[5];
+//		}
+//	}
+	
+	public void generateCINITmethod(MethodVisitor mv,String className,int counters_cnt) {
+		mv.visitFieldInsn(Opcodes.GETSTATIC, className, COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
+		Label l1 = new Label();
+		mv.visitJumpInsn(Opcodes.IFNONNULL, l1);
 		mv.visitLdcInsn(counters_cnt);
 		mv.visitIntInsn(Opcodes.NEWARRAY,Opcodes.T_INT);
 	    mv.visitFieldInsn(Opcodes.PUTSTATIC, className,
 	    		COBERTURA_COUNTERS_FIELD_NAME,
-	    		COBERTURA_COUNTERS_FIELD_TYPE);	    
+	    		COBERTURA_COUNTERS_FIELD_TYPE);
+	    generateRegisterClass(mv, className);
+	    mv.visitLabel(l1);
 	}
 	
 	public void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv, String className){

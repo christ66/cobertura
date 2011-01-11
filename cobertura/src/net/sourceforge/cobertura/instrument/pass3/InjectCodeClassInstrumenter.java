@@ -136,15 +136,13 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 		if (ignoredMethods.contains(name + desc)) {
 			return mv;
 		}
-		if ("<clinit>".equals(name)){
-			/*
-			 * It is static initialization method, so we have to inject 'static initialization code'
-			 * We will add this code after processing (instrumenting) previous content of static initialization code. 
-			 * */
-			mv=new GenerateCLINITMethodVisitor(mv,  classMap.getClassName(),classMap.getMaxCounterId()+1);
-			wasStaticInitMethodVisited=true;
+		if ((access & Opcodes.ACC_STATIC) != 0) {
+			mv = new GenerateCallCoberturaInitMethodVisitor(mv,  classMap.getClassName());
+			if ("<clinit>".equals(name)) {
+				wasStaticInitMethodVisited=true;
+			}			
 		}
-		FindTouchPointsMethodAdapter instrumenter=new FindTouchPointsMethodAdapter(mv,classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
+		FindTouchPointsMethodAdapter instrumenter = new FindTouchPointsMethodAdapter(mv,classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
 		instrumenter.setTouchPointListener(touchPointListener);
 		instrumenter.setIgnoreRegexp(getIgnoreRegexp());
 		touchPointListener.setLastJumpIdVariableIndex(ShiftVariableMethodAdapter.calculateFirstStackVariable(access, desc));
@@ -157,19 +155,17 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	 * 
 	 * @author piotr.tabor@gmail.com
 	 */
-	private class GenerateCLINITMethodVisitor extends MethodAdapter{
+	private class GenerateCallCoberturaInitMethodVisitor extends MethodAdapter {
 		private String className;
-		private int counter_cnt;
-		public GenerateCLINITMethodVisitor(MethodVisitor arg0,String className,int counter_cnt) {
+		public GenerateCallCoberturaInitMethodVisitor(MethodVisitor arg0,String className) {
 			super(arg0);
-			this.className=className;
-			this.counter_cnt=counter_cnt;
+			this.className = className;
 		}
 
 		@Override
 		public void visitCode() {			
+			codeProvider.generateCallCoberturaInitMethod(mv, className);
 			super.visitCode();
-			codeProvider.generateCINITmethod(mv, className,counter_cnt);
 		}		
 	}
 	
@@ -182,15 +178,17 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	public void visitEnd() {
 		if (!wasStaticInitMethodVisited){
 			//We need to generate new method
-			MethodVisitor mv=super.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null,	null);
+			MethodVisitor mv = super.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null,	null);
 			mv.visitCode();
-			codeProvider.generateCINITmethod(mv, classMap.getClassName(),classMap.getMaxCounterId()+1);
+			codeProvider.generateCallCoberturaInitMethod(mv, classMap.getClassName());
 			mv.visitInsn(Opcodes.RETURN);
 			mv.visitMaxs(/*stack*/3,/*local*/ 0);
 			mv.visitEnd();			
 			wasStaticInitMethodVisited=true;
 		}
 		
+		codeProvider.generateCoberturaInitMethod(cv, classMap.getClassName(), 
+				classMap.getMaxCounterId() + 1);
 		codeProvider.generateCoberturaClassMapMethod(cv, classMap);
 		codeProvider.generateCoberturaGetAndResetCountersMethod(cv, classMap.getClassName());
 		
