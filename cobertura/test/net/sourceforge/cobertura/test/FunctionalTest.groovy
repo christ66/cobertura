@@ -69,6 +69,106 @@ public class FunctionalTest {
 	def ignoreUtil
 
 	@Test
+	void callJunit() {
+		/*
+		 * Use a temporary directory and create a few sources files.
+		 */
+		TestUtil.withTempDir { tempDir ->
+			def srcDir = new File(tempDir, "src")
+			
+			def reportDir = new File(tempDir, "report")
+			reportDir.mkdirs()
+			
+			def instrumentDir = new File(tempDir, "instrument")
+			instrumentDir.mkdirs()
+			
+			def buildDir = new File(tempDir, "build")
+			buildDir.mkdirs()
+			
+			def testSourceFile = new File(srcDir, "mypackage/MyTest.groovy")
+			testSourceFile.parentFile.mkdirs()
+			testSourceFile.write '''
+package mypackage
+
+import junit.framework.TestSuite
+import junit.framework.Test
+
+
+public class MyTest extends TestSuite {
+	public MyTest(String arg0) {
+		super(arg0);
+	}
+
+	public static Test suite() {
+		
+		// do something that will cause Sub's static initializer to run
+		Sub.class
+		
+		return new TestSuite("Empty Suite")
+	}
+}
+
+
+
+'''
+			
+			def superSourceFile = new File(srcDir, "mypackage/Super.java")
+			def subSourceFile = new File(srcDir, "mypackage/Sub.java")
+			def datafile = new File(srcDir, "cobertura.ser")
+			
+			superSourceFile.write """
+package mypackage;
+
+public class Super {
+	static {
+		Sub.aStaticMethod();
+	};
+}
+"""
+			
+			subSourceFile.write """
+package mypackage;
+
+public class Sub extends Super {
+
+	public static void aStaticMethod() {
+		System.out.println("aStaticMethod called");
+	}
+
+}
+"""
+
+			// compile to the srcDir
+			testUtil.compileSource(ant, srcDir)
+
+			// instrument all but the test class (in place)
+			testUtil.instrumentClasses(ant, srcDir, datafile, instrumentDir,
+				[excludeClassesRegexList:['mypackage.MyTest']])
+			
+			// run the MyTest
+			testUtil.junit(
+				testClass     : 'mypackage.MyTest',
+				ant           : ant,
+				buildDir      : srcDir,
+				instrumentDir : instrumentDir,
+				reportDir     : reportDir,
+			)
+			
+			/*
+			* Now create a cobertura xml file and make sure the correct counts are in it.
+			*/
+		   ant.'cobertura-report'(datafile:datafile, format:'xml', destdir:srcDir)
+		   def dom = TestUtil.getXMLReportDOM("${srcDir}/coverage.xml")
+			   
+		   def lines = TestUtil.getLineCounts(dom, 'mypackage.Sub', 'aStaticMethod')
+		   
+		   def aStaticMethodLine = lines.grep {it.number == '7'}[0]
+		   assertEquals(1, aStaticMethodLine.hits)
+
+		}
+	}
+
+	@Test
 	void simpleFunctionalTest() {
 		/*
 		 * Use a temporary directory and create a few sources files.
