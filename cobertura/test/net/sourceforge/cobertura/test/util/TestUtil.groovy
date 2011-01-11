@@ -93,7 +93,7 @@ public class TestUtil {
 			savedThrowable = t
 		} finally {
 			try {
-				//antBuilder.delete(dir:tempSubdir, failonerror:false)
+				antBuilder.delete(dir:tempSubdir, failonerror:false)
 			} catch (Throwable t) {
 				if (savedThrowable) {
 					//something went wrong with the delete, but the savedThrowable is more important
@@ -289,22 +289,59 @@ public class TestUtil {
 		}
 	}
 
-	public instrumentClasses(ant, srcDir, datafile, todir, map=null)
+	public instrumentClasses(ant, srcDir, datafile, todir, map=[:])
 	{
 		def attributes = [datafile:datafile, todir:todir, failonerror:true]
 		                  
 		map.each { key, value ->
 			if (key == 'ignoreAnnotationNames') return
+			if (key == 'excludeClassesRegexList') return
 			attributes.put(key, value)
 		}
 		
   		ant.'cobertura-instrument'(attributes) {
 			includeClasses(regex:'mypackage.*')
+			map.excludeClassesRegexList.each {
+				excludeClasses(regex:it)
+			}
 			fileset(dir:srcDir) {
 				include(name:'**/*.class')
 			}
-			map?.ignoreAnnotationNames.each {
+			map.ignoreAnnotationNames.each {
 				ignoreMethodAnnotation(annotationName:it)
+			}
+		}
+	}
+	
+	/**
+	 * Run Ant's junit task.   Typical usage:
+	 * 
+	 * 			testUtil.junit(
+	 *				testClass     : 'mypackage.MyTest',
+	 *				ant           : ant,
+	 *				buildDir      : buildDir,
+	 *				instrumentDir : instrumentDir,
+	 *				reportDir     : reportDir,
+	 *		)
+	 *
+	 * 'ant' is the AntBuilder that is used.   Instrumented classes are in
+	 * instrumentDir; The remaining classes are in buildDir.
+	 * An XML report is created in reportDir.
+	 *
+	 * @param map
+	 * @return
+	 */
+	public junit(map) {
+		map.ant.junit(fork:true, dir:map.buildDir, haltonfailure:true) {
+			test(name:map.testClass, todir:map.reportDir)
+			formatter(type:'xml')
+			classpath {
+				pathelement(location:map.instrumentDir)
+				pathelement(location:map.buildDir)
+				pathelement(location:TestUtil.getCoberturaClassDir())
+				fileset(dir:'antLibrary/common/groovy') {
+					include(name:'*.jar')
+				}
 			}
 		}
 	}
