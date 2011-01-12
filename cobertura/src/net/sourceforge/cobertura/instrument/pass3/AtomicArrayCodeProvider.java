@@ -63,14 +63,7 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider implements Cod
 	    generateRegisterClass(mv, className);
 	    mv.visitLabel(l1);
 	}
-	
-//	int[] abc;
-//	void method() {
-//		if (abc==null) {
-//			abc = new int[4];
-//		}
-//	}
-	
+		
 	public void generateCodeThatIncrementsCoberturaCounter(MethodVisitor nextMethodVisitor, Integer counterId,String className) {
 		/*cobertura_counters.incrementAndGet(i);*/
 		/*cobertura_counters.*/nextMethodVisitor.visitFieldInsn(Opcodes.GETSTATIC,  className, COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE);
