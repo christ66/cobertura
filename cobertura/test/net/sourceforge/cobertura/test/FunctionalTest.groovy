@@ -69,6 +69,66 @@ public class FunctionalTest {
 	def ignoreUtil
 
 	@Test
+	void conditionalInFinallyFunctionalTest() {
+		/*
+		 * Use a temporary directory and create a few sources files.
+		 */
+		TestUtil.withTempDir { tempDir ->
+			def srcDir = new File(tempDir, "src")
+			def reportDir = new File(tempDir, "report")
+			def instrumentDir = new File(tempDir, "instrument")
+			
+			def mainSourceFile = new File(srcDir, "mypackage/Main.java")
+			def datafile = new File(srcDir, "cobertura.ser")
+			mainSourceFile.parentFile.mkdirs()
+			
+			mainSourceFile.write """
+package mypackage;
+
+
+
+public class Main {
+
+	private boolean isDisabled() {
+		return true;
+	}
+
+	private void doSomething() {
+	}
+
+    public void aMethod() {
+		boolean disabled = false;
+		try {
+			disabled = isDisabled();
+		} finally {
+			if (disabled)
+				doSomething();
+		}
+    }
+
+
+}
+"""
+
+			testUtil.compileSource(ant, srcDir)
+			
+			testUtil.instrumentClasses(ant, srcDir, datafile, instrumentDir)
+			
+			/*
+			* Now create a cobertura xml file and make sure the correct counts are in it.
+			*/
+			ant.'cobertura-report'(datafile:datafile, format:'xml', destdir:srcDir)
+			def dom = TestUtil.getXMLReportDOM("${srcDir}/coverage.xml")
+		   
+			def lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'aMethod')
+			
+			def conditionalLine = lines.grep {it.number == '20'}[0]
+			assertEquals('0% (0/2)', conditionalLine.conditionCoverage)
+
+		}
+	}
+
+	@Test
 	void callJunit() {
 		/*
 		 * Use a temporary directory and create a few sources files.
