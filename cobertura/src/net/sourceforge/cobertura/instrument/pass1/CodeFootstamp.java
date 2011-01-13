@@ -151,6 +151,15 @@ public class CodeFootstamp {
 		return result;
 	}
 
+	void testCode() {
+		int abc;
+		try {
+			System.out.append('x');
+		} catch (Exception ebc) {
+			System.out.println(ebc);
+		}
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -175,7 +184,7 @@ public class CodeFootstamp {
 
 	/**
 	 * Some signatures are to simple (empty) and generates false positive duplicates. To avoid
-	 * that we filter here lines that are shorter then 3 jvm asm instruction.    
+	 * that we filter here lines that are shorter then 2 jvm asm instruction.    
 	 * 
 	 * @return true if the signature is long enough to make sense comparing it
 	 */
@@ -183,7 +192,7 @@ public class CodeFootstamp {
 		if (!finalized){
 			throw new IllegalStateException("The signature should been already finalized");
 		}	
-		return events.size()>2;
+		return events.size()>=1;
 	}
 
 }
