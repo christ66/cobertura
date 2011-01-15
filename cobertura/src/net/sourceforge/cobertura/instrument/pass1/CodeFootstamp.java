@@ -150,15 +150,6 @@ public class CodeFootstamp {
 		result = prime * result + ((events == null) ? 0 : events.hashCode());
 		return result;
 	}
-
-	void testCode() {
-		int abc;
-		try {
-			System.out.append('x');
-		} catch (Exception ebc) {
-			System.out.println(ebc);
-		}
-	}
 	
 	@Override
 	public boolean equals(Object obj) {

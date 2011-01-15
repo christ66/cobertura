@@ -49,12 +49,9 @@ import java.util.TreeSet;
  */
 
 public class ClassData extends CoverageDataContainer
-	implements Comparable<ClassData>, HasBeenInstrumented 
-{
-
+	implements Comparable<ClassData>, HasBeenInstrumented {
 	private static final long serialVersionUID = 5;
 
-	
 
 	/**
 	 * Each key is a line number in this class, stored as an Integer object.

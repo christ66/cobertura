@@ -333,30 +333,30 @@ public class ClassMap {
 	 */
 	public ClassData applyOnProjectData(ProjectData projectData, boolean instrumented){
 		ClassData classData=projectData.getOrCreateClassData(className.replace('/','.'));
-		if (instrumented){
-			classData.setContainsInstrumentationInfo();
-		}
 		if(source!=null){
 			classData.setSourceFileName(source);
 		}
-		int lastLine=0;
-		int jumpsInLine=0;
-		int toucesInLine=0;
-		
-		for(TouchPointDescriptor tpd:getTouchPointsInLineOrder()){
-			if(tpd.getLineNumber()!=lastLine){
-				jumpsInLine=0;
-				toucesInLine=0;
-				lastLine=tpd.getLineNumber();
-			}
-			if(tpd instanceof LineTouchPointDescriptor){
-				classData.addLine(tpd.getLineNumber(), ((LineTouchPointDescriptor) tpd).getMethodName(), ((LineTouchPointDescriptor) tpd).getMethodSignature());
-			}else if(tpd instanceof JumpTouchPointDescriptor){
-				classData.addLineJump(tpd.getLineNumber(), jumpsInLine++);
-			}else if(tpd instanceof SwitchTouchPointDescriptor){
-				int countersCnt=((SwitchTouchPointDescriptor)tpd).getCountersForLabelsCnt();
-				classData.addLineSwitch(tpd.getLineNumber(), toucesInLine++,0, countersCnt-2);
-			}		
+		if (instrumented){
+			classData.setContainsInstrumentationInfo();
+			int lastLine=0;
+			int jumpsInLine=0;
+			int toucesInLine=0;
+			
+			for(TouchPointDescriptor tpd:getTouchPointsInLineOrder()){
+				if(tpd.getLineNumber()!=lastLine){
+					jumpsInLine=0;
+					toucesInLine=0;
+					lastLine=tpd.getLineNumber();
+				}
+				if(tpd instanceof LineTouchPointDescriptor){
+					classData.addLine(tpd.getLineNumber(), ((LineTouchPointDescriptor) tpd).getMethodName(), ((LineTouchPointDescriptor) tpd).getMethodSignature());
+				}else if(tpd instanceof JumpTouchPointDescriptor){
+					classData.addLineJump(tpd.getLineNumber(), jumpsInLine++);
+				}else if(tpd instanceof SwitchTouchPointDescriptor){
+					int countersCnt=((SwitchTouchPointDescriptor)tpd).getCountersForLabelsCnt();
+					classData.addLineSwitch(tpd.getLineNumber(), toucesInLine++,0, countersCnt-2);
+				}		
+			}			
 		}
 		return classData;
 	}

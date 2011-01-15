@@ -128,7 +128,6 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 	 * 
 	 * Class is found to be not instrumentable by cobertura if:
 	 * <ul>
-	 *  <li>Is an interface</li>
 	 * 	<li>It's already instrumented (already implements {@link HasBeenInstrumented})</li>
 	 *  <li>TODO: (not implemented yet) It's already instrumented (is anotated by \@CoberturaHasBeanInstrumented)</li> 
 	 * </ul>
