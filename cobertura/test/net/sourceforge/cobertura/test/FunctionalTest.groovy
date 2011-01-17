@@ -69,6 +69,76 @@ public class FunctionalTest {
 	def ignoreUtil
 
 	@Test
+	void interfaceFunctionalTest() {
+		/*
+		 * Interfaces are not instrumented (yet).   So, instrument an interface and make
+		 * sure line/conditional information is not in the report.
+		 */
+		/*
+		 * Use a temporary directory and create a few sources files.
+		 */
+		TestUtil.withTempDir { tempDir ->
+			def srcDir = new File(tempDir, "src")
+			def reportDir = new File(tempDir, "report")
+			def instrumentDir = new File(tempDir, "instrument")
+			
+			def mainSourceFile = new File(srcDir, "mypackage/Main.java")
+			def datafile = new File(srcDir, "cobertura.ser")
+			mainSourceFile.parentFile.mkdirs()
+			
+			def interfaceSourceFile = new File(srcDir, "mypackage/MyInterface.java")
+			
+			interfaceSourceFile.write """
+package mypackage;
+
+public interface MyInterface {
+	public static final Object MY_CONSTANT = new Object();  /* the test expects this to be line 5 */
+}
+"""
+			
+			mainSourceFile.write """
+package mypackage;
+
+public class Main implements MyInterface {
+
+    public static void main(String[] args) {
+			System.out.println(new Main());
+			System.out.println(MY_CONSTANT);
+    }
+}
+"""
+			testUtil.compileSource(ant, srcDir)		
+			testUtil.instrumentClasses(ant, srcDir, datafile, instrumentDir)			
+			/*
+			 * Kick off the Main (instrumented) class.
+			 */
+			//ant.java(classname:'mypackage.Main', dir:srcDir, fork:true, failonerror:true) {
+			//	classpath {
+			//		dirset(dir:instrumentDir)
+			//		dirset(dir:srcDir)
+			//		dirset(dir:testUtil.coberturaClassDir)
+			//	}
+			//}
+
+			/*
+			* Now create a cobertura xml file and make sure the correct counts are in it.
+			*/
+			ant.'cobertura-report'(datafile:datafile, format:'xml', destdir:srcDir)
+			def dom = TestUtil.getXMLReportDOM("${srcDir}/coverage.xml")
+		   
+			def lines = TestUtil.getLineCounts(dom, 'mypackage.MyInterface', '<clinit>')
+			
+			def myconstantLine = lines.grep {it.number == '5'}[0]
+			
+			// When/if interfaces are instrumented, the next line can go away and the
+			// lines in this method that have been commented out, can be uncommented.
+			assertNull("Interfaces are being instrumented", myconstantLine)
+			//assertEquals(1, myconstantLine.hits)
+
+		}
+	}
+
+	@Test
 	void conditionalInFinallyFunctionalTest() {
 		/*
 		 * Use a temporary directory and create a few sources files.
