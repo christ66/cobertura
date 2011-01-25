@@ -74,6 +74,7 @@ public class SwitchFunctionalTest {
 		 */
 		TestUtil.withTempDir { tempDir ->
 			def srcDir = new File(tempDir, "src")
+			def reportDir = new File(tempDir, "report")
 			def instrumentDir = new File(tempDir, "instrument")
 			
 			def mainSourceFile = new File(srcDir, "mypackage/Main.java")
@@ -151,11 +152,183 @@ public class Main {
 			System.out.println("default");
         }
     }
+
+	public void callSwitchWithoutGaps() {
+		switchWithoutGaps(1);
+	}
+
+	private void switchWithoutGaps(int i) {
+		boolean aBoolean = false;
+		
+		switch (i) {                   // tests assume this is line 76
+		// these cases have no gaps - the numbers are sequential
+		case 0:
+			System.out.println("0");
+			break;
+		case 1:
+			System.out.println("1");
+			break;
+		case 2:
+			System.out.println("2");
+			break;
+		default:
+			System.out.println("default");
+			break;
+		}
+    }
+
+	public void callSwitchWithoutGapsWithFallThrough() {
+		switchWithoutGapsWithFallThrough(1);
+	}
+
+	private void switchWithoutGapsWithFallThrough(int i) {
+		boolean aBoolean = false;
+		
+		switch (i) {                   // tests assume this is line 100
+		// these cases have no gaps - the numbers are sequential
+		case 0:
+			System.out.println("0");
+			break;
+		case 1:
+			if (aBoolean) {
+				System.out.println("1");
+				// the break is intentionally put inside this block to cause a fall-through
+				break;
+			}
+		case 2:
+			System.out.println("2");
+			break;
+		default:
+			System.out.println("default");
+			break;
+		}
+    }
+
+	public enum AnEnumeration {
+		FOO, BAR, GONK
+	};
+
+	public void callSwitchBug2075537() {
+		switchBug2075537(AnEnumeration.FOO);
+		switchBug2075537(AnEnumeration.BAR);
+		switchBug2075537(AnEnumeration.GONK);
+	}
+
+	public boolean switchBug2075537(AnEnumeration e) {
+		// see bug http://sourceforge.net/tracker/?func=detail&aid=2075537&group_id=130558&atid=720015
+		switch (e) {                     // tests assume this is line 132
+			case FOO:
+			case BAR:
+			case GONK:
+				return true;
+
+			default:
+				return false;
+		}
+	}
+
+	public void callSwitchBug2075537_2() {
+		switchBug2075537_2(AnEnumeration.FOO);
+		switchBug2075537_2(AnEnumeration.BAR);
+		switchBug2075537_2(AnEnumeration.GONK);
+	}
+
+	public boolean switchBug2075537_2(AnEnumeration e) {
+		switch (e) {                     // tests assume this is line 150
+			case FOO:
+				return true;
+
+			case BAR:
+				return true;
+
+			case GONK:
+				return true;
+
+			default:
+				return false;
+		}
+	}
+
+	public void callSwitchNonDefaultFallThrough() {
+		switchNonDefaultFallThrough(AnEnumeration.FOO);
+	}
+
+	public boolean switchNonDefaultFallThrough(AnEnumeration e) {
+		switch (e) {                     // tests assume this is line 170
+			case FOO:
+				System.out.println("FOO");
+
+			case BAR:
+				System.out.println("BAR");
+				return true;
+
+			case GONK:
+				return true;
+
+			default:
+				return false;
+		}
+	}
+
+	public void callSwitchWithBoolean() {
+		switchWithBoolean(1, false);
+		switchWithBoolean(3, false);
+		switchWithBoolean(7, true);
+		switchWithBoolean(7, false);
+		switchWithBoolean(8, true);
+	}
+
+	public void switchWithBoolean(int type, boolean aBoolean) {
+		switch (type) {                     // tests assume this is line 195
+			case 9:{
+				System.out.println("9");
+				break;
+			}
+			case 1:{
+				try {
+					System.out.println("1");
+				} catch (Exception e) {}
+				break;                     // tests assume this is line 204
+			}
+			case 5:{
+				System.out.println("5");
+				break;
+			}
+			case 4:{
+				System.out.println("4");
+				break;
+			}
+			case 3:{
+				System.out.println("3");
+				break;
+			}
+			case 7:{
+				if (aBoolean) {
+					System.out.println("7");
+					break;
+				}
+				// if aBoolean == false, this will fall through to the next case.
+			}
+			case 8:{
+				if (aBoolean) {
+					System.out.println("8");
+					break;
+				}
+			}
+		}
+	}
+
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.callNoDefaultSwitch();
 		main.callSwitchFallThrough();
 		main.callSwitchWithDefault();
+		main.callSwitchWithoutGaps();
+		main.callSwitchWithoutGapsWithFallThrough();
+		main.callSwitchBug2075537();
+		main.callSwitchBug2075537_2();
+		main.callSwitchNonDefaultFallThrough();
+		main.callSwitchWithBoolean();
 	}	
 }
 			"""
@@ -175,12 +348,74 @@ public class Main {
 			}
 
 			/*
+			* Now create a cobertura html report and make sure the files are created.
+			*/
+			ant.'cobertura-report'(datafile:datafile, format:'html', destdir:reportDir, srcdir:srcDir)
+			assertTrue(new File(reportDir, "index.html").exists())
+			assertTrue(new File(reportDir, "mypackage.Main.html").exists())
+
+			/*
 			 * Now create a cobertura xml file and make sure the correct counts are in it.
 			 */
 			ant.'cobertura-report'(datafile:datafile, format:'xml', destdir:srcDir)
 			def dom = TestUtil.getXMLReportDOM("${srcDir}/coverage.xml")
-				
-			def lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'callNoDefaultSwitch')
+			
+			def lines	
+			
+			//switchWithBoolean
+			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchWithBoolean')
+			
+			def switchWithBooleanLine = lines.grep {it.number == '195'}[0]
+			assertEquals('50% (4/8)', switchWithBooleanLine.conditionCoverage)
+
+			
+			/*
+			 * A try catch just before a break statement used to cause Cobertura
+			 * to report the line with the break as uncovered.  Make sure
+			 * this no longer happens.
+			 */
+			def breakInSwitchWithBooleanLine = lines.grep {it.number == '204'}[0]
+			assertEquals(1, breakInSwitchWithBooleanLine.hits)
+
+			
+
+			//switchNonDefaultFallThrough
+			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchNonDefaultFallThrough')
+			
+			def nonDefaultFallThroughSwitchLine = lines.grep {it.number == '170'}[0]
+			assertEquals('25% (1/4)', nonDefaultFallThroughSwitchLine.conditionCoverage)
+
+			
+
+			//switchBug2075537
+			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchBug2075537')
+			
+			def bug2075537SwitchLine = lines.grep {it.number == '132'}[0]
+			assertEquals('50% (1/2)', bug2075537SwitchLine.conditionCoverage)
+
+			
+
+			//switchBug2075537_2
+			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchBug2075537_2')
+			
+			def bug2075537SwitchLine_2 = lines.grep {it.number == '150'}[0]
+			assertEquals('75% (3/4)', bug2075537SwitchLine_2.conditionCoverage)
+
+			
+
+			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchWithoutGaps')
+			
+			def noGapsSwitchLine = lines.grep {it.number == '76'}[0]
+			assertEquals('25% (1/4)', noGapsSwitchLine.conditionCoverage)
+
+			
+			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchWithoutGapsWithFallThrough')
+			
+			def noGapsWithFallThroughSwitchLine = lines.grep {it.number == '100'}[0]
+			assertEquals('25% (1/4)', noGapsWithFallThroughSwitchLine.conditionCoverage)
+
+			
+			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'callNoDefaultSwitch')
 			
 			def noDefaultSwitchLine = lines.grep {it.number == '7'}[0]
 			assertEquals('33% (1/3)', noDefaultSwitchLine.conditionCoverage)
@@ -194,6 +429,7 @@ public class Main {
 			
 			def withDefaultSwitchLine = lines.grep {it.number == '40'}[0]
 			assertEquals('16% (1/6)', withDefaultSwitchLine.conditionCoverage)
+			
 		}
 	}
 
