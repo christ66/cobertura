@@ -69,7 +69,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener{
 	 */
 	public void afterJump(int eventId, Label label, int currentLine,
 			MethodVisitor nextMethodVisitor) {
-		logger.debug("Before jump:"+currentLine+"("+eventId+") to :"+label);
+		logger.debug("After jump:"+currentLine+"("+eventId+") to :"+label);
 		Integer jumpFalseCounterId=classMap.getCounterIdForJumpFalse(eventId);
 		if (jumpFalseCounterId!=null){
 			codeProvider.generateCodeThatIncrementsCoberturaCounter(nextMethodVisitor,jumpFalseCounterId,classMap.getClassName());			
@@ -98,8 +98,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener{
 	public void afterLabel(int eventId, Label label, int currentLine, MethodVisitor mv) {
 		logger.debug("Looking for jumps going to event("+eventId+"):"+label+" ");
 		if (classMap.isJumpDestinationLabel(eventId)){
-			codeProvider.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(mv,lastJumpIdVariableIndex,classMap.getClassName());
-			codeProvider.generateCodeThatZeroJumpCounterIdVariable(mv,lastJumpIdVariableIndex);	
+			codeProvider.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(mv,lastJumpIdVariableIndex,classMap.getClassName());	
 		}
 		
 		Map<Integer,Integer> branchTouchPoints=classMap.getBranchLabelDescriptorsForLabelEvent(eventId);
@@ -108,6 +107,10 @@ public class InjectCodeTouchPointListener implements TouchPointListener{
 			for(Map.Entry<Integer, Integer> entry:branchTouchPoints.entrySet()){
 				codeProvider.generateCodeThatIncrementsCoberturaCounterIfVariableEqualsAndCleanVariable(mv,entry.getKey(),entry.getValue(),lastJumpIdVariableIndex,classMap.getClassName());
 			}
+		}
+		
+		if (classMap.isJumpDestinationLabel(eventId)){		
+			codeProvider.generateCodeThatZeroJumpCounterIdVariable(mv,lastJumpIdVariableIndex);	
 		}
 	}	
 	

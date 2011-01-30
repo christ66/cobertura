@@ -203,7 +203,7 @@ public class FindTouchPointsMethodAdapter extends ContextMethodAwareMethodAdapte
 		 that the variable is null before attempting to set it.
 		 This check contains an IFNONNULL jump instruction which
 		 would confuse people if it showed up in the reports.*/
-		if ((opcode != Opcodes.GOTO) && (opcode != Opcodes.GOTO)
+		if ((opcode != Opcodes.GOTO) 
 				&& (opcode != Opcodes.JSR) && (currentLine != 0)
 				&& (!methodName.equals("<clinit>"))) {
 			int eventId = getEventId();
