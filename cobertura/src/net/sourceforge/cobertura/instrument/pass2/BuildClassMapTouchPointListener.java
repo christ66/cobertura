@@ -50,7 +50,7 @@ public class BuildClassMapTouchPointListener implements TouchPointListener{
 		classmap.registerLineNumber(eventId,currentLine,label,methodName,methodSignature);
 	}
 	
-	public void beforeSwitch(int eventId,Label def, Label[] labels, int currentLine, MethodVisitor mv) {
+	public void beforeSwitch(int eventId, Label def, Label[] labels, int currentLine, MethodVisitor mv) {
 		classmap.registerSwitch(eventId,currentLine,def,labels);
 	}
 

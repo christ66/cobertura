@@ -147,7 +147,7 @@ public class CoberturaInstrumenter {
 		DetectIgnoredCodeClassVisitor detectIgnoredCv =
 			new DetectIgnoredCodeClassVisitor(cw0, ignoreTrivial, ignoreMethodAnnotations);
 		DetectDuplicatedCodeClassVisitor cv0=new DetectDuplicatedCodeClassVisitor(detectIgnoredCv);
-		cr0.accept(cv0,0);		
+		cr0.accept(cv0, 0);		
 		
 		ClassReader cr = new ClassReader(cw0.toByteArray());
 		ClassWriter cw = new ClassWriter(0);
@@ -185,7 +185,7 @@ public class CoberturaInstrumenter {
 			logger.debug("Assigned "+ cv.getClassMap().getMaxCounterId()+" counters for class:"+cv.getClassMap().getClassName());
 			InjectCodeClassInstrumenter cv2 = new InjectCodeClassInstrumenter(cw2, ignoreRegexes,
 					threadsafeRigorous, cv.getClassMap(), cv0.getDuplicatesLinesCollector(), detectIgnoredCv.getIgnoredMethodNamesAndSignatures());
-			cr2.accept(cv2, 0);			
+			cr2.accept(cv2, ClassReader.EXPAND_FRAMES);			
 			return new InstrumentationResult(cv.getClassMap().getClassName(), cw2.toByteArray());
 		}else{
 			logger.debug("Class shouldn't be instrumented: "+cv.getClassMap().getClassName());

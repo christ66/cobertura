@@ -34,6 +34,7 @@ import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.LocalVariablesSorter;
 
 /**
  * <p>This class is responsible for real instrumentation of the user's class.</p> 
@@ -145,8 +146,11 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 		FindTouchPointsMethodAdapter instrumenter = new FindTouchPointsMethodAdapter(mv,classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
 		instrumenter.setTouchPointListener(touchPointListener);
 		instrumenter.setIgnoreRegexp(getIgnoreRegexp());
-		touchPointListener.setLastJumpIdVariableIndex(ShiftVariableMethodAdapter.calculateFirstStackVariable(access, desc));
-		return new ShiftVariableMethodAdapter(instrumenter, access, desc, 1);
+		LocalVariablesSorter sorter = new LocalVariablesSorter(access, desc, instrumenter);
+		int variable = sorter.newLocal(Type.INT_TYPE);
+		touchPointListener.setLastJumpIdVariableIndex(variable);
+		return sorter;
+		//return new ShiftVariableMethodAdapter(instrumenter, access, desc, 1);
 	}
 		
 	/**

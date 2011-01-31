@@ -48,7 +48,7 @@ public class ClassPattern
 	private Set<String> excludeClassesRegexes = new HashSet<String>();
 
 	private static final String WEBINF_CLASSES = "WEB-INF/classes/";
-
+	
 	/**
 	 * Returns true if any regular expressions have been specified by calling the
 	 * add methods.  If none are specified, this class matches anything.

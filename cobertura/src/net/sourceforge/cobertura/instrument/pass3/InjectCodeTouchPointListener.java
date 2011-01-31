@@ -82,9 +82,9 @@ public class InjectCodeTouchPointListener implements TouchPointListener{
 	 * connected with any branch of the switch. 
 	 */
 	public void beforeSwitch(int eventId, Label def, Label[] labels,int currentLine, MethodVisitor mv) {
-		Integer switchCounterId=classMap.getCounterIdForSwitch(eventId);
-		if(switchCounterId!=null){
-			codeProvider.generateCodeThatSetsJumpCounterIdVariable(mv,switchCounterId,lastJumpIdVariableIndex);
+		Integer switchCounterId = classMap.getCounterIdForSwitch(eventId);
+		if (switchCounterId != null){
+			codeProvider.generateCodeThatSetsJumpCounterIdVariable(mv, switchCounterId, lastJumpIdVariableIndex);
 		}		
 	}
 	
@@ -101,7 +101,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener{
 			codeProvider.generateCodeThatIncrementsCoberturaCounterFromInternalVariable(mv,lastJumpIdVariableIndex,classMap.getClassName());	
 		}
 		
-		Map<Integer,Integer> branchTouchPoints=classMap.getBranchLabelDescriptorsForLabelEvent(eventId);
+		Map<Integer,Integer> branchTouchPoints = classMap.getBranchLabelDescriptorsForLabelEvent(eventId);
 		if(branchTouchPoints!=null){
 			/*map of counterId of a switch into counterId of the branch of the switch*/
 			for(Map.Entry<Integer, Integer> entry:branchTouchPoints.entrySet()){
@@ -110,7 +110,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener{
 		}
 		
 		if (classMap.isJumpDestinationLabel(eventId)){		
-			codeProvider.generateCodeThatZeroJumpCounterIdVariable(mv,lastJumpIdVariableIndex);	
+			codeProvider.generateCodeThatZeroJumpCounterIdVariable(mv, lastJumpIdVariableIndex);	
 		}
 	}	
 	
