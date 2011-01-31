@@ -154,7 +154,7 @@ public class CoberturaInstrumenter {
 		BuildClassMapClassVisitor cv = new BuildClassMapClassVisitor(cw, ignoreRegexes,cv0.getDuplicatesLinesCollector(),
 				detectIgnoredCv.getIgnoredMethodNamesAndSignatures());
 
-		cr.accept(cv, 0);
+		cr.accept(cv, ClassReader.EXPAND_FRAMES);
 				
 		if(logger.isDebugEnabled()){
 			logger.debug("=============== Detected duplicated code =============");

@@ -150,6 +150,10 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		mv.visitMaxs(0, 0);//will be recalculated by writer
 		mv.visitEnd();		
 	}
+	
+	enum Abcd {
+		A, B, C;
+	}
 		
 	private void classMapContent(ClassVisitor cv, int nr, List<TouchPointDescriptor> touchPointDescriptors){
 		MethodVisitor mv=cv.visitMethod(
@@ -171,8 +175,15 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 				mv.visitLdcInsn(((JumpTouchPointDescriptor) tpd).getCounterIdForTrue());
 				mv.visitLdcInsn(((JumpTouchPointDescriptor) tpd).getCounterIdForFalse());
 				mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, CLASSMAP_LISTENER_INTERNALNAME,"putJumpTouchPoint","(III)V");
-			}else if (tpd instanceof SwitchTouchPointDescriptor){
-				SwitchTouchPointDescriptor stpd=(SwitchTouchPointDescriptor)tpd;			
+			}else if (tpd instanceof SwitchTouchPointDescriptor) {
+				SwitchTouchPointDescriptor stpd=(SwitchTouchPointDescriptor)tpd;
+				final String enum_sign = ((SwitchTouchPointDescriptor) tpd).getEnumType();
+				if (enum_sign == null) {
+					mv.visitLdcInsn(Integer.MAX_VALUE);
+				} else {
+					mv.visitMethodInsn(Opcodes.INVOKESTATIC, enum_sign, "values", "()[L" + enum_sign + ";");
+					mv.visitInsn(Opcodes.ARRAYLENGTH);
+				}								
 				Collection<Integer> ci=stpd.getCountersForLabels();
 				mv.visitLdcInsn(ci.size());//Size of a new table
 				mv.visitIntInsn(Opcodes.NEWARRAY,Opcodes.T_INT);				
@@ -184,7 +195,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 					mv.visitInsn(Opcodes.IASTORE);
 					i++;
 				}
-				mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, CLASSMAP_LISTENER_INTERNALNAME,"putSwitchTouchPoint","(I[I)V");				
+				mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, CLASSMAP_LISTENER_INTERNALNAME,"putSwitchTouchPoint","(II[I)V");				
 			}
 		}
 		mv.visitInsn(Opcodes.POP);

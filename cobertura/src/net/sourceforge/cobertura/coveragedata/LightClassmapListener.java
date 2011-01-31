@@ -9,5 +9,5 @@ public interface LightClassmapListener {
 	
 	public void putJumpTouchPoint(int classLine,int trueCounterId,int falseCounterId);
 	
-	public void putSwitchTouchPoint(int classLine, int... counterIds);
+	public void putSwitchTouchPoint(int classLine, int maxBranches, int... counterIds);
 }

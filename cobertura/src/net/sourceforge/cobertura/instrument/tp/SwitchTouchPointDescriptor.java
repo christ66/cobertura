@@ -49,8 +49,11 @@ import org.objectweb.asm.Label;
  * @author piotr.tabor@gmail.com
  */
 public class SwitchTouchPointDescriptor extends TouchPointDescriptor{	
-	private Label defaultDestinationLabel;
-	private Label[] labels;
+	private final Label defaultDestinationLabel;
+	private final Label[] labels;
+	/** Encoded as: {@link org.objectweb.asm.commons#AnalyzerAdapter#stack}*/	
+	private final String enum_type;
+	
 	private Integer counterId;
 	private Map<Label,Integer> label2counterId;
 
@@ -61,23 +64,11 @@ public class SwitchTouchPointDescriptor extends TouchPointDescriptor{
 	 * @param def	      - internal identifier of a default destination label
 	 * @param labels      - table of other destination labels for different values (duplicates allowed) 
 	 */
-	public SwitchTouchPointDescriptor(int eventId, int currentLine, Label def,	Label[] labels) {
+	public SwitchTouchPointDescriptor(int eventId, int currentLine, Label def,	Label[] labels, String enum_type) {
 		super(eventId, currentLine);
 		this.labels=labels;
 		this.defaultDestinationLabel=def;
-	}
-
-	public Label getDefaultDestinationLabel() {
-		return defaultDestinationLabel;
-	}
-	public void setDefaultDestinationLabel(Label defaultDestinationLabel) {
-		this.defaultDestinationLabel = defaultDestinationLabel;
-	}
-	public Label[] getLabels() {
-		return labels;
-	}
-	public void setLabels(Label[] labels) {
-		this.labels = labels;
+		this.enum_type = enum_type;
 	}
 	
 	public Integer getCounterId() {
@@ -121,6 +112,10 @@ public class SwitchTouchPointDescriptor extends TouchPointDescriptor{
 		Set<Label> l=new HashSet<Label>(Arrays.asList(labels));
 		l.add(defaultDestinationLabel);
 		return l.size();
+	}
+	
+	public String getEnumType(){
+		return enum_type;
 	}
 	
 }

@@ -64,8 +64,7 @@ public class TouchCollector implements HasBeenInstrumented {
 				jumpsInLine=0;
 				switchesInLine=0;
 			}
-		}
-		
+		}		
 		
 		public ApplyToClassDataLightClassmapListener(ClassData cd,int[] res) {
 			classData=cd;
@@ -87,17 +86,15 @@ public class TouchCollector implements HasBeenInstrumented {
 			ld.touch(res[counterId]);
 		}
 		
-		public void putSwitchTouchPoint(int classLine,int... counterIds) {
+		public void putSwitchTouchPoint(int classLine, int maxBranches, int... counterIds) {
 			updateLine(classLine);			
 			LineData ld=getOrCreateLine(classLine);
-			int switchId=switchesInLine++;
-			classData.addLineSwitch(classLine,switchId , 0, counterIds.length-2);
-			for(int i=0; i<counterIds.length; i++){
+			int switchId = switchesInLine++;
+			classData.addLineSwitch(classLine,switchId , 0, counterIds.length-2, maxBranches);
+			for(int i=0; i < counterIds.length; i++){
 				ld.touchSwitch(switchId, i-1, res[counterIds[i]]);
 			}
-		}
-		
-		
+		}		
 		
 		public void putJumpTouchPoint(int classLine, int trueCounterId,	int falseCounterId) {
 			updateLine(classLine);					

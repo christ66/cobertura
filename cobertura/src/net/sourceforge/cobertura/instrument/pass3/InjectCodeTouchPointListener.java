@@ -81,7 +81,7 @@ public class InjectCodeTouchPointListener implements TouchPointListener{
 	 * Before switch we set the internal variable to a special counterId connected with the switch. This counterId is not
 	 * connected with any branch of the switch. 
 	 */
-	public void beforeSwitch(int eventId, Label def, Label[] labels,int currentLine, MethodVisitor mv) {
+	public void beforeSwitch(int eventId, Label def, Label[] labels,int currentLine, MethodVisitor mv, String conditionType) {
 		Integer switchCounterId = classMap.getCounterIdForSwitch(eventId);
 		if (switchCounterId != null){
 			codeProvider.generateCodeThatSetsJumpCounterIdVariable(mv, switchCounterId, lastJumpIdVariableIndex);

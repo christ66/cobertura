@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import net.sourceforge.cobertura.coveragedata.HasBeenInstrumented;
 import net.sourceforge.cobertura.instrument.AbstractFindTouchPointsClassInstrumenter;
 import net.sourceforge.cobertura.instrument.FindTouchPointsMethodAdapter;
+import net.sourceforge.cobertura.instrument.HistoryMethodAdapter;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
 
 import org.objectweb.asm.ClassReader;
@@ -54,7 +55,7 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 	 * Information about important 'events' (instructions) are sent into the listener that is internally
 	 * responsible for modifying the {@link #classMap} content. 
 	 */
-	private BuildClassMapTouchPointListener touchPointListener=new BuildClassMapTouchPointListener(classMap);	
+	private final BuildClassMapTouchPointListener touchPointListener = new BuildClassMapTouchPointListener(classMap);	
 	
 	/**
 	 * It's flag that signals if the class should be instrumented by cobertura. 
@@ -108,7 +109,9 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 		if (ignoredMethods.contains(name + desc)) {
 			return mv;
 		}
-		FindTouchPointsMethodAdapter instrumenter=new FindTouchPointsMethodAdapter(mv,classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
+		FindTouchPointsMethodAdapter instrumenter = new FindTouchPointsMethodAdapter(
+				new HistoryMethodAdapter(mv, 4),
+				classMap.getClassName(),name,desc,eventIdGenerator,duplicatedLinesMap,lineIdGenerator);
 		instrumenter.setTouchPointListener(touchPointListener);
 		instrumenter.setIgnoreRegexp(getIgnoreRegexp());
 		return instrumenter;

@@ -488,7 +488,7 @@ public class ClassData extends CoverageDataContainer
 		}
 	}
 
-	public void addLineSwitch(int lineNumber, int switchNumber, int[] keys) 
+	public void addLineSwitch(int lineNumber, int switchNumber, int min, int max, int maxBranches) 
 	{
 		lock.lock();
 		try
@@ -496,25 +496,7 @@ public class ClassData extends CoverageDataContainer
 			LineData lineData = getLineData(lineNumber);
 			if (lineData != null) 
 			{
-				lineData.addSwitch(switchNumber, keys);
-				this.branches.put(Integer.valueOf(lineNumber), lineData);
-			}
-		}
-		finally
-		{
-			lock.unlock();
-		}
-	}
-
-	public void addLineSwitch(int lineNumber, int switchNumber, int min, int max) 
-	{
-		lock.lock();
-		try
-		{
-			LineData lineData = getLineData(lineNumber);
-			if (lineData != null) 
-			{
-				lineData.addSwitch(switchNumber, min, max);
+				lineData.addSwitch(switchNumber, min, max, maxBranches);
 				this.branches.put(Integer.valueOf(lineNumber), lineData);
 			}
 		}

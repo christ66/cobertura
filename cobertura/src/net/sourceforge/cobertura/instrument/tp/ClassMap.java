@@ -177,9 +177,9 @@ public class ClassMap {
 		}
 	}
 
-	public void registerSwitch(int eventId,int currentLine, Label def, Label[] labels) {
+	public void registerSwitch(int eventId,int currentLine, Label def, Label[] labels, String conditionType) {
 		if (alreadyRegisteredEvents.add(eventId)){
-			SwitchTouchPointDescriptor swi=new SwitchTouchPointDescriptor(eventId, currentLine,def,labels);
+			SwitchTouchPointDescriptor swi=new SwitchTouchPointDescriptor(eventId, currentLine,def, labels, conditionType);
 			eventId2touchPointDescriptor.put(eventId, swi);
 			getOrCreateLineTouchPoints(currentLine).add(swi);
 			getOrCreateSourcePoints(def).add(swi);
@@ -354,7 +354,8 @@ public class ClassMap {
 					classData.addLineJump(tpd.getLineNumber(), jumpsInLine++);
 				}else if(tpd instanceof SwitchTouchPointDescriptor){
 					int countersCnt=((SwitchTouchPointDescriptor)tpd).getCountersForLabelsCnt();
-					classData.addLineSwitch(tpd.getLineNumber(), toucesInLine++,0, countersCnt-2);
+					//TODO(ptab): instead of Integer.MAX_VALUE should be length of Enum.
+					classData.addLineSwitch(tpd.getLineNumber(), toucesInLine++,0, countersCnt-2, Integer.MAX_VALUE);
 				}		
 			}			
 		}

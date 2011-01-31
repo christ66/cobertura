@@ -94,8 +94,9 @@ public interface TouchPointListener {
 	 * @param labels      - table of labels connected to switch 'values' (different switch branches). There might be duplicates in the table (fall-through in switch statement)
 	 * @param currentLine - number of line in which the 'switch' keyword has been found (number of line currently being processed)  
 	 * @param mv          - sink for instrumented (injected) code
+	 * @param conditionType - NULL (if undetected) or signature of variable used as a switch condition.	 * 						 
 	 */
-	public void beforeSwitch(int eventId,Label def, Label[] labels, int currentLine, MethodVisitor mv);
+	public void beforeSwitch(int eventId,Label def, Label[] labels, int currentLine, MethodVisitor mv, String conditionType);
 	
 	/**
 	 * Called before processing 'label' directive

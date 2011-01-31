@@ -20,8 +20,10 @@
 package net.sourceforge.cobertura.instrument;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -31,6 +33,10 @@ import net.sourceforge.cobertura.util.RegexUtil;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 /**
  * Analyzes given method, assign unique event identifiers to every found
@@ -88,13 +94,37 @@ public class FindTouchPointsMethodAdapter extends ContextMethodAwareMethodAdapte
 	 * If we are currently processing a duplicated line, it is a list of identifiers that should be used for the line. After processing event, you should remove identifier from the begining of the list.  
 	 */
 	private LinkedList<Integer> replyEventIdList = null;
+	
+	/**
+	 * State of last N instructions.
+	 */
+	private final List<AbstractInsnNode> backlog;
 
-	public FindTouchPointsMethodAdapter(MethodVisitor arg0,
+	public FindTouchPointsMethodAdapter(HistoryMethodAdapter mv,
 			String className, String methodName, String methodSignature,
 			AtomicInteger eventIdGenerator,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
 			AtomicInteger lineIdGenerator) {
-		super(arg0, className, methodName, methodSignature, lineIdGenerator);
+		this(mv, mv.backlog(), className, methodName, methodSignature, eventIdGenerator, duplicatedLinesMap, lineIdGenerator);		
+	}
+	
+	public FindTouchPointsMethodAdapter(MethodVisitor mv,
+			String className, String methodName, String methodSignature,
+			AtomicInteger eventIdGenerator,
+			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
+			AtomicInteger lineIdGenerator) {
+		this(mv, Collections. <AbstractInsnNode> emptyList(), 
+		     className, methodName, methodSignature, eventIdGenerator, duplicatedLinesMap, lineIdGenerator);		
+	}
+
+	protected FindTouchPointsMethodAdapter(MethodVisitor mv,
+			List<AbstractInsnNode> backlog,
+			String className, String methodName, String methodSignature,
+			AtomicInteger eventIdGenerator,
+			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
+			AtomicInteger lineIdGenerator) {
+		super(mv, className, methodName, methodSignature, lineIdGenerator);
+		this.backlog = backlog;
 		this.eventIdGenerator = eventIdGenerator;
 		this.duplicatedLinesMap = duplicatedLinesMap;
 	}
@@ -227,18 +257,50 @@ public class FindTouchPointsMethodAdapter extends ContextMethodAwareMethodAdapte
 
 	@Override
 	public void visitLookupSwitchInsn(Label def, int[] values, Label[] labels) {
-		touchPointListener.beforeSwitch(getEventId(), def, labels, currentLine,
-				mv);
+		touchPointListener.beforeSwitch(getEventId(), def, labels, currentLine,	mv, tryToFindSignatureOfConditionEnum());
 		super.visitLookupSwitchInsn(def, values, labels);
 	}
 
 	@Override
 	public void visitTableSwitchInsn(int min, int max, Label def, Label[] labels) {
-		touchPointListener.beforeSwitch(getEventId(), def, labels, currentLine,
-				mv);
+		touchPointListener.beforeSwitch(getEventId(), def, labels, currentLine,	mv, tryToFindSignatureOfConditionEnum());
 		super.visitTableSwitchInsn(min, max, def, labels);
 	}
-
+	
+	enum Abc {A, B};
+	
+/**		
+ * We try to detect such a last 2 instructions and extract the enum signature.
+ * @code{
+    INVOKESTATIC FindTouchPointsMethodAdapter.$SWITCH_TABLE$net$sourceforge$cobertura$instrument$FindTouchPointsMethodAdapter$Abc() : int[]
+    ALOAD 1: a
+    INVOKEVIRTUAL FindTouchPointsMethodAdapter$Abc.ordinal() : int
+    IALOAD
+ * }
+ */
+	private String tryToFindSignatureOfConditionEnum() {
+//		mv.visitMethodInsn(INVOKESTATIC, "net/sourceforge/cobertura/instrument/FindTouchPointsMethodAdapter", "$SWITCH_TABLE$net$sourceforge$cobertura$instrument$FindTouchPointsMethodAdapter$Abc", "()[I");
+//		mv.visitVarInsn(ALOAD, 1);
+//		mv.visitMethodInsn(INVOKEVIRTUAL, "net/sourceforge/cobertura/instrument/FindTouchPointsMethodAdapter$Abc", "ordinal", "()I");
+//		mv.visitInsn(IALOAD);
+		
+		if (backlog == null || backlog.size() < 4) return null;
+		int last = backlog.size() - 1;
+		if ((backlog.get(last) instanceof InsnNode)
+		    && (backlog.get(last - 1) instanceof MethodInsnNode)
+		    && (backlog.get(last - 2) instanceof VarInsnNode)) {
+			VarInsnNode i2 = (VarInsnNode)backlog.get(last - 2);
+			MethodInsnNode i3 = (MethodInsnNode)backlog.get(last - 1);
+			InsnNode i4 = (InsnNode)backlog.get(last);
+			if ((i2.getOpcode() == Opcodes.ALOAD)
+		        && (i3.getOpcode() == Opcodes.INVOKEVIRTUAL && i3.name.equals("ordinal"))
+		        && (i4.getOpcode() == Opcodes.IALOAD)) {
+				return i3.owner;
+			}		        		
+		}
+		return null;
+	}
+	
 	// ===========  Getters and setters =====================
 	
 	/**
@@ -248,7 +310,7 @@ public class FindTouchPointsMethodAdapter extends ContextMethodAwareMethodAdapte
 		return touchPointListener;
 	}
 
-	/**
+	/**Niestety terminalnie.
 	 * Sets backing listener that will be informed about all interesting events found
 	 */
 	public void setTouchPointListener(TouchPointListener touchPointListener) {
