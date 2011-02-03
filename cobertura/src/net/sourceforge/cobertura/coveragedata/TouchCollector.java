@@ -7,9 +7,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
 
-public class TouchCollector implements HasBeenInstrumented {
+@CoverageIgnore
+public class TouchCollector {
 	private static final Logger logger = Logger.getLogger(TouchCollector.class.getCanonicalName());
 	/*In fact - concurrentHashset*/
 	private static Map<Class<?>,Integer> registeredClasses = new ConcurrentHashMap<Class<?>,Integer>();
@@ -49,7 +51,8 @@ public class TouchCollector implements HasBeenInstrumented {
 		}
 	}
 	
-	private static class ApplyToClassDataLightClassmapListener implements LightClassmapListener, HasBeenInstrumented  {
+	@CoverageIgnore
+	private static class ApplyToClassDataLightClassmapListener implements LightClassmapListener {
 		//private AtomicInteger idProvider=new AtomicInteger(0);
 		private final ClassData classData;
 		private final int[] res;

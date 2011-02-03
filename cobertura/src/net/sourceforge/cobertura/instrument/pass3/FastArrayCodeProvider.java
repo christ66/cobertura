@@ -83,7 +83,7 @@ public class FastArrayCodeProvider extends AbstractCodeProvider implements CodeP
 	
 	public void generateCountersField(ClassVisitor cv) {
 		/*final tooks 270ms, no-modifier 310ms, volatile 500ms*/
-		FieldVisitor fv=cv.visitField(Opcodes.ACC_STATIC|Opcodes.ACC_PUBLIC|Opcodes.ACC_FINAL/*|Opcodes.ACC_VOLATILE*/, 
+		FieldVisitor fv=cv.visitField(Opcodes.ACC_STATIC|Opcodes.ACC_PUBLIC|Opcodes.ACC_FINAL|Opcodes.ACC_TRANSIENT, 
 				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE, null, null);
 		fv.visitEnd();		
 	}

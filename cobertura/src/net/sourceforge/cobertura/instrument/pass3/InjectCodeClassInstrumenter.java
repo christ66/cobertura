@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import net.sourceforge.cobertura.coveragedata.HasBeenInstrumented;
 import net.sourceforge.cobertura.instrument.AbstractFindTouchPointsClassInstrumenter;
 import net.sourceforge.cobertura.instrument.FindTouchPointsMethodAdapter;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
@@ -92,35 +91,14 @@ public class InjectCodeClassInstrumenter extends AbstractFindTouchPointsClassIns
 	}
 	
 	/**
-	 * <p>Marks the class 'already instrumented' and injects code connected to the fields that are keeping counters</p>
-	 * 
-	 *  <p>Marking the class is currently acquired by adding {@link HasBeenInstrumented} to the list of implemented interfaces</p>
-	 *  <p>TODO: I would recommend instead of using interface, to use annotation. The benefit is that using annotation 
-	 *  the instrumented code will not require cobertura.jar to work</p>    
+	 * <p>Marks the class 'already instrumented' and injects code connected to the fields that are keeping counters.</p> 
 	 */
 	@Override
 	public void visit(int version, int access, String name, String signature,
 			String supertype, String[] interfaces) {	
-		
-		String[] new_interfaces = appendToTable(interfaces,Type.getInternalName(HasBeenInstrumented.class));	
-		super.visit(version, access, name, signature, supertype, new_interfaces);		
-		codeProvider.generateCountersField(cv);			}
-
-	/**
-	 * Creates a new table that is concatenation of given table (old_content) and a new_item
-	 * 
-	 * @param old_content - table that is coppied to returned table. The table is not modified.
-	 * @param new_item - item to add at the end of the table
-	 * @return
-	 */
-	private static  String[] appendToTable(String[] old_content,String new_item) {
-		//JDK1.6: String[] new_interfaces=Arrays.copyOf(interfaces, interfaces.length+1);		
-		String[] new_interfaces=new String[old_content.length+1];
-		for(int i=0; i<old_content.length; i++){
-			new_interfaces[i]=old_content[i];
-		}
-		new_interfaces[old_content.length]=new_item;
-		return new_interfaces;
+			
+		super.visit(version, access, name, signature, supertype, interfaces);		
+		codeProvider.generateCountersField(cv);		
 	}	
 
 	/**

@@ -78,17 +78,7 @@ import org.apache.log4j.Logger;
  * <li>Call a method in this ProjectData class that increments
  * a counter for this line of code.
  * </ol>
- *
- * <p>
- * After every line in a class has been "instrumented," Cobertura
- * edits the bytecode for the class one more time and adds
- * "implements net.sourceforge.cobertura.coveragedata.HasBeenInstrumented" 
- * This is basically just a flag used internally by Cobertura to
- * determine whether a class has been instrumented or not, so
- * as not to instrument the same class twice.
- * </p>
- */
-// TODO(ptab): Change adding implements net.sourceforge.cobertura.coveragedata.HasBeenInstrumented into Annotation. The effect on code will be smaller. 
+ */ 
 public class Main {
 	private static final LoggerWrapper logger = new LoggerWrapper();
 

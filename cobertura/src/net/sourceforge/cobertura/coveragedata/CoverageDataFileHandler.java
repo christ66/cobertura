@@ -24,6 +24,7 @@
 
 package net.sourceforge.cobertura.coveragedata;
 
+import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.util.ConfigurationUtil;
 
 import java.io.BufferedInputStream;
@@ -42,7 +43,8 @@ import java.util.logging.Logger;
  * This contains methods used for reading and writing the
  * "cobertura.ser" file.
  */
-public abstract class CoverageDataFileHandler implements HasBeenInstrumented {
+@CoverageIgnore
+public abstract class CoverageDataFileHandler  {
 	private static Logger logger = Logger.getLogger(CoverageDataFileHandler.class.getCanonicalName());
 	private static File defaultFile = null;
 

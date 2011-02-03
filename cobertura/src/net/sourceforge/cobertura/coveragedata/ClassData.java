@@ -33,23 +33,19 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import net.sourceforge.cobertura.CoverageIgnore;
+
 /**
  * <p>
  * ProjectData information is typically serialized to a file. An
  * instance of this class records coverage information for a single
  * class that has been instrumented.
  * </p>
- *
- * <p>
- * This class implements HasBeenInstrumented so that when cobertura
- * instruments itself, it will omit this class.  It does this to
- * avoid an infinite recursion problem because instrumented classes
- * make use of this class.
- * </p>
  */
 
+@CoverageIgnore
 public class ClassData extends CoverageDataContainer
-	implements Comparable<ClassData>, HasBeenInstrumented {
+	implements Comparable<ClassData> {
 	private static final long serialVersionUID = 5;
 
 

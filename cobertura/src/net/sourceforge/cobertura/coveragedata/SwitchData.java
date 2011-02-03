@@ -24,16 +24,10 @@ package net.sourceforge.cobertura.coveragedata;
 import java.io.Serializable;
 import java.util.Arrays;
 
-/**
- * <p>
- * This class implements HasBeenInstrumented so that when cobertura instruments
- * itself, it will omit this class. It does this to avoid an infinite recursion
- * problem because instrumented classes make use of this class.
- * </p>
- */
-public class SwitchData implements BranchCoverageData, Comparable<Object>, Serializable,
-		HasBeenInstrumented
-{
+import net.sourceforge.cobertura.CoverageIgnore;
+
+@CoverageIgnore
+public class SwitchData implements BranchCoverageData, Comparable<Object>, Serializable {
 	private static final long serialVersionUID = 9;
 
 	private int switchNumber;

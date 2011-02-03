@@ -33,20 +33,16 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import net.sourceforge.cobertura.CoverageIgnore;
+
 /**
  * <p>
  * Coverage data information is typically serialized to a file.
  * </p>
- *
- * <p>
- * This class implements HasBeenInstrumented so that when cobertura
- * instruments itself, it will omit this class.  It does this to
- * avoid an infinite recursion problem because instrumented classes
- * make use of this class.
- * </p>
  */
+@CoverageIgnore
 public abstract class CoverageDataContainer
-		implements CoverageData, HasBeenInstrumented, Serializable
+		implements CoverageData, Serializable
 {
 
 	private static final long serialVersionUID = 2;

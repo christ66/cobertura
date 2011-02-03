@@ -146,8 +146,7 @@ public interface CodeProvider {
 	 * @param cv - listener used to inject the code
 	 */
 	public abstract void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv, String className);
-	
-	 
+		 
 	public void generateCoberturaInitMethod(ClassVisitor cv,  String className, int countersCnt);
 
 	public abstract void generateCallCoberturaInitMethod(MethodVisitor mv,

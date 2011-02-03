@@ -3,6 +3,7 @@ package net.sourceforge.cobertura.instrument.pass1;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.instrument.ContextMethodAwareMethodAdapter;
 
 import org.objectweb.asm.AnnotationVisitor;
@@ -80,7 +81,8 @@ public class DetectIgnoredCodeMethodVisitor extends ContextMethodAwareMethodAdap
 	   // Check to see if this annotation is one of the ones that we use to 
 	   // trigger us to ignore this method
 	   String clazz = Type.getObjectType(desc.substring(1).replace(';', ' ').trim()).getClassName();
-	   if (ignoreMethodAnnotations.contains(clazz)){
+	   if (ignoreMethodAnnotations.contains(clazz)
+		 || desc.equals(Type.getDescriptor(CoverageIgnore.class))){
 		   ignoredStatus = IgnoredStatus.IGNORED_BY_ANNOTATION;
 	   }	                
 	   return super.visitAnnotation(desc, visible);

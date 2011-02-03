@@ -28,6 +28,7 @@
 package net.sourceforge.cobertura.coveragedata;
 
 import java.io.File;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,9 +39,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
+import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.util.FileLocker;
 
-public class ProjectData extends CoverageDataContainer implements HasBeenInstrumented {
+@CoverageIgnore
+public class ProjectData extends CoverageDataContainer {
     private static final Logger logger = Logger.getLogger(ProjectData.class.getCanonicalName());
 	private static final long serialVersionUID = 6;
 
@@ -269,7 +272,6 @@ public class ProjectData extends CoverageDataContainer implements HasBeenInstrum
 			CoverageData.class.toString();
 			CoverageDataContainer.class.toString();
 			FileLocker.class.toString();
-			HasBeenInstrumented.class.toString();
 			LineData.class.toString();
 			PackageData.class.toString();
 			SourceFileData.class.toString();

@@ -42,7 +42,7 @@ public class AtomicArrayCodeProvider extends AbstractCodeProvider implements Cod
 	static final String COBERTURA_COUNTERS_FIELD_TYPE = Type.getType(AtomicIntegerArray.class).toString();
 	
 	public void generateCountersField(ClassVisitor cv) {
-		FieldVisitor fv=cv.visitField(Opcodes.ACC_STATIC|Opcodes.ACC_PUBLIC|Opcodes.ACC_FINAL/*|Opcodes.ACC_VOLATILE*/, 
+		FieldVisitor fv=cv.visitField(Opcodes.ACC_STATIC|Opcodes.ACC_PUBLIC|Opcodes.ACC_FINAL|Opcodes.ACC_TRANSIENT, 
 				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE, null, null);
 		fv.visitEnd();		
 	}

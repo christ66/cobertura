@@ -19,18 +19,19 @@
 
 package net.sourceforge.cobertura.instrument.pass2;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import net.sourceforge.cobertura.coveragedata.HasBeenInstrumented;
+import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.instrument.AbstractFindTouchPointsClassInstrumenter;
 import net.sourceforge.cobertura.instrument.FindTouchPointsMethodAdapter;
 import net.sourceforge.cobertura.instrument.HistoryMethodAdapter;
+import net.sourceforge.cobertura.instrument.pass3.CodeProvider;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
 
+import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
@@ -61,7 +62,7 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 	 * It's flag that signals if the class should be instrumented by cobertura. 
 	 * After analyzing the class you can check the field using {@link #shouldBeInstrumented()}.
 	 */
-	private boolean toInstrument=true;
+	private boolean toInstrument = true; 
 	
 	private final Set<String> ignoredMethods;
 
@@ -75,6 +76,14 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 		super(cv,ignoreRegexes,duplicatedLinesMap);
 		this.ignoredMethods = ignoredMethods;
 	}
+	
+	@Override
+	public AnnotationVisitor visitAnnotation(String name, boolean arg1) {
+		if (Type.getDescriptor(CoverageIgnore.class).equals(name)) {
+			toInstrument = false;
+		}
+		return super.visitAnnotation(name, arg1);
+	}
 
 	/**
 	 * Stores in {@link #classMap} information of className and if the class should be instrumented ({@link #shouldBeInstrumented()}) 
@@ -84,8 +93,7 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 			String parent, String[] interfaces) {
 		classMap.setClassName(name);
 		
-		if (((access & Opcodes.ACC_INTERFACE) != 0)
-				|| Arrays.asList(interfaces).contains(Type.getInternalName(HasBeenInstrumented.class))){
+		if ((access & Opcodes.ACC_INTERFACE) != 0) {
 			toInstrument = false;
 		}
 		super.visit(version, access, name, signature, parent, interfaces);		
@@ -105,6 +113,11 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 	 */
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {		
+		if (((access & Opcodes.ACC_STATIC) != 0) 
+				&& CodeProvider.COBERTURA_INIT_METHOD_NAME.equals(name)) {
+		  toInstrument = false; //  The class has bean already instrumented.
+		}
+		
 		MethodVisitor mv = super.visitMethod(access, name, desc, signature,	exceptions);
 		if (ignoredMethods.contains(name + desc)) {
 			return mv;
@@ -127,14 +140,7 @@ public class BuildClassMapClassVisitor extends AbstractFindTouchPointsClassInstr
 	}
 
 	/**
-	 * It's flag that signals if the class should be instrumented by cobertura.
-	 * 
-	 * Class is found to be not instrumentable by cobertura if:
-	 * <ul>
-	 * 	<li>It's already instrumented (already implements {@link HasBeenInstrumented})</li>
-	 *  <li>TODO: (not implemented yet) It's already instrumented (is anotated by \@CoberturaHasBeanInstrumented)</li> 
-	 * </ul>
-	 * @return
+	 * It's flag that signals if the class should be instrumented by Cobertura.
 	 */
 	public boolean shouldBeInstrumented() {
 		return toInstrument;

@@ -28,18 +28,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.util.StringUtil;
 
-/**
- * <p>
- * This class implements HasBeenInstrumented so that when cobertura
- * instruments itself, it will omit this class.  It does this to
- * avoid an infinite recursion problem because instrumented classes
- * make use of this class.
- * </p>
- */
+@CoverageIgnore
 public class LineData
-		implements Comparable<Object>, CoverageData, HasBeenInstrumented, Serializable
+		implements Comparable<Object>, CoverageData, Serializable
 {
 	private static final long serialVersionUID = 4;
 
