@@ -7,6 +7,8 @@
  * Copyright (C) 2005 Grzegorz Lukasik
  * Copyright (C) 2006 John Lewis
  * Copyright (C) 2006 Jiri Mares
+ * Copyright (C) 2008 Scott Frederick
+ * Copyright (C) 2010 Tad Smith 
  * Copyright (C) 2010 Piotr Tabor  
  * Contact information for the above is given in the COPYRIGHT file.
  *
