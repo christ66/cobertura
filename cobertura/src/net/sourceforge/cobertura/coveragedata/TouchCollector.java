@@ -26,13 +26,13 @@ public class TouchCollector {
 
 	public static synchronized void applyTouchesOnProjectData(
 			ProjectData projectData) {
-		logger.fine("=================== START OF RAPORT ======================== ");
+		logger.fine("=================== START OF REPORT ======================== ");
 		for (Class<?> c : registeredClasses.keySet()) {
 			logger.fine("Report: "+c.getName());
 			ClassData cd=projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData(cd, c);
 		}
-		logger.fine("===================  END OF RAPORT  ======================== ");
+		logger.fine("===================  END OF REPORT  ======================== ");
 	}
 
 	private static void applyTouchesToSingleClassOnProjectData(final ClassData classData,final Class<?> c) {
