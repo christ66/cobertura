@@ -154,7 +154,7 @@ public class Main extends Thread {
 			assertFalse(bigLineNumberLines.isEmpty())
 			
 			// make sure each line has 50% coverage
-			bigLineNumberLines.each { line ->
+			bigLineNumberLines[0..-2].each { line ->
 				assertEquals('50% (1/2)', line.conditionCoverage)
 			}
 		}
