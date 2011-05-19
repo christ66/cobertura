@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
  * reserved.
+ * Copyright (C) 2011 Piotr Tabor
  * Copyright (C) 2011 John Lewis
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,13 +77,14 @@ public class LargeFileTest {
 		 */
 		TestUtil.withTempDir { tempDir ->
 			def srcDir = new File(tempDir, "src")
+			def reportDir = new File(tempDir, "report")
 			def instrumentDir = new File(tempDir, "instrument")
 			
 			def mainSourceFile = new File(srcDir, "mypackage/Main.java")
 			def datafile = new File(srcDir, "cobertura.ser")
 			mainSourceFile.parentFile.mkdirs()
 			
-			def content = "" << '';
+			def content = '';
 			for (i in 0..500) {
 				content <<= "if (i < 1000) {i++;};\n";
 			}
@@ -130,13 +132,31 @@ public class Main extends Thread {
 				}
 			}
 
+			/* Now create a cobertura html report and make sure the files are created.
+			*/
+			ant.'cobertura-report'(datafile:datafile, format:'html', destdir:reportDir, srcdir:srcDir)
+			assertTrue(new File(reportDir, "index.html").exists())
+			assertTrue(new File(reportDir, "mypackage.Main.html").exists())
+
 			/*
 			 * Now create a cobertura xml file and make sure the correct counts are in it.
 			 */
 			ant.'cobertura-report'(datafile:datafile, format:'xml', destdir:srcDir)
 			dom = TestUtil.getXMLReportDOM("${srcDir}/coverage.xml")
 			
-			ignoreUtil = new IgnoreUtil(className:'mypackage.Main', dom:dom)				
+			def lines	
+			
+			//look for the last method - method9
+			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'method9')
+			
+			// take lines greater than 4500 - any big number will do
+			def bigLineNumberLines = lines.grep {it.number.toInteger() > 4500}
+			assertFalse(bigLineNumberLines.isEmpty())
+			
+			// make sure each line has 50% coverage
+			bigLineNumberLines.each { line ->
+				assertEquals('50% (1/2)', line.conditionCoverage)
+			}
 		}
 	}
 
