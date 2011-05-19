@@ -1,6 +1,12 @@
 /*
  * Cobertura - http://cobertura.sourceforge.net/
  *
+ * Copyright (C) 2011 Piotr Tabor
+ *
+ * Note: This file is dual licensed under the GPL and the Apache
+ * Source License (so that it can be used from both the main
+ * Cobertura classes and the ant tasks).
+ *
  * Cobertura is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published
  * by the Free Software Foundation; either version 2 of the License,
