@@ -152,7 +152,6 @@ public class Main {
 			System.out.println("default");
         }
     }
-<<<<<<< HEAD
 
 	public void callSwitchWithoutGaps() {
 		switchWithoutGaps(1);
@@ -393,14 +392,11 @@ public class Main {
 	}
 	
 
-=======
->>>>>>> master
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.callNoDefaultSwitch();
 		main.callSwitchFallThrough();
 		main.callSwitchWithDefault();
-<<<<<<< HEAD
 		main.callSwitchWithoutGaps();
 		main.callSwitchWithoutGapsWithFallThrough();
 		main.callSwitchBug2075537();
@@ -410,8 +406,6 @@ public class Main {
 		main.callSwitchWithEnum();
 		main.callSwitchWithAllEnumValues();
 		main.callSwitchWithAllButDefaultEnumValues();
-=======
->>>>>>> master
 	}	
 }
 			"""
@@ -443,7 +437,6 @@ public class Main {
 			ant.'cobertura-report'(datafile:datafile, format:'xml', destdir:srcDir)
 			def dom = TestUtil.getXMLReportDOM("${srcDir}/coverage.xml")
 			
-<<<<<<< HEAD
 			def lines	
 			
 			//switchWithBoolean
@@ -497,8 +490,6 @@ public class Main {
 			
 			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'callNoDefaultSwitch')
 			
-=======
->>>>>>> master
 			def noDefaultSwitchLine = lines.grep {it.number == '7'}[0]
 			assertEquals('33% (1/3)', noDefaultSwitchLine.conditionCoverage)
 
@@ -511,7 +502,6 @@ public class Main {
 			
 			def withDefaultSwitchLine = lines.grep {it.number == '40'}[0]
 			assertEquals('16% (1/6)', withDefaultSwitchLine.conditionCoverage)
-<<<<<<< HEAD
 			
 			
 			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchWithEnum')
@@ -528,8 +518,6 @@ public class Main {
 			lines = TestUtil.getLineCounts(dom, 'mypackage.Main', 'switchWithAllButDefaultEnumValues')
 			def withAllButDefaultEnumValuesSwitchLine = lines.grep {it.number == '271'}[0]
 			assertEquals('100% (4/4)', withAllButDefaultEnumValuesSwitchLine.conditionCoverage)			
-=======
->>>>>>> master
 		}
 	}
 
