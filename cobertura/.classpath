@@ -1,32 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="**/*.css|**/*.html|**/*.java|**/*.js|**/*.png|**/*.txt|**/*.xml" kind="src" path="src"/>
-	<classpathentry kind="src" path="examples/functionaltest1/src"/>
-	<classpathentry kind="src" path="examples/basic/src"/>
-	<classpathentry kind="src" path="src-2"/>
-	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="examples/functionalconditiontest/src"/>
-	<classpathentry kind="lib" path="etc">
-		<accessrules>
-			<accessrule kind="accessible" pattern="task.properties"/>
-			<accessrule kind="nonaccessible" pattern="*"/>
-		</accessrules>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/jakarta-oro-2.0.8.jar"/>
-	<classpathentry kind="lib" path="lib/jaxen-1.1-beta-8.jar"/>
-	<classpathentry kind="lib" path="lib/jdom-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/junit.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.9.jar"/>
-	<classpathentry kind="lib" path="lib/xalan-2.6.0.jar"/>
-	<classpathentry kind="lib" path="jetty/lib/servlet-api-2.5-6.1.14.jar"/>
-	<classpathentry kind="lib" path="antLibrary/common/groovy/groovy-all-1.6-RC-1.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Ant"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/xerces/2.6.2/xercesImpl.jar"/>
-	<classpathentry kind="lib" path="lib/xerces/2.6.2/xml-apis.jar"/>
-	<classpathentry kind="lib" path="lib/xerces/2.6.2/xmlParserAPIs.jar"/>
-	<classpathentry kind="lib" path="lib/asm-3.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/asm-tree-3.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/asm-commons-3.3.1.jar"/>
-	<classpathentry kind="output" path="bin"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes" including="**/*.java"/>
+  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
+  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="var" path="M2_REPO/javax/servlet/javax.servlet-api/3.1-b07/javax.servlet-api-3.1-b07.jar" sourcepath="M2_REPO/javax/servlet/javax.servlet-api/3.1-b07/javax.servlet-api-3.1-b07-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/javax/servlet/javax.servlet-api/3.1-b07/javax.servlet-api-3.1-b07-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-junit/1.9.0/ant-junit-1.9.0.jar" sourcepath="M2_REPO/org/apache/ant/ant-junit/1.9.0/ant-junit-1.9.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant/1.8.2/ant-1.8.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/ant/ant-launcher/1.8.2/ant-launcher-1.8.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.11/junit-4.11.jar" sourcepath="M2_REPO/junit/junit/4.11/junit-4.11-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/junit/junit/4.11/junit-4.11-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="lib" path="/usr/lib/jvm/jdk1.6.0_43/lib/tools.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/codehaus/gmaven/runtime/gmaven-runtime-2.0/1.5/gmaven-runtime-2.0-1.5.jar" sourcepath="M2_REPO/org/codehaus/gmaven/runtime/gmaven-runtime-2.0/1.5/gmaven-runtime-2.0-1.5-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/codehaus/gmaven/runtime/gmaven-runtime-2.0/1.5/gmaven-runtime-2.0-1.5-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-api/1.5.10/slf4j-api-1.5.10.jar" sourcepath="M2_REPO/org/slf4j/slf4j-api/1.5.10/slf4j-api-1.5.10-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/codehaus/gmaven/feature/gmaven-feature-support/1.5/gmaven-feature-support-1.5.jar" sourcepath="M2_REPO/org/codehaus/gmaven/feature/gmaven-feature-support/1.5/gmaven-feature-support-1.5-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/codehaus/gmaven/feature/gmaven-feature-support/1.5/gmaven-feature-support-1.5-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/codehaus/gmaven/feature/gmaven-feature-api/1.5/gmaven-feature-api-1.5.jar" sourcepath="M2_REPO/org/codehaus/gmaven/feature/gmaven-feature-api/1.5/gmaven-feature-api-1.5-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/codehaus/gmaven/feature/gmaven-feature-api/1.5/gmaven-feature-api-1.5-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/codehaus/gmaven/runtime/gmaven-runtime-support/1.5/gmaven-runtime-support-1.5.jar" sourcepath="M2_REPO/org/codehaus/gmaven/runtime/gmaven-runtime-support/1.5/gmaven-runtime-support-1.5-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/codehaus/gmaven/runtime/gmaven-runtime-support/1.5/gmaven-runtime-support-1.5-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/codehaus/gmaven/runtime/gmaven-runtime-api/1.5/gmaven-runtime-api-1.5.jar" sourcepath="M2_REPO/org/codehaus/gmaven/runtime/gmaven-runtime-api/1.5/gmaven-runtime-api-1.5-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/codehaus/gmaven/runtime/gmaven-runtime-api/1.5/gmaven-runtime-api-1.5-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sonatype/gshell/gshell-io/2.4/gshell-io-2.4.jar" sourcepath="M2_REPO/org/sonatype/gshell/gshell-io/2.4/gshell-io-2.4-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/sonatype/gshell/gshell-io/2.4/gshell-io-2.4-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/sonatype/gossip/gossip/1.3/gossip-1.3.jar" sourcepath="M2_REPO/org/sonatype/gossip/gossip/1.3/gossip-1.3-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/sonatype/gossip/gossip/1.3/gossip-1.3-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.jar" sourcepath="M2_REPO/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/com/thoughtworks/qdox/qdox/1.12/qdox-1.12.jar" sourcepath="M2_REPO/com/thoughtworks/qdox/qdox/1.12/qdox-1.12-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/com/thoughtworks/qdox/qdox/1.12/qdox-1.12-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy-all/2.0.1/groovy-all-2.0.1.jar" sourcepath="M2_REPO/org/codehaus/groovy/groovy-all/2.0.1/groovy-all-2.0.1-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/codehaus/groovy/groovy-all/2.0.1/groovy-all-2.0.1-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/jline/jline/0.9.94/jline-0.9.94.jar" sourcepath="M2_REPO/jline/jline/0.9.94/jline-0.9.94-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/jdom/jdom/2.0.2/jdom-2.0.2.jar" sourcepath="M2_REPO/org/jdom/jdom/2.0.2/jdom-2.0.2-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/jdom/jdom/2.0.2/jdom-2.0.2-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar" sourcepath="M2_REPO/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/ow2/asm/asm-all/4.1/asm-all-4.1.jar" sourcepath="M2_REPO/org/ow2/asm/asm-all/4.1/asm-all-4.1-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/ow2/asm/asm-all/4.1/asm-all-4.1-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/oro/oro/2.0.8/oro-2.0.8.jar" sourcepath="M2_REPO/oro/oro/2.0.8/oro-2.0.8-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/ow2/asm/asm/4.1/asm-4.1.jar" sourcepath="M2_REPO/org/ow2/asm/asm/4.1/asm-4.1-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/ow2/asm/asm/4.1/asm-4.1-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/ow2/asm/asm-commons/4.1/asm-commons-4.1.jar" sourcepath="M2_REPO/org/ow2/asm/asm-commons/4.1/asm-commons-4.1-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/ow2/asm/asm-commons/4.1/asm-commons-4.1-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/ow2/asm/asm-tree/4.1/asm-tree-4.1.jar" sourcepath="M2_REPO/org/ow2/asm/asm-tree/4.1/asm-tree-4.1-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/org/ow2/asm/asm-tree/4.1/asm-tree-4.1-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/jaxen/jaxen/1.1.4/jaxen-1.1.4.jar" sourcepath="M2_REPO/jaxen/jaxen/1.1.4/jaxen-1.1.4-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/jaxen/jaxen/1.1.4/jaxen-1.1.4-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.17/log4j-1.2.17.jar" sourcepath="M2_REPO/log4j/log4j/1.2.17/log4j-1.2.17-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/home/schristou88/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/xalan/xalan/2.7.1/xalan-2.7.1.jar" sourcepath="M2_REPO/xalan/xalan/2.7.1/xalan-2.7.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/xalan/serializer/2.7.1/serializer-2.7.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/xml-apis/xml-apis/1.3.04/xml-apis-1.3.04.jar" sourcepath="M2_REPO/xml-apis/xml-apis/1.3.04/xml-apis-1.3.04-sources.jar"/>
 </classpath>
