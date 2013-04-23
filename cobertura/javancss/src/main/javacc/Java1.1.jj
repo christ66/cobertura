@@ -2960,9 +2960,16 @@ void TryStatement() :
  */
 {}
 {
-  "try" Block()
+  "try" TryWithResources() Block()
   ( "catch" "(" FormalParameter() ")" Block() { _ncss++;       Util.debug( "_ncss++" ); _cyc++; } )*
   [ "finally" Block() { _ncss++;       Util.debug( "_ncss++" );} ]
+}
+
+/** Try-with-resource parameter with jdk 7**/
+void TryWithResources() :
+{}
+{
+ ["(" (Expression() [";"] )* ")"]
 }
 
 void Identifier() :
