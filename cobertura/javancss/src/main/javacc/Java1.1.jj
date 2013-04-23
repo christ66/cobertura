@@ -3405,7 +3405,7 @@ void TypeArguments():
 //    "<" TypeArgument() ( LOOKAHEAD(2) "," TypeArgument() )* [LOOKAHEAD(3)">"] [LOOKAHEAD(3)">>"] [LOOKAHEAD(3)">>>"] //Removed by REYNAUD Sebastien (LOGICA)
 
 //Added by REYNAUD Sebastien (LOGICA)
-	"<" TypeArgument() ( LOOKAHEAD(2) "," TypeArgument() )* ">"
+	"<" (TypeArgument() ( LOOKAHEAD(2) "," TypeArgument() )* )* ">"
 //
 
 }
