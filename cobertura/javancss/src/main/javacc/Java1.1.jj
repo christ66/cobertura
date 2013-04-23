@@ -2961,7 +2961,7 @@ void TryStatement() :
 {}
 {
   "try" TryWithResources() Block()
-  ( "catch" "(" FormalParameter() ")" Block() { _ncss++;       Util.debug( "_ncss++" ); _cyc++; } )*
+  ( "catch" "(" CatchParameter() ")" Block() { _ncss++;       Util.debug( "_ncss++" ); _cyc++; } )*
   [ "finally" Block() { _ncss++;       Util.debug( "_ncss++" );} ]
 }
 
@@ -2970,6 +2970,13 @@ void TryWithResources() :
 {}
 {
  ["(" (Expression() [";"] )* ")"]
+}
+
+/** Multi-catch parameter with jdk 7 **/
+void CatchParameter() :
+{}
+{
+  Modifiers() ReferenceType() ("|" ReferenceType())* VariableDeclaratorId()
 }
 
 void Identifier() :
