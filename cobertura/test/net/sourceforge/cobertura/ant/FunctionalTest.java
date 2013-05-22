@@ -406,7 +406,8 @@ public class FunctionalTest extends TestCase
 //		task.setClasspath(classpath);
 		classpath.add(TestUtils.getCoberturaDefaultClasspath());
 		classpath.add(pathElement);
-//
+		java.setClasspath(classpath);
+		
 		try
 		{
 			java.executeJava();
