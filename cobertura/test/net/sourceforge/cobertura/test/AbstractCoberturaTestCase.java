@@ -22,10 +22,10 @@ import org.junit.Before;
  *
  */
 public class AbstractCoberturaTestCase {
-	File tempDir;
-	File srcDir;
-	File reportDir;
-	File instrumentDir;
+	public static File tempDir;
+	public static File srcDir;
+	public static File reportDir;
+	public static File instrumentDir;
 	File mainSourceFile;
 	File datafile;
 
