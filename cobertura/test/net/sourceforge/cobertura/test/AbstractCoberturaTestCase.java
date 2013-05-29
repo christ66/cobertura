@@ -39,7 +39,11 @@ public class AbstractCoberturaTestCase {
 		reportDir = new File(tempDir, "report");
 		instrumentDir = new File(tempDir, "instrument");
 		mainSourceFile = new File(srcDir, "mypackage/Main.java");
-		datafile = new File(srcDir, "cobertura.ser");		
+		datafile = new File(srcDir, "cobertura.ser");
+		
+		srcDir.mkdirs();
+		reportDir.mkdirs();
+		instrumentDir.mkdirs();
 	}
 	
 	@After
