@@ -19,7 +19,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.9.jar"/>
 	<classpathentry kind="lib" path="lib/xalan-2.6.0.jar"/>
 	<classpathentry kind="lib" path="jetty/lib/servlet-api-2.5-6.1.14.jar"/>
-	<classpathentry kind="lib" path="antLibrary/common/groovy/groovy-all-1.6-RC-1.jar" sourcepath="/home/schristou88/Downloads/groovy-all-1.6.0-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.7.0_13"/>
 	<classpathentry kind="lib" path="lib/xerces/2.6.2/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/xerces/2.6.2/xml-apis.jar"/>
@@ -37,5 +36,6 @@
 	<classpathentry kind="lib" path="lib/asm-4.1.jar" sourcepath="/home/schristou88/.m2/repository/org/ow2/asm/asm/4.1/asm-4.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/asm-commons-4.1.jar"/>
 	<classpathentry kind="lib" path="lib/asm-tree-4.1.jar"/>
+	<classpathentry kind="lib" path="antLibrary/common/groovy/groovy-all-1.6-RC-1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

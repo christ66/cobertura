@@ -413,7 +413,7 @@ public class TestUtils {
 	 *				buildDir      : buildDir,           File
 	 *				instrumentDir : instrumentDir,      File
 	 *				reportDir     : reportDir,          File
-	 *		)
+	 *			)
 	 *
 	 * 'ant' is the AntBuilder that is used.   Instrumented classes are in
 	 * instrumentDir; The remaining classes are in buildDir.
@@ -470,7 +470,7 @@ public class TestUtils {
 		
 		// Add classpath to junitTask
 		junit.createClasspath().add(classpath);
-		System.out.println(System.getProperty("java.class.path"));
+		System.out.println(classpath);
 		// Finally execute junitTask
 		junit.execute();
 	}
