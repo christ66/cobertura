@@ -1,12 +1,14 @@
-# ABOUT
+# COBERTURA
+
+## ABOUT
 Cobertura is a free Java code coverage reporting tool.  It is
 based on jcoverage 1.0.5.  See the [Cobertura web page](http://cobertura.sourceforge.net/) for more
 details.
 
-# COPYRIGHT
+## COPYRIGHT
 See the included file "COPYRIGHT"
 
-# LICENSE
+## LICENSE
 Cobertura is free software.  Most of it is licensed under the GNU
 GPL, and you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
@@ -16,16 +18,16 @@ distribution for further details.
 Parts of Cobertura are licensed under the Apache Software License,
 Version 1.1.
 
-# WARRANTY
+## WARRANTY
 Cobertura is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
-# CONVENTIONS
+## CONVENTIONS
 When contributing consider using the provided xsl for code formatting.
 
-# CONTRIBUTORS
+## CONTRIBUTORS
 List of all contributors to Cobertura listed alphabetically by last name
 * Copyright (C) 2005 Björn Beskow      <bbeskow a.t users d.o.t sourceforge d.o.t net>
 * Copyright (C) 2008 Matt Cordes        <mcordes a.t visa d.o.t com>
@@ -56,16 +58,16 @@ List of all contributors to Cobertura listed alphabetically by last name
 * Copyright (C) 2005 Nathan Wilson      <ndciwilson a.t users d.o.t sourceforge d.o.t net>
 * Copyright (C) 2005 Alexei Yudichev    <sflexus a.t users d.o.t sourceforge d.o.t net>
 
-# MAVEN MIGRATION NOTES
+## MAVEN MIGRATION NOTES
 * How do we get a good blame while all files were moved? 
 Use "git blame --follow" nameOfFile.java
 
 
-# CHANGELOG
+## CHANGELOG
 Code in the net.sourceforge.cobertura.javancss package is
 Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 
-## version 1.9.5:
+### version 1.9.5:
 	* New --ignoreTrivial switch that tells Cobertura to ignore the 
 	  following in the coverage report: Getter methods that simply 
 	  read a class field; Setter methods that set a class field;
@@ -77,7 +79,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	  method in the coverage report.
 	  (Patch 3010530) (Tad Smith)
 
-## version 1.9.4.1:
+### version 1.9.4.1:
 	* Fix a problem that occurs in Tomcat.   When TouchCollector 
 	  initializes, it calls ProjectData.initialize() which (with 
 	  Tomcat only) eventually calls TouchCollector.   However, 
@@ -86,7 +88,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	  for suggesting the fix).
 	* Runs on Java 5.  (Fix for Bug 2962599).
 
-## version 1.9.4:
+### version 1.9.4:
 	* Cobertura is now up to 10x faster. Aggregates changes in
 	  temporary TouchCollector class (thread-safe, but lock-free) and after that
 	  applies it on real model (ProjectData) as a batch operation. (Piotr Tabor)
@@ -95,7 +97,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	* Fixed "Inner classes not counted in coverage report total" bug (#2943320)
 	  (Charlie Squires)
 
-## version 1.9.3:
+### version 1.9.3:
 	* Update to the latest Javancss (32.53) to fix some complexity calculation
 	  problems.  Bug #2824425. (John Lewis)
 	* Non-Java source files (like Groovy) no longer show the JavaNCSS warnings
@@ -106,18 +108,18 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	  if ProjectData.saveGlobalProjectData() is called before any instrumented
 	  code is executed.
 
-## version 1.9.2:
+### version 1.9.2:
 	* Cobertura is now thread safe.
 	* Fix for FileLocker exception when writing coverage data 
 	  (java.lang.IllegalStateException: Shutdown in progress) that started
 	  to appear with Java 6 update 14. (Chris van Es)
 	* Fix for bug "Unix scripts behave oddly due to DOS format - ID: 2788621"
 
-## version 1.9.1.1:
+### version 1.9.1.1:
 	* Just a copy of 1.9.1 with a corrected Maven POM file (cobertura-runtime.pom).
 	  A new version has to be created to get it uploaded to the central Maven repo.
 
-## version 1.9.1:
+### version 1.9.1:
 	* Complexity calculation now works with Java 5 language
 	  features such as Annotations. (Tri Bao Ho)
 	* Removed the bold font from the source-view for uncovered lines to
@@ -153,7 +155,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	* Spelling error corrected in main.css file - changed magin to
 	  margin. (Dennis Lundberg)
 
-## version 1.9:
+### version 1.9:
 	* Much improved branch coverage.  Information on whether
 	  the true as well as the false of an if statement is
 	  collected.  Also, information on the branches of a
@@ -178,7 +180,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	  net.sourceforge.cobertura.datafile property.  
 	  (Joakim Erdfelt)
 
-## version 1.8 (2006-04-10)
+### version 1.8 (2006-04-10)
 	* Ability to have multiple <ignore/> regular expressions
 	  in the instrument task (Alexei Yudichev).
 	* Ability to specify a minimum branch coverage rate and
@@ -213,7 +215,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	  so that we don't need to include the entire JavaNCSS and
 	  CCL jars.
 
-## version 1.7 (2005-12-06)
+### version 1.7 (2005-12-06)
 	* log4j is no longer used by the Cobertura classes that are
 	  accessed by instrumented Java code.  This means you will
 	  not need to add log4j to your project's classpath in order
@@ -235,7 +237,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	* Added support for classes compiled with AspectJ.
 	* Cobertura now produces valid XHTML 1.0 reports.
 
-## version 1.6 (2005-08-22)
+### version 1.6 (2005-08-22)
 	* Can now use multiple filesets in the cobertura-instrument
 	  task (Thanks to Grzegorz Lukasik).
 	* Can now use multiple filesets in the cobertura-report task
@@ -245,7 +247,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	  the HTML report included anonymous classes when it should
 	  not have.
 
-## version 1.5 (2005-08-05)
+### version 1.5 (2005-08-05)
 	* Shortened the header shown when running Cobertura (Thanks
 	  to Jarkko Viinamäki).
 	* Don't save the data file twice after instrumenting.
@@ -277,7 +279,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	  the online documentation for usage information.
 	* The command line Windows batch scripts work better.
 
-## version 1.4 (2005-05-30)
+### version 1.4 (2005-05-30)
 	* Fixed a bug that sometimes resulted in a
 	  StringIndexOutOfBoundsException when running cobertura-report
 	  (Thanks to Grzegorz Lukasik).
@@ -290,7 +292,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	* Show "N/A" in the branch column of the HTML report for classes
 	  and packages that do not have any branches.
 
-## version 1.3 (2005-05-20)
+### version 1.3 (2005-05-20)
 	* Increased speed of HTML reports by filtering the files read
 	  in to determine cyclomatic complexity numbers on.
 	* In the lower left pane of the HTML reports, classes are now
@@ -305,12 +307,12 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	  data files from the ant tasks and the command line.
 	* More user-friendly error checking and reporting.
 
-## version 1.2 (2005-03-16)
+### version 1.2 (2005-03-16)
 	* Fix a bug that caused the XML reports to be invalid XML
 	  (they were missing the </package> tag).
 	* Use Java 1.4 pattern matching and remove Jakarta ORO.
 
-## version 1.1 (2005-03-08)
+### version 1.1 (2005-03-08)
 	* Fix a bug in the syntax highlighting code of the HTML report
 	  generation.  Previously, the highlighting for single quotes
 	  containing "\\" would not end correctly.
@@ -338,7 +340,7 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	  This changes the structure of the XML report so that <classes> are
 	  enclosed inside <packages>.
 
-## version 1.0 (2005-02-12)
+### version 1.0 (2005-02-12)
 	* Forked jcoverage 1.0.5 (although the version in the source says 1.0.4).
 	  All original code is copyright 2003 jcoverage ltd.  Kurt Guenther
 	  highlighted a bug in the branch coverage, was was fixed.
