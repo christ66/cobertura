@@ -1,4 +1,5 @@
 # COBERTURA
+[![Build Status](https://travis-ci.org/cobertura/cobertura.png)](https://travis-ci.org/cobertura/cobertura)
 
 ## ABOUT
 Cobertura is a free Java code coverage reporting tool.  It is
