@@ -7,7 +7,7 @@ based on jcoverage 1.0.5.  See the [Cobertura web page](http://cobertura.sourcef
 details.
 
 ## COPYRIGHT
-See the included file "COPYRIGHT"
+See the included file "LICENSE.txt"
 
 ## LICENSE
 Cobertura is free software.  Most of it is licensed under the GNU
