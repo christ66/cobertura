@@ -1,6 +1,3 @@
-<<<<<<< HEAD:cobertura/ChangeLog
-version 2.0:
-=======
 # COBERTURA
 [![Build Status](https://travis-ci.org/cobertura/cobertura.png)](https://travis-ci.org/cobertura/cobertura)
 
@@ -72,7 +69,6 @@ Code in the net.sourceforge.cobertura.javancss package is
 Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 
 ### version 1.9.5:
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:README.markdown
 	* New --ignoreTrivial switch that tells Cobertura to ignore the 
 	  following in the coverage report: Getter methods that simply 
 	  read a class field; Setter methods that set a class field;

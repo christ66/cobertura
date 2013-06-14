@@ -164,12 +164,7 @@ public class FunctionalConditionCoverageTest extends TestCase {
 	}
 
 	@Test
-<<<<<<< HEAD:cobertura/test/net/sourceforge/cobertura/ant/FunctionalConditionCoverageTest.java
-	public static void testConditionCoverage() throws Exception
-	{
-=======
 	public static void testConditionCoverage() throws Exception {
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:cobertura/src/test/java/net/sourceforge/cobertura/ant/FunctionalConditionCoverageTest.java
 		runTestAntScript("condition-coverage", "test-condition-coverage");
 		verify("condition-coverage");
 	}
@@ -424,18 +419,6 @@ public class FunctionalConditionCoverageTest extends TestCase {
 	 * Use the ant 'java' task to run the test.xml
 	 * file and the specified target.
 	 */
-<<<<<<< HEAD:cobertura/test/net/sourceforge/cobertura/ant/FunctionalConditionCoverageTest.java
-	private static void runTestAntScript(String testName, String target) throws IOException
-	{
-		Java java = new Java();
-		java.setProject(TestUtils.project);
-		java.init();
-		
-		// Call ant launcher.  Requires ant-lancher.jar.
-		java.setClassname("org.apache.tools.ant.launch.Launcher");
-		java.setFork(true);
-		
-=======
 	private static void runTestAntScript(String testName, String target)
 			throws IOException {
 		Java java = new Java();
@@ -445,8 +428,6 @@ public class FunctionalConditionCoverageTest extends TestCase {
 		// Call ant launcher.  Requires ant-lancher.jar.
 		java.setClassname("org.apache.tools.ant.launch.Launcher");
 		java.setFork(true);
-
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:cobertura/src/test/java/net/sourceforge/cobertura/ant/FunctionalConditionCoverageTest.java
 		AntUtil.transferCoberturaDataFileProperty(java);
 
 		java.createArg().setValue("-f");
@@ -469,16 +450,8 @@ public class FunctionalConditionCoverageTest extends TestCase {
 		System.out.println(classpath);
 		try {
 			java.execute();
-<<<<<<< HEAD:cobertura/test/net/sourceforge/cobertura/ant/FunctionalConditionCoverageTest.java
-		}
-		finally
-		{
-			if (outputFile.exists())
-			{
-=======
 		} finally {
 			if (outputFile.exists()) {
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:cobertura/src/test/java/net/sourceforge/cobertura/ant/FunctionalConditionCoverageTest.java
 				// Put the contents of the output file in the exception
 				System.out.println("\n\n\nOutput from Ant for " + testName
 						+ " test:\n----------------------------------------\n"

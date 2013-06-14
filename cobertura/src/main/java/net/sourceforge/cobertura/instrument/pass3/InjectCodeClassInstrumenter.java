@@ -82,7 +82,7 @@ public class InjectCodeClassInstrumenter
 
 	/**
 	 * @param cv                 - a listener for code-instrumentation events
-	 * @param ignoreRegexp       - list of patters of method calls that should be ignored from line-coverage-measurement
+	 * @param ignoreRegexes       - list of patters of method calls that should be ignored from line-coverage-measurement
 	 * @param classMap           - map of all interesting places in the class. You should acquire it by {@link BuildClassMapClassVisitor} and remember to
 	 *                           prepare it using {@link ClassMap#assignCounterIds()} before using it with {@link InjectCodeClassInstrumenter}
 	 * @param duplicatedLinesMap - map of found duplicates in the class. You should use {@link DetectDuplicatedCodeClassVisitor} to find the duplicated lines.
@@ -156,12 +156,8 @@ public class InjectCodeClassInstrumenter
 	 */
 	private class GenerateCallCoberturaInitMethodVisitor extends MethodVisitor {
 		private String className;
-<<<<<<< HEAD:cobertura/src/net/sourceforge/cobertura/instrument/pass3/InjectCodeClassInstrumenter.java
-		public GenerateCallCoberturaInitMethodVisitor(MethodVisitor arg0,String className) {
-=======
 		public GenerateCallCoberturaInitMethodVisitor(MethodVisitor arg0,
 				String className) {
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:cobertura/src/main/java/net/sourceforge/cobertura/instrument/pass3/InjectCodeClassInstrumenter.java
 			super(Opcodes.ASM4, arg0);
 			this.className = className;
 		}

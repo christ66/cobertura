@@ -64,12 +64,7 @@ public abstract class CoverageDataFileHandler {
 
 	public static ProjectData loadCoverageData(File dataFile) {
 		InputStream is = null;
-<<<<<<< HEAD:cobertura/src/net/sourceforge/cobertura/coveragedata/CoverageDataFileHandler.java
-		try
-		{
-=======
 		try {
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:cobertura/src/main/java/net/sourceforge/cobertura/coveragedata/CoverageDataFileHandler.java
 			is = new BufferedInputStream(new FileInputStream(dataFile), 16384);
 			return loadCoverageData(is);
 		} catch (IOException e) {

@@ -61,11 +61,7 @@ public class HistoryMethodAdapter extends MethodVisitor {
 
 	public HistoryMethodAdapter(MethodVisitor mv, int eventsToTrace) {
 		super(Opcodes.ASM4, mv);
-<<<<<<< HEAD:cobertura/src/net/sourceforge/cobertura/instrument/HistoryMethodAdapter.java
-		this.eventsToTrace = eventsToTrace; 
-=======
 		this.eventsToTrace = eventsToTrace;
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:cobertura/src/main/java/net/sourceforge/cobertura/instrument/HistoryMethodAdapter.java
 	}
 	public List<AbstractInsnNode> backlog() {
 		return Collections.unmodifiableList(backlog);

@@ -34,22 +34,13 @@ import net.sourceforge.cobertura.instrument.pass1.DetectDuplicatedCodeClassVisit
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
-<<<<<<< HEAD:cobertura/src/net/sourceforge/cobertura/instrument/AbstractFindTouchPointsClassInstrumenter.java
-
-=======
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:cobertura/src/main/java/net/sourceforge/cobertura/instrument/AbstractFindTouchPointsClassInstrumenter.java
 
 /**
  * Class extending {@link ClassVisitor} that provides features used by all three passes of instrumentation.
  *
  * @author piotr.tabor@gmail.com
  */
-<<<<<<< HEAD:cobertura/src/net/sourceforge/cobertura/instrument/AbstractFindTouchPointsClassInstrumenter.java
-public class AbstractFindTouchPointsClassInstrumenter extends ClassVisitor{
-=======
 public class AbstractFindTouchPointsClassInstrumenter extends ClassVisitor {
-
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:cobertura/src/main/java/net/sourceforge/cobertura/instrument/AbstractFindTouchPointsClassInstrumenter.java
 	/**
 	 * List of patterns to know that we don't want trace lines that are calls to some methods
 	 */
@@ -101,13 +92,8 @@ public class AbstractFindTouchPointsClassInstrumenter extends ClassVisitor {
 			Collection<Pattern> ignoreRegexp,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap) {
 		super(Opcodes.ASM4, cv);
-<<<<<<< HEAD:cobertura/src/net/sourceforge/cobertura/instrument/AbstractFindTouchPointsClassInstrumenter.java
-		this.ignoreRegexp=ignoreRegexp;
-		this.duplicatedLinesMap=duplicatedLinesMap;
-=======
 		this.ignoreRegexp = ignoreRegexp;
 		this.duplicatedLinesMap = duplicatedLinesMap;
->>>>>>> b5bd520fc9600fcd3d7687a85d24e8f60e204c04:cobertura/src/main/java/net/sourceforge/cobertura/instrument/AbstractFindTouchPointsClassInstrumenter.java
 	}
 
 	/**
