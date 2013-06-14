@@ -1,0 +1,341 @@
+<?php
+	$title = "Command Line Reference";
+	include("header.html");
+?>
+
+<h1>Command Line Reference</h1>
+
+<p>
+    Cobertura can be used either from the command line or via
+    ant tasks. You can even mix and match the command line and
+    ant tasks. This document describes how to use Cobertura
+    from the command line.
+</p>
+
+
+<h2>Instrumenting</h2>
+
+<p>
+    <code>cobertura-instrument.bat [--basedir <i>dir</i>] [--datafile <i>file</i>] [--destination <i>dir</i>] [--ignore
+        <i>regex</i>] <i>classes</i> [<i>...</i>]</code>
+</p>
+
+<p>
+    Note: Classes may be specified individually, or as a directory tree containing multiple classes.
+</p>
+
+<table>
+    <tr>
+        <th>Parameter</th>
+        <th>Required?</th>
+        <th>Description</th>
+        <th>Default Value</th>
+    </tr>
+    <tr>
+        <td>--basedir</td>
+        <td>No</td>
+        <td>Specify the base directory containing the classes you want to instrument. This command line parameter should
+            appear <i>before</i> any classes. If you are instrumenting classes in different directories, you should
+            specify multiple basedirs.
+        </td>
+        <td>No default value.</td>
+    </tr>
+    <tr>
+        <td>--datafile</td>
+        <td>No</td>
+        <td>Specify the name of the file to use for storing the metadata about your classes. This is a single file
+            containing serialized Java classes. It contains information about the names of classes in your project,
+            their method names, line numbers, etc. It will be updated as your tests are run, and will be referenced by
+            the Cobertura reporting command.
+        </td>
+        <td>"cobertura.ser" in the current directory</td>
+    </tr>
+    <tr>
+        <td>--destination</td>
+        <td>No</td>
+        <td>Specify the output directory for the instrumented classes.</td>
+        <td>If no destination directory is specified, then the uninstrumented classes will be overwritten with their
+            instrumented counterparts.
+        </td>
+    </tr>
+    <tr>
+        <td>--ignore</td>
+        <td>No</td>
+        <td>Specify a regular expression to filter out certain lines of your source code. This is useful for ignoring
+            logging statements, for example. You can have as many &lt;ignore/&gt; statements as you want.
+        </td>
+        <td>No files are ignored.</td>
+    </tr>
+</table>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+    <p>
+        <code>cobertura-instrument.bat --destination C:\MyProject\build\instrumented C:\MyProject\build\classes</code>
+    </p>
+</div>
+
+
+<br/>
+<h2>Running Tests</h2>
+
+<p>
+    You can basically run your tests the same way you always do. The
+    only changes you need to make are to your classpath:
+</p>
+
+<ul>
+    <li>Include cobertura.jar</li>
+    <li>Add the directory containing the instrumented
+        classes BEFORE the directory containing the uninstrumented classes.
+        The order is very important.
+    </li>
+</ul>
+
+<p>
+    Your tests do not have to be JUnit tests. They don't even have
+    to be automated. If your application is a program with a GUI,
+    you could fire it up, perform a few actions, then exit.
+    Cobertura updates its data file whenever your instrumented classes
+    are accessed.
+</p>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+    <p>
+        <code>java -cp
+            C:\cobertura\lib\cobertura.jar;C:\MyProject\build\instrumented;C:\MyProject\build\classes;C:\MyProject\build\test-classes
+            -Dnet.sourceforge.cobertura.datafile=C:\MyProject\build\cobertura.ser ASimpleTestCase</code>
+    </p>
+</div>
+
+
+<br/>
+<h2>Reporting</h2>
+
+<p>
+    <code>cobertura-report.bat [--datafile <i>file</i>] [--destination <i>dir</i>] [--format (html|xml)] [--encoding <i>encoding</i>]
+        <i>source code directory</i> [<i>...</i>] [--basedir <i>dir</i> <i>file underneath basedir</i>
+        <i>...</i>]</code>
+</p>
+
+<table>
+    <tr>
+        <th>Parameter</th>
+        <th>Required?</th>
+        <th>Description</th>
+        <th>Default Value</th>
+    </tr>
+    <tr>
+        <td>--basedir</td>
+        <td>No</td>
+        <td>Specify a directory containing source code. All files listed after this are assumed to be underneath this
+            directory. This should only be used if you want to include only a few specific files underneath a source
+            tree and exclude all other files.
+        </td>
+        <td>No default value.</td>
+    </tr>
+    <tr>
+        <td>--datafile</td>
+        <td>No</td>
+        <td>Specify the name of the file containing metadata about your classes.</td>
+        <td>"cobertura.ser" in the current directory</td>
+    </tr>
+    <tr>
+        <td>--destination</td>
+        <td>Yes</td>
+        <td>Specify the output directory for the report.</td>
+        <td>No default value.</td>
+    </tr>
+    <tr>
+        <td>--format</td>
+        <td>No</td>
+        <td>The type of report you want to generate.</td>
+        <td>html</td>
+    </tr>
+    <tr>
+        <td>--encoding</td>
+        <td>No</td>
+        <td>Specify the encoding used to read the source. See javadocs for java.nio.charset.Charset for more details.
+            <BR><BR><I>Since 1.9.1.</I></td>
+        <td>The default encoding.</td>
+    </tr>
+</table>
+
+<p>
+    The source code directories are used to calculate the cyclomatic code complexity of each class. The HTML reports are
+    also made of annotated versions of each source file, showing which lines of code were excercised.
+</p>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+    <p>
+        <code>cobertura-report.bat --format html --datafile C:\MyProject\build\cobertura.ser --destination
+            C:\MyProject\reports\coverage C:\MyProject\src</code>
+    </p>
+</div>
+
+
+<br/>
+<h2>Checking Coverage</h2>
+
+<p>
+    <code>cobertura-check.bat [--datafile <i>file</i>] [--branch <i>0..100</i>] [--line <i>0..100</i>] [--totalbranch
+        <i>0..100</i>] [--totalline <i>0..100</i>] [--regex <i>regex</i>:<i>branchrate</i>:<i>linerate</i>]</code>
+</p>
+
+<p>
+    This can be run after your JUnit tests to show which classes do not
+    have adequate test coverage. Note: If no parameters are specified
+    then all values will be set to 50%
+</p>
+
+<table>
+    <tr>
+        <th>Parameter</th>
+        <th>Required?</th>
+        <th>Description</th>
+        <th>Default Value</th>
+    </tr>
+    <tr>
+        <td>--branch</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable branch coverage rate needed by each class. This should be an integer value
+            between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>--datafile</td>
+        <td>No</td>
+        <td>Specify the name of the file containing metadata about your classes.</td>
+        <td>"cobertura.ser" in the current directory</td>
+    </tr>
+    <tr>
+        <td>--line</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable line coverage rate needed by each class. This should be an integer value
+            between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>--regex</td>
+        <td>No</td>
+        <td>For finer grained control, you can optionally specify minimum branch and line coverage rates for individual
+            classes using any number of regular expressions.
+        </td>
+        <td>None.</td>
+    </tr>
+    <tr>
+        <td>--packagebranch</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable average branch coverage rate needed by each package. This should be an
+            integer value between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>--packageline</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable average line coverage rate needed by each package. This should be an integer
+            value between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>--totalbranch</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable average branch coverage rate needed by the project as a whole. This should be
+            an integer value between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>--totalline</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable average line coverage rate needed by the project as a whole. This should be
+            an integer value between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+</table>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+    <p>
+        <code>cobertura-check.bat --datafile C:\MyProject\build\cobertura.ser --branch 50 --totalline 70 --regex
+            com.example.rabidsquirrel.*:65:65</code>
+    </p>
+</div>
+
+<p>
+    The above example specifies that each class must have a branch
+    coverage rate of 50 or higher, the average line coverage rate
+    for the entire project must be 70 or higher, and any classes
+    in the package com.example.rabidsquirrel must have a line
+    coverage and a branch coverage of 65 or greater.
+</p>
+
+
+<br/>
+<h2>Merging Datafiles</h2>
+
+<p>
+    <code>cobertura-merge.bat [--datafile <i>file</i>] <i>datafile</i> [<i>...</i>]</code>
+</p>
+
+<p>
+    This can be run after your JUnit tests to merge multiple data files
+    into a single data file.
+</p>
+
+<table>
+    <tr>
+        <th>Parameter</th>
+        <th>Required?</th>
+        <th>Description</th>
+        <th>Default Value</th>
+    </tr>
+    <tr>
+        <td>--datafile</td>
+        <td>No</td>
+        <td>Specify the name of the file containing metadata about your classes. This is the "destination" file into
+            which the contents of the other data files will be merged.
+        </td>
+        <td>"cobertura.ser" in the current directory</td>
+    </tr>
+</table>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+    <p>
+        <code>cobertura-merge.bat --datafile C:\MyProject\build\cobertura.ser
+            C:\MyProject\testrundir\server\cobertura.ser C:\MyProject\testrundir\client\cobertura.ser</code>
+    </p>
+</div>
+
+<p>
+    The above example merges a 'cobertura.ser' file from a server
+    process and from a client process into one combined file in the
+    build directory. You can then use cobertura-report to create
+    a report based on this new data file.
+</p>
+
+
+<?php include("footer.html"); ?>

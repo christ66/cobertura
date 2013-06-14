@@ -1,0 +1,452 @@
+<?php
+	$title = "Ant Task Reference";
+	include("header.html");
+?>
+
+<h1>Ant Task Reference</h1>
+
+<p>
+    Cobertura can be used either from the command line or via
+    Ant tasks. You can even mix and match the command line and
+    Ant tasks. This document describes how to use Cobertura
+    via Ant tasks.
+</p>
+
+<p>
+    You must first tell Ant about the Cobertura Ant tasks using
+    a taskdef statement. The best place to do this is near the
+    top of your build.xml script, before any target statements.
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;property name="cobertura.dir" value="C:/javastuff/cobertura" /&gt;
+
+    &lt;path id="cobertura.classpath"&gt;
+    &lt;fileset dir="${cobertura.dir}"&gt;
+    &lt;include name="cobertura.jar" /&gt;
+    &lt;include name="lib/**/*.jar" /&gt;
+    &lt;/fileset&gt;
+    &lt;/path&gt;
+
+    &lt;taskdef classpathref="cobertura.classpath" resource="tasks.properties" /&gt;</code></pre>
+</div>
+
+
+<h2>cobertura-instrument Task</h2>
+
+<table>
+    <tr>
+        <th>Parameter</th>
+        <th>Required?</th>
+        <th>Description</th>
+        <th>Default Value</th>
+    </tr>
+    <tr>
+        <td>datafile</td>
+        <td>No</td>
+        <td>Specify the name of the file to use for storing the metadata about your classes. This is a single file
+            containing serialized Java classes. It contains information about the names of classes in your project,
+            their method names, line numbers, etc. It will be updated as your tests are run, and will be referenced by
+            the Cobertura reporting command.
+        </td>
+        <td>"cobertura.ser" in the current directory</td>
+    </tr>
+    <tr>
+        <td>maxmemory</td>
+        <td>No</td>
+        <td>Specify the maximum amount of memory used by the JVM. This is not normally needed, but you may need to
+            specify a larger value if you see out of memory exceptions while this ant task is running. For example,
+            "1024M". This might be needed if you have a very large number of classes.
+        </td>
+        <td>The default value for your system</td>
+    </tr>
+    <tr>
+        <td>todir</td>
+        <td>No</td>
+        <td>Specify the output directory for the instrumented classes. Note: If you do not specify a todir attribute, be
+            careful to make sure to delete any instrumented class files whenever you delete your cobertura.ser file.
+        </td>
+        <td>If no destination directory is specified, then the uninstrumented classes will be overwritten with their
+            instrumented counterparts.
+        </td>
+    </tr>
+</table>
+
+<p>
+    Possible to specify a forked JVM max memory size?
+</p>
+
+<p>
+    You must tell Cobertura which class files to instrument by passing
+    in standard ant filesets.
+</p>
+
+<p>
+    You can also pass in jar files to be instrumented using standard
+    ant filesets. Cobertura will extract each class from the jar and
+    instrument it. If 'todir' was not specified then the original
+    jar will be overwritten with an instrumented version. Otherwise
+    a new jar will be written to the output directory.
+</p>
+
+<p>
+    You can tell Cobertura to ignore certain classes by passing in
+    "ignore" regular expressions. The ignore pattern can be any
+    valid perl 5 regular expression. This will ignore any calls to
+    any method that matches the ignore regular expression. It will
+    NOT skip over these classes during instrumention. To exclude
+    classes from being instrumented, either exclude them from your
+    fileset or use the alternative method below and specify an
+    excludeClasses pattern.
+</p>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;delete file="cobertura.ser" /&gt;
+
+    &lt;cobertura-instrument todir="${instrumented.dir}"&gt;
+    &lt;ignore regex="org.apache.log4j.*" /&gt;
+    &lt;fileset dir="${classes.dir}"&gt;
+    &lt;include name="**/*.class" /&gt;
+    &lt;exclude name="**/*Test.class" /&gt;
+    &lt;/fileset&gt;
+    &lt;fileset dir="${guiclasses.dir}"&gt;
+    &lt;include name="**/*.class" /&gt;
+    &lt;exclude name="**/*Test.class" /&gt;
+    &lt;/fileset&gt;
+    &lt;fileset dir="${jars.dir}"&gt;
+    &lt;include name="my-simple-plugin.jar" /&gt;
+    &lt;/fileset&gt;
+    &lt;/cobertura-instrument&gt;</code></pre>
+</div>
+
+<p>
+    Alternatively you can specify a classpath and a set of classes to
+    include and exclude, and Cobertura will look through the classpath
+    and only instrument the specified classes. When this method is
+    used, Cobertura will instrument archives inside of archives. For
+    example, if you have a war file which contains a jar file at
+    WEB-INF/lib, Cobertura will extract the war, instrument the classes
+    within the jar, then build a new war containing the instrumented jar.
+</p>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;delete file="cobertura.ser" /&gt;
+
+    &lt;cobertura-instrument todir="${instrumented.dir}"&gt;
+    &lt;includeClasses regex=".*" /&gt;
+    &lt;excludeClasses regex=".*\.Test.*" /&gt;
+
+    &lt;instrumentationClasspath&gt;
+    &lt;path refid="test.classpath" /&gt;
+    &lt;pathelement location="${test.build}" /&gt;
+    &lt;/instrumentationClasspath&gt;
+    &lt;/cobertura-instrument&gt;</code></pre>
+</div>
+
+
+<br/>
+<h2>Running Tests</h2>
+
+<p>
+    Here's an example call to the JUnit ant task that has been
+    modified to work with Cobertura. Important settings are
+    highlighted in <span class="highlight">blue</span>.
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;junit <span class="highlight">fork="yes"</span> dir="${basedir}" failureProperty="test.failed"&gt;
+    &lt;!--
+    Specify the name of the coverage data file to use.
+    The value specified below is the default.
+    --&gt;
+	<span class="highlight">&lt;sysproperty key="net.sourceforge.cobertura.datafile"
+		file="${basedir}/cobertura.ser" /&gt;</span>
+
+    &lt;!--
+    Note the classpath order: instrumented classes are before the
+    original (uninstrumented) classes. This is important.
+    --&gt;
+    <span class="highlight">&lt;classpath location="${instrumented.dir}" /&gt;</span>
+    &lt;classpath location="${classes.dir}" /&gt;
+
+    &lt;!--
+    The instrumented classes reference classes used by the
+    Cobertura runtime, so Cobertura and its dependencies
+    must be on your classpath.
+    --&gt;
+    <span class="highlight">&lt;classpath refid="cobertura_classpath" /&gt;</span>
+
+    &lt;formatter type="xml" /&gt;
+    &lt;test name="${testcase}" todir="${reports.xml.dir}" if="testcase" /&gt;
+    &lt;batchtest todir="${reports.xml.dir}" unless="testcase"&gt;
+    &lt;fileset dir="${src.dir}"&gt;
+    &lt;include name="**/*Test.java" /&gt;
+    &lt;/fileset&gt;
+    &lt;/batchtest&gt;
+    &lt;/junit&gt;</code></pre>
+</div>
+
+<p>
+    It is important to set fork="true" because of the way Cobertura works.
+    It only flushes its changes to the coverage data file to disk when
+    the JVM exits. If JUnit runs in the same JVM as ant, then the
+    coverage data file will be updated AFTER ant exits, but you want to
+    run cobertura-report BEFORE ant exits.
+</p>
+
+<p>
+    For this same reason, if you're using ant 1.6.2 or higher then you
+    might want to set forkmode="once" This will cause only one JVM
+    to be started for all your JUnit tests, and will reduce the overhead
+    of Cobertura reading/writing the coverage data file each time a JVM
+    starts/stops.
+</p>
+
+
+<br/>
+<h2>cobertura-report Task</h2>
+
+<table>
+    <tr>
+        <th>Parameter</th>
+        <th>Required?</th>
+        <th>Description</th>
+        <th>Default Value</th>
+    </tr>
+    <tr>
+        <td>format</td>
+        <td>No</td>
+        <td>The type of report you want to generate.</td>
+        <td>html</td>
+    </tr>
+    <tr>
+        <td>datafile</td>
+        <td>No</td>
+        <td>Specify the name of the file containing metadata about your classes.</td>
+        <td>"cobertura.ser" in the current directory</td>
+    </tr>
+    <tr>
+        <td>destdir</td>
+        <td>Yes</td>
+        <td>Specify the output directory for the report.</td>
+        <td>No default value.</td>
+    </tr>
+    <tr>
+        <td>maxmemory</td>
+        <td>No</td>
+        <td>Specify the maximum amount of memory used by the JVM. This is not normally needed, but you may need to
+            specify a larger value if you see out of memory exceptions while this ant task is running. This could happen
+            when you have a very large number of classes.
+        </td>
+        <td>The default value for your system</td>
+    </tr>
+    <tr>
+        <td>srcdir</td>
+        <td>Yes</td>
+        <td>Specify the directory containing the source code of your project. This is used to calculate the cyclomatic
+            code complexity of each class. The HTML reports are also made of annotated versions of each source file,
+            showing which lines of code were excercised.
+        </td>
+        <td>No default value.</td>
+    </tr>
+    <tr>
+        <td>encoding</td>
+        <td>No</td>
+        <td>Specify the encoding used to read the source. See javadocs for java.nio.charset.Charset for more details.
+            <BR><BR><I>Since 1.9.1.</I></td>
+        <td>The default encoding.</td>
+    </tr>
+</table>
+
+<p>
+    Alternately, you may specify source directories using nested filesets.
+    This is required if you have more than one directory of source code.
+</p>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+    <pre><code>&lt;cobertura-report format="html" destdir="${coveragereport.dir}" srcdir="${src.dir}" /&gt;</code></pre>
+</div>
+
+<p>
+    Example with multiple source directories:
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;cobertura-report format="html" destdir="${coveragereport.dir}" &gt;
+    &lt;fileset dir="${src.dir}"&gt;
+    &lt;include name="**/*.java" /&gt;
+    &lt;exclude name="**/*Stub.java" /&gt;
+    &lt;/fileset&gt;
+    &lt;fileset dir="${guisrc.dir}"&gt;
+    &lt;include name="**/*.java" /&gt;
+    &lt;exclude name="**/*RB.java" /&gt;
+    &lt;/fileset&gt;
+    &lt;/cobertura-report&gt;</code></pre>
+</div>
+
+
+<br/>
+<h2>cobertura-check Task</h2>
+
+<table>
+    <tr>
+        <th>Parameter</th>
+        <th>Required?</th>
+        <th>Description</th>
+        <th>Default Value</th>
+    </tr>
+    <tr>
+        <td>branchrate</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable branch coverage rate needed by each class. This should be an integer value
+            between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>datafile</td>
+        <td>No</td>
+        <td>Specify the name of the file containing metadata about your classes.</td>
+        <td>"cobertura.ser" in the current directory</td>
+    </tr>
+    <tr>
+        <td>failureproperty</td>
+        <td>No</td>
+        <td>If haltonfailure is false and any of the specified checks fails, then Cobertura will set the given property
+            to "true"
+        </td>
+        <td>None</td>
+    </tr>
+    <tr>
+        <td>haltonfailure</td>
+        <td>No</td>
+        <td>If this property is true and any of the specified checks fails, then Cobertura will cause the ant build to
+            fail.
+        </td>
+        <td>True</td>
+    </tr>
+    <tr>
+        <td>linerate</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable line coverage rate needed by each class. This should be an integer value
+            between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>packagebranchrate</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable average branch coverage rate needed by each package. This should be an
+            integer value between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>packagelinerate</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable average line coverage rate needed by each package. This should be an integer
+            value between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>totalbranchrate</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable average branch coverage rate needed by the project as a whole. This should be
+            an integer value between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+    <tr>
+        <td>totallinerate</td>
+        <td>No</td>
+        <td>Specify the minimum acceptable average line coverage rate needed by the project as a whole. This should be
+            an integer value between 0 and 100.
+        </td>
+        <td>0</td>
+    </tr>
+</table>
+
+<p>
+    If you do not specify branchrate, linerate, totalbranchrate or
+    totallinerate, then Cobertura will use 50% for all of these values.
+</p>
+
+<p>
+    You can specify finer-grained thresholds for certain classes
+    using regular expressions. See the example below.
+</p>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;cobertura-check branchrate="30" totalbranchrate="60" totallinerate="80"&gt;
+    &lt;regex pattern="com.example.reallyimportant.*" branchrate="80" linerate="90"/&gt;
+    &lt;regex pattern="com.example.boringcode.*" branchrate="40" linerate="30"/&gt;
+    &lt;/cobertura-check&gt;</code></pre>
+</div>
+
+
+<br/>
+<h2>cobertura-merge Task</h2>
+
+<table>
+    <tr>
+        <th>Parameter</th>
+        <th>Required?</th>
+        <th>Description</th>
+        <th>Default Value</th>
+    </tr>
+    <tr>
+        <td>datafile</td>
+        <td>No</td>
+        <td>Specify the name of the file containing metadata about your classes. This is the "destination" file into
+            which the contents of the other data files will be merged.
+        </td>
+        <td>"cobertura.ser" in the current directory</td>
+    </tr>
+    <tr>
+        <td>maxmemory</td>
+        <td>No</td>
+        <td>Specify the maximum amount of memory used by the JVM. This is not normally needed, but you may need to
+            specify a larger value if you see out of memory exceptions while this ant task is running. This could happen
+            when you have a very large number of classes.
+        </td>
+        <td>The default value for your system</td>
+    </tr>
+</table>
+
+<p>
+    You must tell Cobertura which coverage data files to merge by passing
+    in standard ant filesets.
+</p>
+
+<p>
+    Example:
+</p>
+
+<div class="codeblock">
+<pre><code>&lt;cobertura-merge&gt;
+    &lt;fileset dir="${test.execution.dir}"&gt;
+    &lt;include name="server/cobertura.ser" /&gt;
+    &lt;include name="client/cobertura.ser" /&gt;
+    &lt;/fileset&gt;
+    &lt;/cobertura-merge&gt;</code></pre>
+</div>
+
+
+<?php include("footer.html"); ?>
