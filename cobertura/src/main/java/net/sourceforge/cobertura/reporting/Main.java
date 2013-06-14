@@ -25,8 +25,6 @@
 
 package net.sourceforge.cobertura.reporting;
 
-import java.io.File;
-
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.reporting.html.HTMLReport;
@@ -35,8 +33,9 @@ import net.sourceforge.cobertura.reporting.xml.XMLReport;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.Header;
-
 import org.apache.log4j.Logger;
+
+import java.io.File;
 
 public class Main {
 

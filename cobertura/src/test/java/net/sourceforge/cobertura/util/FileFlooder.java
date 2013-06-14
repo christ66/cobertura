@@ -21,11 +21,11 @@
 
 package net.sourceforge.cobertura.util;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
-import org.apache.log4j.Logger;
 
 /**
  * I used this class to flood aa directory with files to test a fix for a guy

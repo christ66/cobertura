@@ -25,15 +25,14 @@
 
 package net.sourceforge.cobertura.instrument.pass1;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import net.sourceforge.cobertura.instrument.AbstractFindTouchPointsClassInstrumenter;
-
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The same line can cause generation of many byte-code blocks connected to the same line.

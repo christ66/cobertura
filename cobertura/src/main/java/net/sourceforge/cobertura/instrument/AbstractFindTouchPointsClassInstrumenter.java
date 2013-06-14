@@ -25,15 +25,14 @@
 
 package net.sourceforge.cobertura.instrument;
 
+import net.sourceforge.cobertura.instrument.pass1.DetectDuplicatedCodeClassVisitor;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.Opcodes;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
-
-import net.sourceforge.cobertura.instrument.pass1.DetectDuplicatedCodeClassVisitor;
-
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Opcodes;
 
 /**
  * Class extending {@link ClassVisitor} that provides features used by all three passes of instrumentation.

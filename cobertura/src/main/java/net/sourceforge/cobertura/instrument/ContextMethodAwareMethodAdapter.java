@@ -25,11 +25,11 @@
 
 package net.sourceforge.cobertura.instrument;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Abstract implementation of {@link MethodVisitor} that:

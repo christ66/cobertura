@@ -25,20 +25,19 @@
 
 package net.sourceforge.cobertura.instrument.pass3;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import net.sourceforge.cobertura.instrument.AbstractFindTouchPointsClassInstrumenter;
 import net.sourceforge.cobertura.instrument.FindTouchPointsMethodAdapter;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
-
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.LocalVariablesSorter;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * <p>This class is responsible for real instrumentation of the user's class.</p>
