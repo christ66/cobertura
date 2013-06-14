@@ -116,7 +116,7 @@ public class Main {
 	public Main(String[] args) throws MalformedPatternException {
 		int exitStatus = 0;
 
-		Header.print(System.out);
+		Header.print();
 
 		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
 		double branchCoverageRate = -1.0;

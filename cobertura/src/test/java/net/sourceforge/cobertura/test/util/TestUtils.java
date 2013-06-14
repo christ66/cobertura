@@ -4,6 +4,7 @@ import groovy.util.AntBuilder;
 import groovy.util.Node;
 import groovy.util.XmlParser;
 import net.sourceforge.cobertura.ant.InstrumentTask;
+import org.apache.log4j.Logger;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Javac;
@@ -32,6 +33,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class TestUtils {
+	private static final Logger log = Logger.getLogger(TestUtils.class);
 	private static final String SRC_DIR = "src/main/java";
 
 	static File coberturaClassDir;

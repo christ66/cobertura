@@ -191,7 +191,6 @@ public class ClassMap {
 			getOrCreateLineTouchPoints(currentLine).add(swi);
 			getOrCreateSourcePoints(def).add(swi);
 			for (Label l : labels) {
-				//				System.out.println("Registering label to switch:"+l);
 				getOrCreateSourcePoints(l).add(swi);
 			}
 		}
