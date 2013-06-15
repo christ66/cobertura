@@ -3,29 +3,28 @@
  */
 package net.sourceforge.cobertura.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import groovy.util.Node;
+import net.sourceforge.cobertura.test.util.TestUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import net.sourceforge.cobertura.test.util.TestUtils;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author schristou88
  *
  */
 public class AbstractCoberturaTestCase {
-	File tempDir;
-	File srcDir;
-	File reportDir;
-	File instrumentDir;
+	public static File tempDir;
+	public static File srcDir;
+	public static File reportDir;
+	public static File instrumentDir;
 	File mainSourceFile;
 	File datafile;
 
@@ -39,7 +38,11 @@ public class AbstractCoberturaTestCase {
 		reportDir = new File(tempDir, "report");
 		instrumentDir = new File(tempDir, "instrument");
 		mainSourceFile = new File(srcDir, "mypackage/Main.java");
-		datafile = new File(srcDir, "cobertura.ser");		
+		datafile = new File(srcDir, "cobertura.ser");
+		
+		srcDir.mkdirs();
+		reportDir.mkdirs();
+		instrumentDir.mkdirs();
 	}
 	
 	@After

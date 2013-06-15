@@ -1,12 +1,25 @@
 package net.sourceforge.cobertura.test.util;
 
-import static org.junit.Assert.*;
 import groovy.util.AntBuilder;
 import groovy.util.Node;
-import groovy.util.NodeList;
 import groovy.util.XmlParser;
-import groovy.xml.QName;
+import net.sourceforge.cobertura.ant.InstrumentTask;
+import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Javac;
+import org.apache.tools.ant.taskdefs.Zip;
+import org.apache.tools.ant.taskdefs.optional.junit.FormatterElement;
+import org.apache.tools.ant.taskdefs.optional.junit.FormatterElement.TypeAttribute;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitTask;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
+import org.apache.tools.ant.types.DirSet;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Path.PathElement;
+import org.codehaus.groovy.ant.Groovyc;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -14,37 +27,9 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import net.sourceforge.cobertura.ant.IgnoreMethodAnnotation;
-import net.sourceforge.cobertura.ant.InstrumentTask;
-
-import org.apache.tools.ant.DefaultLogger;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.taskdefs.Echo;
-import org.apache.tools.ant.taskdefs.Javac;
-import org.apache.tools.ant.taskdefs.Taskdef;
-import org.apache.tools.ant.taskdefs.Zip;
-import org.apache.tools.ant.taskdefs.optional.junit.FormatterElement;
-import org.apache.tools.ant.taskdefs.optional.junit.JUnitTask;
-import org.apache.tools.ant.taskdefs.optional.junit.JUnitTask.ForkMode;
-import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
-import org.apache.tools.ant.taskdefs.optional.junit.FormatterElement.TypeAttribute;
-import org.apache.tools.ant.types.DirSet;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Path.PathElement;
-import org.apache.xerces.parsers.DOMParser;
-import org.codehaus.groovy.ant.Groovyc;
-import org.codehaus.groovy.tools.xml.DomToGroovy;
-import org.hamcrest.core.Is;
-import org.xml.sax.SAXException;
+import static org.junit.Assert.*;
 
 public class TestUtils {
 	static File coberturaClassDir;
@@ -157,6 +142,58 @@ public class TestUtils {
 		
 		return 0;
 	}
+	
+	public static int getTotalHitCount(Node dom, String className, String methodName) {
+		int sum = 0;
+		for(Iterator<Node>packagesIterator = dom.iterator();packagesIterator.hasNext();) {
+			Node packagesNode = packagesIterator.next();
+			if ("packages".equals(packagesNode.name())) {
+				for(Iterator<Node>packageIterator = packagesNode.iterator();packageIterator.hasNext();) {
+					Node packageNode = packageIterator.next();
+					if ("package".equals(packageNode.name())) {
+						for (Iterator<Node>classesIterator = packageNode.iterator(); classesIterator.hasNext();) {
+							Node classesNode = classesIterator.next();
+							if ("classes".equals(classesNode.name())) {
+								for (Iterator<Node>classIterator = classesNode.iterator(); classIterator.hasNext();) {
+									Node classNode = classIterator.next();
+									if ("class".equals(classNode.name())) {
+										if (className.equals(classNode.attribute("name"))) {
+											for (Iterator<Node>methodsIterator = classNode.iterator(); methodsIterator.hasNext();) {
+												Node methodsNode = methodsIterator.next();
+												if ("methods".equals(methodsNode.name())) {
+													for(Iterator<Node>methodIterator = methodsNode.iterator(); methodIterator.hasNext();) {
+														Node methodNode = methodIterator.next();
+														if ("method".equals(methodNode.name())) {
+															if (methodName.equals(methodNode.attribute("name"))) {
+																for(Iterator<Node>linesIterator = methodNode.iterator(); linesIterator.hasNext();) {
+																	Node linesNode = linesIterator.next();
+																	if ("lines".equals(linesNode.name())) {
+																		for (Iterator<Node>lineIterator = linesNode.iterator(); lineIterator.hasNext();) {
+																			Node lineNode = lineIterator.next();
+																			if ("line".equals(lineNode.name())) {
+																				sum += Integer.valueOf((String)lineNode.attribute("hits"));
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return sum;
+	}
+
 	
 	public static void instrumentClasses(AntBuilder ant, File srcDir, File datafile, File instrumentDir, Map arguments) {
 		FileSet fileSet = new FileSet();
@@ -361,7 +398,7 @@ public class TestUtils {
 	 *				buildDir      : buildDir,           File
 	 *				instrumentDir : instrumentDir,      File
 	 *				reportDir     : reportDir,          File
-	 *		)
+	 *			)
 	 *
 	 * 'ant' is the AntBuilder that is used.   Instrumented classes are in
 	 * instrumentDir; The remaining classes are in buildDir.
@@ -418,7 +455,7 @@ public class TestUtils {
 		
 		// Add classpath to junitTask
 		junit.createClasspath().add(classpath);
-		System.out.println(System.getProperty("java.class.path"));
+		System.out.println(classpath);
 		// Finally execute junitTask
 		junit.execute();
 	}
