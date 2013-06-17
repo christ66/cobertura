@@ -54,7 +54,7 @@ public class FunctionalConditionCoverageTest extends TestCase {
 	private final static File BASEDIR = new File(
 			(System.getProperty("basedir") != null) ? System
 					.getProperty("basedir") : ".",
-			"examples/functionalconditiontest");
+			"src/test/resources/examples/functionalconditiontest");
 
 	private final static String CONDITION_MISSING_TRUE = "50%";
 	private final static String CONDITION_MISSING_FALSE = "50%";

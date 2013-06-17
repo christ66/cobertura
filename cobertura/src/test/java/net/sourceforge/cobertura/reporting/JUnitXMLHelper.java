@@ -54,7 +54,7 @@ public class JUnitXMLHelper {
 		SAXBuilder saxBuilder = new SAXBuilder();
 		saxBuilder.setValidation(validate);
 		saxBuilder.setEntityResolver(new JUnitXMLParserEntityResolver(new File(
-				"src/main/resources/dtds")));
+				"src/test/resources/dtds")));
 		saxBuilder.setErrorHandler(new JUnitXMLParserErrorHandler());
 		return saxBuilder.build(file);
 	}
