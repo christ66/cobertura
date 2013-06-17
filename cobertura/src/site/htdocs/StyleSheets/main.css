@@ -1,0 +1,155 @@
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+blockquote {
+    background-color: #f0f0f0;
+    border: 1px dashed #bbbbbb;
+    font-family: arial, helvetica, sans-serif;
+    font-size: 85%;
+    margin: 1em 3em;
+    padding: 0.5em;
+}
+
+body {
+    background-color: #aacccc;
+    border: 0px;
+    font-size: 105%;
+    margin: 10px;
+}
+
+div.bigger {
+    font-size: 115%;
+}
+
+div.codeblock {
+    background-color: #f0f0f0;
+    border: 1px dashed #bbbbbb;
+    font-family: courier, monospace;
+    font-size: 85%;
+    margin: 1em 3em;
+    padding: 0.5em;
+}
+
+div.download {
+    font-size: 125%;
+}
+
+div.faq {
+}
+
+div.faq div.question {
+    font-style: italic;
+    font-weight: bold;
+}
+
+div.faq div.question p {
+    margin-bottom: 0px;
+}
+
+div.faq div.answer {
+}
+
+div.faq div.answer p {
+    margin-top: 0px;
+}
+
+div#footer {
+    font-size: 85%;
+    font-style: italic;
+    text-align: center;
+}
+
+div#main {
+    background-color: #ffffff;
+    border: 1px solid #888888;
+    margin-left: 202px;
+    padding: 10px;
+    /* Work around an IE5x bug.  See http://www.glish.com/css/hacks.asp */
+    voice-family: "\"}\"";
+    voice-family: inherit;
+    margin-left: 204px;
+}
+
+div#navigation {
+    background-color: #f8f8f8;
+    border: 1px solid #888888;
+    font-weight: bold;
+    font-family: arial, helvetica, sans-serif;
+    position: absolute;
+    left: 10px;
+    width: 200px;
+}
+
+div#navigation p {
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    padding: 8px;
+    margin: 4px;
+}
+
+div#navigation img {
+    margin: 4px;
+}
+
+div.newsitem {
+    background-color: #f0f0f0;
+    border: 1px dashed #bbbbbb;
+    font-family: arial, helvetica, sans-serif;
+    margin: 1em;
+    padding: 2px;
+    padding-left: 4px;
+}
+
+div.newsitem div.text {
+    padding: 0.5em;
+    padding-top: 0px;
+}
+
+div.newsitem span {
+    font-size: 65%;
+    font-weight: bold;
+}
+
+hr {
+    background-color: #aa0000;
+    width: 70%;
+}
+
+img {
+    border-style: none;
+}
+
+p.centered {
+    text-align: center;
+}
+
+p.right {
+    text-align: right;
+}
+
+span.highlight {
+    color: #0000ff;
+}
+
+span.smaller {
+    font-size: 85%;
+}
+
+table {
+    border: 1px solid #bbbbbb;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    empty-cells: show;
+    margin-left: 1em;
+    margin-right: 3em;
+}
+
+td, th {
+    border: 1px solid #bbbbbb;
+    padding: 0.1em;
+}
