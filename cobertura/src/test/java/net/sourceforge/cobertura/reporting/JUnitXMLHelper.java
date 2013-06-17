@@ -22,7 +22,6 @@
 
 package net.sourceforge.cobertura.reporting;
 
-import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -32,7 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class JUnitXMLHelper {
-	private static final Logger log = Logger.getLogger(JUnitXMLHelper.class);
 
 	/**
 	 * This reads the given file into an XML Document.
@@ -50,7 +48,7 @@ public class JUnitXMLHelper {
 	 */
 	public static Document readXmlFile(File file, boolean validate)
 			throws FileNotFoundException, IOException, JDOMException {
-		log.info(String.format("Reading %s", file.getAbsolutePath()));
+		System.out.println("Reading " + file.getAbsolutePath());
 
 		// First create an XML document parser
 		SAXBuilder saxBuilder = new SAXBuilder();
