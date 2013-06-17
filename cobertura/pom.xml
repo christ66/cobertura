@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.sourceforge.cobertura</groupId>
+  <artifactId>coverage</artifactId>
+  <packaging>jar</packaging>
+  <name>Cobertura code coverage</name>
+
+  <parent>
+    <groupId>net.sourceforge.cobertura</groupId>
+    <artifactId>cobertura</artifactId>
+    <version>2.0.0</version>
+  </parent>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/test/resources</directory>
+        <excludes>
+          <exclude>test/performance/Test1.class</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <plugins>
+    <!--
+      https://code.google.com/p/maven-java-formatter-plugin/
+      https://github.com/treymarc/maven-java-formatter-plugin
+    -->
+      <plugin>
+        <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
+        <artifactId>maven-java-formatter-plugin</artifactId>
+        <version>0.3.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <fork>true</fork>
+          <source>1.6</source>
+          <target>1.6</target>
+          <excludes>
+            <exclude>**/test/*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.2</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12.3</version>
+        <configuration>
+          <excludes>
+            <exclude>**/test/first/FirstTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <properties>
+    <!--<json-simple.version>1.1</json-simple.version>-->
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-tree</artifactId>
+      <version>4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-commons</artifactId>
+      <version>4.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.6.2</version>
+    </dependency>
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+      <version>2.6.0</version>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <version>2.0.8</version>
+    </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <version>1.1-beta-8</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.4</version>
+    </dependency>
+
+
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.8.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant-junit</artifactId>
+      <version>1.8.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <version>8.1.2.v20120308</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.simpleframework</groupId>
+      <artifactId>simple-xml</artifactId>
+      <version>2.6.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>13.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>2.1.3</version>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.javacc</groupId>
+      <artifactId>javacc</artifactId>
+      <version>5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sun</groupId>
+      <artifactId>tools</artifactId>
+      <version>0</version>
+      <scope>system</scope>
+      <systemPath>${toolsjar}</systemPath>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.9</version>
+    </dependency>
+  </dependencies>
+
+
+  <profiles>
+    <profile>
+      <id>WindowsProfile</id>
+      <activation>
+        <os>
+          <family>Windows</family>
+        </os>
+      </activation>
+      <properties>
+        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+      </properties>
+    </profile>
+    <profile>
+      <id>UnixProfile</id>
+      <activation>
+        <os>
+          <family>unix</family>
+          <name>Linux</name>
+        </os>
+      </activation>
+      <properties>
+        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+      </properties>
+    </profile>
+    <profile>
+      <id>OSXProfile</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <properties>
+        <toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
+      </properties>
+    </profile>
+  </profiles>
+</project>

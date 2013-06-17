@@ -1,3 +1,4 @@
+build/
 cobertura/bin/
 cobertura/build/
 cobertura/cobertura.jar
@@ -10,3 +11,8 @@ cobertura/examples/functionaltest1/cobertura.ser
 cobertura/examples/functionaltest1/instrumented/
 cobertura/examples/functionaltest1/reports/
 cobertura/examples/functionaltest1/tmp/
+*.iml
+*.project
+*.classpath
+**/target/
+*.idea

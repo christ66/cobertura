@@ -1,0 +1,444 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+    <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+    <TITLE>Cobertura Como comprobar cuanto c&oacute;digo prueban nuestros test</TITLE>
+    <META NAME="GENERATOR" CONTENT="OpenOffice.org 2.4  (Linux)">
+    <META NAME="AUTHOR" CONTENT="Alejandro P&eacute;rez Garc&iacute;a">
+    <META NAME="CREATED" CONTENT="20060414;20593600">
+    <META NAME="CHANGEDBY" CONTENT="Alejandro P&eacute;rez Garc&iacute;a">
+    <META NAME="CHANGED" CONTENT="20081020;10554200">
+    <META NAME="CLASSIFICATION" CONTENT="Cobertura Como comprobar cuanto c&oacute;digo prueban nuestros test">
+    <META NAME="DESCRIPTION" CONTENT="Cobertura Como comprobar cuanto c&oacute;digo prueban nuestros test">
+    <META NAME="KEYWORDS" CONTENT="Cobertura Como comprobar cuanto c&oacute;digo prueban nuestros test">
+    <META NAME="CHANGEDBY" CONTENT="Alejandro P&eacute;rez Garc&iacute;a">
+    <META NAME="CHANGEDBY" CONTENT="Alejandro P&eacute;rez Garc&iacute;a">
+    <META NAME="CHANGEDBY" CONTENT="Alejandro P&eacute;rez Garc&iacute;a">
+    <META NAME="CHANGEDBY" CONTENT="Alejandro P&eacute;rez Garc&iacute;a">
+    <link type="text/css" rel="stylesheet"
+          href="http://cobertura.sourceforge.net/sintax/css/SyntaxHighlighter.css"></link>
+    <SCRIPT LANGUAGE="javascript" SRC="http://cobertura.sourceforge.net/sintax/js/shCore.js"></SCRIPT>
+    <SCRIPT LANGUAGE="javascript" SRC="http://cobertura.sourceforge.net/sintax/js/shBrushJava.js"></SCRIPT>
+    <SCRIPT LANGUAGE="javascript" SRC="http://cobertura.sourceforge.net/sintax/js/shBrushXml.js"></SCRIPT>
+    <SCRIPT>
+        window.onload = function () {
+            dp.SyntaxHighlighter.HighlightAll("code");
+        }
+    </SCRIPT>
+</HEAD>
+<BODY LANG="es-ES" TEXT="#000000" DIR="LTR">
+<H1 ALIGN=CENTER><A NAME="1. Introducci&oacute;n|outline"></A>Cobertura<BR>Como
+    comprobar cuanto c&oacute;digo prueban nuestros test</H1>
+
+<P>Creaci&oacute;n: 18-10-2008</P>
+
+<P><BR><BR>
+</P>
+
+<H2><A NAME="mozTocId173597"></A>&iacute;ndice de contenidos</H2>
+
+<P STYLE="margin-left: 2cm"><A HREF="#1. Introducci&oacute;n|outline">1.
+    Introducci&oacute;n<BR></A><A HREF="#2. Entorno|outline">2. Entorno<BR></A><A
+        HREF="#3. El c&oacute;digo que queremos probar: Autentia.java|outline">3.
+    El c&oacute;digo que queremos probar: Autentia.java</A><A HREF="#2. Entorno|outline"><BR></A><A
+        HREF="#4. El test: AutentiaTest.java|outline">4.
+    El test: AutentiaTest.java</A><A HREF="#2. Entorno|outline"><BR></A><A
+        HREF="#5. Configurando el pom.xml de Maven|outline">5.
+    Configurando el pom.xml de Maven</A><A HREF="#2. Entorno|outline"><BR></A><A
+        HREF="#6. Nuestro primer informe|outline">6.
+    Nuestro primer informe</A><A HREF="#2. Entorno|outline"><BR></A><A
+        HREF="#7. Mejorando nuestro test, y viendo como funciona Cobertura|outline">7.
+    Mejorando nuestro test, y viendo como funciona Cobertura</A><A HREF="#2. Entorno|outline"><BR></A><A
+        HREF="#8. Forzar un m&iacute;nimo de cobertura|outline">8.
+    Forzar un m&iacute;nimo de cobertura</A><A HREF="#2. Entorno|outline"><BR></A><A
+        HREF="#9. Mejorando nuestro test (segunda parte)|outline">9.
+    Mejorando nuestro test (segunda parte)</A><A HREF="#9. Sobre el autor|outline"><BR></A><A
+        HREF="#10. Conclusiones|outline">10.
+    Conclusiones</A><A HREF="#4. Configuraci&oacute;n de Hibernate Search|outline"><BR></A><A
+        HREF="#11. Sobre el autor|outline">11.
+    Sobre el autor<BR></A><BR><BR>
+</P>
+
+<H2><A NAME="mozTocId891317"></A>1. Introducci&oacute;n</H2>
+
+<P><B>Cobertura</B> (<A HREF="http://cobertura.sourceforge.net/">http://cobertura.sourceforge.net/</A>)
+    es una herramienta libre (<A HREF="http://www.gnu.org/copyleft/gpl.html">GPL</A>)
+    escrita en Java, que nos permite comprobar el porcentaje de c&oacute;digo
+    al que accedemos desde los test. Es decir, Conbertura nos permite
+    saber cuanto c&oacute;digo estamos realmente probando con nuestros test.</P>
+
+<P>De esta forma Cobertura se convierte en una potente herramienta de
+    trabajo, ya que lo podemos usar como medida de calidad (mientras m&aacute;s
+    c&oacute;digo tengamos probado, m&aacute;s garant&iacute;as tenemos de que podemos
+    hacer refactorizaciones sin peligro).</P>
+
+<P>Adem&aacute;s Cobertura tambi&eacute;n nos indica la complejidad ciclom&aacute;tica
+    de McCabe (<A HREF="http://en.wikipedia.org/wiki/Cyclomatic_complexity">http://en.wikipedia.org/wiki/Cyclomatic_complexity</A>).
+    Esto nos dice como de &quot;complejo&quot; es un m&eacute;todo. Esto nos
+    puede servir para orientar nuestros test y probar primero las piezas
+    m&aacute;s complejas, o incluso nos puede hacer plantearnos una
+    refactorizaci&oacute;n para bajar la complejidad del c&oacute;digo.</P>
+
+<P>Como veis, muchas son las ventajas de usar herramientas de este
+    estilo, as&iacute; que en este tutorial vamos a ver como integrar Cobertura
+    en nuestro ciclo de Maven 2 (<A HREF="http://maven.apache.org/">http://maven.apache.org/</A>),
+    y aprenderemos a interpretar los sencill&iacute;simos informes que nos va a
+    generar (son tan sencillos de interpretar, que se convierten en otro
+    de los puntos fuertes de Cobertura).</P>
+
+<P><BR><BR>
+</P>
+
+<H2><A NAME="mozTocId966996"></A><A NAME="2. Entorno|outline"></A><A NAME="2. Entorno|outline"></A><A
+        NAME="2. Entorno|outline"></A><A NAME="2. Entorno|outline"></A><A NAME="2. Entorno|outline"></A><A
+        NAME="2. Entorno|outline"></A><A NAME="2. Entorno|outline"></A>
+    2. Entorno</H2>
+
+<P>El tutorial est&aacute; escrito usando el siguiente entorno:</P>
+<UL>
+    <LI><P>Hardware: Port&aacute;til Asus G1 (Core 2 Duo a 2.1 GHz, 2048 MB
+        RAM, 120 GB HD).</P>
+    <LI><P>Nvidia GEFORCE GO 7700</P>
+    <LI><P>Sistema Operativo: GNU / Linux, Debian (unstable), Kernel
+        2.6.26, KDE 3.5</P>
+    <LI><P>Java Sun 1.6.0_07</P>
+    <LI><P>Maven 2.0.9</P>
+    <LI><P>Cobertura 1.9</P>
+</UL>
+<P><BR><BR>
+</P>
+
+<H2><A NAME="mozTocId8409861"></A><A NAME="3. El c&oacute;digo que queremos probar: Autentia.java|outline"></A>
+    3. El c&oacute;digo que queremos probar: Autentia.java</H2>
+
+<P>Vamos a poner un sencillo ejemplo, una sola clase con un s&oacute;lo
+    m&eacute;todo:</P>
+<PRE name="code" class="java">package com.autentia.tutorial;
+
+public class Autentia {
+
+        public void tellMeSomething(int i) {
+                if (i &lt; 5) {
+                        System.out.println(&quot;Soy menor que cinco&quot;);
+                        return;
+                }
+
+                if (i % 2 == 0) {
+                        System.out.println(&quot;Soy un n&uacute;mero par&quot;);
+                        return;
+                }
+        }
+}</PRE>
+<P>
+    <BR><BR>
+</P>
+
+<H2><A NAME="mozTocId840986"></A><A NAME="4. El test: AutentiaTest.java|outline"></A>
+    4. El test: AutentiaTest.java</H2>
+
+<P>Un peque&ntilde;o test para probar un peque&ntilde;o programa ;)</P>
+<PRE name="code" class="java">package com.autentia.tutorial;
+
+import org.junit.Test;
+
+public class AutentiaTest {
+
+        @Test
+        public void testApp() {
+            final Autentia autentia = new Autentia();
+        }
+}</PRE>
+<P>
+    <BR><BR>
+</P>
+
+<H2><A NAME="5. Configurando el pom.xml de Maven|outline"></A>5.
+    Configurando el pom.xml de Maven</H2>
+
+<P>En el <CODE><B>pom.xml</B></CODE> a&ntilde;adiremos las siguientes
+    l&iacute;neas para que se nos generen los informes de Cobertura:</P>
+<PRE name="code" class="xml">...
+&lt;reporting&gt;
+        &lt;plugins&gt;
+        ...
+                &lt;plugin&gt;
+                        &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;
+                        &lt;artifactId&gt;cobertura-maven-plugin&lt;/artifactId&gt;
+                &lt;/plugin&gt;
+        &lt;/plugins&gt;
+        ...
+&lt;/reporting&gt;
+...</PRE>
+<P>
+    <BR><BR>
+</P>
+
+<H2><A NAME="6. Nuestro primer informe|outline"></A>6. Nuestro primer
+    informe</H2>
+
+<P>Los informes de Cobertura se generan dentro del &quot;site&quot;
+    de Maven, as&iacute; que tendremos que ejecutar:</P>
+
+<P STYLE="margin-left: 2cm"><CODE>$ mvn site</CODE></P>
+
+<P>Si ahora nos vamos a la secci&oacute;n de informes veremos que tenemos
+    uno llamado: &quot;Cobertura Test Coverage&quot;. Le pinchamos y
+    deber&iacute;amos ver algo similar a esto:</P>
+
+<P ALIGN=CENTER><IMG SRC="mavenCobertura/mavenCobertura01.png" NAME="graphics1" ALIGN=BOTTOM WIDTH=772 HEIGHT=371
+                     BORDER=0></P>
+
+<P>El informe es como si se tratara de una documentaci&oacute;n de Javadoc,
+    donde arriba a la izquierda tenemos los paquetes, justo debajo las
+    clases (o todas, o las del paquete seleccionado), y a la derecha
+    tenemos la informaci&oacute;n del elemento seleccionado (general, paquete,
+    clase, ...).</P>
+
+<P>En la imagen se pude ver como el paquete <CODE>com.autentia.tutorial</CODE>
+    s&oacute;lo est&aacute; probado en un 12%.</P>
+
+<P>Si pinchamos sobre la clase, veremos algo como:</P>
+
+<P ALIGN=CENTER><IMG SRC="mavenCobertura/mavenCobertura02.png" NAME="graphics2" ALIGN=BOTTOM WIDTH=776 HEIGHT=497
+                     BORDER=0></P>
+
+<P>En la zona de la derecha, arriba podemos ver una peque&ntilde;a tabla
+    resumen:</P>
+<UL>
+    <LI><P><B>Classes in this File</B>: clases en este fichero, por si
+        tenemos clases internas, que no es el caso.</P>
+    <LI><P><B>Line Coverage</B>: Cuantas l&iacute;neas de este fichero se han
+        probado. Nos dice que se ha probado 1 l&iacute;nea de 8 l&iacute;neas
+        ejecutables (para el Cobertura, las l&iacute;neas ejecutables con la 3, 6,
+        7, 8, 11, 12, 13, 15, que son las que est&aacute;n marcadas en verde en la
+        primera columna).</P>
+    <LI><P><B>Branch Coverage</B>: Nos indica cuanto posibles caminos
+        (if else, while, for, ...) se han probado. En el informe vemos que
+        se han probado 0 caminos de 4 posibles.</P>
+    <LI><P><B>Complexity</B>: La complejidad ciclom&aacute;tica McCabe de este
+        fichero.</P>
+</UL>
+<P>Justo debajo de esta tabla resumen no encontramos con el c&oacute;digo
+    fuente:</P>
+
+<P>La columna de la izquierda es el n&uacute;mero de l&iacute;nea (en verde si se
+    trata de una l&iacute;nea ejecutable), la siguiente columna es el n&uacute;mero
+    de veces que la l&iacute;nea ha sido probada (las veces que se ha ejecutado
+    esa l&iacute;nea). En la imagen podemos ver como por la l&iacute;nea 3 (la
+    construcci&oacute;n de la clase) s&oacute;lo se ha pasado 1 vez.</P>
+
+<P>Por &uacute;ltimo podemos ver como en rojo tenemos marcadas todas las
+    l&iacute;neas que no han sido probadas.</P>
+
+<P>La conclusi&oacute;n es que nuestro test no es demasiado bueno :( pero
+    gracias Cobertura nos hemos dado cuenta de ello, y por eso podemos
+    mejorar :)</P>
+
+<P><BR><BR>
+</P>
+
+<H2><A NAME="7. Mejorando nuestro test, y viendo como funciona Cobertura|outline"></A>
+    7. Mejorando nuestro test, y viendo como funciona Cobertura</H2>
+
+<P>Antes de hacer nada, vamos a explicar un poco como funciona
+    Cobertura. Cobertura lo que hace es instrumentalizar nuestro c&oacute;digo.
+    Esto significa que, en tiempo de compilaci&oacute;n lo &quot;altera&quot;
+    para llevar un contador del n&uacute;mero de veces que se pasa por cada
+    l&iacute;nea. Esta informaci&oacute;n se va acumulando en un fichero llamado
+    <CODE>cobertura.ser</CODE>.</P>
+
+<P>Y ojo porque hemos dicho &quot;acumulando&quot;, esto quiere decir
+    que siempre se a&ntilde;ade nunca se borra. Esto es necesario para poder
+    probar, por ejemplo, distintos m&oacute;dulos o distintos conjuntos de
+    pruebas, pero esto implica que si ejecutamos dos veces el mismo test,
+    el n&uacute;mero de l&iacute;neas ejecutadas se ir&aacute; incrementando. Para evitar
+    esto tenemos dos soluciones:</P>
+<UL>
+    <LI><P><CODE>$ mvn clean</CODE>: borra toda la informaci&oacute;n de
+        salida de Maven (un poco dr&aacute;stico)</P>
+    <LI><P><CODE>$ mvn cobertura</CODE>: clean borra s&oacute;lo la
+        informaci&oacute;n que almacena Cobertura, con lo que la siguiente vez que
+        generemos los informes estos se har&aacute;n a partir de un entorno
+        &quot;limpio&quot;.</P>
+</UL>
+<P STYLE="margin-left: 2cm"><B>NOTA</B>: No debemos preocuparnos por
+    la instrumentalizaci&oacute;n del c&oacute;digo, ya que Cobertura la hace en un
+    directorio diferente, por lo que nuestras clases, que luego se
+    empaquetar&aacute;n, quedan intactas.</P>
+
+<P STYLE="margin-left: 2cm"><BR><BR>
+</P>
+
+<P>Ahora nuestro test va a ser el siguiente:</P>
+<PRE name="code" class="java">package com.autentia.tutorial;
+
+import org.junit.Test;
+
+public class AutentiaTest {
+
+        @Test
+        public void testApp() {
+                final Autentia autentia = new Autentia();
+                autentia.tellMeSomething(3);
+        }
+}</PRE>
+<P>
+    Para lanzar otra vez el site, haremos:</P>
+
+<P STYLE="margin-left: 2cm"><CODE>$ mvn cobertura:clean site</CODE></P>
+
+<P>Esta vez el resultado del informe ser&aacute;:</P>
+
+<P ALIGN=CENTER><IMG SRC="mavenCobertura/mavenCobertura03.png" NAME="graphics3" ALIGN=BOTTOM WIDTH=776 HEIGHT=497
+                     BORDER=0></P>
+
+<P>Se puede ver como hemos mejorado bastante: ya estamos probando el
+    50% del c&oacute;digo, aunque todav&iacute;a s&oacute;lo un 25% de los caminos
+    posibles.</P>
+
+<P><BR><BR>
+</P>
+
+<H2><A NAME="8. Forzar un m&iacute;nimo de cobertura|outline"></A>8. Forzar
+    un m&iacute;nimo de cobertura</H2>
+
+<P><A NAME="Supported_file_extensions"></A>Hasta ahora s&oacute;lo hemos
+    estado usando Cobertura para sacar informes. Pero tambi&eacute;n podemos
+    integrarlo en el ciclo de desarrollo, de forma que si nuestro c&oacute;digo
+    no est&aacute; m&iacute;nimamente cubierto por los test, no nos deje sacar una
+    versi&oacute;n.</P>
+
+<P>Para conseguir esto, en nuestro <CODE>pom.xml</CODE>, adem&aacute;s de
+    la configuraci&oacute;n anterior, a&ntilde;adiremos las siguientes l&iacute;neas:</P>
+<PRE name="code" class="xml">...
+&lt;build&gt;
+        &lt;plugins&gt;
+                ...
+                &lt;plugin&gt;
+                        &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;
+                        &lt;artifactId&gt;cobertura-maven-plugin&lt;/artifactId&gt;
+                        &lt;configuration&gt;
+                                &lt;check&gt;
+                                        &lt;haltOnFailure&gt;true&lt;/haltOnFailure&gt;
+                                &lt;/check&gt;
+                        &lt;/configuration&gt;
+                        &lt;executions&gt;
+                                &lt;execution&gt;
+                                        &lt;goals&gt;
+                                                &lt;goal&gt;clean&lt;/goal&gt;
+                                                &lt;goal&gt;check&lt;/goal&gt;
+                                        &lt;/goals&gt;
+                                &lt;/execution&gt;
+                        &lt;/executions&gt;
+                &lt;/plugin&gt;
+                ...
+        &lt;/plugins&gt;
+&lt;/build&gt;
+...</PRE>
+<P>
+    Ojo, porque estas l&iacute;neas las hemos puesto dentro del elemento <CODE>build</CODE>,
+    mientras que antes las hab&iacute;amos puesto dentro del elemento
+    <CODE>reporting</CODE>.</P>
+
+<P>Por defecto Cobertura va a exigir un m&iacute;nimo de un 50% de l&iacute;neas
+    probadas y un m&iacute;nimo de un 50% de caminos probados. Esto es
+    configurable y podemos aumentar o disminuir el porcentaje. Incluso
+    podemos configurarlo por paquete o incluso para una clase concreta.
+    Para saber como hacer esto, pod&eacute;is encontrar informaci&oacute;n en la
+    documentaci&oacute;n del plugin:
+    <A HREF="http://mojo.codehaus.org/cobertura-maven-plugin/usage.html">http://mojo.codehaus.org/cobertura-maven-plugin/usage.html</A>
+</P>
+
+<P>Si ahora ejecutamos:</P>
+
+<P STYLE="margin-left: 2cm"><CODE>$ mvn clean install</CODE></P>
+
+<P>Veremos el siguiente error:</P>
+<PRE STYLE="margin-left: 2cm">Cobertura: Loaded information on 1 classes.
+Cobertura: Saved information on 1 classes.
+[INFO] [cobertura:check {execution: default}]
+[INFO] Cobertura 1.9 - GNU GPL License (NO WARRANTY) - See COPYRIGHT file
+Cobertura: Loaded information on 1 classes.
+
+[ERROR] com.autentia.tutorial.Autentia failed check. Branch coverage rate of 25.0% is below 50.0%
+Package com.autentia.tutorial failed check. Package branch coverage rate of 25.0% is below 50.0%
+Project failed check. Total branch coverage rate of 25.0% is below 50.0%</PRE>
+<P>
+    Hasta que no tengamos suficientemente cubierto nuestro c&oacute;digo, Maven
+    no nos dejar&aacute; continuar.</P>
+
+<P><BR><BR>
+</P>
+
+<H2><A NAME="9. Mejorando nuestro test (segunda parte)|outline"></A>9.
+    Mejorando nuestro test (segunda parte)</H2>
+
+<P>A&ntilde;adimos una nueva l&iacute;nea a nuestro test:</P>
+<PRE name="code" class="java">package com.autentia.tutorial;
+
+import org.junit.Test;
+
+public class AutentiaTest {
+
+        @Test
+        public void testApp() {
+                final Autentia autentia = new Autentia();
+                autentia.tellMeSomething(3);
+                autentia.tellMeSomething(6);
+        }
+}</PRE>
+<P>
+    Ahora si intentamos compilar no tendremos ning&uacute;n problema. Y si
+    generamos los informes obtendremos esto:</P>
+
+<P ALIGN=CENTER><IMG SRC="mavenCobertura/mavenCobertura04.png" NAME="graphics4" ALIGN=BOTTOM WIDTH=776 HEIGHT=497
+                     BORDER=0></P>
+
+<P>Se ve como estamos probando el 88% de las l&iacute;neas y el 75% de los
+    caminos posibles.</P>
+
+<P><BR><BR>
+</P>
+
+<H2><A NAME="10. Conclusiones|outline"></A>10. Conclusiones</H2>
+
+<P>No hay que buscar la calidad perfecta ni el 100% de cobertura,
+    esto no es inteligente ni pr&aacute;ctico, ya que nos llevar&iacute;a demasiado
+    tiempo y esfuerzo. Pero si es necesario unos m&iacute;nimos de calidad y
+    enfocar nuestros esfuerzos a probar las piezas m&aacute;s complicadas o m&aacute;s
+    importantes para negocio.</P>
+
+<P>Herramientas como Cobertura nos ayudan enormemente a conseguir
+    estos objetivos y son un aliado fundamental para entornos de mejora
+    continua.</P>
+
+<P>Y recordad siempre que, sin medir, es imposible mejorar. Hay que
+    medir antes y despu&eacute;s, y comparar las medidas. Eso es lo que
+    realmente me indica si estoy mejorando o empeorando.</P>
+
+<P><A HREF="mavenCobertura/autentia-cobertura-example.tar.gz">Aqu&iacute;</A>
+    os dejo todo el proyecto de Maven para que pod&aacute;is ver el c&oacute;digo
+    completo y pod&aacute;is jugar con &eacute;l.</P>
+
+<P><BR><BR>
+</P>
+
+<H2><A NAME="11. Sobre el autor|outline"></A>11. Sobre el autor</H2>
+
+<P>Alejandro P&eacute;rez Garc&iacute;a, Ingeniero en Inform&aacute;tica (especialidad
+    de Ingenier&iacute;a del Software)</P>
+
+<P>Socio fundador de Autentia (Formaci&oacute;n, Consultor&iacute;a, Desarrollo
+    de sistemas transaccionales)</P>
+
+<P><A HREF="mailto:alejandropg@autentia.com">mailto:alejandropg@autentia.com</A></P>
+
+<P>Autentia Real Business Solutions S.L. - &quot;Soporte a
+    Desarrollo&quot;</P>
+
+<P><A HREF="http://www.autentia.com/">http://www.autentia.com</A></P>
+
+<P><BR><BR>
+</P>
+</BODY>
+</HTML>
