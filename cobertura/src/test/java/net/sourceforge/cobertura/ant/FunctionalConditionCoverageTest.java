@@ -446,7 +446,7 @@ public class FunctionalConditionCoverageTest extends TestCase {
 			}
 		}
 	}
-	
+
 	private class ConditionCalls {
 		public static final int CALL_CONDITION_LINE_NUMBER = 17;
 		public static final int CALL_IGNORE_LINE_NUMBER = 21;
