@@ -8,7 +8,7 @@
   <version>2.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Cobertura code coverage</name>
-  
+
   <properties>
     <asmVersion>4.1</asmVersion>
     <xercesVersion>2.6.2</xercesVersion>
@@ -27,6 +27,12 @@
     <junitVersion>4.11</junitVersion>
     <jdkVersion>1.7</jdkVersion>
     <surefireVersion>2.12.3</surefireVersion>
+    <plugin.java.formatter.version>0.3.1</plugin.java.formatter.version>
+    <plugin.mvn.compiler.version>2.3.2</plugin.mvn.compiler.version>
+    <plugin.mvn.jar.version>2.3.2</plugin.mvn.jar.version>
+    <plugin.pmd.version>3.0.1</plugin.pmd.version>
+    <plugin.jdoc.version>2.9</plugin.jdoc.version>
+    <plugin.findbugs.version>2.5.2</plugin.findbugs.version>
   </properties>
   
   <dependencies>
@@ -169,11 +175,24 @@
   </profiles>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/test/resources</directory>
+        <excludes>
+          <exclude>test/performance/Test1.class</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
     <plugins>
+      <!--
+        https://code.google.com/p/maven-java-formatter-plugin/
+        https://github.com/treymarc/maven-java-formatter-plugin
+      -->
       <plugin>
         <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
         <artifactId>maven-java-formatter-plugin</artifactId>
-        <version>0.3.1</version>
+        <version>${plugin.java.formatter.version}</version>
         <executions>
           <execution>
             <goals>
@@ -186,33 +205,78 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>${plugin.mvn.compiler.version}</version>
         <configuration>
+          <fork>true</fork>
           <source>${jdkVersion}</source>
           <target>${jdkVersion}</target>
+          <excludes>
+            <exclude>**/test/*.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${plugin.mvn.jar.version}</version>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefireVersion}</version>
         <configuration>
-	  <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <excludes>
             <exclude>**/test/**</exclude>
           </excludes>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${plugin.pmd.version}</version>
+        <configuration>
+          <failOnViolation>false</failOnViolation>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+              <goal>cpd-check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>${plugin.findbugs.version}</version>
+        <configuration>
+          <failOnError>false</failOnError>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
-  
+
   <reporting>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9</version>
+        <version>${plugin.jdoc.version}</version>
       </plugin>
     </plugins>
   </reporting>
+
 </project>
