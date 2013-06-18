@@ -4,89 +4,17 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sourceforge.cobertura</groupId>
-  <artifactId>coverage</artifactId>
+  <artifactId>cobertura</artifactId>
+  <version>2.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Cobertura code coverage</name>
-
+  
   <parent>
-    <groupId>net.sourceforge.cobertura</groupId>
-    <artifactId>cobertura</artifactId>
-    <version>2.0.0</version>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
   </parent>
-
-  <build>
-    <resources>
-      <resource>
-        <directory>src/test/resources</directory>
-        <excludes>
-          <exclude>test/performance/Test1.class</exclude>
-        </excludes>
-      </resource>
-    </resources>
-
-    <plugins>
-    <!--
-      https://code.google.com/p/maven-java-formatter-plugin/
-      https://github.com/treymarc/maven-java-formatter-plugin
-    -->
-      <plugin>
-        <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-        <artifactId>maven-java-formatter-plugin</artifactId>
-        <version>0.3.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <fork>true</fork>
-          <source>1.6</source>
-          <target>1.6</target>
-          <excludes>
-            <exclude>**/test/*.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.2</version>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.12.3</version>
-        <configuration>
-          <excludes>
-            <exclude>**/test/first/FirstTest.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9</version>
-      </plugin>
-    </plugins>
-  </reporting>
-
-  <properties>
-    <!--<json-simple.version>1.1</json-simple.version>-->
-  </properties>
-
+  
   <dependencies>
     <dependency>
       <groupId>org.ow2.asm</groupId>
@@ -187,6 +115,12 @@
       <artifactId>log4j</artifactId>
       <version>1.2.9</version>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 
@@ -226,4 +160,30 @@
       </properties>
     </profile>
   </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12.3</version>
+        <configuration>
+	  <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <excludes>
+            <exclude>**/test/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
