@@ -169,15 +169,6 @@
   </profiles>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/test/resources</directory>
-        <excludes>
-          <exclude>test/performance/Test1.class</exclude>
-        </excludes>
-      </resource>
-    </resources>
-
     <plugins>
       <plugin>
         <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
