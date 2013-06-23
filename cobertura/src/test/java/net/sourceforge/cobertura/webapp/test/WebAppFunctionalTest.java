@@ -64,6 +64,8 @@ import net.sourceforge.cobertura.test.util.TestUtils;
 import net.sourceforge.cobertura.test.util.WebappServer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -111,7 +113,7 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 		File webappServerDir = new File(tempDir, "webserver");
 
 		final File srcDir = new File(tempDir, SRC_DIR);
-
+		new File(webappServerDir, "logs").mkdirs();
 		WebappServer.writeSimpleServletSource(srcDir);
 
 		final String appName = "simple";
@@ -176,9 +178,11 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 
 	@Test
 	public void flushCoberturaData() throws Exception {
+		Logger.getRootLogger().setLevel(Level.ALL);
 		File tempDir = TestUtils.getTempDir();
 		File webappServerDir = new File(tempDir, "webserver");
 		final File srcDir = new File(tempDir, SRC_DIR);
+		new File(webappServerDir, "logs").mkdirs();
 
 		WebappServer.writeSimpleServletSource(srcDir);
 
@@ -370,6 +374,7 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 		File tempDir = TestUtils.getTempDir();
 		File webappServerDir = new File(tempDir, "webserver");
 		final File srcDir = new File(tempDir, SRC_DIR);
+		new File(webappServerDir, "logs").mkdirs();
 
 		WebappServer.writeSimpleServletSource(srcDir);
 

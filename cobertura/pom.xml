@@ -46,6 +46,16 @@
       <version>${asmVersion}</version>
     </dependency>
     <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-util</artifactId>
+      <version>${asmVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-analysis</artifactId>
+      <version>${asmVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <version>${xercesVersion}</version>
@@ -199,7 +209,8 @@
         <configuration>
 	  <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <excludes>
-            <exclude>**/test/**</exclude>
+            <exclude>**/test/condition/**</exclude>
+	    <exclude>**/examples/functionaltest1/**</exclude>
           </excludes>
         </configuration>
       </plugin>

@@ -34,6 +34,7 @@ import net.sourceforge.cobertura.util.IOUtil;
 import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.util.CheckClassAdapter;
 
 import java.io.*;
 import java.util.*;
@@ -200,7 +201,13 @@ public class CoberturaInstrumenter {
 					cw2, ignoreRegexes, threadsafeRigorous, cv.getClassMap(),
 					cv0.getDuplicatesLinesCollector(), detectIgnoredCv
 							.getIgnoredMethodNamesAndSignatures());
-			cr2.accept(cv2, ClassReader.EXPAND_FRAMES);
+			cr2.accept(new CheckClassAdapter(cv2), ClassReader.SKIP_FRAMES);
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			CheckClassAdapter.verify(new ClassReader(cw2.toByteArray()), false,
+					pw);
+			logger.debug(sw.toString());
+
 			return new InstrumentationResult(cv.getClassMap().getClassName(),
 					cw2.toByteArray());
 		} else {

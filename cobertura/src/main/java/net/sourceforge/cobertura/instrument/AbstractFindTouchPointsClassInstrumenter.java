@@ -28,6 +28,7 @@ package net.sourceforge.cobertura.instrument;
 import net.sourceforge.cobertura.instrument.pass1.DetectDuplicatedCodeClassVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.util.CheckClassAdapter;
 
 import java.util.Collection;
 import java.util.Map;
@@ -90,7 +91,7 @@ public class AbstractFindTouchPointsClassInstrumenter extends ClassVisitor {
 	public AbstractFindTouchPointsClassInstrumenter(ClassVisitor cv,
 			Collection<Pattern> ignoreRegexp,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap) {
-		super(Opcodes.ASM4, cv);
+		super(Opcodes.ASM4, new CheckClassAdapter(cv, false));
 		this.ignoreRegexp = ignoreRegexp;
 		this.duplicatedLinesMap = duplicatedLinesMap;
 	}
