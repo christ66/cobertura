@@ -89,10 +89,10 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 	 * execution, touch collector knows that is responsible to ask the class after execution about a current status of the counters.
 	 */
 	protected void generateRegisterClass(MethodVisitor mv, String className) {
-		mv.visitLdcInsn(Type.getObjectType(className));
+		mv.visitLdcInsn(className);
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, Type
 				.getInternalName(TouchCollector.class), "registerClass",
-				"(Ljava/lang/Class;)V");
+				"(Ljava/lang/String;)V");
 	}
 
 	final String CLASSMAP_LISTENER_INTERNALNAME = Type
@@ -130,10 +130,10 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
 
 		mv.visitInsn(Opcodes.DUP);
-		mv.visitLdcInsn(Type.getObjectType(classMap.getClassName()));
+		mv.visitLdcInsn(classMap.getClassName());
 		mv.visitMethodInsn(Opcodes.INVOKEINTERFACE,
 				CLASSMAP_LISTENER_INTERNALNAME, "setClazz",
-				"(Ljava/lang/Class;)V");
+				"(Ljava/lang/String;)V");
 
 		if (classMap.getSource() != null) {
 			mv.visitInsn(Opcodes.DUP);
@@ -256,6 +256,7 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 
 	public void generateCallCoberturaInitMethod(MethodVisitor mv,
 			String className) {
+		mv.visitCode(); // Since we are using the ASM Check Adapter, we need to visit the code before visiting any instructions.
 		mv.visitMethodInsn(Opcodes.INVOKESTATIC, className,
 				COBERTURA_INIT_METHOD_NAME, "()V");
 	}

@@ -28,6 +28,8 @@ package net.sourceforge.cobertura.coveragedata;
 public interface LightClassmapListener {
 	public void setClazz(Class<?> clazz);
 
+	public void setClazz(String clazz);
+
 	public void setSource(String source);
 
 	public void putLineTouchPoint(int classLine, int counterId,

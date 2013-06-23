@@ -258,7 +258,7 @@ public class FunctionalTest extends AbstractCoberturaTestCase {
 				+ "\n  }" + "\n  " + "\n }");
 
 		// compile to the srcDir
-		TestUtils.compileSource(ant, srcDir);
+		TestUtils.compileGroovy(ant, srcDir);
 
 		// instrument all but the test class (in place)
 		TestUtils.instrumentClasses(ant, srcDir, datafile, instrumentDir,

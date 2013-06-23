@@ -158,9 +158,6 @@ public class WebappServer {
 
 		File coberturaJar = createCoberturaJar();
 
-		AntBuilder coberturaAnt = TestUtils.getCoberturaAntBuilder(TestUtils
-				.getCoberturaClassDir());
-
 		if (map.get("instrumentRegEx") != null) {
 			instrumentWar(war, (String) map.get("instrumentRegEx"));
 		}
@@ -196,7 +193,7 @@ public class WebappServer {
 		javac.setSrcdir(new Path(TestUtils.project, srcDir.getAbsolutePath()));
 		javac.setDestdir(classesDir);
 		javac.setDebug(true);
-		javac.setTarget("1.5");
+		javac.setTarget("1.7");
 
 		Path classpath = new Path(TestUtils.project);
 		FileSet fileSet = new FileSet();
@@ -249,13 +246,9 @@ public class WebappServer {
 		javac.setDebug(true);
 
 		Path classpath = new Path(TestUtils.project);
-		//		FileSet libFileSet = new FileSet();
 		FileSet jettyFileSet = new FileSet();
-		//		libFileSet.setDir(new File("lib"));
-		//		libFileSet.setIncludes("**/*.jar");
 		jettyFileSet.setDir(new File(JETTY_DIR));
 		jettyFileSet.setIncludes("**/*.jar");
-		//		classpath.addFileset(libFileSet);
 		classpath.addFileset(jettyFileSet);
 
 		javac.setIncludes("**/FlushCoberturaServlet.java");
@@ -285,7 +278,7 @@ public class WebappServer {
 		instrumentTask.setDataFile(dir.getAbsolutePath() + "/cobertura.ser");
 		instrumentTask.createIncludeClasses().setRegex(instrumentRegEx);
 		instrumentTask.createExcludeClasses().setRegex(".*Test.*");
-
+		System.out.println(war.getAbsolutePath());
 		FileSet fileSet = new FileSet();
 		fileSet.setDir(war.getParentFile());
 		fileSet.setIncludes("**/*.war");
@@ -307,6 +300,7 @@ public class WebappServer {
 		fileSet.setIncludes(coberturaJar.getName());
 
 		instrumentTask.addFileset(fileSet);
+		//		instrumentTask.execute();
 	}
 
 	/**
@@ -319,8 +313,6 @@ public class WebappServer {
 
 	public Map withRunningServer(Closure closure) throws Exception {
 		freePorts = findFreePorts();
-		System.out.println("Stop: " + freePorts.get("stop"));
-		System.out.println("Webapp: " + freePorts.get("webapp"));
 		new File(dir, "logs").mkdirs();
 
 		startWebServer(freePorts);
