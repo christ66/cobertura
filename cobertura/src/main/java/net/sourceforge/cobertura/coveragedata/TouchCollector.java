@@ -29,6 +29,7 @@ import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -47,6 +48,52 @@ public class TouchCollector {
 
 	public static synchronized void registerClass(Class<?> classa) {
 		registeredClasses.put(classa, 0);
+	}
+
+	/**
+	 * This method is only for backward compatibility
+	 * 
+	 * Information:
+	 * ASM version 4.1 does not allow for the data type java.lang.Class to be a parameter
+	 * to the method visitLdcInsn which causes issues for anything below .class versions
+	 * 49 and lower. Changing the registered class to use instead a String parameter and
+	 * search for the class in the classpath helped resolve the issue.
+	 * Also as a side note: The replace parameters might enter as "java/lang/String" and
+	 * need to be translated to "java.lang.String" so the forName method can understand it.
+	 * 
+	 * @param classa Class that needs to be registered.
+	 * @throws ClassNotFoundException 
+	 */
+	public static synchronized void registerClass(String classa)
+			throws ClassNotFoundException {
+		try {
+			// If it's not in the system jvm, then search the current thread for the class.
+			// This is a dirty hack to guarantee that multiple classloaders can invoke cobertura code.
+
+			// We try 2 methods to register the classes
+			// First method we try to call the invoker classloader. If the invoker causes an exception (NoClassDefFound) it
+			// will then call Thread.currentThread.getContextClassLoader() which gets the current threads classloader and
+			// checks to see if cobertura code is in there. This is here because there are situations where multiple
+			// classloaders might be invoked and it requires the check of multiple classloaders.
+			boolean found = false;
+			Class<?> clazz = Class.forName(classa.replace("/", "."), false,
+					Thread.currentThread().getContextClassLoader());
+			for (Method meth : clazz.getMethods()) {
+				if (meth.toString().contains("net.sourceforge.cobertura")) {
+					registerClass(clazz);
+					found = true;
+				}
+			}
+
+			if (!found) {
+				clazz = Class.forName(classa.replace("/", "."));
+				registerClass(clazz);
+			}
+		} catch (ClassNotFoundException e) {
+			logger.log(Level.SEVERE, "Exception when registering class: "
+					+ classa, e);
+			throw e;
+		}
 	}
 
 	public static synchronized void applyTouchesOnProjectData(
@@ -116,6 +163,9 @@ public class TouchCollector {
 		}
 
 		public void setClazz(Class<?> clazz) {
+		}
+
+		public void setClazz(String clazz) {
 		}
 
 		public void putLineTouchPoint(int classLine, int counterId,

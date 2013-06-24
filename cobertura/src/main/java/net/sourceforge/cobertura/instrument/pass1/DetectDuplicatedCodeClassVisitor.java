@@ -29,6 +29,7 @@ import net.sourceforge.cobertura.instrument.AbstractFindTouchPointsClassInstrume
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.util.CheckClassAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -195,7 +196,7 @@ public class DetectDuplicatedCodeClassVisitor extends ClassVisitor {
 	private final AtomicInteger lineIdGenerator = new AtomicInteger(0);
 
 	public DetectDuplicatedCodeClassVisitor(ClassVisitor cv) {
-		super(Opcodes.ASM4, cv);
+		super(Opcodes.ASM4, new CheckClassAdapter(cv, false));
 	}
 
 	@Override

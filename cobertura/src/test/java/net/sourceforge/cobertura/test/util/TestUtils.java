@@ -295,6 +295,23 @@ public class TestUtils {
 	}
 
 	public static void compileSource(AntBuilder ant, File srcDir) {
+		compileSource(ant, srcDir, "1.7");
+	}
+
+	public static void compileSource(AntBuilder ant, File srcDir,
+			String jdkVersion) {
+		Javac javac = new Javac();
+		javac.setDebug(true);
+		javac.setSource(jdkVersion);
+		javac.setTarget(jdkVersion);
+
+		javac.setProject(project);
+		javac.setSrcdir(new Path(project, srcDir.getAbsolutePath()));
+		javac.setDestdir(srcDir);
+		javac.execute();
+	}
+
+	public static void compileGroovy(AntBuilder ant, File srcDir) {
 		Javac javac = new Javac();
 		javac.setDebug(true);
 
