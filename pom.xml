@@ -12,6 +12,8 @@
     Cobertura Runtime artifact to prevent unneeded dependencies at runtime.
   </description>
   
+  <url>http://cobertura.sourceforge.net</url>
+  
  <modules>
     <module>cobertura</module>
   </modules>
@@ -53,4 +55,22 @@
       </exclusions>
     </dependency>
   </dependencies>
+  
+  <scm>
+    <connection>scm:git:git://github.com/cobertura/cobertura</connection>
+    <developerConnection>scm:git:git@github.com:cobertura/cobertura.git</developerConnection>
+    <url>http://github.com/cobertura/cobertura</url>
+  </scm>
+  
+  <developers>
+    <developer>
+      <id>schristou88</id>
+      <name>Steven Christou</name>
+      <email>schristou88@gmail.com</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+6</timezone>
+    </developer>
+  </developers>
 </project>

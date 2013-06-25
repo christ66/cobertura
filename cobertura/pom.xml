@@ -9,6 +9,14 @@
   <packaging>jar</packaging>
   <name>Cobertura code coverage</name>
   
+  <description>
+    Cobertura is a free Java tool that calculates the percentage of
+    code accessed by tests. It can be used to identify which parts of
+    your Java program are lacking test coverage. It is based on jcoverage.
+  </description>
+  
+  <url>http://cobertura.sourceforge.net</url>
+  
   <properties>
     <asmVersion>4.1</asmVersion>
     <xercesVersion>2.6.2</xercesVersion>
@@ -268,4 +276,22 @@
       </plugin>
     </plugins>
   </reporting>
+  
+  <scm>
+    <connection>scm:git:git://github.com/cobertura/cobertura</connection>
+    <developerConnection>scm:git:git@github.com:cobertura/cobertura.git</developerConnection>
+    <url>http://github.com/cobertura/cobertura</url>
+  </scm>
+  
+  <developers>
+    <developer>
+      <id>schristou88</id>
+      <name>Steven Christou</name>
+      <email>schristou88@gmail.com</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+6</timezone>
+    </developer>
+  </developers>
 </project>
