@@ -9,6 +9,17 @@
   <packaging>jar</packaging>
   <name>Cobertura code coverage</name>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>sonatype-releases</id>
+      <url>http://oss.sonatype.org/content/repositories/releases</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>clojars.org</id>
+      <url>http://clojars.org/repo</url>
+    </pluginRepository>
+  </pluginRepositories>
+
   <properties>
     <asmVersion>4.1</asmVersion>
     <xercesVersion>2.6.2</xercesVersion>
@@ -35,6 +46,8 @@
     <plugin.findbugs.version>2.5.2</plugin.findbugs.version>
   </properties>
   
+
+
   <dependencies>
     <dependency>
       <groupId>org.ow2.asm</groupId>
@@ -190,6 +203,17 @@
             <goals>
               <goal>format</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.code54.mojo</groupId>
+        <artifactId>buildversion-plugin</artifactId>
+        <version>1.0.2</version>
+        <executions>
+          <execution>
+            <goals><goal>set-properties</goal></goals>
           </execution>
         </executions>
       </plugin>
