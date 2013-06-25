@@ -8,6 +8,12 @@
   <version>2.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
   <description>
     Cobertura Runtime artifact to prevent unneeded dependencies at runtime.
   </description>
