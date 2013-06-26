@@ -87,16 +87,7 @@ public class MergeTask extends CommonMatchingTask {
 			throw new BuildException("Unable to create the commands file.", ioe);
 		}
 
-		// Execute GPL licensed code in separate virtual machine
-		getJava().createArg().setValue("--commandsfile");
-		getJava().createArg().setValue(builder.getCommandLineFile());
-		AntUtil.transferCoberturaDataFileProperty(getJava());
-		if (getJava().executeJava() != 0) {
-			throw new BuildException(
-					"Error running reports. See messages above.");
-		}
-
-		builder.dispose();
+		createCommandsFileAndExecute(builder);
 	}
 
 	public void setDataFile(String dataFile) {

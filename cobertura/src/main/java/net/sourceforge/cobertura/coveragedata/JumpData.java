@@ -32,15 +32,13 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  */
 @CoverageIgnore
-public class JumpData
+public class JumpData extends CoverageDataLock
 		implements
 			BranchCoverageData,
 			Comparable<Object>,
 			Serializable {
 	private static final long serialVersionUID = 8;
-
-	protected transient Lock lock;
-
+	
 	private int conditionNumber;
 
 	private long trueHits;
@@ -53,10 +51,6 @@ public class JumpData
 		this.trueHits = 0L;
 		this.falseHits = 0L;
 		initLock();
-	}
-
-	private void initLock() {
-		lock = new ReentrantLock();
 	}
 
 	public int compareTo(Object o) {
@@ -154,35 +148,6 @@ public class JumpData
 		} finally {
 			lock.unlock();
 			jumpData.lock.unlock();
-		}
-	}
-
-	private void getBothLocks(JumpData other) {
-		/*
-		 * To prevent deadlock, we need to get both locks or none at all.
-		 * 
-		 * When this method returns, the thread will have both locks.
-		 * Make sure you unlock them!
-		 */
-		boolean myLock = false;
-		boolean otherLock = false;
-		while ((!myLock) || (!otherLock)) {
-			try {
-				myLock = lock.tryLock();
-				otherLock = other.lock.tryLock();
-			} finally {
-				if ((!myLock) || (!otherLock)) {
-					//could not obtain both locks - so unlock the one we got.
-					if (myLock) {
-						lock.unlock();
-					}
-					if (otherLock) {
-						other.lock.unlock();
-					}
-					//do a yield so the other threads will get to work.
-					Thread.yield();
-				}
-			}
 		}
 	}
 

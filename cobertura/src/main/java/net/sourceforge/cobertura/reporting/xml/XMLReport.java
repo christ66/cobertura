@@ -38,13 +38,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
-public class XMLReport {
+public class XMLReport extends CommonXMLReport {
 
 	private static final Logger logger = Logger.getLogger(XMLReport.class);
 
 	protected final static String coverageDTD = "coverage-04.dtd";
 
-	private final PrintWriter pw;
 	private final FileFinder finder;
 	private final ComplexityCalculator complexity;
 	private int indent = 0;
@@ -56,34 +55,11 @@ public class XMLReport {
 		this.finder = finder;
 
 		File file = new File(destinationDir, "coverage.xml");
-		pw = IOUtil.getPrintWriter(file);
+		setPrintWriter(IOUtil.getPrintWriter(file));
 
 		try {
-			println("<?xml version=\"1.0\"?>");
-			println("<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/"
-					+ coverageDTD + "\">");
-			println("");
-
-			double ccn = complexity.getCCNForProject(projectData);
-			int numLinesCovered = projectData.getNumberOfCoveredLines();
-			int numLinesValid = projectData.getNumberOfValidLines();
-			int numBranchesCovered = projectData.getNumberOfCoveredBranches();
-			int numBranchesValid = projectData.getNumberOfValidBranches();
-
-			// TODO: Set a schema?
-			//println("<coverage " + sourceDirectories.toString() + " xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
-			println("<coverage line-rate=\""
-					+ projectData.getLineCoverageRate() + "\" branch-rate=\""
-					+ projectData.getBranchCoverageRate()
-					+ "\" lines-covered=\"" + numLinesCovered
-					+ "\" lines-valid=\"" + numLinesValid
-					+ "\" branches-covered=\"" + numBranchesCovered
-					+ "\" branches-valid=\"" + numBranchesValid
-
-					+ "\" complexity=\"" + ccn
-
-					+ "\" version=\"" + Header.version() + "\" timestamp=\""
-					+ new Date().getTime() + "\">");
+			printHeader();
+			printCoverageElement(projectData, complexity);
 
 			increaseIndentation();
 			dumpSources();
@@ -91,28 +67,8 @@ public class XMLReport {
 			decreaseIndentation();
 			println("</coverage>");
 		} finally {
-			pw.close();
+			close();
 		}
-	}
-
-	void increaseIndentation() {
-		indent++;
-	}
-
-	void decreaseIndentation() {
-		if (indent > 0)
-			indent--;
-	}
-
-	void indent() {
-		for (int i = 0; i < indent; i++) {
-			pw.print("\t");
-		}
-	}
-
-	void println(String ln) {
-		indent();
-		pw.println(ln);
 	}
 
 	private void dumpSources() {
