@@ -396,7 +396,7 @@ public class WebappServer {
 
 	private void closeSocket(ServerSocket socket) {
 		try {
-			if (socket != null || socket.isClosed()) {
+			if (socket != null && socket.isClosed()) {
 				socket.close();
 			}
 		} catch (Throwable t) {

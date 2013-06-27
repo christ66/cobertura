@@ -268,7 +268,8 @@ public class ThreadedFunctionalTest {
 			bw = new BufferedWriter(new FileWriter(sourceFile));
 			bw.write(getThreadedCode(code));
 		} finally {
-			bw.close();
+			if (bw != null)
+				bw.close();
 		}
 
 		compileSource(srcDir);
