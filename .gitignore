@@ -16,6 +16,3 @@ cobertura/src/test/resources/examples/functionaltest1/tmp/
 *.classpath
 **/target/
 *.idea
-**/.pmd/
-**/reports/
-target/

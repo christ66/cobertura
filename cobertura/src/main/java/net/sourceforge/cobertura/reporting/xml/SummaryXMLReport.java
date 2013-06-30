@@ -32,16 +32,43 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 
-public class SummaryXMLReport extends CommonXMLReport {
+public class SummaryXMLReport {
+
+	private final PrintWriter pw;
+	private int indent = 0;
+
 	public SummaryXMLReport(ProjectData projectData, File destinationDir,
 			FileFinder finder, ComplexityCalculator complexity)
 			throws IOException {
 		File file = new File(destinationDir, "coverage-summary.xml");
-		setPrintWriter(IOUtil.getPrintWriter(file));
+		pw = IOUtil.getPrintWriter(file);
 
 		try {
-			printHeader();
-			printCoverageElement(projectData, complexity);
+			println("<?xml version=\"1.0\"?>");
+			println("<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/"
+					+ XMLReport.coverageDTD + "\">");
+			println("");
+
+			double ccn = complexity.getCCNForProject(projectData);
+			int numLinesCovered = projectData.getNumberOfCoveredLines();
+			int numLinesValid = projectData.getNumberOfValidLines();
+			int numBranchesCovered = projectData.getNumberOfCoveredBranches();
+			int numBranchesValid = projectData.getNumberOfValidBranches();
+
+			// TODO: Set a schema?
+			//println("<coverage " + sourceDirectories.toString() + " xmlns=\"http://cobertura.sourceforge.net\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://cobertura.sourceforge.net/xml/coverage.xsd\">");
+			println("<coverage line-rate=\""
+					+ projectData.getLineCoverageRate() + "\" branch-rate=\""
+					+ projectData.getBranchCoverageRate()
+					+ "\" lines-covered=\"" + numLinesCovered
+					+ "\" lines-valid=\"" + numLinesValid
+					+ "\" branches-covered=\"" + numBranchesCovered
+					+ "\" branches-valid=\"" + numBranchesValid
+
+					+ "\" complexity=\"" + ccn
+
+					+ "\" version=\"" + Header.version() + "\" timestamp=\""
+					+ new Date().getTime() + "\">");
 
 			//the DTD requires a "packages" element
 			increaseIndentation();
@@ -50,7 +77,28 @@ public class SummaryXMLReport extends CommonXMLReport {
 
 			println("</coverage>");
 		} finally {
-			close();
+			pw.close();
+		}
+
+	}
+
+	void increaseIndentation() {
+		indent++;
+	}
+
+	void decreaseIndentation() {
+		if (indent > 0)
+			indent--;
+	}
+
+	private void println(String ln) {
+		indent();
+		pw.println(ln);
+	}
+
+	private void indent() {
+		for (int i = 0; i < indent; i++) {
+			pw.print("\t");
 		}
 	}
 }

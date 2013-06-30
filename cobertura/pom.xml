@@ -290,9 +290,6 @@
         <version>${plugin.pmd.version}</version>
         <configuration>
           <failOnViolation>false</failOnViolation>
-          <excludes>
-            <exclude>**/javancss/**</exclude>
-          </excludes>
         </configuration>
         <executions>
           <execution>

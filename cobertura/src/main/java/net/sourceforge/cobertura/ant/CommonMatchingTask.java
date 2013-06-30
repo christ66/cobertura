@@ -246,25 +246,4 @@ public abstract class CommonMatchingTask extends MatchingTask {
 		failOnError = fail;
 	}
 
-	/**
-	 * We add the --commandsfile to the argument list and executeJava. We also perform
-	 * a dispose after we execute the command.
-	 * 
-	 * Note: This is called by the report and merge ant tasks.
-	 * 
-	 * @param builder The command line builder where we want to add the arguments.
-	 */
-	public void createCommandsFileAndExecute(CommandLineBuilder builder) {
-		// Execute GPL licensed code in separate virtual machine
-		getJava().createArg().setValue("--commandsfile");
-		getJava().createArg().setValue(builder.getCommandLineFile());
-		AntUtil.transferCoberturaDataFileProperty(getJava());
-		if (getJava().executeJava() != 0) {
-			throw new BuildException(
-					"Error running reports. See messages above.");
-		}
-
-		builder.dispose();
-	}
-
 }

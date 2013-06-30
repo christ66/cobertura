@@ -41,12 +41,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * </p>
  */
 @CoverageIgnore
-public abstract class CoverageDataContainer extends CoverageDataLock
+public abstract class CoverageDataContainer
 		implements
 			CoverageData,
 			Serializable {
 
 	private static final long serialVersionUID = 2;
+
+	protected transient Lock lock;
 
 	/**
 	 * Each key is the name of a child, usually stored as a String or
@@ -57,6 +59,10 @@ public abstract class CoverageDataContainer extends CoverageDataLock
 
 	public CoverageDataContainer() {
 		initLock();
+	}
+
+	private void initLock() {
+		lock = new ReentrantLock();
 	}
 
 	/**
@@ -278,6 +284,35 @@ public abstract class CoverageDataContainer extends CoverageDataLock
 		} finally {
 			lock.unlock();
 			container.lock.unlock();
+		}
+	}
+
+	protected void getBothLocks(CoverageDataContainer other) {
+		/*
+		 * To prevent deadlock, we need to get both locks or none at all.
+		 * 
+		 * When this method returns, the thread will have both locks.
+		 * Make sure you unlock them!
+		 */
+		boolean myLock = false;
+		boolean otherLock = false;
+		while ((!myLock) || (!otherLock)) {
+			try {
+				myLock = lock.tryLock();
+				otherLock = other.lock.tryLock();
+			} finally {
+				if ((!myLock) || (!otherLock)) {
+					//could not obtain both locks - so unlock the one we got.
+					if (myLock) {
+						lock.unlock();
+					}
+					if (otherLock) {
+						other.lock.unlock();
+					}
+					//do a yield so the other threads will get to work.
+					Thread.yield();
+				}
+			}
 		}
 	}
 
