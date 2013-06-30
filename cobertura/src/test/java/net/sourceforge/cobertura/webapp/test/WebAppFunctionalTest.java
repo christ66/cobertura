@@ -83,19 +83,19 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 	private static final String SAVE_DATA_CLASSNAME = "net.sourceforge.cobertura.webapp.FlushCoberturaServlet";
 	private static final String SAVE_DATA_METHOD_NAME = "doGet";
 	private static final boolean TOMCAT = true;
-	
+
 	static File tempDir = TestUtils.getTempDir();
 	File webappServerDir;
 	File srcDir;
-	
+
 	@Before
 	public void setUp() throws IOException {
 		Logger.getRootLogger().setLevel(Level.ALL);
-		
+
 		FileUtils.deleteDirectory(tempDir);
-		
+
 		webappServerDir = new File(tempDir, "webserver");
-		
+
 		srcDir = new File(tempDir, SRC_DIR);
 		assertTrue(new File(webappServerDir, "logs").mkdirs());
 
@@ -120,7 +120,7 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 		webappServer.withRunningServer();
 
 		webappServer.pingServer();
-		
+
 		File xmlReport = webappServer.getXmlReport();
 
 		generateReportFile(xmlReport);
@@ -149,7 +149,7 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 		webappServer.withRunningServer();
 
 		webappServer.pingServer();
-		
+
 		File xmlReport = webappServer.getXmlReport();
 
 		generateReportFile(xmlReport);
@@ -181,13 +181,13 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 	@Test
 	public void flushCoberturaData2() throws Exception {
 		WebappServer webappServer = new WebappServer(webappServerDir, false);
-		
+
 		webappServer.deployApp(srcDir, true, "com.acme.*");
 
 		webappServer.withRunningServer();
 
 		webappServer.pingServer();
-		
+
 		File xmlReport = webappServer.getXmlReport();
 
 		generateReportFile(xmlReport);
@@ -230,17 +230,17 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 		webappServer.deployApp(srcDir, true, "com.acme.*");
 
 		webappServer.withRunningServer();
-		
+
 		File xmlReport = webappServer.getXmlReport();
-		
+
 		generateReportFile(xmlReport);
-		
+
 		Node dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int hitCountBefore = TestUtils.getHitCount(dom,
 				WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet");
 		assertEquals(0, hitCountBefore);
-		
+
 		Thread.sleep(10 * 1000);
 
 		generateReportFile(xmlReport);
@@ -253,7 +253,7 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 		assertEquals(0, hitCountAfter);
 
 		generateReportFile(xmlReport);
-		
+
 		dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int finalCount = TestUtils.getHitCount(dom,
@@ -263,11 +263,12 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 
 		assertEquals(0, finalCount);
 	}
-	
+
 	public void generateReportFile(File xmlReport) {
 		ReportTask reportTask = new ReportTask();
 		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(webappServerDir.getAbsolutePath() + "/cobertura.ser");
+		reportTask.setDataFile(webappServerDir.getAbsolutePath()
+				+ "/cobertura.ser");
 		reportTask.setFormat("xml");
 		reportTask.setDestDir(new File(xmlReport.getParent()));
 		reportTask.execute();

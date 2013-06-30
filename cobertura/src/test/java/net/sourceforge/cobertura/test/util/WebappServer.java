@@ -134,7 +134,7 @@ public class WebappServer {
 			s = new ServerSocket(0);
 			webappPort = s.getLocalPort();
 			s.close();
-			
+
 			s = new ServerSocket(0);
 			stopPort = s.getLocalPort();
 			s.close();
@@ -142,22 +142,24 @@ public class WebappServer {
 			e.printStackTrace();
 		}
 	}
-	
-	public void deployApp(File srcDir, boolean instrumentCobertura, boolean deployCoberturaFlush, boolean modifyMainCoberturaDataFile, String instrumentRegEx) throws Exception{
+
+	public void deployApp(File srcDir, boolean instrumentCobertura,
+			boolean deployCoberturaFlush, boolean modifyMainCoberturaDataFile,
+			String instrumentRegEx) throws Exception {
 		this.modifyMainCoberturaDataFile = modifyMainCoberturaDataFile;
 
 		File extractedDir = new File(dir, "extracted");
 		File webInfDir = new File(extractedDir, "WEB-INF");
 		File classesDir = new File(webInfDir, "classes");
 
-		File webInfFile = writeWebInfFile(webInfDir, SIMPLE_SERVLET_WEB_XML_TEXT);
+		File webInfFile = writeWebInfFile(webInfDir,
+				SIMPLE_SERVLET_WEB_XML_TEXT);
 
 		compileSourceFiles(srcDir, classesDir);
 
 		copyJettyFiles(dir);
 
-		File war = makeWarFile(appName, webInfFile,
-				classesDir);
+		File war = makeWarFile(appName, webInfFile, classesDir);
 
 		FileUtils.deleteDirectory(extractedDir);
 
@@ -175,16 +177,20 @@ public class WebappServer {
 			deployCoberturaFlush(deployCoberturaFlush);
 		}
 	}
-	
-	public void deployApp(File srcDir, boolean instrumentCobertura, boolean deployCoberturaFlush, boolean modifyMainCoberturaDataFile) throws Exception {
-		deployApp(srcDir, instrumentCobertura, deployCoberturaFlush, modifyMainCoberturaDataFile, "");
+
+	public void deployApp(File srcDir, boolean instrumentCobertura,
+			boolean deployCoberturaFlush, boolean modifyMainCoberturaDataFile)
+			throws Exception {
+		deployApp(srcDir, instrumentCobertura, deployCoberturaFlush,
+				modifyMainCoberturaDataFile, "");
 	}
-	
-	public void deployApp(File srcDir, boolean deployCoberturaFlush, String instrumentRegEx) throws Exception {
+
+	public void deployApp(File srcDir, boolean deployCoberturaFlush,
+			String instrumentRegEx) throws Exception {
 		deployApp(srcDir, false, deployCoberturaFlush, false, instrumentRegEx);
 	}
-	
-	public void deployApp(File srcDir, String instrumentRegEx) throws Exception{
+
+	public void deployApp(File srcDir, String instrumentRegEx) throws Exception {
 		deployApp(srcDir, false, instrumentRegEx);
 	}
 
@@ -484,9 +490,9 @@ public class WebappServer {
 	public void pingServer() {
 		String webappResponse = null;
 		try {
-			webappResponse = IOUtils
-					.toString(new URL("http://localhost:" + webappPort + "/" + appName
-							+ "/SimpleServlet").openConnection().getInputStream());
+			webappResponse = IOUtils.toString(new URL("http://localhost:"
+					+ webappPort + "/" + appName + "/SimpleServlet")
+					.openConnection().getInputStream());
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -494,20 +500,19 @@ public class WebappServer {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
-		
+
 		assertNotNull(webappResponse);
 		assertEquals("Webapp response was incorrect", "Hi", webappResponse
 				.trim());
 	}
-	
+
 	public void pingCoberturaServer() {
 		//flush the cobertura data by doing an HTTP get
 		String flushing = null;
 		try {
-			flushing = IOUtils.toString(
-									new java.net.URL("http://localhost:" + webappPort
-					+ "/coberturaFlush/flushCobertura").openConnection()
-					.getInputStream());
+			flushing = IOUtils.toString(new java.net.URL("http://localhost:"
+					+ webappPort + "/coberturaFlush/flushCobertura")
+					.openConnection().getInputStream());
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -515,7 +520,7 @@ public class WebappServer {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
-		
+
 		assertNotNull(flushing);
 		assertEquals("", flushing.trim());
 
