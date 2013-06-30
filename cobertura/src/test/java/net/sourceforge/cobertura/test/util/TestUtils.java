@@ -85,7 +85,12 @@ public class TestUtils {
 	public static File getTempDir() {
 		return new File("/tmp", "cobertura");
 	}
-
+	
+	public static Node getXMLReportDOM(File xmlReport)
+			throws ParserConfigurationException, SAXException, IOException {
+		return getXMLReportDOM(xmlReport.getAbsolutePath());
+	}
+	
 	public static Node getXMLReportDOM(String xmlReport)
 			throws ParserConfigurationException, SAXException, IOException {
 		XmlParser parser = new XmlParser();

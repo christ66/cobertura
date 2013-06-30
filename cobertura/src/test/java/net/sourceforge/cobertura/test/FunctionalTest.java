@@ -300,7 +300,7 @@ public class FunctionalTest extends AbstractCoberturaTestCase {
 				break;
 			}
 		}
-		
+
 		assertNotNull(aStaticMethodLine);
 		assertEquals(1, Integer.valueOf(
 				aStaticMethodLine.attribute("hits").toString()).intValue());

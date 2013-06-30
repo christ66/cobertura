@@ -84,6 +84,7 @@ public class LargeFileTest {
 		 * has trivial methods such as .
 		 */
 		File tempDir = TestUtils.getTempDir();
+		FileUtils.deleteDirectory(tempDir);
 		File srcDir = new File(tempDir, "src");
 		File reportDir = new File(tempDir, "report");
 		File instrumentDir = new File(tempDir, "instrument");
@@ -92,7 +93,7 @@ public class LargeFileTest {
 		File datafile = new File(srcDir, "cobertura.ser");
 		mainSourceFile.getParentFile().mkdirs();
 
-		StringBuilder content = new StringBuilder();
+		StringBuffer content = new StringBuffer();
 		for (int i = 0; i < 500; i++) {
 			content.append("if (i < 1000) {i++;};\n");
 		}

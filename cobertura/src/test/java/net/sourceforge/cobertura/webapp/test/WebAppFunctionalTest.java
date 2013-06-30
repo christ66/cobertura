@@ -55,15 +55,12 @@
 
 package net.sourceforge.cobertura.webapp.test;
 
-import groovy.lang.Closure;
-import groovy.util.AntBuilder;
 import groovy.util.Node;
 import net.sourceforge.cobertura.ant.ReportTask;
 import net.sourceforge.cobertura.test.AbstractCoberturaTestCase;
 import net.sourceforge.cobertura.test.util.TestUtils;
 import net.sourceforge.cobertura.test.util.WebappServer;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -71,10 +68,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.*;
 
 public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
@@ -90,12 +83,23 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 	private static final String SAVE_DATA_CLASSNAME = "net.sourceforge.cobertura.webapp.FlushCoberturaServlet";
 	private static final String SAVE_DATA_METHOD_NAME = "doGet";
 	private static final boolean TOMCAT = true;
-
-	AntBuilder ant = TestUtils.getCoberturaAntBuilder(TestUtils.getTempDir());
-
+	
+	static File tempDir = TestUtils.getTempDir();
+	File webappServerDir;
+	File srcDir;
+	
 	@Before
 	public void setUp() throws IOException {
-		FileUtils.deleteDirectory(TestUtils.getTempDir());
+		Logger.getRootLogger().setLevel(Level.ALL);
+		
+		FileUtils.deleteDirectory(tempDir);
+		
+		webappServerDir = new File(tempDir, "webserver");
+		
+		srcDir = new File(tempDir, SRC_DIR);
+		assertTrue(new File(webappServerDir, "logs").mkdirs());
+
+		WebappServer.writeSimpleServletSource(srcDir);
 	}
 
 	@Test
@@ -109,154 +113,61 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 	}
 
 	public void basicStartAndStopOfWebApp(boolean tomcat) throws Exception {
-		File tempDir = TestUtils.getTempDir();
-		File webappServerDir = new File(tempDir, "webserver");
-
-		final File srcDir = new File(tempDir, SRC_DIR);
-		new File(webappServerDir, "logs").mkdirs();
-		WebappServer.writeSimpleServletSource(srcDir);
-
-		final String appName = "simple";
-
 		WebappServer webappServer = new WebappServer(webappServerDir, tomcat);
 
-		webappServer.deployApp(new HashMap() {
-			{
-				put("webInfText", WebappServer.SIMPLE_SERVLET_WEB_XML_TEXT);
-				put("srcDir", srcDir);
-				put("appName", appName);
-				put("instrumentRegEx", "com.acme.*");
-			}
-		});
+		webappServer.deployApp(srcDir, "com.acme.*");
 
-		Map data = webappServer.withRunningServer(new Closure(null) {
-			public void doCall(HashMap values) {
-			}
-		});
+		webappServer.withRunningServer();
 
-		//do a HTTP get so the doGet method will be hit
-		String webappResponse = IOUtils
-				.toString(new URL("http://" + data.get("hostname") + ":"
-						+ data.get("webappPort") + "/" + appName
-						+ "/SimpleServlet").openConnection().getInputStream());
+		webappServer.pingServer();
+		
+		File xmlReport = webappServer.getXmlReport();
 
-		assertEquals("Webapp response was incorrect", "Hi", webappResponse
-				.trim());
+		generateReportFile(xmlReport);
 
-		ReportTask reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
+		Node dom = TestUtils.getXMLReportDOM(xmlReport);
 
-		Node dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
-
-		//make sure the report shows the doGet method has not been hit yet - the data is not flushed until the server stops
 		assertFalse(TestUtils.isMethodHit(dom,
 				"com.acme.servlet.SimpleServlet", "doGet"));
 
 		webappServer.killServer();
 		Thread.sleep(5 * 1000);
-		reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
+		generateReportFile(xmlReport);
 
-		dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
+		dom = TestUtils.getXMLReportDOM(xmlReport);
 
-		//now that the server has stopped, make sure the report shows it has been hit
 		assertTrue("doGet has hits=0 in cobertura report", TestUtils
 				.isMethodHit(dom, "com.acme.servlet.SimpleServlet", "doGet"));
 	}
 
 	@Test
 	public void flushCoberturaData() throws Exception {
-		Logger.getRootLogger().setLevel(Level.ALL);
-		File tempDir = TestUtils.getTempDir();
-		File webappServerDir = new File(tempDir, "webserver");
-		final File srcDir = new File(tempDir, SRC_DIR);
-		new File(webappServerDir, "logs").mkdirs();
-
-		WebappServer.writeSimpleServletSource(srcDir);
-
-		final String appName = "simple";
-
 		WebappServer webappServer = new WebappServer(webappServerDir, false);
 
-		webappServer.deployApp(new HashMap() {
-			{
-				put("webInfText", WebappServer.SIMPLE_SERVLET_WEB_XML_TEXT);
-				put("srcDir", srcDir);
-				put("appName", appName);
-				put("instrumentCobertura", true);
-				put("deployCoberturaFlush", true);
-				put("modifyMainCoberturaDataFile", true);
-			}
-		});
+		webappServer.deployApp(srcDir, true, true, true);
 
-		Map data = webappServer.withRunningServer(new Closure(null) {
-			public void doCall(HashMap values) {
-			}
-		});
+		webappServer.withRunningServer();
 
-		/*
-		 * do a HTTP get of the simple webapp - this is just to get somewhat close to a 
-		 * real world scenario
-		 */
-		String webappResponse = IOUtils
-				.toString(new java.net.URL("http://" + data.get("hostname")
-						+ ":" + data.get("webappPort") + "/" + appName
-						+ "/SimpleServlet").openConnection().getInputStream());
-		assertEquals("Webapp response was incorrect", "Hi", webappResponse
-				.trim());
+		webappServer.pingServer();
+		
+		File xmlReport = webappServer.getXmlReport();
 
-		//Do a coverage report of the main cobertura.ser file at the root of the project
-		ReportTask reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
+		generateReportFile(xmlReport);
 
-		Node dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
+		Node dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int hitCountBefore = TestUtils.getHitCount(dom, SAVE_DATA_CLASSNAME,
 				SAVE_DATA_METHOD_NAME);
 
 		assertEquals(0, hitCountBefore);
 
-		//flush the cobertura data by doing an HTTP get
-
-		String flushing = IOUtils.toString(new java.net.URL("http://"
-				+ data.get("hostname") + ":" + data.get("webappPort")
-				+ "/coberturaFlush/flushCobertura").openConnection()
-				.getInputStream());
-
-		assertEquals("", flushing);
+		webappServer.pingCoberturaServer();
 
 		Thread.sleep(10 * 1000);
 
-		//run the report again
+		generateReportFile(xmlReport);
 
-		reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
-
-		dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
+		dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int hitCountAfter = TestUtils.getHitCount(dom, SAVE_DATA_CLASSNAME,
 				SAVE_DATA_METHOD_NAME);
@@ -269,76 +180,30 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 
 	@Test
 	public void flushCoberturaData2() throws Exception {
-		File tempDir = TestUtils.getTempDir();
-		File webappServerDir = new File(tempDir, "webserver");
-		final File srcDir = new File(tempDir, SRC_DIR);
-
-		WebappServer.writeSimpleServletSource(srcDir);
-
-		final String appName = "simple";
-
 		WebappServer webappServer = new WebappServer(webappServerDir, false);
-		webappServer.deployApp(new HashMap() {
-			{
-				put("webInfText", WebappServer.SIMPLE_SERVLET_WEB_XML_TEXT);
-				put("srcDir", srcDir);
-				put("appName", appName);
-				put("deployCoberturaFlush", true);
-				put("instrumentRegEx", "com.acme.*");
-			}
-		});
+		
+		webappServer.deployApp(srcDir, true, "com.acme.*");
 
-		Map data = webappServer.withRunningServer(new Closure(null) {
-			public void doCall(HashMap values) {
-			}
-		});
+		webappServer.withRunningServer();
 
-		/*
-		 * do a HTTP get of the simple webapp
-		 */
-		String webappResponse = IOUtils.toString(new URL("http://"
-				+ data.get("hostname") + ":" + data.get("webappPort") + "/"
-				+ appName + "/SimpleServlet"));
+		webappServer.pingServer();
+		
+		File xmlReport = webappServer.getXmlReport();
 
-		assertEquals("Webapp response was incorrect", "Hi", webappResponse
-				.trim());
+		generateReportFile(xmlReport);
 
-		//Do a coverage report of the main cobertura.ser file at the root of the project
-		ReportTask reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
-
-		Node dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
+		Node dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int hitCountBefore = TestUtils.getHitCount(dom,
 				WebappServer.SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
 
 		assertEquals(0, hitCountBefore);
 
-		//flush the cobertura data by doing an HTTP get
+		webappServer.pingCoberturaServer();
 
-		assertEquals("", IOUtils.toString(
-				new java.net.URL("http://" + data.get("hostname") + ":"
-						+ data.get("webappPort")
-						+ "/coberturaFlush/flushCobertura").openConnection()
-						.getInputStream()).trim());
+		generateReportFile(xmlReport);
 
-		//run the report again
-		reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
-
-		dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
+		dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int hitCountAfter = TestUtils.getHitCount(dom,
 				WebappServer.SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
@@ -348,17 +213,9 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 		webappServer.killServer();
 		Thread.sleep(5 * 1000); // Give server time to shutdown.
 
-		//run the report again
-		reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
+		generateReportFile(xmlReport);
 
-		dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
+		dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int hitCountFinal = TestUtils.getHitCount(dom,
 				WebappServer.SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
@@ -368,89 +225,36 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 
 	@Test
 	public void flushCoberturaDataOnly() throws Exception {
-		/*
-		 * Test case where a flush is done before any instrumented code is executed.
-		 */
-		File tempDir = TestUtils.getTempDir();
-		File webappServerDir = new File(tempDir, "webserver");
-		final File srcDir = new File(tempDir, SRC_DIR);
-		new File(webappServerDir, "logs").mkdirs();
-
-		WebappServer.writeSimpleServletSource(srcDir);
-
-		final String appName = "simple";
-
 		WebappServer webappServer = new WebappServer(webappServerDir, false);
 
-		webappServer.deployApp(new HashMap() {
-			{
-				put("webInfText", WebappServer.SIMPLE_SERVLET_WEB_XML_TEXT);
-				put("srcDir", srcDir);
-				put("appName", appName);
-				put("deployCoberturaFlush", true);
-				put("instrumentRegEx", "com.acme.*");
-			}
-		});
+		webappServer.deployApp(srcDir, true, "com.acme.*");
 
-		Map data = webappServer.withRunningServer(new Closure(null) {
-			public void doCall(HashMap values) {
-			}
-		});
-		//Do a coverage report of the main cobertura.ser file at the root of the project
-		ReportTask reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
-
-		Node dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
+		webappServer.withRunningServer();
+		
+		File xmlReport = webappServer.getXmlReport();
+		
+		generateReportFile(xmlReport);
+		
+		Node dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int hitCountBefore = TestUtils.getHitCount(dom,
 				WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet");
 		assertEquals(0, hitCountBefore);
-		System.out.println("http://" + data.get("hostname") + ":"
-				+ data.get("webappPort") + "/coberturaFlush/flushCobertura");
-		//flush the cobertura data by doing an HTTP get
-		String flushing = IOUtils.toString(new java.net.URL("http://"
-				+ data.get("hostname") + ":" + data.get("webappPort")
-				+ "/coberturaFlush/flushCobertura").openConnection()
-				.getInputStream());
-
-		assertEquals("", flushing);
-
+		
 		Thread.sleep(10 * 1000);
 
-		//run the report again
-		reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
+		generateReportFile(xmlReport);
 
-		dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
+		dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int hitCountAfter = TestUtils.getHitCount(dom,
 				WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet");
 
 		assertEquals(0, hitCountAfter);
 
-		//run the report again
-		reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(((File) data.get("datafile")).getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(new File(((File) data.get("xmlReport"))
-				.getParent()));
-		reportTask.execute();
-
-		dom = TestUtils.getXMLReportDOM(((File) data.get("xmlReport"))
-				.getAbsolutePath());
+		generateReportFile(xmlReport);
+		
+		dom = TestUtils.getXMLReportDOM(xmlReport);
 
 		int finalCount = TestUtils.getHitCount(dom,
 				WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet");
@@ -458,5 +262,14 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 		webappServer.killServer();
 
 		assertEquals(0, finalCount);
+	}
+	
+	public void generateReportFile(File xmlReport) {
+		ReportTask reportTask = new ReportTask();
+		reportTask.setProject(TestUtils.project);
+		reportTask.setDataFile(webappServerDir.getAbsolutePath() + "/cobertura.ser");
+		reportTask.setFormat("xml");
+		reportTask.setDestDir(new File(xmlReport.getParent()));
+		reportTask.execute();
 	}
 }
