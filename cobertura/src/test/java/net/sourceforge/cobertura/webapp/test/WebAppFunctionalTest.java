@@ -71,9 +71,6 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
-
-	private static final String SRC_DIR = "src/main/java";
-
 	/*
 	 * For the next two constants, it would be preferable to use saveGlobalProjectData
 	 * in class net.sourceforge.cobertura.coveragedata.ProjectData, but ProjectData is
@@ -96,7 +93,7 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 
 		webappServerDir = new File(tempDir, "webserver");
 
-		srcDir = new File(tempDir, SRC_DIR);
+		srcDir = new File(tempDir, "src/main/java");
 		assertTrue(new File(webappServerDir, "logs").mkdirs());
 
 		WebappServer.writeSimpleServletSource(srcDir);
@@ -110,34 +107,6 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 	@Test
 	public void basicStartAndStopOfWebAppInTomcat() throws Exception {
 		basicStartAndStopOfWebApp(TOMCAT);
-	}
-
-	public void basicStartAndStopOfWebApp(boolean tomcat) throws Exception {
-		WebappServer webappServer = new WebappServer(webappServerDir, tomcat);
-
-		webappServer.deployApp(srcDir, "com.acme.*");
-
-		webappServer.withRunningServer();
-
-		webappServer.pingServer();
-
-		File xmlReport = webappServer.getXmlReport();
-
-		generateReportFile(xmlReport);
-
-		Node dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		assertFalse(TestUtils.isMethodHit(dom,
-				"com.acme.servlet.SimpleServlet", "doGet"));
-
-		webappServer.killServer();
-		Thread.sleep(5 * 1000);
-		generateReportFile(xmlReport);
-
-		dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		assertTrue("doGet has hits=0 in cobertura report", TestUtils
-				.isMethodHit(dom, "com.acme.servlet.SimpleServlet", "doGet"));
 	}
 
 	@Test
@@ -262,6 +231,34 @@ public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
 		webappServer.killServer();
 
 		assertEquals(0, finalCount);
+	}
+
+	public void basicStartAndStopOfWebApp(boolean tomcat) throws Exception {
+		WebappServer webappServer = new WebappServer(webappServerDir, tomcat);
+
+		webappServer.deployApp(srcDir, "com.acme.*");
+
+		webappServer.withRunningServer();
+
+		webappServer.pingServer();
+
+		File xmlReport = webappServer.getXmlReport();
+
+		generateReportFile(xmlReport);
+
+		Node dom = TestUtils.getXMLReportDOM(xmlReport);
+
+		assertFalse(TestUtils.isMethodHit(dom,
+				"com.acme.servlet.SimpleServlet", "doGet"));
+
+		webappServer.killServer();
+		Thread.sleep(5 * 1000);
+		generateReportFile(xmlReport);
+
+		dom = TestUtils.getXMLReportDOM(xmlReport);
+
+		assertTrue("doGet has hits=0 in cobertura report", TestUtils
+				.isMethodHit(dom, "com.acme.servlet.SimpleServlet", "doGet"));
 	}
 
 	public void generateReportFile(File xmlReport) {

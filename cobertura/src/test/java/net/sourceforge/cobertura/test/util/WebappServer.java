@@ -263,6 +263,7 @@ public class WebappServer {
 		File war = new File(webappsDir, "coberturaFlush.war");
 
 		File classesDir = new File("target/build/warClasses");
+		if (!classesDir.exists()) classesDir.mkdirs();
 		Javac javac = new Javac();
 		javac.setProject(TestUtils.project);
 		javac.setSrcdir(new Path(TestUtils.project, SRC_DIR));
@@ -356,6 +357,7 @@ public class WebappServer {
 				public void doCall(HashMap<String, Object> values) {
 				}
 			};
+
 			closure.call(data);
 		} finally {
 		}
@@ -441,25 +443,34 @@ public class WebappServer {
 	}
 
 	private void stopWebServer() {
-		Java java = new Java();
-		java.setProject(TestUtils.project);
-		java.setJar(new File(TestUtils.getTempDir(), "webserver/start.jar"));
-		java.setDir(dir);
-		java.setFork(true);
-		java.setArgs("--stop");
-		Variable stopPortVariable = new Variable();
-		Variable stopKeyVariable = new Variable();
+		Thread t = new Thread() {
+			@Override
+			public void run() {
+				Java java = new Java();
+				java.setProject(TestUtils.project);
+				java.setJar(new File(TestUtils.getTempDir(),
+						"webserver/start.jar"));
+				java.setDir(dir);
+				java.setFork(true);
+				java.setArgs("--stop");
+				Variable stopPortVariable = new Variable();
+				Variable stopKeyVariable = new Variable();
 
-		stopPortVariable.setKey("STOP.PORT");
-		stopPortVariable.setValue(String.valueOf(stopPort));
+				stopPortVariable.setKey("STOP.PORT");
+				stopPortVariable.setValue(String.valueOf(stopPort));
 
-		stopKeyVariable.setKey("STOP.KEY");
-		stopKeyVariable.setValue("cobertura");
+				stopKeyVariable.setKey("STOP.KEY");
+				stopKeyVariable.setValue("cobertura");
 
-		java.addSysproperty(stopPortVariable);
-		java.addSysproperty(stopKeyVariable);
+				java.addSysproperty(stopPortVariable);
+				java.addSysproperty(stopKeyVariable);
 
-		java.execute();
+				java.execute();
+
+				java.execute();
+			}
+		};
+		t.start();
 	}
 
 	private File createCoberturaJar() {
