@@ -534,7 +534,7 @@ public class WebappServer {
 		}
 
 		assertNotNull(flushing);
-		assertEquals("meow", flushing.trim());
+		assertEquals("", flushing.trim());
 
 	}
 
