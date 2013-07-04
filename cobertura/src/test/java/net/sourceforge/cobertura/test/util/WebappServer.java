@@ -263,7 +263,8 @@ public class WebappServer {
 		File war = new File(webappsDir, "coberturaFlush.war");
 
 		File classesDir = new File("target/build/warClasses");
-		if (!classesDir.exists()) classesDir.mkdirs();
+		if (!classesDir.exists())
+			classesDir.mkdirs();
 		Javac javac = new Javac();
 		javac.setProject(TestUtils.project);
 		javac.setSrcdir(new Path(TestUtils.project, SRC_DIR));
@@ -358,7 +359,7 @@ public class WebappServer {
 				}
 			};
 
-			closure.call(data);
+			System.err.println(closure.call(data));
 		} finally {
 		}
 	}
@@ -533,7 +534,7 @@ public class WebappServer {
 		}
 
 		assertNotNull(flushing);
-		assertEquals("", flushing.trim());
+		assertEquals("meow", flushing.trim());
 
 	}
 

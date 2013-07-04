@@ -83,7 +83,7 @@ public class TestUtils {
 	}
 
 	public static File getTempDir() {
-		return new File("/tmp", "cobertura");
+		return new File("target/tmp", "cobertura");
 	}
 
 	public static Node getXMLReportDOM(File xmlReport)

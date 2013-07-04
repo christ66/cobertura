@@ -1,271 +1,368 @@
-/*
- * The Apache Software License, Version 1.1
- *
- * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
- * reserved.
- * Copyright (C) 2009 John Lewis
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *
- * 3. The end-user documentation included with the redistribution, if
- *    any, must include the following acknowlegement:
- *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
- *    Alternately, this acknowlegement may appear in the software itself,
- *    if and wherever such third-party acknowlegements normally appear.
- *
- * 4. The names "Ant" and "Apache Software
- *    Foundation" must not be used to endorse or promote products derived
- *    from this software without prior written permission. For written
- *    permission, please contact apache@apache.org.
- *
- * 5. Products derived from this software may not be called "Apache"
- *    nor may "Apache" appear in their names without prior written
- *    permission of the Apache Group.
- *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE APACHE SOFTWARE FOUNDATION OR
- * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- * ====================================================================
- *
- * This software consists of voluntary contributions made by many
- * individuals on behalf of the Apache Software Foundation.  For more
- * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
- */
-
 package net.sourceforge.cobertura.webapp.test;
 
+import static org.junit.Assert.*;
+
 import groovy.util.Node;
-import net.sourceforge.cobertura.ant.ReportTask;
-import net.sourceforge.cobertura.test.AbstractCoberturaTestCase;
-import net.sourceforge.cobertura.test.util.TestUtils;
-import net.sourceforge.cobertura.test.util.WebappServer;
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import static org.junit.Assert.*;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
 
-public class WebAppFunctionalTest extends AbstractCoberturaTestCase {
-	/*
-	 * For the next two constants, it would be preferable to use saveGlobalProjectData
-	 * in class net.sourceforge.cobertura.coveragedata.ProjectData, but ProjectData is
-	 * not instrumented since it is annotated with CoberturaIgnore.   So, the best we can
-	 * do is make sure the doGet method in FlushCoberturaServlet is called.
-	 */
-	private static final String SAVE_DATA_CLASSNAME = "net.sourceforge.cobertura.webapp.FlushCoberturaServlet";
+import net.sourceforge.cobertura.ant.InstrumentTask;
+import net.sourceforge.cobertura.ant.ReportTask;
+import net.sourceforge.cobertura.test.util.TestUtils;
+import net.sourceforge.cobertura.webapp.FlushCoberturaServlet;
+
+import org.apache.commons.io.FileUtils;
+
+import org.apache.tools.ant.taskdefs.Javac;
+import org.apache.tools.ant.taskdefs.War;
+import org.apache.tools.ant.taskdefs.Zip;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.ZipFileSet;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import org.mortbay.jetty.testing.HttpTester;
+import org.mortbay.jetty.testing.ServletTester;
+
+/**
+ * 
+ * This test tests the functional FlushCoberturaServlet used for jetty sevlets.
+ * 
+ * We use the ServletTester API to remove the sensitive tests that were in
+ * the previous versions of cobertura.
+ * 
+ * @author schristou88
+ *
+ */
+public class WebAppFunctionalTest {
+	ServletTester tester;
+	HttpTester request;
+	HttpTester response;
+	File tempDir = TestUtils.getTempDir();
+	public static final String SIMPLE_SERVLET_CLASSNAME = "com.acme.servlet.SimpleServlet";
 	private static final String SAVE_DATA_METHOD_NAME = "doGet";
-	private static final boolean TOMCAT = true;
-
-	static File tempDir = TestUtils.getTempDir();
-	File webappServerDir;
-	File srcDir;
 
 	@Before
-	public void setUp() throws IOException {
-		Logger.getRootLogger().setLevel(Level.ALL);
-
+	public void setUp() throws Exception {
 		FileUtils.deleteDirectory(tempDir);
-
-		webappServerDir = new File(tempDir, "webserver");
-
-		srcDir = new File(tempDir, "src/main/java");
-		assertTrue(new File(webappServerDir, "logs").mkdirs());
-
-		WebappServer.writeSimpleServletSource(srcDir);
+		FileUtils.deleteQuietly(new File("cobertura.ser"));
+		FileUtils.deleteQuietly(new File(tempDir.getAbsolutePath(), "coverage.xml"));
+	}
+	
+	@After
+	public void tearDown() throws Exception {
+		if (tester != null)
+			tester.stop();
 	}
 
 	@Test
-	public void basicStartAndStopOfWebApp() throws Exception {
-		basicStartAndStopOfWebApp(!TOMCAT);
+	public void testServletCreation() throws Exception {
+		startUpServlet();
+		pingServer();
 	}
 
 	@Test
-	public void basicStartAndStopOfWebAppInTomcat() throws Exception {
-		basicStartAndStopOfWebApp(TOMCAT);
+	public void testCoberturaServlet() throws Exception {
+		startUpServlet();
+		pingCoberturaServer();
 	}
-
+	
 	@Test
-	public void flushCoberturaData() throws Exception {
-		WebappServer webappServer = new WebappServer(webappServerDir, false);
+	public void testFlushCoberturaData() throws Exception {
+		createSimpleWar();
 
-		webappServer.deployApp(srcDir, true, true, true);
+		createCoberturaServlet();
 
-		webappServer.withRunningServer();
+		createCoberturaJar();
 
-		webappServer.pingServer();
+		instrumentWar();
 
-		File xmlReport = webappServer.getXmlReport();
+		startUpServlet();
 
-		generateReportFile(xmlReport);
+		pingServer();
 
-		Node dom = TestUtils.getXMLReportDOM(xmlReport);
+		generateReportFile();
 
-		int hitCountBefore = TestUtils.getHitCount(dom, SAVE_DATA_CLASSNAME,
-				SAVE_DATA_METHOD_NAME);
+		Node dom = TestUtils.getXMLReportDOM(new File(
+				tempDir.getAbsolutePath(), "coverage.xml"));
+
+		int hitCountBefore = TestUtils.getHitCount(dom,
+				SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
 
 		assertEquals(0, hitCountBefore);
 
-		webappServer.pingCoberturaServer();
+		pingCoberturaServer();
 
-		Thread.sleep(10 * 1000);
+		generateReportFile();
 
-		generateReportFile(xmlReport);
+		dom = TestUtils.getXMLReportDOM(new File(tempDir.getAbsolutePath(),
+				"coverage.xml"));
 
-		dom = TestUtils.getXMLReportDOM(xmlReport);
+		int hitCountAfter = TestUtils.getHitCount(dom,
+				SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
 
-		int hitCountAfter = TestUtils.getHitCount(dom, SAVE_DATA_CLASSNAME,
-				SAVE_DATA_METHOD_NAME);
-
-		webappServer.killServer();
-
-		assertEquals("hit count should have increased by one",
+		tester.stop();
+		
+		assertEquals("Hit count should have increased by one",
 				hitCountBefore + 1, hitCountAfter);
 	}
-
+	
 	@Test
-	public void flushCoberturaData2() throws Exception {
-		WebappServer webappServer = new WebappServer(webappServerDir, false);
-
-		webappServer.deployApp(srcDir, true, "com.acme.*");
-
-		webappServer.withRunningServer();
-
-		webappServer.pingServer();
-
-		File xmlReport = webappServer.getXmlReport();
-
-		generateReportFile(xmlReport);
-
-		Node dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		int hitCountBefore = TestUtils.getHitCount(dom,
-				WebappServer.SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
-
+	public void testFlushCoberturaData2() throws Exception {
+		createSimpleWar();
+		
+		createCoberturaServlet();
+		
+		createCoberturaJar();
+		
+		instrumentWar();
+		
+		startUpServlet();
+		
+		pingServer();
+		
+		generateReportFile();
+		
+		Node dom = TestUtils.getXMLReportDOM(new File(tempDir.getAbsolutePath(), "coverage.xml"));
+		
+		int hitCountBefore = TestUtils.getHitCount(dom, SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
+		
 		assertEquals(0, hitCountBefore);
-
-		webappServer.pingCoberturaServer();
-
-		generateReportFile(xmlReport);
-
-		dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		int hitCountAfter = TestUtils.getHitCount(dom,
-				WebappServer.SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
-
-		assertEquals(1, hitCountAfter);
-
-		webappServer.killServer();
-		Thread.sleep(5 * 1000); // Give server time to shutdown.
-
-		generateReportFile(xmlReport);
-
-		dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		int hitCountFinal = TestUtils.getHitCount(dom,
-				WebappServer.SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
-
-		assertEquals(1, hitCountFinal);
+		
+		pingCoberturaServer();
+		
+		generateReportFile();
+		
+		dom = TestUtils.getXMLReportDOM(new File(tempDir.getAbsolutePath(), "coverage.xml"));
+		
+		int hitCountAfter = TestUtils.getHitCount(dom, SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
+		
+		assertEquals(2, hitCountAfter);
+		
+		tester.stop();
+		
+		generateReportFile();
+		
+		dom = TestUtils.getXMLReportDOM(new File(tempDir.getAbsolutePath(), "coverage.xml"));
+		
+		int hitCountFinal = TestUtils.getHitCount(dom, SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
+		
+		assertEquals(hitCountAfter, hitCountFinal);
 	}
-
+	
 	@Test
-	public void flushCoberturaDataOnly() throws Exception {
-		WebappServer webappServer = new WebappServer(webappServerDir, false);
-
-		webappServer.deployApp(srcDir, true, "com.acme.*");
-
-		webappServer.withRunningServer();
-
-		File xmlReport = webappServer.getXmlReport();
-
-		generateReportFile(xmlReport);
-
-		Node dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		int hitCountBefore = TestUtils.getHitCount(dom,
-				WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet");
+	public void testFlushCoberturaDataOnly() throws Exception {
+		createSimpleWar();
+		
+		createCoberturaServlet();
+		
+		createCoberturaJar();
+		
+		instrumentWar();
+		
+		startUpServlet();
+				
+		generateReportFile();
+		
+		Node dom = TestUtils.getXMLReportDOM(new File(tempDir.getAbsolutePath(), "coverage.xml"));
+		
+		int hitCountBefore = TestUtils.getHitCount(dom, SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
+		
 		assertEquals(0, hitCountBefore);
-
-		Thread.sleep(10 * 1000);
-
-		generateReportFile(xmlReport);
-
-		dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		int hitCountAfter = TestUtils.getHitCount(dom,
-				WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet");
-
+		
+		generateReportFile();
+		
+		dom = TestUtils.getXMLReportDOM(new File(tempDir.getAbsolutePath(), "coverage.xml"));
+		
+		int hitCountAfter = TestUtils.getHitCount(dom, SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
+		
 		assertEquals(0, hitCountAfter);
-
-		generateReportFile(xmlReport);
-
-		dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		int finalCount = TestUtils.getHitCount(dom,
-				WebappServer.SIMPLE_SERVLET_CLASSNAME, "doGet");
-
-		webappServer.killServer();
-
+		
+		tester.stop();
+		
+		generateReportFile();
+		
+		dom = TestUtils.getXMLReportDOM(new File(tempDir.getAbsolutePath(), "coverage.xml"));
+		
+		int finalCount = TestUtils.getHitCount(dom, SIMPLE_SERVLET_CLASSNAME, SAVE_DATA_METHOD_NAME);
+		
 		assertEquals(0, finalCount);
+		
+	}
+	
+	public void startUpServlet() throws Exception {
+		tester = new ServletTester();
+		request = new HttpTester();
+		response = new HttpTester();
+
+		ClassLoader loader = createClassLoader();
+		tester.setClassLoader(loader);
+		
+		tester.addServlet("com.acme.servlet.SimpleServlet", "/simple/SimpleServlet");
+		tester.addServlet(FlushCoberturaServlet.class, "/coberturaFlush/flushCobertura");
+		tester.start();
+
+		request.setMethod("GET");
+		request.setHeader("host", "tester");
+		request.setVersion("HTTP/1.0");
+	}
+	
+	public void pingServer() throws Exception {
+		request.setURI("/simple/SimpleServlet");
+		response.parse(tester.getResponses(request.generate()));
+		assertNull(response.getMethod());
+		assertEquals(200, response.getStatus());
+		assertEquals("Hi", response.getContent().trim());
 	}
 
-	public void basicStartAndStopOfWebApp(boolean tomcat) throws Exception {
-		WebappServer webappServer = new WebappServer(webappServerDir, tomcat);
-
-		webappServer.deployApp(srcDir, "com.acme.*");
-
-		webappServer.withRunningServer();
-
-		webappServer.pingServer();
-
-		File xmlReport = webappServer.getXmlReport();
-
-		generateReportFile(xmlReport);
-
-		Node dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		assertFalse(TestUtils.isMethodHit(dom,
-				"com.acme.servlet.SimpleServlet", "doGet"));
-
-		webappServer.killServer();
-		Thread.sleep(5 * 1000);
-		generateReportFile(xmlReport);
-
-		dom = TestUtils.getXMLReportDOM(xmlReport);
-
-		assertTrue("doGet has hits=0 in cobertura report", TestUtils
-				.isMethodHit(dom, "com.acme.servlet.SimpleServlet", "doGet"));
+	public void pingCoberturaServer() throws Exception {
+		request.setURI("/coberturaFlush/flushCobertura");
+		response.parse(tester.getResponses(request.generate()));
+		assertNull(response.getMethod());
+		assertEquals(200, response.getStatus());
+		assertNull(response.getContent());
 	}
 
-	public void generateReportFile(File xmlReport) {
+	private void createSimpleWar() throws IOException {
+		File webappsDir = new File(tempDir, "webapps");
+		File war = new File(webappsDir, "simple.war");
+
+		File classesDir = new File("target/build/simpleWarClasses/");
+		if (!classesDir.exists())
+			classesDir.mkdirs();
+
+		FileUtils.copyDirectory(new File("target/test-classes/com"), new File(
+				classesDir, "com"));
+
+		War antWar = new War();
+		antWar.setProject(TestUtils.project);
+		antWar.setDestFile(war);
+		antWar.setWebxml(new File("src/test/resources/testJetty/web.xml"));
+
+		ZipFileSet classesFileSet = new ZipFileSet();
+		classesFileSet.setDir(classesDir);
+
+		antWar.addClasses(classesFileSet);
+		antWar.execute();
+	}
+
+	private void createCoberturaServlet() {
+		File webappsDir = new File(TestUtils.getTempDir(), "webapps");
+		File war = new File(webappsDir, "coberturaFlush.war");
+
+		File classesDir = new File("target/build/warClasses");
+		if (!classesDir.exists())
+			classesDir.mkdirs();
+		Javac javac = new Javac();
+		javac.setProject(TestUtils.project);
+		javac.setSrcdir(new Path(TestUtils.project, "src/main/java"));
+		javac.setDestdir(classesDir);
+		javac.setDebug(true);
+
+		Path classpath = new Path(TestUtils.project);
+		FileSet jettyFileSet = new FileSet();
+		jettyFileSet.setDir(new File("src/test/resources/jetty"));
+		jettyFileSet.setIncludes("**/*.jar");
+		classpath.addFileset(jettyFileSet);
+
+		javac.setIncludes("**/FlushCoberturaServlet.java");
+
+		javac.setClasspath(classpath);
+		javac.execute();
+
+		War antWar = new War();
+		antWar.setProject(TestUtils.project);
+		antWar.setDestFile(war);
+		antWar.setWebxml(new File(
+				"src/main/java/net/sourceforge/cobertura/webapp/web.xml"));
+
+		ZipFileSet classesFileSet = new ZipFileSet();
+		classesFileSet.setDir(classesDir);
+
+		antWar.addClasses(classesFileSet);
+		antWar.execute();
+	}
+
+	private ClassLoader createClassLoader() throws Exception {
+		File simplewar = new File(tempDir, "webapps/simple.war");
+		File coberturawar = new File(tempDir, "webapps/coberturaFlush.war");
+		File coberturaJar = new File(tempDir, "lib/cobertura.jar");
+
+		@SuppressWarnings("deprecation")
+		URL[] urls = new URL[]{
+					simplewar.toURL(),
+					coberturawar.toURL(),
+					coberturaJar.toURL()
+				};
+
+		System.out.println(Arrays.toString(urls));
+
+		// Create a new class loader with the directory
+
+		return new URLClassLoader(urls);
+	}
+
+	private void createCoberturaJar() {
+		File coberturaJar = new File(tempDir, "lib/cobertura.jar");
+		File coberturaClassDir = TestUtils.getCoberturaClassDir();
+
+		Zip zip = new Zip();
+		zip.setProject(TestUtils.project);
+		zip.setDestFile(coberturaJar);
+
+		FileSet fileSet = new FileSet();
+		fileSet.setDir(coberturaClassDir);
+
+		zip.addFileset(fileSet);
+		zip.execute();
+	}
+
+	private void instrumentWar() {
+		instrumentWar(new File(tempDir, "webapps/simple.war"));
+		// Future: There is an issue with ServetTester api and adding a custom classloader.
+		// When specify the instrumented .war file it still prefers to use the
+		// target/test-classes/**/*.class files instead. In this situation we instrument the
+		// classes directly but a better solution should be provided for this.
+		instrumentClasses(new File("target/test-classes/com/acme/servlet/SimpleServlet.class"));
+	}
+	
+	private void instrumentClasses(File classesDir) {
+		InstrumentTask instrumentTask = new InstrumentTask();
+		instrumentTask.setProject(TestUtils.project);
+		instrumentTask.setDataFile("cobertura.ser");
+		FileSet fileSet = new FileSet();
+		fileSet.setDir(classesDir.getParentFile());
+		fileSet.setIncludes("**/*.class");
+		
+		instrumentTask.addFileset(fileSet);
+		instrumentTask.execute();
+	}
+
+	private void instrumentWar(File warFile) {
+		InstrumentTask instrumentTask = new InstrumentTask();
+		instrumentTask.setProject(TestUtils.project);
+		instrumentTask.setDataFile("cobertura.ser");
+		FileSet fileSet = new FileSet();
+		fileSet.setDir(warFile.getParentFile());
+		fileSet.setIncludes("**/*.war");
+
+		instrumentTask.addFileset(fileSet);
+		instrumentTask.execute();
+	}
+
+	public void generateReportFile() {
+		File xmlReport = new File(tempDir.getAbsolutePath(), "coverage.xml");
+
 		ReportTask reportTask = new ReportTask();
 		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(webappServerDir.getAbsolutePath()
-				+ "/cobertura.ser");
+		reportTask.setDataFile("cobertura.ser");
 		reportTask.setFormat("xml");
 		reportTask.setDestDir(new File(xmlReport.getParent()));
 		reportTask.execute();
