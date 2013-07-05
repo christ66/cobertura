@@ -73,6 +73,10 @@ Use "git blame --follow" nameOfFile.java
 Code in the net.sourceforge.cobertura.javancss package is
 Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 
+### version 2.0.2:
+	* Compiled code using source and target of java 5.
+	* Fixed sensitive test units.
+
 ### version 2.0.1:
 	* Fix a problem that occurs if class version lower than 49.
 
