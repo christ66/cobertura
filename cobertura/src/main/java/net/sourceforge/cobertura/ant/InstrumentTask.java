@@ -94,6 +94,8 @@ public class InstrumentTask extends CommonMatchingTask {
 
 	final List<ExcludeClasses> excludeClassesRegexs = new ArrayList<ExcludeClasses>();
 
+	Path auxClasspath = null;
+
 	boolean ignoreTrivial = false;
 
 	private Integer forkedJVMDebugPort;
@@ -250,16 +252,19 @@ public class InstrumentTask extends CommonMatchingTask {
 	 * Creates a classpath to be used by the instrumenter because
 	 * asm uses Class.forName() in its own classpath to determine common super classes.
 	 */
-    private Path createClasspathForInstrumenter() {
-        Path path = (Path) createInstrumentationClasspath().clone();
+	private Path createClasspathForInstrumenter() {
+		Path path = (Path) createInstrumentationClasspath().clone();
 		path = path.concatSystemClasspath();
 		for (AbstractFileSet fileSet : fileSets) {
 			if (fileSet instanceof FileSet) {
 				path.add(new Path(getProject(), baseDir(fileSet)));
 			}
 		}
-        return path;
-    }
+		if (auxClasspath != null) {
+			path.add(auxClasspath);
+		}
+		return path;
+	}
 
 	private void processInstrumentationClasspath() {
 		if (includeClassesRegexs.size() == 0) {
@@ -326,4 +331,20 @@ public class InstrumentTask extends CommonMatchingTask {
 	public void setForkedJVMDebugPort(Integer forkedJVMDebugPort) {
 		this.forkedJVMDebugPort = forkedJVMDebugPort;
 	}
+
+	public void setAuxClasspath(Path path) {
+		if (auxClasspath == null) {
+			auxClasspath = path;
+		} else {
+			auxClasspath.append(path);
+		}
+	}
+
+	public Path createAuxClasspath() {
+		if (auxClasspath == null) {
+			auxClasspath = new Path(getProject());
+		}
+		return auxClasspath.createPath();
+	}
+
 }
