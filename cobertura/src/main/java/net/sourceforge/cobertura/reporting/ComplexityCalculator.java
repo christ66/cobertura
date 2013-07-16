@@ -102,8 +102,7 @@ public class ComplexityCalculator {
 		if (!sourceFileName.endsWith(".java")) {
 			return ZERO_COMPLEXITY;
 		}
-		Javancss javancss = new Javancss(source
-				.getInputStream());
+		Javancss javancss = new Javancss(source.getInputStream());
 
 		if (javancss.getLastErrorMessage() != null) {
 			//there is an error while parsing the java file. log it

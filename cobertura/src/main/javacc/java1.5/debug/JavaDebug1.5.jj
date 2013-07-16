@@ -37,12 +37,12 @@ package net.sourceforge.cobertura.javancss.parser.java15.debug;
 
 import java.io.*;
 
-import javancss.parser.JavaParserInterface;
+import net.sourceforge.cobertura.javancss.parser.JavaParserInterface;
 import java.util.*;
 
-import javancss.FunctionMetric;
-import javancss.ObjectMetric;
-import javancss.PackageMetric;
+import net.sourceforge.cobertura.javancss.FunctionMetric;
+import net.sourceforge.cobertura.javancss.ObjectMetric;
+import net.sourceforge.cobertura.javancss.PackageMetric;
 
 /**
  * Grammar to parse Java version 1.5

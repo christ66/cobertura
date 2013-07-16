@@ -39,11 +39,11 @@ package net.sourceforge.cobertura.javancss.parser;
 
 import java.util.*;
 
-import ccl.util.Util;
+import net.sourceforge.cobertura.javancss.ccl.Util;
 
-import javancss.FunctionMetric;
-import javancss.ObjectMetric;
-import javancss.PackageMetric;
+import net.sourceforge.cobertura.javancss.FunctionMetric;
+import net.sourceforge.cobertura.javancss.ObjectMetric;
+import net.sourceforge.cobertura.javancss.PackageMetric;
 
 /**
  * Java source code parser based on a grammar compiled by
