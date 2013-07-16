@@ -75,13 +75,13 @@ public class AbstractCoberturaTestCase {
 
 	public Node createAndExecuteMainMethod(String packageName, String fileName,
 			String fileContent, String mainMethod) throws Exception {
-		
+
 		FileUtils.write(new File(srcDir, fileName + ".java"), fileContent);
-		
 
 		TestUtils.compileSource(TestUtils.antBuilder, srcDir);
 
-		TestUtils.instrumentClasses(TestUtils.antBuilder, srcDir, datafile, instrumentDir);
+		TestUtils.instrumentClasses(TestUtils.antBuilder, srcDir, datafile,
+				instrumentDir);
 
 		/*
 		 * Kick off the Main (instrumented) class.
