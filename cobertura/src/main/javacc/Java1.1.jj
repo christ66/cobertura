@@ -2365,7 +2365,7 @@ void EqualityExpression() :
 void EqualityExpression() :
 {}
 {
-  AssigmentExpression() ( ( "==" | "!=" ) AssigmentExpression() )*
+  AssigmentExpression() ( ( "==" | "!=" | "+=" | "-=" | "*=" | "/=" | "&=" | "|=" | "^=" | "%=" | "<<=" | ">>=" | ">>>=") AssigmentExpression() )*
 }
 
 void AssigmentExpression() :
