@@ -45,7 +45,7 @@ public class AbstractCoberturaAntTestCase {
 	 */
 	public void executeAntTarget(String target) throws Exception {
 		Exception error = null;
-		Project project = TestUtils.project;
+		Project project = new Project();
 		BuildLogger buildLogger = new DefaultLogger();
 		buildLogger.setErrorPrintStream(System.err);
 		buildLogger.setOutputPrintStream(System.out);
