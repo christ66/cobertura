@@ -1,0 +1,364 @@
+<?xml version="1.0"?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+
+<coverage line-rate="1.0" branch-rate="0.6666666666666666" lines-covered="92" lines-valid="92" branches-covered="2" branches-valid="3" complexity="1.025" version="null" timestamp="1374134920970">
+	<sources>
+		<source>src</source>
+	</sources>
+	<packages>
+		<package name="mypackage" line-rate="1.0" branch-rate="0.6666666666666666" complexity="1.025">
+			<classes>
+				<class name="mypackage.Main" filename="mypackage/Main.java" line-rate="1.0" branch-rate="0.6666666666666666" complexity="1.0256410256410255">
+					<methods>
+						<method name="&lt;init&gt;" signature="(I)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="82" hits="1" branch="false"/>
+								<line number="84" hits="1" branch="true" condition-coverage="100% (1/1)">
+									<conditions>
+										<condition number="0" type="switch" coverage="100%"/>
+									</conditions>
+								</line>
+								<line number="87" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="&lt;init&gt;" signature="(Ljava/lang/String;)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="89" hits="1" branch="false"/>
+								<line number="91" hits="1" branch="false"/>
+								<line number="92" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="&lt;init&gt;" signature="(Ljava/lang/String;I)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="99" hits="2" branch="false"/>
+								<line number="101" hits="2" branch="false"/>
+								<line number="102" hits="2" branch="false"/>
+							</lines>
+						</method>
+						<method name="&lt;init&gt;" signature="(Ljava/lang/String;Ljava/lang/String;)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="94" hits="1" branch="false"/>
+								<line number="96" hits="1" branch="false"/>
+								<line number="97" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="&lt;init&gt;" signature="(Ljava/lang/String;Z)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="106" hits="1" branch="false"/>
+								<line number="107" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="&lt;init&gt;" signature="(Ljava/lang/Thread;I)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="74" hits="1" branch="false"/>
+								<line number="75" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="&lt;init&gt;" signature="(Z)V" line-rate="1.0" branch-rate="0.5">
+							<lines>
+								<line number="77" hits="1" branch="false"/>
+								<line number="79" hits="1" branch="true" condition-coverage="50% (1/2)">
+									<conditions>
+										<condition number="0" type="jump" coverage="50%"/>
+									</conditions>
+								</line>
+								<line number="80" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="empty" signature="()I" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="137" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="getArray" signature="()[I" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="176" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="getINVOKESPECIAL" signature="()I" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="235" hits="1" branch="false"/>
+								<line number="236" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="getINVOKESTATIC" signature="()I" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="241" hits="1" branch="false"/>
+								<line number="242" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="getINVOKEVIRTUAL" signature="()I" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="229" hits="1" branch="false"/>
+								<line number="230" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="getIntWithIntParm" signature="(I)I" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="142" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="getMultiDimArray" signature="()[[I" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="156" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="getObject" signature="()Ljava/lang/Object;" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="182" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="getStatic" signature="()I" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="187" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="getVoid" signature="()V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="132" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="main" signature="([Ljava/lang/String;)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="11" hits="1" branch="false"/>
+								<line number="18" hits="1" branch="false"/>
+								<line number="19" hits="1" branch="false"/>
+								<line number="20" hits="1" branch="false"/>
+								<line number="21" hits="1" branch="false"/>
+								<line number="22" hits="1" branch="false"/>
+								<line number="23" hits="1" branch="false"/>
+								<line number="24" hits="1" branch="false"/>
+								<line number="25" hits="1" branch="false"/>
+								<line number="26" hits="1" branch="false"/>
+								<line number="27" hits="1" branch="false"/>
+								<line number="28" hits="1" branch="false"/>
+								<line number="29" hits="1" branch="false"/>
+								<line number="30" hits="1" branch="false"/>
+								<line number="31" hits="1" branch="false"/>
+								<line number="32" hits="1" branch="false"/>
+								<line number="33" hits="1" branch="false"/>
+								<line number="34" hits="1" branch="false"/>
+								<line number="35" hits="1" branch="false"/>
+								<line number="36" hits="1" branch="false"/>
+								<line number="37" hits="1" branch="false"/>
+								<line number="38" hits="1" branch="false"/>
+								<line number="39" hits="1" branch="false"/>
+								<line number="40" hits="1" branch="false"/>
+								<line number="41" hits="1" branch="false"/>
+								<line number="42" hits="1" branch="false"/>
+								<line number="45" hits="1" branch="false"/>
+								<line number="46" hits="1" branch="false"/>
+								<line number="47" hits="1" branch="false"/>
+								<line number="48" hits="1" branch="false"/>
+								<line number="49" hits="1" branch="false"/>
+								<line number="50" hits="1" branch="false"/>
+								<line number="51" hits="1" branch="false"/>
+								<line number="52" hits="1" branch="false"/>
+								<line number="53" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="privateMethod" signature="()V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="223" hits="2" branch="false"/>
+							</lines>
+						</method>
+						<method name="publicMethod" signature="()V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="221" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="set" signature="()V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="147" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setASTORE" signature="(Ljava/lang/Object;)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="217" hits="1" branch="false"/>
+								<line number="218" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setConst" signature="(Ljava/lang/String;)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="170" hits="1" branch="false"/>
+								<line number="171" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setDSTORE" signature="(D)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="212" hits="1" branch="false"/>
+								<line number="213" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setFSTORE" signature="(F)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="207" hits="1" branch="false"/>
+								<line number="208" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setINVOKEINTERFACE" signature="(Lmypackage/MyInterface;)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="247" hits="1" branch="false"/>
+								<line number="248" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setISTORE" signature="(I)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="197" hits="1" branch="false"/>
+								<line number="198" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setIncrement" signature="(I)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="161" hits="1" branch="false"/>
+								<line number="162" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setIntWithTwoParms" signature="(II)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="151" hits="1" branch="false"/>
+								<line number="152" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setLSTORE" signature="(J)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="202" hits="1" branch="false"/>
+								<line number="203" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="setStatic" signature="(I)V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="192" hits="1" branch="false"/>
+								<line number="193" hits="1" branch="false"/>
+							</lines>
+						</method>
+						<method name="staticMethod" signature="()V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="225" hits="1" branch="false"/>
+							</lines>
+						</method>
+					</methods>
+					<lines>
+						<line number="11" hits="1" branch="false"/>
+						<line number="18" hits="1" branch="false"/>
+						<line number="19" hits="1" branch="false"/>
+						<line number="20" hits="1" branch="false"/>
+						<line number="21" hits="1" branch="false"/>
+						<line number="22" hits="1" branch="false"/>
+						<line number="23" hits="1" branch="false"/>
+						<line number="24" hits="1" branch="false"/>
+						<line number="25" hits="1" branch="false"/>
+						<line number="26" hits="1" branch="false"/>
+						<line number="27" hits="1" branch="false"/>
+						<line number="28" hits="1" branch="false"/>
+						<line number="29" hits="1" branch="false"/>
+						<line number="30" hits="1" branch="false"/>
+						<line number="31" hits="1" branch="false"/>
+						<line number="32" hits="1" branch="false"/>
+						<line number="33" hits="1" branch="false"/>
+						<line number="34" hits="1" branch="false"/>
+						<line number="35" hits="1" branch="false"/>
+						<line number="36" hits="1" branch="false"/>
+						<line number="37" hits="1" branch="false"/>
+						<line number="38" hits="1" branch="false"/>
+						<line number="39" hits="1" branch="false"/>
+						<line number="40" hits="1" branch="false"/>
+						<line number="41" hits="1" branch="false"/>
+						<line number="42" hits="1" branch="false"/>
+						<line number="45" hits="1" branch="false"/>
+						<line number="46" hits="1" branch="false"/>
+						<line number="47" hits="1" branch="false"/>
+						<line number="48" hits="1" branch="false"/>
+						<line number="49" hits="1" branch="false"/>
+						<line number="50" hits="1" branch="false"/>
+						<line number="51" hits="1" branch="false"/>
+						<line number="52" hits="1" branch="false"/>
+						<line number="53" hits="1" branch="false"/>
+						<line number="74" hits="1" branch="false"/>
+						<line number="75" hits="1" branch="false"/>
+						<line number="77" hits="1" branch="false"/>
+						<line number="79" hits="1" branch="true" condition-coverage="50% (1/2)">
+							<conditions>
+								<condition number="0" type="jump" coverage="50%"/>
+							</conditions>
+						</line>
+						<line number="80" hits="1" branch="false"/>
+						<line number="82" hits="1" branch="false"/>
+						<line number="84" hits="1" branch="true" condition-coverage="100% (1/1)">
+							<conditions>
+								<condition number="0" type="switch" coverage="100%"/>
+							</conditions>
+						</line>
+						<line number="87" hits="1" branch="false"/>
+						<line number="89" hits="1" branch="false"/>
+						<line number="91" hits="1" branch="false"/>
+						<line number="92" hits="1" branch="false"/>
+						<line number="94" hits="1" branch="false"/>
+						<line number="96" hits="1" branch="false"/>
+						<line number="97" hits="1" branch="false"/>
+						<line number="99" hits="2" branch="false"/>
+						<line number="101" hits="2" branch="false"/>
+						<line number="102" hits="2" branch="false"/>
+						<line number="106" hits="1" branch="false"/>
+						<line number="107" hits="1" branch="false"/>
+						<line number="132" hits="1" branch="false"/>
+						<line number="137" hits="1" branch="false"/>
+						<line number="142" hits="1" branch="false"/>
+						<line number="147" hits="1" branch="false"/>
+						<line number="151" hits="1" branch="false"/>
+						<line number="152" hits="1" branch="false"/>
+						<line number="156" hits="1" branch="false"/>
+						<line number="161" hits="1" branch="false"/>
+						<line number="162" hits="1" branch="false"/>
+						<line number="170" hits="1" branch="false"/>
+						<line number="171" hits="1" branch="false"/>
+						<line number="176" hits="1" branch="false"/>
+						<line number="182" hits="1" branch="false"/>
+						<line number="187" hits="1" branch="false"/>
+						<line number="192" hits="1" branch="false"/>
+						<line number="193" hits="1" branch="false"/>
+						<line number="197" hits="1" branch="false"/>
+						<line number="198" hits="1" branch="false"/>
+						<line number="202" hits="1" branch="false"/>
+						<line number="203" hits="1" branch="false"/>
+						<line number="207" hits="1" branch="false"/>
+						<line number="208" hits="1" branch="false"/>
+						<line number="212" hits="1" branch="false"/>
+						<line number="213" hits="1" branch="false"/>
+						<line number="217" hits="1" branch="false"/>
+						<line number="218" hits="1" branch="false"/>
+						<line number="221" hits="1" branch="false"/>
+						<line number="223" hits="2" branch="false"/>
+						<line number="225" hits="1" branch="false"/>
+						<line number="229" hits="1" branch="false"/>
+						<line number="230" hits="1" branch="false"/>
+						<line number="235" hits="1" branch="false"/>
+						<line number="236" hits="1" branch="false"/>
+						<line number="241" hits="1" branch="false"/>
+						<line number="242" hits="1" branch="false"/>
+						<line number="247" hits="1" branch="false"/>
+						<line number="248" hits="1" branch="false"/>
+					</lines>
+				</class>
+				<class name="mypackage.Main$MyObject" filename="mypackage/Main.java" line-rate="1.0" branch-rate="1.0" complexity="1.0256410256410255">
+					<methods>
+						<method name="myInterfaceMethod" signature="()V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="7" hits="1" branch="false"/>
+							</lines>
+						</method>
+					</methods>
+					<lines>
+						<line number="7" hits="1" branch="false"/>
+					</lines>
+				</class>
+				<class name="mypackage.MyInterface" filename="mypackage/MyInterface.java" line-rate="1.0" branch-rate="1.0" complexity="1.0">
+					<methods>
+					</methods>
+					<lines>
+					</lines>
+				</class>
+			</classes>
+		</package>
+	</packages>
+</coverage>

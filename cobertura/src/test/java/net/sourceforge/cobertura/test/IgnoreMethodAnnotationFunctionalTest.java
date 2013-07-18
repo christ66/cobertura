@@ -120,14 +120,25 @@ public class IgnoreMethodAnnotationFunctionalTest {
 								+ "\n 		 * Call all methods so they will be considered \"covered\" unless"
 								+ "\n 		 * they are ignored." + "\n 		 *"
 								+ "\n 		 * These are in no particular order."
-								+ "\n 		 */" + "\n main.doNotIgnore();"
-								+ "\n main.ignore();" + "\n }" + "\n "
-								+ "\n public void doNotIgnore()" + "\n {"
-								+ "\n }" + "\n " + "\n @IgnoreAnnotation"
-								+ "\n public void ignore()" + "\n {" + "\n }"
-								+ "\n " + "\n 	@IgnoreAnnotation2"
-								+ "\n 	public void ignore2()" + "\n 	{"
-								+ "\n 	}" + "\n }");
+								+ "\n 		 */" 
+								+ "\n main.doNotIgnore();"
+								+ "\n main.ignore();" 
+								+ "\n }" 
+								+ "\n "
+								+ "\n public void doNotIgnore()" 
+								+ "\n {"
+								+ "\n }" 
+								+ "\n " 
+								+ "\n @IgnoreAnnotation"
+								+ "\n public void ignore()" 
+								+ "\n {" 
+								+ "\n }"
+								+ "\n " 
+								+ "\n 	@IgnoreAnnotation2"
+								+ "\n 	public void ignore2()" 
+								+ "\n 	{"
+								+ "\n 	}" 
+								+ "\n }");
 
 		TestUtils.compileSource(ant, srcDir);
 
