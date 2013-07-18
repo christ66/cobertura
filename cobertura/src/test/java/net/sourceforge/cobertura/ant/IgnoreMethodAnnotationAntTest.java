@@ -25,10 +25,10 @@ public class IgnoreMethodAnnotationAntTest extends AbstractCoberturaAntTestCase 
 		String methodName = "foo";
 
 		assertEquals(0, TestUtils.getTotalHitCount(dom, className, methodName));
-		
+
 		className = "test.condition.IgnoreMeAlso";
-		assertEquals(0, TestUtils.getTotalHitCount(dom, className, methodName));		
-		
+		assertEquals(0, TestUtils.getTotalHitCount(dom, className, methodName));
+
 		className = "test.condition.IgnoreMeNot";
 		assertTrue(TestUtils.getHitCount(dom, className, methodName) > 0);
 	}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="cobertura.examples.functionalconditiontest" basedir="." default="help">
+<project name="test.ant.IgnoreMethodAnnotation" basedir="." default="help">
 
 	<description>
     Cobertura - http://cobertura.sourceforge.net/
@@ -11,7 +11,7 @@
     Cobertura comes with ABSOLUTELY NO WARRANTY
     </description>
 
-	<property file="build.properties" />
+	<loadproperties srcFile="src/test/resources/ant/IgnoreMethodAnnotation/build.properties" />
 
 	<path id="project.classpath">
 		<path path="${java.class.path}" />

@@ -26,7 +26,8 @@ public class IgnoreTrivialAntTest extends AbstractCoberturaAntTestCase {
 	}
 
 	@Test
-	public void test() throws ParserConfigurationException, SAXException, IOException {
+	public void test() throws ParserConfigurationException, SAXException,
+			IOException {
 		dom = TestUtils.getXMLReportDOM(new File(buildXmlFile.getParentFile(),
 				"reports/cobertura-xml/coverage.xml"));
 
@@ -108,7 +109,7 @@ public class IgnoreTrivialAntTest extends AbstractCoberturaAntTestCase {
 		assertNotIgnored("<init>", "(Ljava/lang/String;I)V"); // Main(String, int)
 		assertNotIgnored("<init>", "(Ljava/lang/String;Z)V"); // Main(String, boolean)
 	}
-	
+
 	public void assertIgnored(String methodName, String signature) {
 		ignoreUtil.assertIgnored(methodName, signature);
 	}

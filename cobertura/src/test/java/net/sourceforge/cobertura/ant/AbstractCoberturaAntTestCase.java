@@ -33,7 +33,8 @@ import org.junit.rules.TestName;
  */
 public class AbstractCoberturaAntTestCase {
 	public File buildXmlFile;
-   @Rule public TestName name = new TestName();
+	@Rule
+	public TestName name = new TestName();
 	public Node dom;
 
 	/**
@@ -43,26 +44,27 @@ public class AbstractCoberturaAntTestCase {
 	 * @throws Exception 
 	 */
 	public void executeAntTarget(String target) throws Exception {
-	    Exception error = null;
-	    Project project = TestUtils.project;
-	    BuildLogger buildLogger = new DefaultLogger();
-	    buildLogger.setErrorPrintStream(System.err);
-	    buildLogger.setOutputPrintStream(System.out);
-	    try {
-	        project.addBuildListener(buildLogger);
-	        project.fireBuildStarted();
-	        project.init();
-	        project.setUserProperty(MagicNames.ANT_FILE, buildXmlFile.getAbsolutePath());
-	        ProjectHelper.configureProject(project, buildXmlFile);
-	        project.executeTarget(target);
-	    } catch (Exception e) {
-	        error = e;
-	        throw e;
-	    } finally {
-	        project.fireBuildFinished(error);
-	    }
-	    
-	    dom = TestUtils.getXMLReportDOM(new File(buildXmlFile.getParentFile(),
-	    										 "reports/cobertura-xml/coverage.xml"));
-	}	
+		Exception error = null;
+		Project project = TestUtils.project;
+		BuildLogger buildLogger = new DefaultLogger();
+		buildLogger.setErrorPrintStream(System.err);
+		buildLogger.setOutputPrintStream(System.out);
+		try {
+			project.addBuildListener(buildLogger);
+			project.fireBuildStarted();
+			project.init();
+			project.setUserProperty(MagicNames.ANT_FILE, buildXmlFile
+					.getAbsolutePath());
+			ProjectHelper.configureProject(project, buildXmlFile);
+			project.executeTarget(target);
+		} catch (Exception e) {
+			error = e;
+			throw e;
+		} finally {
+			project.fireBuildFinished(error);
+		}
+
+		dom = TestUtils.getXMLReportDOM(new File(buildXmlFile.getParentFile(),
+				"reports/cobertura-xml/coverage.xml"));
+	}
 }
