@@ -73,6 +73,10 @@ Use "git blame --follow" nameOfFile.java
 Code in the net.sourceforge.cobertura.javancss package is
 Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 
+### version 2.0.2:
+	* Compiled code using source and target of java 5.
+	* Fixed sensitive test units.
+
 ### version 2.0.1:
 	* Fix a problem that occurs if class version lower than 49.
 
@@ -359,7 +363,13 @@ Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
 	* Rewrote the HTML reporting and included code complexity in the output.
 
 ## RELATED PROJECTS
+Here we list projects that spread the use of Cobertura by integrating it to other tools.
+
 ### Cobertura Maven Plugin
 Adds Maven goals to run Cobertura. Documentation and details can be found [here](http://mojo.codehaus.org/cobertura-maven-plugin/)
 ### Cobertura Jenkins Plugin
 Runs Cobertura on Jenkins CI jobs. Check it [here](https://github.com/jenkinsci/cobertura-plugin)
+### eCobertura - Eclipse Plugin for Cobertura
+Allows to launch applications or tests in Cobertura covered mode within Eclipse. Displays coverage data on Eclipse IDE code. Check [the website](http://ecobertura.johoop.de/)
+### Gradle Cobertura plugins
+Gradle Cobertura plugins are listed on Gradle's [wiki](http://wiki.gradle.org/display/GRADLE/Plugins#Plugins-CoberturaPlugin).
