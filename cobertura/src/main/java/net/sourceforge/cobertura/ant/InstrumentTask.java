@@ -220,16 +220,14 @@ public class InstrumentTask extends CommonMatchingTask {
 				processInstrumentationClasspath();
 			}
 			createArgumentsForFilesets(builder);
-			
 
 			Path classPath = createClasspathForInstrumenter();
-			if (classPath != null &&
-				classPath.toString() != null &&
-				!classPath.toString().isEmpty()) {
-				
+			if (classPath != null && classPath.toString() != null
+					&& !classPath.toString().isEmpty()) {
+
 				builder.addArg("--auxClasspath", classPath.toString());
 			}
-			
+
 			builder.saveArgs();
 		} catch (IOException ioe) {
 			getProject().log("Error creating commands file.", Project.MSG_ERR);
@@ -245,7 +243,7 @@ public class InstrumentTask extends CommonMatchingTask {
 					"-Xrunjdwp:transport=dt_socket,address="
 							+ forkedJVMDebugPort + ",server=y,suspend=y");
 		}
-		
+
 		AntUtil.transferCoberturaDataFileProperty(getJava());
 		if (getJava().executeJava() != 0) {
 			throw new BuildException(

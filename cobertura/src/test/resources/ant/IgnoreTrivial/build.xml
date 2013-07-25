@@ -11,7 +11,7 @@
     Cobertura comes with ABSOLUTELY NO WARRANTY
     </description>
 
-	<loadproperties srcFile="build.properties" />
+	<loadproperties srcFile="src/test/resources/ant/IgnoreTrivial/build.properties" />
 
 	<path id="project.classpath">
 		<path path="${java.class.path}" />

@@ -101,23 +101,25 @@ public class Main {
 			zos = (ZipOutputStream) IOUtil.closeOutputStream(zos);
 		}
 	}
-	
+
 	private void addElementsToJVM(String classpath) {
 		List<URL> urlsArray = new ArrayList<URL>();
 		String[] classpathParsed = classpath.split(File.pathSeparator);
-				
+
 		for (String element : classpathParsed) {
 			File f = null;
 			try {
 				f = new File(element);
 				urlsArray.add(f.toURI().toURL());
 			} catch (MalformedURLException e) {
-				logger.debug("Warning - could not convert file: " + element + " to a URL.", e);
+				logger.debug("Warning - could not convert file: " + element
+						+ " to a URL.", e);
 			}
 		}
-		urlClassLoader = new URLClassLoader(urlsArray.toArray(new URL[urlsArray.size()]));
+		urlClassLoader = new URLClassLoader(urlsArray.toArray(new URL[urlsArray
+				.size()]));
 	}
-	
+
 	private boolean addInstrumentationToArchive(CoberturaFile file,
 			ZipInputStream archive, ZipOutputStream output) throws Exception {
 		/*
@@ -330,7 +332,7 @@ public class Main {
 		boolean ignoreTrivial = false;
 		boolean failOnError = false;
 		Set<String> ignoreMethodAnnotations = new HashSet<String>();
-		
+
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("--basedir"))
 				baseDir = args[++i];
