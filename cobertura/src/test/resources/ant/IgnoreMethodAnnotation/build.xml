@@ -11,7 +11,7 @@
     Cobertura comes with ABSOLUTELY NO WARRANTY
     </description>
 
-	<loadproperties srcFile="src/test/resources/ant/IgnoreMethodAnnotation/build.properties" />
+	<loadproperties srcFile="build.properties" />
 
 	<path id="project.classpath">
 		<path path="${java.class.path}" />
