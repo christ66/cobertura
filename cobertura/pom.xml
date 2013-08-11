@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sourceforge.cobertura</groupId>
   <artifactId>cobertura</artifactId>
-  <version>2.0.3-SNAPSHOT</version>
+  <version>2.0.3</version>
   <packaging>jar</packaging>
   <name>Cobertura code coverage</name>
   
@@ -271,10 +271,10 @@
         <version>${plugin.mvn.jar.version}</version>
           <configuration>
             <archive>
-              <index/>
+              <index />
               <manifest>
-                <addDefaultImplementationEntries/>
-		<addDefaultSpecificationEntries/>
+                <addDefaultImplementationEntries />
+		<addDefaultSpecificationEntries />
               </manifest>
                 <manifestEntries>
                   <Specification-Title>A code coverage analysis tool.</Specification-Title>
@@ -453,7 +453,7 @@
     <connection>scm:git:git://github.com/cobertura/cobertura</connection>
     <developerConnection>scm:git:git@github.com:cobertura/cobertura.git</developerConnection>
     <url>http://github.com/cobertura/cobertura</url>
-    <tag>HEAD</tag>
+    <tag>cobertura-runtime-2.0.3</tag>
   </scm>
   
   <developers>
