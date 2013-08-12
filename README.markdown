@@ -9,6 +9,9 @@ details.
 Since 2.0.0, Cobertura versions follow the [Semantic versioning](http://semver.org/) guidelines.
 
 ## COPYRIGHT
+Code in the net.sourceforge.cobertura.javancss package is
+Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
+
 See the included file "LICENSE.txt"
 
 ## LICENSE
@@ -62,6 +65,7 @@ List of all contributors to Cobertura listed alphabetically by last name
 * Copyright (C) 2006 Srivathsan Varadarajan <vatsanv a.t users d.o.t sourceforge d.o.t net>
 * Copyright (C) 2005 Nathan Wilson      <ndciwilson a.t users d.o.t sourceforge d.o.t net>
 * Copyright (C) 2005 Alexei Yudichev    <sflexus a.t users d.o.t sourceforge d.o.t net>
+* Copyright (C) 2013 Steven Christou    <schristou88 a.t gmail d.o.t com>
 
 ## MAVEN MIGRATION NOTES
 * *How do we get a good blame while all files were moved?*
@@ -70,8 +74,13 @@ Use "git blame --follow" nameOfFile.java
 
 
 ## CHANGELOG
-Code in the net.sourceforge.cobertura.javancss package is
-Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
+
+### version 2.0.3:
+	* Fixed null version in reports. (Github Issue 37)
+	* Added auxClasspath argument to fix ClassNotFoundException with ClassWriter.getCommonSuperClass. Thanks Hendrik Brummermann(nhnb)
+	* Fixed parsing of annonymous classes. (Github Issue 53)
+	* Fixed ClassCastException with JumpTouchPointDescriptor, SwitchTouchPointDescriptor and LineTouchPointDescriptor.
+	* Fixed parsing for += in if-statement.
 
 ### version 2.0.2:
 	* Compiled code using source and target of java 5.
