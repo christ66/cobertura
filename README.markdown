@@ -78,7 +78,7 @@ Use "git blame --follow" nameOfFile.java
 ### version 2.0.3:
 	* Fixed null version in reports. (Github Issue 37)
 	* Added auxClasspath argument to fix ClassNotFoundException with ClassWriter.getCommonSuperClass. Thanks Hendrik Brummermann(nhnb)
-	* Fixed parsing of annonymous classes. (Github Issue 53)
+	* Fixed parsing of anonymous classes. (Github Issue 53)
 	* Fixed ClassCastException with JumpTouchPointDescriptor, SwitchTouchPointDescriptor and LineTouchPointDescriptor.
 	* Fixed parsing for += in if-statement.
 
