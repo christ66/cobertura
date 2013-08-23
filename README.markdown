@@ -1,5 +1,6 @@
 # COBERTURA
-[![Build Status](https://travis-ci.org/cobertura/cobertura.png)](https://travis-ci.org/cobertura/cobertura)
+[![Build Status](http://www.cloudbees.com/sites/default/files/Button-Built-on-CB-1.png)](https://cobertura.ci.cloudbees.com/job/Cobertura/)
+[![Build Status](http://www.cloudbees.com/sites/default/files/Button-Powered-by-CB.png)](http://www.cloudbees.com/)
 
 ## ABOUT
 Cobertura is a free Java code coverage reporting tool.  It is
