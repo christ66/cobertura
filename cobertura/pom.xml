@@ -98,11 +98,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
-      <version>${oroVersion}</version>
-    </dependency>
-    <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
       <version>${jaxenVersion}</version>

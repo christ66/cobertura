@@ -27,13 +27,12 @@
 package net.sourceforge.cobertura.util;
 
 import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Abstract, not to be instantiated utility class for Regex functions.
@@ -43,8 +42,6 @@ import java.util.Iterator;
 public abstract class RegexUtil {
 
 	private static final Logger logger = Logger.getLogger(RegexUtil.class);
-
-	private final static Perl5Matcher pm = new Perl5Matcher();
 
 	/**
 	 * <p>
@@ -61,7 +58,8 @@ public abstract class RegexUtil {
 		Iterator iter = regexs.iterator();
 		while (iter.hasNext()) {
 			Pattern regex = (Pattern) iter.next();
-			if (pm.matches(str, regex)) {
+			Matcher m = regex.matcher(str);
+			if (m.matches()) {
 				return true;
 			}
 		}
@@ -71,12 +69,11 @@ public abstract class RegexUtil {
 
 	public static void addRegex(Collection list, String regex) {
 		try {
-			Perl5Compiler pc = new Perl5Compiler();
-			Pattern pattern = pc.compile(regex);
+			Pattern pattern = Pattern.compile(regex);
 			list.add(pattern);
-		} catch (MalformedPatternException e) {
+		} catch (PatternSyntaxException pse) {
 			logger.warn("The regular expression " + regex + " is invalid: "
-					+ e.getLocalizedMessage());
+					+ pse.getLocalizedMessage());
 		}
 	}
 

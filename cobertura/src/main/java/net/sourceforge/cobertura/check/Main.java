@@ -29,10 +29,6 @@ import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.Header;
 import org.apache.log4j.Logger;
-import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -40,14 +36,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
 	private static final Logger logger = Logger.getLogger(Main.class);
-
-	final Perl5Matcher pm = new Perl5Matcher();
-
-	final Perl5Compiler pc = new Perl5Compiler();
 
 	/**
 	 * The default CoverageRate needed for a class to pass the check.
@@ -84,11 +78,10 @@ public class Main {
 				+ "% is invalid.  Percentages must be between 0 and 100.");
 	}
 
-	void setMinimumCoverageRate(String minimumCoverageRate)
-			throws MalformedPatternException {
+	void setMinimumCoverageRate(String minimumCoverageRate) {
 		StringTokenizer tokenizer = new StringTokenizer(minimumCoverageRate,
 				":");
-		this.minimumCoverageRates.put(pc.compile(tokenizer.nextToken()),
+		this.minimumCoverageRates.put(Pattern.compile(tokenizer.nextToken()),
 				new CoverageRate(inRangeAndDivideByOneHundred(tokenizer
 						.nextToken()), inRangeAndDivideByOneHundred(tokenizer
 						.nextToken())));
@@ -106,14 +99,15 @@ public class Main {
 		while (iter.hasNext()) {
 			Map.Entry entry = (Map.Entry) iter.next();
 
-			if (pm.matches(classname, (Pattern) entry.getKey())) {
+			Matcher m = ((Pattern) entry.getKey()).matcher(classname);
+			if (m.matches()) {
 				return (CoverageRate) entry.getValue();
 			}
 		}
 		return this.minimumCoverageRate;
 	}
 
-	public Main(String[] args) throws MalformedPatternException {
+	public Main(String[] args) {
 		int exitStatus = 0;
 
 		Header.print(System.out);
@@ -143,6 +137,9 @@ public class Main {
 				totalBranchCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
 			} else if (args[i].equals("--totalline")) {
 				totalLineCoverageRate = inRangeAndDivideByOneHundred(args[++i]);
+			} else {
+				System.err.println("Error: Unrecognized arg " + args[i]);
+				System.exit(1);
 			}
 		}
 
@@ -339,7 +336,7 @@ public class Main {
 		return decimal.setScale(1, BigDecimal.ROUND_DOWN).toString();
 	}
 
-	public static void main(String[] args) throws MalformedPatternException {
+	public static void main(String[] args) {
 		new Main(args);
 	}
 

@@ -50,6 +50,7 @@ public class AbstractCoberturaAntTestCase {
 		buildLogger.setErrorPrintStream(System.err);
 		buildLogger.setOutputPrintStream(System.out);
 		try {
+			System.out.println(buildXmlFile.getAbsolutePath());
 			project.addBuildListener(buildLogger);
 			project.fireBuildStarted();
 			project.init();
