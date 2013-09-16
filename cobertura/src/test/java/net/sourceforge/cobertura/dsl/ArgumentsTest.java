@@ -31,6 +31,7 @@ public class ArgumentsTest {
 	private static final File COMMANDS_FILE = new File("commandsFile");
 	private static final boolean FAIL_ON_ERROR = false;
 	private static final boolean IGNORE_TRIVIAL = true;
+	private static final boolean IGNORE_DEPRECATED = true;
 	private static final boolean THREADSAFE_RIGOROUS = true;
 	private static final String ENCODING = "UTF-8";
 	private static final String IGNORE_REGEX_PATTERN = "ignoreRegexPattern";
@@ -76,8 +77,8 @@ public class ArgumentsTest {
 				DESTINATION_DIRECTORY, COMMANDS_FILE, ignoreRegexes,
 				ignoreBranchesRegexes, classPatternIncludeClassesRegexes,
 				classPatternExcludeClassesRegexes, FAIL_ON_ERROR,
-				IGNORE_TRIVIAL, THREADSAFE_RIGOROUS, ENCODING,
-				minimumCoverageThresholds, CLASS_LINE_THRESHOLD,
+				IGNORE_TRIVIAL, IGNORE_DEPRECATED, THREADSAFE_RIGOROUS,
+				ENCODING, minimumCoverageThresholds, CLASS_LINE_THRESHOLD,
 				CLASS_BRANCH_THRESHOLD, PACKAGE_LINE_THRESHOLD,
 				PACKAGE_BRANCH_THRESHOLD, TOTAL_LINE_THRESHOLD,
 				TOTAL_BRANCH_THRESHOLD, filesToInstrument, filesToMerge,

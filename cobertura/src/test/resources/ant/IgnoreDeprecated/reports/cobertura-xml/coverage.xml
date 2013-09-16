@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+
+<coverage line-rate="0.5" branch-rate="1.0" lines-covered="2" lines-valid="4" branches-covered="0" branches-valid="0" complexity="1.0" version="null" timestamp="1379344679810">
+	<sources>
+		<source>src/test/resources/ant/IgnoreDeprecated/src</source>
+	</sources>
+	<packages>
+		<package name="test.depr" line-rate="0.5" branch-rate="1.0" complexity="1.0">
+			<classes>
+				<class name="test.depr.IgnoreMe" filename="test/depr/IgnoreMe.java" line-rate="0.0" branch-rate="1.0" complexity="1.0">
+					<methods>
+						<method name="&lt;init&gt;" signature="()V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="3" hits="0" branch="false"/>
+							</lines>
+						</method>
+					</methods>
+					<lines>
+						<line number="3" hits="0" branch="false"/>
+					</lines>
+				</class>
+				<class name="test.depr.IgnoreMeAlso" filename="test/depr/IgnoreMeAlso.java" line-rate="1.0" branch-rate="1.0" complexity="1.0">
+					<methods>
+					</methods>
+					<lines>
+					</lines>
+				</class>
+				<class name="test.depr.IgnoreMeNot" filename="test/depr/IgnoreMeNot.java" line-rate="0.6666666666666666" branch-rate="1.0" complexity="1.0">
+					<methods>
+						<method name="&lt;init&gt;" signature="()V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="4" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="foo" signature="()V" line-rate="1.0" branch-rate="1.0">
+							<lines>
+								<line number="6" hits="1" branch="false"/>
+								<line number="7" hits="1" branch="false"/>
+							</lines>
+						</method>
+					</methods>
+					<lines>
+						<line number="4" hits="0" branch="false"/>
+						<line number="6" hits="1" branch="false"/>
+						<line number="7" hits="1" branch="false"/>
+					</lines>
+				</class>
+			</classes>
+		</package>
+	</packages>
+</coverage>

@@ -92,6 +92,11 @@ public class CoberturaInstrumenter {
 	private boolean ignoreTrivial;
 
 	/**
+	 * If true, deprecated classes and methods will be ignore by coverage measurement
+	 */
+	private boolean ignoreDeprecated;
+
+	/**
 	 * If true: The process is interrupted when first error occured.
 	 */
 	private boolean failOnError;
@@ -149,7 +154,7 @@ public class CoberturaInstrumenter {
 		ClassReader cr0 = new ClassReader(inputStream);
 		ClassWriter cw0 = new ClassWriter(0);
 		DetectIgnoredCodeClassVisitor detectIgnoredCv = new DetectIgnoredCodeClassVisitor(
-				cw0, ignoreTrivial, ignoreMethodAnnotations);
+				cw0, ignoreTrivial, ignoreMethodAnnotations, ignoreDeprecated);
 		DetectDuplicatedCodeClassVisitor cv0 = new DetectDuplicatedCodeClassVisitor(
 				detectIgnoredCv);
 		cr0.accept(cv0, 0);
@@ -157,8 +162,9 @@ public class CoberturaInstrumenter {
 		ClassReader cr = new ClassReader(cw0.toByteArray());
 		ClassWriter cw = new ClassWriter(0);
 		BuildClassMapClassVisitor cv = new BuildClassMapClassVisitor(cw,
-				ignoreRegexes, cv0.getDuplicatesLinesCollector(),
-				detectIgnoredCv.getIgnoredMethodNamesAndSignatures());
+				ignoreRegexes, ignoreDeprecated, cv0
+						.getDuplicatesLinesCollector(), detectIgnoredCv
+						.getIgnoredMethodNamesAndSignatures());
 
 		cr.accept(cv, ClassReader.EXPAND_FRAMES);
 
@@ -301,6 +307,10 @@ public class CoberturaInstrumenter {
 
 	public void setIgnoreMethodAnnotations(Set<String> ignoreMethodAnnotations) {
 		this.ignoreMethodAnnotations = ignoreMethodAnnotations;
+	}
+
+	public void setIgnoreDeprecataed(boolean ignoreDeprecated) {
+		this.ignoreDeprecated = ignoreDeprecated;
 	}
 
 	public void setThreadsafeRigorous(boolean threadsafeRigorous) {

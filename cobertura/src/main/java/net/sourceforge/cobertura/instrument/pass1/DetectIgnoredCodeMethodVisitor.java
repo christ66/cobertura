@@ -41,9 +41,10 @@ public class DetectIgnoredCodeMethodVisitor
 
 	final Set<String> ignoreMethodAnnotations;
 	final boolean ignoreTrivial;
+	final boolean ignoreDeprecated;
 
 	enum IgnoredStatus {
-		POSSIBLE_TRIVIAL_GETTER, POSSIBLE_TRIVIAL_SETTER, POSSIBLE_TRIVIAL_INIT, IGNORED_BY_ANNOTATION, NOT_IGNORED;
+		POSSIBLE_TRIVIAL_GETTER, POSSIBLE_TRIVIAL_SETTER, POSSIBLE_TRIVIAL_INIT, IGNORED_BY_ANNOTATION, NOT_IGNORED, IGNORED_BY_DEPRECATED;
 
 		boolean isTrivial() {
 			return (this == POSSIBLE_TRIVIAL_GETTER)
@@ -59,7 +60,7 @@ public class DetectIgnoredCodeMethodVisitor
 			Set<String> ignoredMethodNamesAndSignatures, boolean ignoreTrivial,
 			Set<String> ignoreMethodAnnotations, String className,
 			String superName, String methodName, String description,
-			AtomicInteger lineIdGenerator) {
+			AtomicInteger lineIdGenerator, boolean ignoreDeprecated) {
 		super(mv, className, methodName, description, lineIdGenerator);
 		this.superName = superName;
 		this.ignoredLineIds = ignoredLineIds;
@@ -67,6 +68,7 @@ public class DetectIgnoredCodeMethodVisitor
 		this.ignoreTrivial = ignoreTrivial;
 		this.ignoredStatus = checkForTrivialSignature(methodName, description);
 		this.ignoreMethodAnnotations = ignoreMethodAnnotations;
+		this.ignoreDeprecated = ignoreDeprecated;
 	}
 
 	private static IgnoredStatus checkForTrivialSignature(String name,
@@ -108,6 +110,11 @@ public class DetectIgnoredCodeMethodVisitor
 				|| desc.equals(Type.getDescriptor(CoverageIgnore.class))) {
 			ignoredStatus = IgnoredStatus.IGNORED_BY_ANNOTATION;
 		}
+		if (desc.equals(Type.getDescriptor(java.lang.Deprecated.class))
+				&& ignoreDeprecated) {
+			ignoredStatus = IgnoredStatus.IGNORED_BY_DEPRECATED;
+		}
+
 		return super.visitAnnotation(desc, visible);
 	}
 
@@ -198,6 +205,7 @@ public class DetectIgnoredCodeMethodVisitor
 	public void visitEnd() {
 		super.visitEnd();
 		if ((ignoredStatus == IgnoredStatus.IGNORED_BY_ANNOTATION)
+				|| (ignoredStatus == IgnoredStatus.IGNORED_BY_DEPRECATED)
 				|| (ignoreTrivial && ignoredStatus.isTrivial())) {
 			ignoredMethodNamesAndSignatures.add(methodName + methodSignature);
 		}
