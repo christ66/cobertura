@@ -94,6 +94,8 @@ public class InstrumentTask extends CommonMatchingTask {
 
 	final List<ExcludeClasses> excludeClassesRegexs = new ArrayList<ExcludeClasses>();
 
+	private Path testUnitPath = null;
+
 	Path auxClasspath = null;
 
 	boolean ignoreTrivial = false;
@@ -103,6 +105,8 @@ public class InstrumentTask extends CommonMatchingTask {
 	private Path instrumentationClasspath = null;
 
 	boolean threadsafeRigorous = false;
+
+	boolean individualTest = false;
 
 	final private HashMap<String, FileSet> fileSetMap = new HashMap<String, FileSet>();
 
@@ -139,6 +143,13 @@ public class InstrumentTask extends CommonMatchingTask {
 		ExcludeClasses excludeClassesRegex = new ExcludeClasses();
 		excludeClassesRegexs.add(excludeClassesRegex);
 		return excludeClassesRegex;
+	}
+
+	public Path createTestUnitClasses() {
+		if (testUnitPath == null) {
+			testUnitPath = new Path(getProject());
+		}
+		return testUnitPath.createPath();
 	}
 
 	public Path createInstrumentationClasspath() {
@@ -212,12 +223,20 @@ public class InstrumentTask extends CommonMatchingTask {
 				builder.addArg("--threadsafeRigorous");
 			}
 
+			if (individualTest) {
+				builder.addArg("--individualTest");
+			}
+
 			if (failOnError) {
 				builder.addArg("--failOnError");
 			}
 
 			if (instrumentationClasspath != null) {
 				processInstrumentationClasspath();
+			}
+
+			if (testUnitPath != null) {
+				builder.addArg("--testUnitPath", testUnitPath.toString());
 			}
 			createArgumentsForFilesets(builder);
 
@@ -333,6 +352,10 @@ public class InstrumentTask extends CommonMatchingTask {
 		this.threadsafeRigorous = threadsafeRigorous;
 	}
 
+	public void setIndividualTest(boolean individualTest) {
+		this.individualTest = individualTest;
+	}
+
 	public void setForkedJVMDebugPort(Integer forkedJVMDebugPort) {
 		this.forkedJVMDebugPort = forkedJVMDebugPort;
 	}
@@ -351,5 +374,4 @@ public class InstrumentTask extends CommonMatchingTask {
 		}
 		return auxClasspath.createPath();
 	}
-
 }

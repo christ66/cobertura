@@ -31,8 +31,10 @@ import net.sourceforge.cobertura.instrument.pass1.DetectIgnoredCodeClassVisitor;
 import net.sourceforge.cobertura.instrument.pass2.BuildClassMapClassVisitor;
 import net.sourceforge.cobertura.instrument.pass3.InjectCodeClassInstrumenter;
 import net.sourceforge.cobertura.util.IOUtil;
+
 import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.util.CheckClassAdapter;
 
@@ -90,9 +92,14 @@ public class CoberturaInstrumenter {
 	private boolean ignoreTrivial;
 
 	/**
-	 * If true: The process is interrupted when first error occured.
+	 * If true: The process is interrupted when first error occurred.
 	 */
 	private boolean failOnError;
+
+	/**
+	 * If true: We make sure to keep track of test unit that execute which individual line.
+	 */
+	private boolean individualTest;
 
 	/**
 	 * Setting to true causes cobertura to use more strict threadsafe model that is significantly
@@ -103,6 +110,11 @@ public class CoberturaInstrumenter {
 	 * In implementation it means that AtomicIntegerArray will be used instead of int[].
 	 */
 	private boolean threadsafeRigorous;
+
+	/**
+	 * Used for storing all the test unit locations.
+	 */
+	private List<File> testUnitFilePath;
 
 	/**
 	 * Analyzes and instruments class given by path.
@@ -138,12 +150,20 @@ public class CoberturaInstrumenter {
 	 * <p/>
 	 * <p>Also the {@link #projectData} structure is filled with information about the found touch-points</p>
 	 *
-	 * @param inputStream - source of class to instrument	 *
+	 * @param inputStream - source of class to instrument
+	 *
 	 *
 	 * @return instrumentation result structure or null in case of problems
 	 */
 	public InstrumentationResult instrumentClass(InputStream inputStream)
 			throws IOException {
+		
+		if (testUnitFilePath != null &&
+				testUnitFilePath.size() > 0 &&
+				individualTest) {
+			new TestUnitInstrumenter(testUnitFilePath);
+		}
+		
 		ClassReader cr0 = new ClassReader(inputStream);
 		ClassWriter cw0 = new ClassWriter(0);
 		DetectIgnoredCodeClassVisitor detectIgnoredCv = new DetectIgnoredCodeClassVisitor(
@@ -199,7 +219,7 @@ public class CoberturaInstrumenter {
 			logger.debug("Assigned " + cv.getClassMap().getMaxCounterId()
 					+ " counters for class:" + cv.getClassMap().getClassName());
 			InjectCodeClassInstrumenter cv2 = new InjectCodeClassInstrumenter(
-					cw2, ignoreRegexes, threadsafeRigorous, cv.getClassMap(),
+					cw2, ignoreRegexes, threadsafeRigorous, individualTest, cv.getClassMap(),
 					cv0.getDuplicatesLinesCollector(), detectIgnoredCv
 							.getIgnoredMethodNamesAndSignatures());
 			cr2.accept(new CheckClassAdapter(cv2), ClassReader.SKIP_FRAMES);
@@ -309,6 +329,10 @@ public class CoberturaInstrumenter {
 		this.failOnError = failOnError;
 	}
 
+	public void setIndividualTest(boolean individualTest) {
+		this.individualTest = individualTest;
+	}
+
 	/**
 	 * Sets {@link ProjectData} that will be filled with information about touch points inside instrumented classes
 	 *
@@ -316,6 +340,11 @@ public class CoberturaInstrumenter {
 	 */
 	public void setProjectData(ProjectData projectData) {
 		this.projectData = projectData;
+	}
+	
+
+	public void setTestUnitFilePath(List<File> testUnitFilePath) {
+		this.testUnitFilePath = testUnitFilePath;
 	}
 
 	/**

@@ -29,7 +29,9 @@ import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -114,6 +116,27 @@ public class TouchCollector {
 			final ClassData classData, final Class<?> c) {
 		logger.finer("----------- " + c.getCanonicalName()
 				+ " ---------------- ");
+
+		try {
+			Method m0 = c
+					.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
+			m0.setAccessible(true);
+			final TestUnitInformationHolder[] res = (TestUnitInformationHolder[]) m0
+					.invoke(null, new Object[]{});
+
+			LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
+					classData, res);
+			Method m = c.getDeclaredMethod(
+					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
+					LightClassmapListener.class);
+			m.setAccessible(true);
+			m.invoke(null, lightClassmap);
+		} catch (Exception e) {
+			// Ignore exception. We are not using Junit testing method.
+			// TODO: Fix this so we don't duplicate code and can probably make more efficient.
+			e.printStackTrace();
+		}
+		
 		try {
 			Method m0 = c
 					.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
@@ -136,7 +159,6 @@ public class TouchCollector {
 	private static class ApplyToClassDataLightClassmapListener
 			implements
 				LightClassmapListener {
-		//private AtomicInteger idProvider=new AtomicInteger(0);
 		private final ClassData classData;
 		private final int[] res;
 
@@ -155,6 +177,16 @@ public class TouchCollector {
 		public ApplyToClassDataLightClassmapListener(ClassData cd, int[] res) {
 			classData = cd;
 			this.res = res;
+		}
+
+		public ApplyToClassDataLightClassmapListener(ClassData cd,
+				TestUnitInformationHolder[] results) {
+			classData = cd;
+
+			this.res = new int[results.length];
+			for (int i = 0; i < results.length; i++) {
+				this.res[i] = results[i].getNumOfExecutions();
+			}
 		}
 
 		public void setSource(String source) {
@@ -207,6 +239,4 @@ public class TouchCollector {
 			return ld;
 		}
 	}
-
-	;
 }

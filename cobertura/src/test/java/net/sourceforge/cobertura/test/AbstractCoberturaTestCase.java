@@ -3,16 +3,27 @@
  */
 package net.sourceforge.cobertura.test;
 
+import groovy.util.AntBuilder;
 import groovy.util.Node;
+import net.sourceforge.cobertura.ant.InstrumentTask;
 import net.sourceforge.cobertura.ant.ReportTask;
 import net.sourceforge.cobertura.reporting.Main;
 import net.sourceforge.cobertura.test.util.TestUtils;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.taskdefs.optional.junit.FormatterElement;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitTask;
+import org.apache.tools.ant.taskdefs.optional.junit.JUnitTest;
+import org.apache.tools.ant.taskdefs.optional.junit.FormatterElement.TypeAttribute;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.Path.PathElement;
 import org.junit.After;
 import org.junit.Before;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,6 +37,7 @@ import static org.junit.Assert.*;
  *
  */
 public class AbstractCoberturaTestCase {
+	public static AntBuilder ant = TestUtils.antBuilder;
 	public static File tempDir;
 	public static File srcDir;
 	public static File reportDir;
@@ -184,5 +196,126 @@ public class AbstractCoberturaTestCase {
 			System.setErr(dErr);
 			System.setOut(dOut);
 		}
+	}
+
+	public static void instrumentClass(boolean threadsafeRigorous,
+			boolean ignoretrivial, List<String> ignoreAnnotationNames,
+			String excludeClassesRegexList, boolean individualTest) {
+		FileSet fileSet = new FileSet();
+		fileSet.setDir(srcDir);
+		fileSet.setIncludes("**/*.class");
+
+		InstrumentTask instrumentTask = new InstrumentTask();
+		instrumentTask.setProject(TestUtils.project);
+		instrumentTask.addFileset(fileSet);
+		instrumentTask.createIncludeClasses().setRegex("mypackage.*");
+		instrumentTask.setDataFile(datafile.getAbsolutePath());
+		instrumentTask.setToDir(instrumentDir);
+		instrumentTask.setThreadsafeRigorous(threadsafeRigorous);
+		instrumentTask.setIgnoreTrivial(ignoretrivial);
+		instrumentTask.createExcludeClasses().setRegex(
+				(excludeClassesRegexList == null)
+						? ""
+						: excludeClassesRegexList);
+		instrumentTask.setIndividualTest(individualTest);
+
+		if (ignoreAnnotationNames != null) {
+			for (String annotation : ignoreAnnotationNames) {
+				instrumentTask.createIgnoreMethodAnnotation()
+						.setAnnotationName(annotation);
+			}
+		}
+
+		instrumentTask.execute();
+	}
+
+	public static void executeJunitTest(String testClass) throws Exception {
+		Path classpath = new Path(TestUtils.project);
+		PathElement instDirPathElement = classpath.new PathElement();
+		PathElement buildDirPathElement = classpath.new PathElement();
+		PathElement coberturaClassDirPathElement = classpath.new PathElement();
+		PathElement computerClasspath = classpath.new PathElement();
+
+		FileSet fileSet = new FileSet();
+
+		instDirPathElement.setLocation(instrumentDir);
+		buildDirPathElement.setLocation(srcDir);
+		coberturaClassDirPathElement.setLocation(TestUtils
+				.getCoberturaClassDir());
+		computerClasspath.setPath(System.getProperty("java.class.path"));
+
+		fileSet.setDir(new File("src/test/resources/antLibrary/common/groovy"));
+		fileSet.setIncludes("*.jar");
+
+		classpath.add(instDirPathElement);
+		classpath.add(buildDirPathElement);
+		classpath.add(coberturaClassDirPathElement);
+		classpath.add(computerClasspath);
+		classpath.addFileset(fileSet);
+
+		// Create junitTask
+		JUnitTask junit = new JUnitTask();
+		junit.setProject(TestUtils.project);
+		junit.setHaltonfailure(true);
+		junit.setDir(srcDir);
+		junit.setFork(true);
+
+		// Add formatter to junitTask
+		FormatterElement formatter = new FormatterElement();
+		TypeAttribute type = new TypeAttribute();
+		type.setValue("xml");
+		formatter.setType(type);
+		junit.addFormatter(formatter);
+
+		// Add test to junitTask
+		JUnitTest test = new JUnitTest(testClass);
+		test.setTodir(reportDir);
+		junit.addTest(test);
+
+		junit.setShowOutput(true);
+
+		// Add classpath to junitTask
+		junit.createClasspath().add(classpath);
+		System.out.println(classpath);
+
+		// Finally execute junitTask
+		junit.execute();
+	}
+
+	public static void instrumentClassIndividualTests(
+			boolean threadsafeRigorous, boolean ignoretrivial,
+			List<String> ignoreAnnotationNames, String excludeClassesRegexList,
+			String[] testUnits) {
+		FileSet fileSet = new FileSet();
+		fileSet.setDir(srcDir);
+		fileSet.setIncludes("**/*.class");
+
+		InstrumentTask instrumentTask = new InstrumentTask();
+		instrumentTask.setProject(TestUtils.project);
+		instrumentTask.addFileset(fileSet);
+		instrumentTask.createIncludeClasses().setRegex("mypackage.*");
+		instrumentTask.setDataFile(datafile.getAbsolutePath());
+		instrumentTask.setToDir(instrumentDir);
+		instrumentTask.setThreadsafeRigorous(threadsafeRigorous);
+		instrumentTask.setIgnoreTrivial(ignoretrivial);
+		instrumentTask.createExcludeClasses().setRegex(
+				(excludeClassesRegexList == null)
+						? ""
+						: excludeClassesRegexList);
+		instrumentTask.setIndividualTest(true);
+
+		for (String testUnit : testUnits) {
+			Path p = new Path(TestUtils.project, testUnit);
+			instrumentTask.createTestUnitClasses().add(p);
+		}
+
+		if (ignoreAnnotationNames != null) {
+			for (String annotation : ignoreAnnotationNames) {
+				instrumentTask.createIgnoreMethodAnnotation()
+						.setAnnotationName(annotation);
+			}
+		}
+
+		instrumentTask.execute();
 	}
 }

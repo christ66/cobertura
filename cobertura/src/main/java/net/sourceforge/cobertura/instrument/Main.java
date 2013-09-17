@@ -30,10 +30,12 @@
 
 package net.sourceforge.cobertura.instrument;
 
+import net.sourceforge.cobertura.Cobertura;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.instrument.CoberturaInstrumenter.InstrumentationResult;
 import net.sourceforge.cobertura.util.*;
+
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -326,11 +328,13 @@ public class Main {
 
 		// Parse our parameters
 		List<CoberturaFile> filePaths = new ArrayList<CoberturaFile>();
+		List<File> testUnitFilePath = new ArrayList<File>();
 		String baseDir = null;
 
 		boolean threadsafeRigorous = false;
 		boolean ignoreTrivial = false;
 		boolean failOnError = false;
+		boolean individualTest = false;
 		Set<String> ignoreMethodAnnotations = new HashSet<String>();
 
 		for (int i = 0; i < args.length; i++) {
@@ -364,6 +368,13 @@ public class Main {
 				threadsafeRigorous = true;
 			} else if (args[i].equals("--auxClasspath")) {
 				addElementsToJVM(args[++i]);
+			} else if (args[i].equals("--individualTest")) {
+				individualTest = true;
+			} else if (args[i].equals("--testUnitPath")) {
+				String[] paths = args[++i].split(File.pathSeparator);
+				for (String path : paths) {
+					testUnitFilePath.add(new File(path));
+				}
 			} else {
 				filePaths.add(new CoberturaFile(baseDir, args[i]));
 			}
@@ -374,6 +385,9 @@ public class Main {
 				.setIgnoreMethodAnnotations(ignoreMethodAnnotations);
 		coberturaInstrumenter.setThreadsafeRigorous(threadsafeRigorous);
 		coberturaInstrumenter.setFailOnError(failOnError);
+		coberturaInstrumenter.setIndividualTest(individualTest);
+		coberturaInstrumenter.setTestUnitFilePath(testUnitFilePath);
+		
 
 		ProjectData projectData;
 

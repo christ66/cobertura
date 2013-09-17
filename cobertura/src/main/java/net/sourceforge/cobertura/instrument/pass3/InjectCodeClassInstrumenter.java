@@ -28,6 +28,7 @@ package net.sourceforge.cobertura.instrument.pass3;
 import net.sourceforge.cobertura.instrument.AbstractFindTouchPointsClassInstrumenter;
 import net.sourceforge.cobertura.instrument.FindTouchPointsMethodAdapter;
 import net.sourceforge.cobertura.instrument.tp.ClassMap;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -37,6 +38,7 @@ import org.objectweb.asm.commons.LocalVariablesSorter;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -88,15 +90,24 @@ public class InjectCodeClassInstrumenter
 	 */
 	public InjectCodeClassInstrumenter(ClassVisitor cv,
 			Collection<Pattern> ignoreRegexes, boolean threadsafeRigorous,
+			boolean individualTest,
 			ClassMap classMap,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
 			Set<String> ignoredMethods) {
 		super(cv, ignoreRegexes, duplicatedLinesMap);
 		this.classMap = classMap;
 		this.ignoredMethods = ignoredMethods;
-		codeProvider = threadsafeRigorous
-				? new AtomicArrayCodeProvider()
-				: new FastArrayCodeProvider();
+		// If we are doing individual test unit items, then
+		// let's use our own test unit provider, otherwise use the others.
+		// Please note that the TestUnitCodeProvider is going to provide 
+		// stronger thread safety by using the ConcurrentHashMap API.
+		if (individualTest) {
+			codeProvider = new TestUnitCodeProvider();
+		} else {
+			codeProvider = threadsafeRigorous
+					? new AtomicArrayCodeProvider()
+					: new FastArrayCodeProvider();
+		}
 		touchPointListener = new InjectCodeTouchPointListener(classMap,
 				codeProvider);
 	}
