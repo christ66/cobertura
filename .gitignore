@@ -21,6 +21,10 @@ cobertura/src/test/resources/ant/IgnoreMethodAnnotation/classes/
 cobertura/src/test/resources/ant/IgnoreMethodAnnotation/instrumented/
 cobertura/src/test/resources/ant/IgnoreMethodAnnotation/reports/
 cobertura/src/test/resources/ant/IgnoreMethodAnnotation/cobertura.ser
+cobertura/src/test/resources/ant/IgnoreDeprecated/classes/
+cobertura/src/test/resources/ant/IgnoreDeprecated/instrumented/
+cobertura/src/test/resources/ant/IgnoreDeprecated/reports/
+cobertura/src/test/resources/ant/IgnoreDeprecated/cobertura.ser
 *.iml
 *.project
 *.classpath
