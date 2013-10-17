@@ -117,7 +117,7 @@ public class WebappServer {
 			+ "\n  </servlet-mapping>" + "\n </web-app>";
 
 	private static final String LOCALHOST = "127.0.0.1";
-	private static final String WEB_XML = "src/main/java/net/sourceforge/cobertura/webapp/web.xml";
+	private static final String WEB_XML = "src/main/resources/net/sourceforge/cobertura/webapp/web.xml";
 	private static final String SRC_DIR = "src/main/java";
 	private static final String appName = "simple";
 	private int webappPort;
