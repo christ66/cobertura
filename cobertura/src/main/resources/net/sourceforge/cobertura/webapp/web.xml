@@ -25,9 +25,9 @@
 
 
   <servlet>
-    <servlet-name>CoberturaFlushServlet</servlet-name>
-    <display-name>CoberturaFlushServlet</display-name>
     <description>CoberturaFlushServlet</description>
+    <display-name>CoberturaFlushServlet</display-name>
+    <servlet-name>CoberturaFlushServlet</servlet-name>
     <servlet-class>net.sourceforge.cobertura.webapp.FlushCoberturaServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
