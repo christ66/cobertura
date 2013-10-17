@@ -370,12 +370,6 @@
           <warName>coberturaFlush</warName>
           <webXml>src/main/resources/net/sourceforge/cobertura/webapp/web.xml</webXml>
           <packagingIncludes>WEB-INF/classes/net/sourceforge/cobertura/webapp/FlushCoberturaServlet.class</packagingIncludes>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>lib/</classpathPrefix>
-            </manifest>
-          </archive>
         </configuration>
         <executions>
           <execution>
