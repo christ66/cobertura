@@ -1,19 +1,14 @@
 package net.sourceforge.cobertura.dsl;
 
-import net.sourceforge.cobertura.CheckThresholdsTask;
+import net.sourceforge.cobertura.check.CheckCoverageTask;
 import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.instrument.CodeInstrumentationTask;
 import net.sourceforge.cobertura.reporting.ComplexityCalculator;
+import net.sourceforge.cobertura.reporting.CompositeReport;
 import net.sourceforge.cobertura.reporting.NativeReport;
 import net.sourceforge.cobertura.reporting.Report;
-import net.sourceforge.cobertura.reporting.ReportFormatStrategy;
-import net.sourceforge.cobertura.reporting.html.HTMLReportFormatStrategy;
-import net.sourceforge.cobertura.reporting.xml.SummaryXMLReportStrategy;
-import net.sourceforge.cobertura.reporting.xml.XMLReportFormatStrategy;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static net.sourceforge.cobertura.coveragedata.TouchCollector.applyTouchesOnProjectData;
@@ -43,21 +38,24 @@ public class Cobertura {
 	private Arguments args;
 	private ProjectData projectData;
 	private CodeInstrumentationTask instrumentationTask;
-	private CheckThresholdsTask checkThresholdsTask;
+	private CheckCoverageTask checkCoverageTask;
 
 	private AtomicBoolean didApplyInstrumentationResults;
+
+	private CompositeReport report;
 
 	/*
 	 * Private constructor so we get sure Cobertura
 	 * is always initialized with Arguments
 	 */
 	private Cobertura() {
+		report = new CompositeReport();
 	}
 
 	public Cobertura(Arguments arguments) {
 		args = arguments;
 		instrumentationTask = new CodeInstrumentationTask();
-		checkThresholdsTask = new CheckThresholdsTask();
+		checkCoverageTask = new CheckCoverageTask();
 
 		didApplyInstrumentationResults = new AtomicBoolean(false);
 	}
@@ -77,19 +75,20 @@ public class Cobertura {
 	 * This should be invoked after running tests.
 	 * @return
 	 */
-	public void applyInstrumentationResults() {
+	public Cobertura calculateCoverage() {
 		applyTouchesOnProjectData(projectData);
 		didApplyInstrumentationResults.set(true);
+		return this;
 	}
 
 	/**
 	 * Checks metrics values against thresholds
 	 * @return
 	 */
-	public ThresholdInformation checkThresholds() {
-		checkThresholdsTask.checkThresholds(args, getProjectDataInstance());
-		return new ThresholdInformation(checkThresholdsTask
-				.getCheckThresholdsExitStatus());
+	public Cobertura checkThresholds() {
+		report.addReport(checkCoverageTask.checkCoverage(args,
+				getProjectDataInstance()));
+		return this;
 	}
 
 	/**
@@ -98,13 +97,17 @@ public class Cobertura {
 	 */
 	public Report report() {
 		//		if (!didApplyInstrumentationResults.get()) {
-		//			applyInstrumentationResults();
+		//			calculateCoverage();
 		//		}
+
 		ComplexityCalculator complexityCalculator = new ComplexityCalculator(
 				args.getSources());
-		return new NativeReport(getProjectDataInstance(), args
+
+		report.addReport(new NativeReport(getProjectDataInstance(), args
 				.getDestinationDirectory(), args.getSources(),
-				complexityCalculator, args.getEncoding());
+				complexityCalculator, args.getEncoding()));
+
+		return report;
 	}
 
 	/**
@@ -130,22 +133,5 @@ public class Cobertura {
 			projectData = new ProjectData();
 
 		return projectData;
-	}
-
-	/*   Aux classes   */
-
-	public static class ThresholdInformation {
-		private int thresholdsExitStatus;
-
-		private ThresholdInformation() {
-		}
-
-		public ThresholdInformation(int thresholdsExitStatus) {
-			this.thresholdsExitStatus = thresholdsExitStatus;
-		}
-
-		public int getCheckThresholdsExitStatus() {
-			return thresholdsExitStatus;
-		}
 	}
 }

@@ -14,4 +14,13 @@ public interface Report {
 	 */
 	void export(ReportFormat reportFormat);
 
+	ReportName getName();
+
+	/**
+	 * Returns a given report or a NullReport instance if no report is found.
+	 * @param name
+	 * @return
+	 */
+	Report getByName(ReportName name);
+
 }
