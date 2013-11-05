@@ -25,57 +25,34 @@
 
 package net.sourceforge.cobertura.merge;
 
-import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
-import net.sourceforge.cobertura.coveragedata.ProjectData;
+import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
+import net.sourceforge.cobertura.dsl.Cobertura;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import net.sourceforge.cobertura.util.Header;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class Main {
 
 	public Main(String[] args) {
-		File dataFile = CoverageDataFileHandler.getDefaultDataFile();
-		File baseDir = null;
-		List filesToMerge = new ArrayList();
+		ArgumentsBuilder builder = new ArgumentsBuilder();
+
+		String baseDir = null;
 
 		// Go through all the parameters
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals("--datafile"))
-				dataFile = new File(args[++i]);
-			else if (args[i].equals("--basedir"))
-				baseDir = new File(args[++i]);
-			else
-				filesToMerge.add(new File(baseDir, args[i]));
+			if (args[i].equals("--datafile")) {
+				builder.setDataFile(args[++i]);
+			} else if (args[i].equals("--basedir")) {
+				baseDir = args[++i];
+				builder.setBaseDirectory(baseDir);
+			} else {
+				builder.addFileToMerge(new File(baseDir, args[i])
+						.getAbsolutePath());
+			}
 		}
 
-		// Load coverage data
-		ProjectData projectData = null;
-		if (dataFile.isFile())
-			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-		if (projectData == null)
-			projectData = new ProjectData();
-
-		if (filesToMerge.isEmpty()) {
-			System.err.println("Error: No files were specified for merging.");
-			System.exit(1);
-		}
-
-		// Merge everything
-		Iterator iter = filesToMerge.iterator();
-		while (iter.hasNext()) {
-			File newDataFile = (File) iter.next();
-			ProjectData projectDataNew = CoverageDataFileHandler
-					.loadCoverageData(newDataFile);
-			if (projectDataNew != null)
-				projectData.merge(projectDataNew);
-		}
-
-		// Save the combined data file
-		CoverageDataFileHandler.saveCoverageData(projectData, dataFile);
+		new Cobertura(builder.build()).merge().saveProjectData();
 	}
 
 	public static void main(String[] args) {

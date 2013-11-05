@@ -44,7 +44,6 @@ import java.util.StringTokenizer;
 import static net.sourceforge.cobertura.check.CoverageResultEntry.CoverageType.BRANCH;
 
 public class Main {
-
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
 	public Main(String[] args) throws MalformedPatternException {
@@ -135,8 +134,8 @@ public class Main {
 	}
 
 	private double inRangeAndDivideByOneHundred(String coverageRateAsPercentage) {
-		return inRangeAndDivideByOneHundred(Integer.valueOf(
-				coverageRateAsPercentage).intValue());
+		return inRangeAndDivideByOneHundred(Integer
+				.valueOf(coverageRateAsPercentage));
 	}
 
 	private double inRangeAndDivideByOneHundred(int coverageRateAsPercentage) {
