@@ -69,7 +69,7 @@ public class MergeTask extends CommonMatchingTask {
 	private String dataFile = null;
 
 	public MergeTask() {
-		super("net.sourceforge.cobertura.merge.Main");
+		super(net.sourceforge.cobertura.merge.Main.class.getCanonicalName());
 	}
 
 	public void execute() throws BuildException {

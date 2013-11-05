@@ -92,7 +92,7 @@ public class CheckTask extends CommonMatchingTask {
 	private boolean haltOnFailure = true;
 
 	public CheckTask() {
-		super("net.sourceforge.cobertura.check.Main");
+		super(net.sourceforge.cobertura.check.Main.class.getCanonicalName());
 	}
 
 	public void execute() throws BuildException {

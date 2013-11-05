@@ -78,7 +78,7 @@ public class ReportTask extends CommonMatchingTask {
 	private String encoding;
 
 	public ReportTask() {
-		super("net.sourceforge.cobertura.reporting.Main");
+		super(net.sourceforge.cobertura.reporting.Main.class.getCanonicalName());
 	}
 
 	public void execute() throws BuildException {
