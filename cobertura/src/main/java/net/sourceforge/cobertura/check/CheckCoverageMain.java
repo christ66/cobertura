@@ -43,10 +43,11 @@ import java.util.StringTokenizer;
 
 import static net.sourceforge.cobertura.check.CoverageResultEntry.CoverageType.BRANCH;
 
-public class Main {
-	private static final Logger logger = LoggerFactory.getLogger(Main.class);
+public class CheckCoverageMain {
+	private static final Logger logger = LoggerFactory
+			.getLogger(CheckCoverageMain.class);
 
-	public Main(String[] args) throws MalformedPatternException {
+	public CheckCoverageMain(String[] args) throws MalformedPatternException {
 		Header.print(System.out);
 
 		ArgumentsBuilder builder = new ArgumentsBuilder();
@@ -149,6 +150,6 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws MalformedPatternException {
-		new Main(args);
+		new CheckCoverageMain(args);
 	}
 }

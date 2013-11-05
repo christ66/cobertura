@@ -58,6 +58,7 @@
 
 package net.sourceforge.cobertura.ant;
 
+import net.sourceforge.cobertura.merge.MergeMain;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -69,7 +70,7 @@ public class MergeTask extends CommonMatchingTask {
 	private String dataFile = null;
 
 	public MergeTask() {
-		super(net.sourceforge.cobertura.merge.Main.class.getCanonicalName());
+		super(MergeMain.class.getCanonicalName());
 	}
 
 	public void execute() throws BuildException {

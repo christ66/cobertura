@@ -58,6 +58,7 @@
 
 package net.sourceforge.cobertura.ant;
 
+import net.sourceforge.cobertura.check.CheckCoverageMain;
 import org.apache.tools.ant.BuildException;
 
 import java.util.HashSet;
@@ -92,7 +93,7 @@ public class CheckTask extends CommonMatchingTask {
 	private boolean haltOnFailure = true;
 
 	public CheckTask() {
-		super(net.sourceforge.cobertura.check.Main.class.getCanonicalName());
+		super(CheckCoverageMain.class.getCanonicalName());
 	}
 
 	public void execute() throws BuildException {

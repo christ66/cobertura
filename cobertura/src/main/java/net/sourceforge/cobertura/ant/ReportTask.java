@@ -58,6 +58,7 @@
 
 package net.sourceforge.cobertura.ant;
 
+import net.sourceforge.cobertura.reporting.ReportMain;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -78,7 +79,7 @@ public class ReportTask extends CommonMatchingTask {
 	private String encoding;
 
 	public ReportTask() {
-		super(net.sourceforge.cobertura.reporting.Main.class.getCanonicalName());
+		super(ReportMain.class.getCanonicalName());
 	}
 
 	public void execute() throws BuildException {

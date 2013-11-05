@@ -319,7 +319,9 @@ public class CodeInstrumentationTask {
 
 	// TODO: Preserved current behaviour, but this code is failing on WARN, not error
 	private static class LoggerWrapper {
-		private final Logger logger = LoggerFactory.getLogger(Main.class);
+		private final Logger logger = LoggerFactory
+				.getLogger(LoggerWrapper.class);
+
 		private boolean failOnError = false;
 
 		public void setFailOnError(boolean failOnError) {

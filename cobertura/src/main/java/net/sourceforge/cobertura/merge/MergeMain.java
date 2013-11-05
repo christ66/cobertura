@@ -32,9 +32,9 @@ import net.sourceforge.cobertura.util.Header;
 
 import java.io.File;
 
-public class Main {
+public class MergeMain {
 
-	public Main(String[] args) {
+	public MergeMain(String[] args) {
 		ArgumentsBuilder builder = new ArgumentsBuilder();
 
 		String baseDir = null;
@@ -65,6 +65,6 @@ public class Main {
 					+ ex.getMessage());
 			System.exit(1);
 		}
-		new Main(args);
+		new MergeMain(args);
 	}
 }

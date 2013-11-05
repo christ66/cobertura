@@ -45,11 +45,12 @@ import static net.sourceforge.cobertura.check.CoverageResultEntry.CoverageType.L
  */
 public class CheckCoverageTask {
 
-	private static final Logger logger = LoggerFactory.getLogger(Main.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(CheckCoverageMain.class);
 
-	final Perl5Matcher pm = new Perl5Matcher();
+	private final Perl5Matcher pm = new Perl5Matcher();
 
-	final Perl5Compiler pc = new Perl5Compiler();
+	private final Perl5Compiler pc = new Perl5Compiler();
 
 	/**
 	 * The default CoverageRate needed for a class to pass the check.
@@ -263,5 +264,4 @@ public class CheckCoverageTask {
 		BigDecimal decimal = new BigDecimal(coverateRate * 100);
 		return decimal.setScale(1, BigDecimal.ROUND_DOWN).toString();
 	}
-
 }

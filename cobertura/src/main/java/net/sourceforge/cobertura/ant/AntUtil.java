@@ -59,9 +59,9 @@ import org.apache.tools.ant.types.Environment.Variable;
 
 abstract class AntUtil {
 
-    private static final String COBERTURA_DATAFILE = "net.sourceforge.cobertura.datafile";
+	private static final String COBERTURA_DATAFILE = "net.sourceforge.cobertura.datafile";
 
-    /**
+	/**
 	 * Used to transfer the net.sourceforge.cobertura.datafile property to a JVM
 	 * that is about to be forked.
 	 * <p/>
@@ -81,8 +81,7 @@ abstract class AntUtil {
 	 * @param task The Java task that will do the forking.
 	 */
 	static void transferCoberturaDataFileProperty(Java task) {
-		String coberturaProperty = System
-				.getProperty(COBERTURA_DATAFILE);
+		String coberturaProperty = System.getProperty(COBERTURA_DATAFILE);
 		if (coberturaProperty != null) {
 			Variable sysproperty = new Variable();
 			sysproperty.setKey(COBERTURA_DATAFILE);

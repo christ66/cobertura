@@ -70,6 +70,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import net.sourceforge.cobertura.instrument.InstrumentMain;
 import net.sourceforge.cobertura.util.CommandLineBuilder;
 
 import org.apache.tools.ant.BuildException;
@@ -107,8 +108,7 @@ public class InstrumentTask extends CommonMatchingTask {
 	final private HashMap<String, FileSet> fileSetMap = new HashMap<String, FileSet>();
 
 	public InstrumentTask() {
-		super(net.sourceforge.cobertura.instrument.Main.class
-				.getCanonicalName());
+		super(InstrumentMain.class.getCanonicalName());
 	}
 
 	public Ignore createIgnore() {
