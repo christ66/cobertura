@@ -7,6 +7,7 @@ import net.sourceforge.cobertura.util.FileFinder;
 import java.io.File;
 
 public class NativeReport implements Report {
+	private NullReport nullReport;
 	private ProjectData projectData;
 	private File destinationDir;
 	private FileFinder finder;
@@ -16,6 +17,7 @@ public class NativeReport implements Report {
 
 	public NativeReport(ProjectData projectData, File destinationDir,
 			FileFinder finder, ComplexityCalculator complexity, String encoding) {
+		this.nullReport = new NullReport();
 		this.projectData = projectData;
 		this.destinationDir = destinationDir;
 		this.finder = finder;
@@ -27,6 +29,17 @@ public class NativeReport implements Report {
 
 	public void export(ReportFormat reportFormat) {
 		formatStrategyRegistry.getReportFormatStrategy(reportFormat).save(this);
+	}
+
+	public ReportName getName() {
+		return ReportName.COVERAGE_REPORT;
+	}
+
+	public Report getByName(ReportName name) {
+		if (getName().equals(name)) {
+			return this;
+		}
+		return nullReport;
 	}
 
 	public ProjectData getProjectData() {

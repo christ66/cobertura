@@ -76,7 +76,12 @@ public class MergeMainTest extends TestCase {
 		String[] args = {"--datafile", dataFile.getAbsolutePath(),
 				greenFile.getAbsolutePath(), redFile.getAbsolutePath()};
 
-		Main.main(args);
+		System.out.println(String.format(
+				"### Will merge dataFiles: %s, %s, %s", dataFile
+						.getAbsolutePath(), greenFile.getAbsolutePath(),
+				redFile.getAbsolutePath()));
+
+		MergeMain.main(args);
 
 		// Read merged data
 		ProjectData merged = CoverageDataFileHandler.loadCoverageData(dataFile);
@@ -106,7 +111,7 @@ public class MergeMainTest extends TestCase {
 		String[] args = {"--datafile", dataFile.getAbsolutePath(),
 				greenFile.getAbsolutePath()};
 
-		Main.main(args);
+		MergeMain.main(args);
 
 		// Read merged data
 		ProjectData merged = CoverageDataFileHandler.loadCoverageData(dataFile);
@@ -141,7 +146,7 @@ public class MergeMainTest extends TestCase {
 				greenFile.getAbsolutePath(), "--basedir", redFile.getParent(),
 				redFile.getName(), blueFile.getName()};
 
-		Main.main(args);
+		MergeMain.main(args);
 
 		// Read merged data
 		ProjectData merged = CoverageDataFileHandler.loadCoverageData(dataFile);

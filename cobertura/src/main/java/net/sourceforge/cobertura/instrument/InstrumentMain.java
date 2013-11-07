@@ -30,13 +30,10 @@
 
 package net.sourceforge.cobertura.instrument;
 
-import net.sourceforge.cobertura.dsl.Arguments;
 import net.sourceforge.cobertura.dsl.ArgumentsBuilder;
 import net.sourceforge.cobertura.dsl.Cobertura;
 import net.sourceforge.cobertura.util.*;
 
-import java.io.*;
-import java.lang.reflect.Method;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -65,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * a counter for this line of code.
  * </ol>
  */
-public class Main {
+public class InstrumentMain {
 	private static final LoggerWrapper logger = new LoggerWrapper();
 	public static URLClassLoader urlClassLoader;
 
@@ -151,7 +148,8 @@ public class Main {
 
 	// TODO: Preserved current behaviour, but this code is failing on WARN, not error
 	private static class LoggerWrapper {
-		private final Logger logger = LoggerFactory.getLogger(Main.class);
+		private final Logger logger = LoggerFactory
+				.getLogger(InstrumentMain.class);
 		private boolean failOnError = false;
 
 		public void setFailOnError(boolean failOnError) {

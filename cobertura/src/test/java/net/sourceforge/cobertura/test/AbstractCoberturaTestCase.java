@@ -5,11 +5,9 @@ package net.sourceforge.cobertura.test;
 
 import groovy.util.Node;
 import net.sourceforge.cobertura.ant.ReportTask;
-import net.sourceforge.cobertura.reporting.Main;
+import net.sourceforge.cobertura.reporting.ReportMain;
 import net.sourceforge.cobertura.test.util.TestUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.tools.ant.DefaultLogger;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.junit.After;
 import org.junit.Before;
@@ -177,7 +175,7 @@ public class AbstractCoberturaTestCase {
 		try {
 			System.setErr(err);
 			System.setOut(out);
-			Main.main(args);
+			ReportMain.main(args);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

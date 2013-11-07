@@ -37,9 +37,10 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Main {
+public class ReportMain {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(ReportMain.class);
 
 	private static void parseArgumentsAndReport(String[] args) throws Exception {
 		ArgumentsBuilder builder = new ArgumentsBuilder();
