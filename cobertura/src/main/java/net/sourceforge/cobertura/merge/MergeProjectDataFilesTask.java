@@ -11,20 +11,11 @@ import java.util.Set;
 
 public class MergeProjectDataFilesTask {
 	private static final Logger logger = LoggerFactory
-			.getLogger(MergeProjectDataFilesTask.class);
+                        .getLogger(MergeProjectDataFilesTask.class);
 
-	public void mergeProjectDataFiles(Arguments arguments) {
-		File dataFile = arguments.getDataFile();
+	public void mergeProjectDataFiles(Arguments arguments,
+			ProjectData projectData) {
 		Set<File> filesToMerge = arguments.getFilesToMerge();
-
-		// Load coverage data
-		ProjectData projectData = null;
-		if (dataFile.isFile()) {
-			projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
-		}
-		if (projectData == null) {
-			projectData = new ProjectData();
-		}
 
 		if (filesToMerge.isEmpty()) {
 			logger.error("No files were specified for merging.");
@@ -34,6 +25,7 @@ public class MergeProjectDataFilesTask {
 		for (File newDataFile : filesToMerge) {
 			ProjectData projectDataNew = CoverageDataFileHandler
 					.loadCoverageData(newDataFile);
+
 			if (projectDataNew != null)
 				projectData.merge(projectDataNew);
 		}

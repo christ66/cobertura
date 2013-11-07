@@ -76,6 +76,11 @@ public class MergeMainTest extends TestCase {
 		String[] args = {"--datafile", dataFile.getAbsolutePath(),
 				greenFile.getAbsolutePath(), redFile.getAbsolutePath()};
 
+		System.out.println(String.format(
+				"### Will merge dataFiles: %s, %s, %s", dataFile
+						.getAbsolutePath(), greenFile.getAbsolutePath(),
+				redFile.getAbsolutePath()));
+
 		MergeMain.main(args);
 
 		// Read merged data

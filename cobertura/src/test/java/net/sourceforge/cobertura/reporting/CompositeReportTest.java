@@ -1,7 +1,10 @@
 package net.sourceforge.cobertura.reporting;
 
+import net.sourceforge.cobertura.check.CoverageResultEntry;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,7 +31,8 @@ public class CompositeReportTest {
 
 	@Test
 	public void testAddReport() throws Exception {
-		Report thresholdReport = new CoverageThresholdsReport(null);
+		Report thresholdReport = new CoverageThresholdsReport(
+				new ArrayList<CoverageResultEntry>());
 		assertEquals(NullReport.class, report.getByName(
 				ReportName.THRESHOLDS_REPORT).getClass());
 		report.addReport(thresholdReport);

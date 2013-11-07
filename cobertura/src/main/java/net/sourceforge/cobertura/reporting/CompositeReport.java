@@ -25,6 +25,9 @@ public class CompositeReport implements Report {
 	}
 
 	public Report getByName(ReportName name) {
+		if (ReportName.COMPOSITE_REPORT.equals(name)) {
+			return this;
+		}
 		for (Report report : reports) {
 			if (report.getName().equals(name)) {
 				return report;

@@ -47,8 +47,12 @@ public class MergeMain {
 				baseDir = args[++i];
 				builder.setBaseDirectory(baseDir);
 			} else {
-				builder.addFileToMerge(new File(baseDir, args[i])
-						.getAbsolutePath());
+				if (baseDir != null) {
+					builder.addFileToMerge(new File(baseDir, args[i])
+							.getAbsolutePath());
+				} else {
+					builder.addFileToMerge(new File(args[i]).getAbsolutePath());
+				}
 			}
 		}
 

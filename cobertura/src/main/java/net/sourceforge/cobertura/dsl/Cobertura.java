@@ -55,6 +55,7 @@ public class Cobertura {
 	}
 
 	public Cobertura(Arguments arguments) {
+		report = new CompositeReport();
 		args = arguments;
 		instrumentationTask = new CodeInstrumentationTask();
 		checkCoverageTask = new CheckCoverageTask();
@@ -99,7 +100,8 @@ public class Cobertura {
 	 * @return this Cobertura instance
 	 */
 	public Cobertura merge() {
-		mergeProjectDataFilesTask.mergeProjectDataFiles(args);
+		mergeProjectDataFilesTask.mergeProjectDataFiles(args,
+				getProjectDataInstance());
 		return this;
 	}
 
