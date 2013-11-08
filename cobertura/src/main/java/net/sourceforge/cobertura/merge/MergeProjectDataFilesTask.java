@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class MergeProjectDataFilesTask {
 	private static final Logger logger = LoggerFactory
-                        .getLogger(MergeProjectDataFilesTask.class);
+			.getLogger(MergeProjectDataFilesTask.class);
 
 	public void mergeProjectDataFiles(Arguments arguments,
 			ProjectData projectData) {
