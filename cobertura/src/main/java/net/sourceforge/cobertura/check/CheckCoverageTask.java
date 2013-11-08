@@ -45,21 +45,12 @@ import static net.sourceforge.cobertura.check.CoverageResultEntry.CoverageType.L
  */
 public class CheckCoverageTask {
 
-<<<<<<< HEAD
 	private static final Logger logger = LoggerFactory
 			.getLogger(CheckCoverageMain.class);
 
 	private final Perl5Matcher pm = new Perl5Matcher();
 
 	private final Perl5Compiler pc = new Perl5Compiler();
-=======
-	private static final Logger logger = Logger
-			.getLogger(CheckCoverageMain.class);
-
-	final Perl5Matcher pm = new Perl5Matcher();
-
-	final Perl5Compiler pc = new Perl5Compiler();
->>>>>>> Fix failing tests
 
 	/**
 	 * The default CoverageRate needed for a class to pass the check.
