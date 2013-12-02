@@ -221,6 +221,15 @@
   </profiles>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>executables</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <!--
         https://code.google.com/p/maven-java-formatter-plugin/

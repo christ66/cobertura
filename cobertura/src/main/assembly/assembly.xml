@@ -24,10 +24,11 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/executables</directory>
+      <directory>${project.basedir}/target/classes</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>*</include>
+        <include>*.sh</include>
+        <include>*.bat</include>
       </includes>
     </fileSet>
     <fileSet>

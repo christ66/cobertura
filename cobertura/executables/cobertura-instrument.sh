@@ -1,1 +1,2 @@
-java -cp `dirname $0`/cobertura.jar:`dirname $0`/lib/asm-3.3.1.jar:`dirname $0`/lib/asm-tree-3.3.1.jar:`dirname $0`/lib/asm-commons-3.3.1.jar:`dirname $0`/lib/log4j-1.2.9.jar:`dirname $0`/lib/jakarta-oro-2.0.8.jar net.sourceforge.cobertura.instrument.InstrumentMain $*
+BASEDIR=`dirname $0`
+java -cp $BASEDIR/cobertura-${project.version}.jar:$BASEDIR/lib/asm-${asmVersion}.jar:$BASEDIR/lib/asm-analysis-${asmVersion}.jar:$BASEDIR/lib/asm-tree-${asmVersion}.jar:$BASEDIR/lib/asm-commons-${asmVersion}.jar:$BASEDIR/lib/asm-util-${asmVersion}.jar:$BASEDIR/lib/slf4j-api-${slf4jVersion}.jar:$BASEDIR/lib/oro-${oroVersion}.jar net.sourceforge.cobertura.instrument.InstrumentMain $*

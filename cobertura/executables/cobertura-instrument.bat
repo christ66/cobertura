@@ -18,4 +18,4 @@ shift
 goto getArgs
 :doneStart
 
-java -cp "%COBERTURA_HOME%cobertura-2.0.3.jar;%COBERTURA_HOME%lib\asm-4.1.jar;%COBERTURA_HOME%lib\asm-util-4.1.jar;%COBERTURA_HOME%lib\asm-tree-4.1.jar;%COBERTURA_HOME%lib\asm-commons-4.1.jar;%COBERTURA_HOME%lib\asm-analysis-4.1.jar;%COBERTURA_HOME%lib\log4j-1.2.9.jar;%COBERTURA_HOME%lib\oro-2.0.8.jar" net.sourceforge.cobertura.instrument.InstrumentMain %CMD_LINE_ARGS%
+java -cp "%COBERTURA_HOME%cobertura-${project.version}.jar;%COBERTURA_HOME%lib\asm-${asmVersion}.jar;%COBERTURA_HOME%lib\asm-util-${asmVersion}.jar;%COBERTURA_HOME%lib\asm-tree-${asmVersion}.jar;%COBERTURA_HOME%lib\asm-commons-${asmVersion}.jar;%COBERTURA_HOME%lib\asm-analysis-${asmVersion}.jar;%COBERTURA_HOME%lib\slf4j-api-${slf4jVersion}.jar;%COBERTURA_HOME%lib\oro-${oroVersion}.jar" net.sourceforge.cobertura.instrument.InstrumentMain %CMD_LINE_ARGS%
