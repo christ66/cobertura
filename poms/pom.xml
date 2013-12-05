@@ -31,7 +31,7 @@
     -->
     <modules>
         <module>cobertura-parent</module>
-        <!-- module>cobertura-api-parent</module -->
+        <module>cobertura-api-parent</module>
     </modules>
 
     <!--
