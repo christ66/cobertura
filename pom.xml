@@ -1,105 +1,373 @@
 <?xml version="1.0" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>net.sourceforge.cobertura</groupId>
-  <artifactId>cobertura-runtime</artifactId>
-  <name>Cobertura :: Limited Runtime</name>
-  <version>2.0.4-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <!--
+    ################################################
+    # Section 1:  Project information
+    ################################################
+    -->
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
-  </parent>
+    <groupId>net.sourceforge.cobertura</groupId>
+    <artifactId>cobertura-reactor</artifactId>
+    <version>2.0.4-SNAPSHOT</version>
+    <name>${project.artifactId}</name>
+    <url>${url.prefix}/${path.in.reactor}</url>
+    <description>Cobertura checks and reports on test coverage in your code.</description>
+    <packaging>pom</packaging>
+    <inceptionYear>2010</inceptionYear>
 
-  <description>
-    Cobertura Runtime artifact to prevent unneeded dependencies at runtime.
-  </description>
-  
-  <url>http://cobertura.sourceforge.net</url>
-  
- <modules>
-    <module>cobertura</module>
-  </modules>
-  
-  <licenses>
-    <license>
-      <name>The GNU General Public License, Version 2</name>
-      <url>http://www.gnu.org/licenses/gpl.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+    <prerequisites>
+        <maven>3.0.5</maven>
+    </prerequisites>
 
-  <dependencies>
-    <dependency>
-      <groupId>net.sourceforge.cobertura</groupId>
-      <artifactId>cobertura</artifactId>
-      <version>2.0.4-SNAPSHOT</version>
-      <exclusions>
-        <exclusion>
-          <groupId>oro</groupId>
-          <artifactId>oro</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-tree</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>asm</groupId>
-          <artifactId>asm-commons</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-  </dependencies>
-  
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.4.1</version>
-        <configuration>
-          <localCheckout>true</localCheckout>
-          <pushChanges>false</pushChanges>
-       </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <scm>
-    <connection>scm:git:git://github.com/cobertura/cobertura</connection>
-    <developerConnection>scm:git:git@github.com:cobertura/cobertura.git</developerConnection>
-    <url>http://github.com/cobertura/cobertura</url>
-    <tag>HEAD</tag>
-  </scm>
-  
-  <developers>
-    <developer>
-      <id>schristou88</id>
-      <name>Steven Christou</name>
-      <email>schristou88@gmail.com</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+6</timezone>
-    </developer>
-  </developers>
-  
-  <distributionManagement>
-    <snapshotRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-    </snapshotRepository>
-    <repository>
-      <id>sonatype-nexus-staging</id>
-      <name>Nexus Release Repository</name>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
+    <licenses>
+        <license>
+            <name>The GNU General Public License, Version 2</name>
+            <url>http://www.gnu.org/licenses/gpl.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>schristou88</id>
+            <name>Steven Christou</name>
+            <email>schristou88@gmail.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+6</timezone>
+        </developer>
+        <developer>
+            <id>lj</id>
+            <name>Lennart Jörelid</name>
+            <email>lj@jguru.se</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
+    <properties>
+        <!-- Build definition properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <jdk.version>1.6</jdk.version>
+
+        <!-- Code style properties -->
+        <wtp.version>2.0</wtp.version>
+        <clean.plugin.version>2.5</clean.plugin.version>
+        <maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
+
+        <!--
+            Define the URL prefixes for Site Deployment and DistributionManagement.
+            These can be overridden in sub-reactors to tailor releases to other locations.
+        -->
+        <path.in.reactor/>
+        <reactor.name>cobertura</reactor.name>
+        <scm.host>github.com</scm.host>
+        <reactor.url.remote.prefix>http://${scm.host}/${reactor.name}</reactor.url.remote.prefix>
+        <site.url.prefix>scp://www-data@angmar/var/www/${reactor.name}</site.url.prefix>
+        <site.staging.localDirectory>/tmp/${reactor.name}</site.staging.localDirectory>
+        <url.prefix>${reactor.url.remote.prefix}/${reactor.name}/${project.version}</url.prefix>
+        <distro.url.prefix>${site.url.prefix}/${reactor.name}/${project.version}</distro.url.prefix>
+        <scm.conn>scm:git:git://${scm.host}/${reactor.name}/${reactor.name}</scm.conn>
+        <scm.devConnection>scm:git:git@${scm.host}/${reactor.name}/${reactor.name}.git</scm.devConnection>
+    </properties>
+
+    <!--
+    ################################################
+    # Section 2:  Modules
+    ################################################
+    -->
+    <modules>
+        <!-- module>codestyle</module -->
+        <!-- module>poms</module -->
+    </modules>
+
+    <!--
+    ################################################
+    # Section 3:  Build settings
+    ################################################
+    -->
+    <build>
+        <plugins>
+
+            <!--
+                Configures the release plugin.
+
+                Why:  Make the release plugin replace any information received from the Sonatype OSS parent.
+                Used: Release lifecycle, mvn release.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.4.2</version>
+                <configuration combine.self="override">
+                    <localCheckout>true</localCheckout>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <tagNameFormat>${reactor.name}-@{project.version}</tagNameFormat>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-hg</artifactId>
+                        <version>1.8.1</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>1.8.1</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!--
+                Configures the site plugin. Its use is further documented in the site documentation itself.
+
+                Why:  Make compile and publish the Nazgul documentation.
+                Used: Site lifecycle, mvn site.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-descriptor</id>
+                        <goals>
+                            <goal>attach-descriptor</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <topSiteURL>${site.url.prefix}/${reactor.name}</topSiteURL>
+                    <stagingSiteURL>${site.url.prefix}/${reactor.name}</stagingSiteURL>
+                    <stagingDirectory>${site.staging.localDirectory}</stagingDirectory>
+                    <generateSitemap>true</generateSitemap>
+                    <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
+                    <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-ssh</artifactId>
+                        <version>2.4</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-file</artifactId>
+                        <version>2.4</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>1.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-xhtml</artifactId>
+                        <version>1.5</version>
+                    </dependency>
+                    <!--
+                        Reflow skin and dependencies.
+                    -->
+                    <!-- dependency>
+                        <groupId>lt.velykis.maven.skins</groupId>
+                        <artifactId>reflow-velocity-tools</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.velocity</groupId>
+                        <artifactId>velocity</artifactId>
+                        <version>1.7</version>
+                    </dependency -->
+                </dependencies>
+            </plugin>
+
+            <!--
+                Provides Plantuml integration into site deployments.
+
+                Why:  Convert Plantuml (*.puml) documents to png images, for use in site documentation.
+                Used: Site lifecycle, mvn site.
+            -->
+            <plugin>
+                <groupId>com.github.jeluard</groupId>
+                <artifactId>plantuml-maven-plugin</artifactId>
+                <version>7954</version>
+                <configuration>
+                    <sourceFiles>
+                        <directory>${basedir}</directory>
+                        <includes>
+                            <include>src/site/**/*.puml</include>
+                        </includes>
+                    </sourceFiles>
+                    <outputDirectory>${project.build.directory}/site/images/plantuml</outputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-plantuml-diagrams</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>pre-site</phase>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sourceforge.plantuml</groupId>
+                        <artifactId>plantuml</artifactId>
+                        <version>7985</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+    <reporting>
+        <excludeDefaults>true</excludeDefaults>
+        <outputDirectory>${project.build.directory}/site</outputDirectory>
+        <plugins>
+
+            <!--
+                Configures the projects-info-reports plugin.
+
+                Why:  Reduce the time consumed considerably by removing the need to acquire
+                      dependency details and locations.
+                Used: Site lifecycle, mvn site.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven-project-info-reports-plugin.version}</version>
+                <configuration>
+                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <profiles>
+
+        <!--
+            Use GPG to sign artifacts during release:perform.
+
+            Why:  Makes the releases traceable to their originator. Required by maven central and Sonatype OSS.
+            Used: Standard lifecycle, mvn release.
+        -->
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <!--
+    ################################################
+    # Section 4:  External systems
+    ################################################
+    -->
+    <!--
+       Define Maven's Git integration.
+    -->
+    <scm>
+        <connection>${scm.conn}</connection>
+        <developerConnection>${scm.devConnection}</developerConnection>
+        <url>${reactor.url.remote.prefix}/${reactor.name}</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <!--
+        Define the issue management system.
+    -->
+    <issueManagement>
+        <system>github</system>
+        <url>${reactor.url.remote.prefix}/${reactor.name}/issues</url>
+    </issueManagement>
+
+    <!--
+        Define repository settings for Maven's deploy and release plugins.
+        To comply with Maven standards, the repository definitions should
+        go in the settings.xml file, rather than into the POM.
+
+        This leaves the site URL mechanics in the POM to cater for staging
+        and deploying sites.
+    -->
+    <distributionManagement>
+        <site>
+            <id>coberturaSite</id>
+            <name>coberturaSite</name>
+            <url>${distro.url.prefix}/${path.in.reactor}</url>
+        </site>
+    </distributionManagement>
+
+    <!-- distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement -->
+
+    <!-- dependencies>
+      <dependency>
+        <groupId>net.sourceforge.cobertura</groupId>
+        <artifactId>cobertura</artifactId>
+        <version>2.0.4-SNAPSHOT</version>
+        <exclusions>
+          <exclusion>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm-tree</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>asm</groupId>
+            <artifactId>asm-commons</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    </dependencies -->
 </project>
