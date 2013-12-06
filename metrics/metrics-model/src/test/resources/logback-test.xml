@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+
+    <appender name="Stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%c{1}::%M]: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- By default, make the logging keep quiet -->
+    <root level="DEBUG">
+        <appender-ref ref="Stdout"/>
+    </root>
+
+    <!-- Lower the logging level for relevant classes -->
+    <logger name="net.sourceforge.cobertura" level="WARN"/>
+    <logger name="net.sourceforge.cobertura.metrics.model" level="DEBUG"/>
+
+    <!-- Make the frameworks shut up. -->
+    <logger name="org.springframework" level="WARN"/>
+
+</configuration>

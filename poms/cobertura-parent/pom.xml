@@ -12,11 +12,12 @@
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
+        <relativePath/>
     </parent>
 
     <groupId>net.sourceforge.cobertura.poms</groupId>
     <artifactId>cobertura-parent</artifactId>
-    <version>2.0.4-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <url>${url.prefix}/${path.in.reactor}</url>
@@ -89,12 +90,14 @@
 
         <!-- Enforcer configuration parameters -->
         <enforcer.includedGroupIdPatterns>^net\\.sourceforge\\.cobertura\\..*</enforcer.includedGroupIdPatterns>
-        <enforcer.excludedGroupIdPatterns>^net\\.sourceforge\\.cobertura\\..*\\.generated\\..*</enforcer.excludedGroupIdPatterns>
+        <enforcer.excludedGroupIdPatterns>^net\\.sourceforge\\.cobertura\\..*\\.generated\\..*
+        </enforcer.excludedGroupIdPatterns>
 
         <!-- Checkstyle configuration parameters. -->
         <checkstyle.plugin.version>2.11</checkstyle.plugin.version>
         <checkstyle.config.location>codestyle/cobertura/checkstyle.xml</checkstyle.config.location>
-        <checkstyle.suppressions.location>codestyle/cobertura/checkstyle-suppressions.xml</checkstyle.suppressions.location>
+        <checkstyle.suppressions.location>codestyle/cobertura/checkstyle-suppressions.xml
+        </checkstyle.suppressions.location>
         <checkstyle.violationSeverity>error</checkstyle.violationSeverity>
 
         <!-- PMD configuration parameters. -->
@@ -311,6 +314,11 @@
                 <artifactId>transaction-api</artifactId>
                 <version>1.1-rev-1</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.2.11</version>
             </dependency>
 
             <!--
@@ -1068,7 +1076,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.0.4-SNAPSHOT</version>
+                            <version>3.0.0-SNAPSHOT</version>
                         </dependency>
                         <dependency>
                             <groupId>log4j</groupId>
@@ -1119,7 +1127,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.0.4-SNAPSHOT</version>
+                            <version>3.0.0-SNAPSHOT</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1154,7 +1162,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.0.4-SNAPSHOT</version>
+                            <version>3.0.0-SNAPSHOT</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1171,7 +1179,8 @@
                     <artifactId>license-maven-plugin</artifactId>
                     <version>1.5</version>
                     <configuration>
-                        <descriptionTemplate>/codestyle/license/${license.id}/licenseDescriptionTemplate.ftl</descriptionTemplate>
+                        <descriptionTemplate>/codestyle/license/${license.id}/licenseDescriptionTemplate.ftl
+                        </descriptionTemplate>
                         <failOnMissingHeader>${breakOnFailure.license}</failOnMissingHeader>
                         <licenseName>${license.id}</licenseName>
                         <licenseResolver>${license.licenseResolver}</licenseResolver>
@@ -1209,7 +1218,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.0.4-SNAPSHOT</version>
+                            <version>3.0.0-SNAPSHOT</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1345,8 +1354,10 @@
                                 -->
                                 <restrictImplDependencies
                                         implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.RestrictImplDependencies">
-                                    <includedGroupIdPatterns>${enforcer.includedGroupIdPatterns}</includedGroupIdPatterns>
-                                    <excludedGroupIdPatterns>${enforcer.excludedGroupIdPatterns}</excludedGroupIdPatterns>
+                                    <includedGroupIdPatterns>${enforcer.includedGroupIdPatterns}
+                                    </includedGroupIdPatterns>
+                                    <excludedGroupIdPatterns>${enforcer.excludedGroupIdPatterns}
+                                    </excludedGroupIdPatterns>
                                 </restrictImplDependencies>
 
                                 <!--
@@ -1373,7 +1384,7 @@
                     <dependency>
                         <groupId>net.sourceforge.cobertura.codestyle</groupId>
                         <artifactId>cobertura-codestyle</artifactId>
-                        <version>2.0.4-SNAPSHOT</version>
+                        <version>3.0.0-SNAPSHOT</version>
                     </dependency>
                 </dependencies>
             </plugin>

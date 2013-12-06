@@ -14,14 +14,14 @@
         <version>3.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>net.sourceforge.cobertura.poms</groupId>
-    <artifactId>cobertura-poms-reactor</artifactId>
+    <groupId>net.sourceforge.cobertura.metrics</groupId>
+    <artifactId>cobertura-metrics-reactor</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <url>${url.prefix}/${path.in.reactor}</url>
 
     <properties>
-        <path.in.reactor>poms</path.in.reactor>
+        <path.in.reactor>metrics</path.in.reactor>
     </properties>
 
     <!--
@@ -30,8 +30,8 @@
     ################################################
     -->
     <modules>
-        <module>cobertura-parent</module>
-        <module>cobertura-api-parent</module>
+        <module>metrics-model</module>
+        <!-- module>metrics-api</module -->
     </modules>
 
     <!--
