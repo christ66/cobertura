@@ -114,7 +114,7 @@
         <surefire.argLine>-Dfile.encoding=UTF-8 -Xmx1024m -XX:MaxPermSize=512m</surefire.argLine>
 
         <!-- License plugin configuration parameters. -->
-        <license.id>jguru_apl_v2</license.id>
+        <license.id>apache_v2</license.id>
         <license.licenseResolver>classpath://codestyle/license</license.licenseResolver>
 
         <!-- Define code-breaking constants -->
@@ -137,7 +137,8 @@
         <distro.url.prefix>${site.url.prefix}/${reactor.name}/${project.version}</distro.url.prefix>
         <scm.conn>scm:git:git://${scm.host}/${reactor.name}/${reactor.name}</scm.conn>
         <scm.devConnection>scm:git:git@${scm.host}/${reactor.name}/${reactor.name}.git</scm.devConnection>
-        <nazgul-tools.version>3.0.1-SNAPSHOT</nazgul-tools.version>
+        <nazgul-tools.version>2.0.9</nazgul-tools.version>
+        <nazgul-core.version>1.6.0</nazgul-core.version>
     </properties>
 
     <!--
@@ -205,6 +206,11 @@
                 <artifactId>openjpa</artifactId>
                 <version>${openjpa.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>se.jguru.nazgul.core.xmlbinding.spi.jaxb</groupId>
+                <artifactId>nazgul-core-xmlbinding-spi-jaxb</artifactId>
+                <version>${nazgul-core.version}</version>
             </dependency>
 
             <!--
@@ -297,6 +303,12 @@
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-all</artifactId>
                 <version>1.9.5</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>se.jguru.nazgul.test.xmlbinding</groupId>
+                <artifactId>nazgul-core-xmlbinding-test</artifactId>
+                <version>${nazgul-core.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -1179,11 +1191,17 @@
                     <artifactId>license-maven-plugin</artifactId>
                     <version>1.5</version>
                     <configuration>
-                        <descriptionTemplate>/codestyle/license/${license.id}/licenseDescriptionTemplate.ftl
-                        </descriptionTemplate>
                         <failOnMissingHeader>${breakOnFailure.license}</failOnMissingHeader>
                         <licenseName>${license.id}</licenseName>
-                        <licenseResolver>${license.licenseResolver}</licenseResolver>
+                        <!--
+                            These two configuration parameters are required if we would like to
+                            stash license (template) files in the Cobertura codestyle project.
+                         -->
+                        <!-- licenseResolver>${license.licenseResolver}</licenseResolver -->
+                        <!--
+                            descriptionTemplate>/codestyle/license/${license.id}/
+                            licenseDescriptionTemplate.ftl</descriptionTemplate
+                        -->
                         <canUpdateDescription>true</canUpdateDescription>
                         <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
                         <licenseFile>${project.build.directory}/LICENSE.TXT</licenseFile>

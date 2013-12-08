@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!--
   #%L
-  cobertura-metrics-model
+  cobertura-conversion-api
   %%
   Copyright (C) 2013 Cobertura
   %%
@@ -34,7 +34,7 @@
 
     <!-- Lower the logging level for relevant classes -->
     <logger name="net.sourceforge.cobertura" level="WARN"/>
-    <logger name="net.sourceforge.cobertura.metrics.model" level="DEBUG"/>
+    <logger name="net.sourceforge.cobertura.conversion.api" level="DEBUG"/>
 
     <!-- Make the frameworks shut up. -->
     <logger name="org.springframework" level="WARN"/>

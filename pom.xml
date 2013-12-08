@@ -97,6 +97,7 @@
         <module>codestyle</module>
         <module>poms</module>
         <module>interaction</module>
+        <module>conversion</module>
         <module>metrics</module>
         <module>cobertura</module>
     </modules>

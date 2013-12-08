@@ -9,19 +9,19 @@
     ################################################
     -->
     <parent>
-        <groupId>net.sourceforge.cobertura.interaction</groupId>
-        <artifactId>cobertura-interaction-reactor</artifactId>
+        <groupId>net.sourceforge.cobertura</groupId>
+        <artifactId>cobertura-reactor</artifactId>
         <version>3.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>net.sourceforge.cobertura.interaction.annotations</groupId>
-    <artifactId>cobertura-annotations-reactor</artifactId>
+    <groupId>net.sourceforge.cobertura.conversion</groupId>
+    <artifactId>cobertura-conversion-reactor</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <url>${url.prefix}/${path.in.reactor}</url>
 
     <properties>
-        <path.in.reactor>annotations</path.in.reactor>
+        <path.in.reactor>conversion</path.in.reactor>
     </properties>
 
     <!--
@@ -30,7 +30,7 @@
     ################################################
     -->
     <modules>
-        <module>annotations-api</module>
+        <module>conversion-api</module>
     </modules>
 
     <!--
