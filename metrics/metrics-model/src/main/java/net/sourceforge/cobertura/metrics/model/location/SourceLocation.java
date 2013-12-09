@@ -204,7 +204,7 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
      * {@inheritDoc}
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
 
         // Check sanity
         if (obj == null) {

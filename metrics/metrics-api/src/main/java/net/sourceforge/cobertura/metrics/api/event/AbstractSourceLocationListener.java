@@ -63,7 +63,7 @@ public abstract class AbstractSourceLocationListener implements SourceLocationLi
      * {@inheritDoc}
      */
     @Override
-    public final void addExecutionStep(SourceLocation location) {
+    public final void addExecutionStep(final SourceLocation location) {
 
         // Delegate
         addExecutionSteps(location, 1);

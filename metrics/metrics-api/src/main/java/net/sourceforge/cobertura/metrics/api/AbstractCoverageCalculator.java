@@ -60,7 +60,7 @@ public abstract class AbstractCoverageCalculator implements CoverageCalculator {
      * {@inheritDoc}
      */
     @Override
-    public double getCoverage(CoverageType type) {
+    public double getCoverage(final CoverageType type) {
 
 
         // Delegate
