@@ -37,7 +37,7 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:lj@jguru.se">Lennart J&ouml;relid</a>, jGuru Europe AB
  */
 @XmlType(namespace = Namespace.COBERTURA_NAMESPACE,
-        propOrder = {"packageName", "className", "methodName", "lineNumber"})
+        propOrder = {"packageName", "className", "methodName", "lineNumber", "branchSegment"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SourceLocation implements Serializable, Comparable<SourceLocation> {
 
@@ -56,6 +56,9 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
     @XmlAttribute(required = false)
     private int lineNumber;
 
+    @XmlAttribute(required = false)
+    private int branchSegment;
+
     /**
      * JAXB-friendly constructor.
      */
@@ -65,30 +68,34 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
     /**
      * Compound constructor, wrapping the supplied data.
      *
-     * @param packageName The name of the package containing this SourceLocation, corresponding
-     *                    to {@code Package.getName() }.
-     * @param className   The simple name of the class containing this SourceLocation,
-     *                    corresponding to {@code Class.getSimpleName() }.
-     * @param methodName  The name of the method containing this SourceLocation, corresponding to
-     *                    {@code Method.getName() }.
-     * @param lineNumber  The line number in the class containing this SourceLocation.
+     * @param packageName   The name of the package containing this SourceLocation, corresponding
+     *                      to {@code Package.getName() }.
+     * @param className     The simple name of the class containing this SourceLocation,
+     *                      corresponding to {@code Class.getSimpleName() }.
+     * @param methodName    The name of the method containing this SourceLocation, corresponding to
+     *                      {@code Method.getName() }.
+     * @param lineNumber    The line number in the class containing this SourceLocation.
+     * @param branchSegment The branch segment on the lineNumber in the class containing this SourceLocation.
      */
     public SourceLocation(final String packageName,
                           final String className,
                           final String methodName,
-                          final int lineNumber) {
+                          final int lineNumber,
+                          final int branchSegment) {
 
         // Check sanity
         Validate.notEmpty(packageName, "Cannot handle null or empty packageName argument.");
         Validate.notEmpty(className, "Cannot handle null or empty className argument.");
         Validate.notEmpty(methodName, "Cannot handle null or empty methodName argument.");
         Validate.isTrue(lineNumber >= 0, "Cannot handle negative lineNumber argument.");
+        Validate.isTrue(branchSegment >= 0, "Cannot handle negative branchSegment argument.");
 
         // Assign internal state
         this.packageName = packageName;
         this.className = className;
         this.methodName = methodName;
         this.lineNumber = lineNumber;
+        this.branchSegment = branchSegment;
     }
 
     /**
@@ -97,14 +104,17 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
      *
      * @param method     The non-null Method object holding package, class and method names.
      * @param lineNumber The line number in the class containing this SourceLocation.
+     * @param branchSegment The branch segment on the lineNumber in the class containing this SourceLocation.
      */
     public SourceLocation(final Method method,
-                          final int lineNumber) {
+                          final int lineNumber,
+                          final int branchSegment) {
         // Delegate
         this(method.getDeclaringClass().getPackage().getName(),
                 method.getDeclaringClass().getSimpleName(),
                 method.getName(),
-                lineNumber);
+                lineNumber,
+                branchSegment);
     }
 
     /**
@@ -117,7 +127,7 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
 
     /**
      * @return The simple name of the class containing this SourceLocation,
-     *                    corresponding to {@code Class.getSimpleName() }.
+     * corresponding to {@code Class.getSimpleName() }.
      */
     public String getClassName() {
         return className;
@@ -125,7 +135,7 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
 
     /**
      * @return The name of the method containing this SourceLocation, corresponding to
-     *                    {@code Method.getName() }.
+     * {@code Method.getName() }.
      */
     public String getMethodName() {
         return methodName;
@@ -136,6 +146,19 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
      */
     public int getLineNumber() {
         return lineNumber;
+    }
+
+    /**
+     * Retrieves the branch segment for this SourceLocation.
+     * The branch segment is 0 for a line holding only one statement, and
+     * increases by 1 for each additional segment introduced.
+     * A new branch segment is introduced whenever an additional branch can
+     * be reached within this SourceLocation.
+     *
+     * @return The branch segment on the lineNumber in the class containing this SourceLocation.
+     */
+    public int getBranchSegment() {
+        return branchSegment;
     }
 
     /**
@@ -161,7 +184,8 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
      */
     @Override
     public String toString() {
-        return getPackageName() + "." + getClassName() + "::" + getMethodName() + ",line:" + getLineNumber();
+        return getPackageName() + "." + getClassName() + "::" + getMethodName() + ",line:" + getLineNumber()
+                + ",segment:" + getBranchSegment();
     }
 
     /**
@@ -172,7 +196,8 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
         return getPackageName().hashCode()
                 + getClassName().hashCode()
                 + getMethodName().hashCode()
-                + getLineNumber();
+                + getLineNumber()
+                + getBranchSegment();
     }
 
     /**
@@ -182,7 +207,7 @@ public class SourceLocation implements Serializable, Comparable<SourceLocation> 
     public boolean equals(Object obj) {
 
         // Check sanity
-        if(obj == null) {
+        if (obj == null) {
             return false;
         }
 

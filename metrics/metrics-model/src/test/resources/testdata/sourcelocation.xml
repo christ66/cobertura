@@ -20,6 +20,7 @@
   -->
 
 <cobertura:sourceLocation packageName="net.sourceforge.cobertura.metrics.model.coverage" lineNumber="122"
+                          branchSegment="0"
                           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:core="http://www.jguru.se/nazgul/core"
                           xmlns:cobertura="http://github.com/cobertura"
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">

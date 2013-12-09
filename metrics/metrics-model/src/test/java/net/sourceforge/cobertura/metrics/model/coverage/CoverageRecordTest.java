@@ -91,7 +91,7 @@ public class CoverageRecordTest {
     public void validateStringForm() {
 
         // Assemble
-        final String expected = "net.sourceforge.cobertura.metrics.model.coverage.Rate::toString,line:122";
+        final String expected = "net.sourceforge.cobertura.metrics.model.coverage.Rate::toString,line:122,segment:0";
 
         // Act & Assert
         Assert.assertEquals(expected, location1.toString());
@@ -159,6 +159,6 @@ public class CoverageRecordTest {
         final String packageName = method.getDeclaringClass().getPackage().getName();
 
         // All Done.
-        return new SourceLocation(packageName, className, methodName, lineNumber);
+        return new SourceLocation(packageName, className, methodName, lineNumber, 0);
     }
 }

@@ -47,6 +47,10 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>se.jguru.nazgul.core.algorithms.api</groupId>
+            <artifactId>nazgul-core-algorithms-api</artifactId>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>

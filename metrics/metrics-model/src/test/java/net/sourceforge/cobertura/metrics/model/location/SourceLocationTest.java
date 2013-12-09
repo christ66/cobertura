@@ -40,6 +40,7 @@ public class SourceLocationTest {
     private String className;
     private String methodName;
     private int lineNumber;
+    private int branchSegment;
 
     @Before
     public void setupSharedState() {
@@ -55,42 +56,50 @@ public class SourceLocationTest {
         className = toStringMethod.getDeclaringClass().getSimpleName();
         packageName = toStringMethod.getDeclaringClass().getPackage().getName();
         lineNumber = 122;
+        branchSegment = 0;
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void validateExceptionOnEmptyPackageName() {
 
         // Act & Assert
-        new SourceLocation("", className, methodName, lineNumber);
+        new SourceLocation("", className, methodName, lineNumber, branchSegment);
     }
 
     @Test(expected = NullPointerException.class)
     public void validateExceptionOnNullPackageName() {
 
         // Act & Assert
-        new SourceLocation(null, className, methodName, lineNumber);
+        new SourceLocation(null, className, methodName, lineNumber, branchSegment);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void validateExceptionOnEmptyMethodName() {
 
         // Act & Assert
-        new SourceLocation(packageName, className, "", lineNumber);
+        new SourceLocation(packageName, className, "", lineNumber, branchSegment);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void validateExceptionOnNegativeLineNumber() {
 
         // Act & Assert
-        new SourceLocation(packageName, className, methodName, -42);
+        new SourceLocation(packageName, className, methodName, -42, branchSegment);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void validateExceptionOnNegativeBranchSegment() {
+
+        // Act & Assert
+        new SourceLocation(packageName, className, methodName, lineNumber, -4);
     }
 
     @Test
     public void validateComparisonAndEquality() {
 
         // Assemble
-        final SourceLocation sl1 = new SourceLocation(packageName, className, methodName, lineNumber);
-        final SourceLocation sl2 = new SourceLocation(packageName, className, methodName, lineNumber);
+        final SourceLocation sl1 = new SourceLocation(packageName, className, methodName, lineNumber, branchSegment);
+        final SourceLocation sl2 = new SourceLocation(packageName, className, methodName, lineNumber, branchSegment);
 
         // Act & Assert
         Assert.assertEquals(sl1, sl2);
@@ -113,8 +122,8 @@ public class SourceLocationTest {
     public void validateStringForm() {
 
         // Assemble
-        final String expected = "net.sourceforge.cobertura.metrics.model.coverage.Rate::toString,line:122";
-        final SourceLocation sl1 = new SourceLocation(packageName, className, methodName, lineNumber);
+        final String expected = "net.sourceforge.cobertura.metrics.model.coverage.Rate::toString,line:122,segment:0";
+        final SourceLocation sl1 = new SourceLocation(packageName, className, methodName, lineNumber, branchSegment);
 
         // Act & Assert
         Assert.assertEquals(expected, sl1.toString());
@@ -124,7 +133,8 @@ public class SourceLocationTest {
     public void validateMarshalling() throws Exception {
 
         // Assemble
-        final SourceLocation unitUnderTest = new SourceLocation(packageName, className, methodName, lineNumber);
+        final SourceLocation unitUnderTest = new SourceLocation(
+                packageName, className, methodName, lineNumber, branchSegment);
         final String expected = XmlTestUtils.readFully("testdata/sourcelocation.xml");
 
         // Act

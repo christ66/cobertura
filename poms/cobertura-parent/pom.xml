@@ -334,6 +334,15 @@
             </dependency>
 
             <!--
+                Algorithm dependencies
+            -->
+            <dependency>
+                <groupId>se.jguru.nazgul.core.algorithms.api</groupId>
+                <artifactId>nazgul-core-algorithms-api</artifactId>
+                <version>${nazgul-core.version}</version>
+            </dependency>
+
+            <!--
                Adapter dependencies
             -->
             <dependency>
