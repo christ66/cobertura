@@ -334,6 +334,13 @@ public class ThreadedFunctionalTest {
 
 		Groovyc groovyc = new Groovyc();
 		groovyc.setProject(TestUtils.project);
+
+        /*
+         TODO: Validate that we can use a normal Ant Path. (It does not seem to escape its \\'s, implying
+         TODO: that exceptions occur on Windows computers during build).
+
+
+         */
 		groovyc.setSrcdir(new Path(TestUtils.project, absolutePath));
 		groovyc.setDestdir(srcDir);
 		groovyc.addConfiguredJavac(javac);
