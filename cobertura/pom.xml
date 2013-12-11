@@ -36,7 +36,7 @@
   <properties>
     <asmVersion>4.1</asmVersion>
     <!-- The 2.9.0 Xerces version is used by the latest Xalan (i.e. 2.7.1). -->
-    <xercesVersion>2.9.0</xercesVersion>
+    <xercesVersion>2.11.0</xercesVersion>
     <xalanVersion>2.7.1</xalanVersion>
     <oroVersion>2.0.8</oroVersion>
     <jaxenVersion>1.1.4</jaxenVersion>
