@@ -81,10 +81,10 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * This tests the thread safety of Cobertura.
- * 
+ *
  * Multiple threads are kicked off that will execute the same switch or
  * if statement.   The switch statement would like like this:
- * 
+ *
  * switch(counter)
  * {
  *    case 0: counter++; break;
@@ -97,13 +97,13 @@ import static org.junit.Assert.assertEquals;
  * {
  *    counter++;
  * }
- * 
+ *
  * Notice that the counter is incremented so the cases or conditionals are
  * hit in order with each call.
- * 
+ *
  * Multiple threads will process the switch or if statement at the same time.
- * Since the case and conditional information is handled with arrays that grow 
- * dynamically larger as each case or conditional is hit, you will get index 
+ * Since the case and conditional information is handled with arrays that grow
+ * dynamically larger as each case or conditional is hit, you will get index
  * out of bounds exceptions if Cobertura is not thread safe.   One thread
  * will increase the array while another is trying to do the same.  Only one
  * thread's change is saved, and the other thread is likely to throw an
@@ -121,7 +121,7 @@ public class ThreadedFunctionalTest {
 
 	/*
 	 * A big switch statement with number of cases equal to numberOfCalls:
-	 * 
+	 *
 	 * switch(counter)
 	 * {
 	 *    case 0: counter++; break;
@@ -134,7 +134,7 @@ public class ThreadedFunctionalTest {
 
 	/*
 	 * A big if statement with number of conditionals equal to numberOfCalls:
-	 * 
+	 *
 	 * if (counter==0||counter==1||counter==2 ... )
 	 * {
 	 *    counter++;
@@ -324,16 +324,24 @@ public class ThreadedFunctionalTest {
 	}
 
 	public void compileSource(final File srcDir) {
-		System.out.println("Invoking groovyC command on "
-				+ srcDir.getAbsolutePath());
+
+		final String absolutePath = srcDir.getAbsolutePath().replaceAll("\\\\",
+				"/");
+		System.out.println("Invoking groovyC command on " + absolutePath);
 		Javac javac = new Javac();
 		javac.setDebug(true);
 		javac.setProject(TestUtils.project);
 
 		Groovyc groovyc = new Groovyc();
 		groovyc.setProject(TestUtils.project);
-		groovyc
-				.setSrcdir(new Path(TestUtils.project, srcDir.getAbsolutePath()));
+
+        /*
+         TODO: Validate that we can use a normal Ant Path. (It does not seem to escape its \\'s, implying
+         TODO: that exceptions occur on Windows computers during build).
+
+
+         */
+		groovyc.setSrcdir(new Path(TestUtils.project, absolutePath));
 		groovyc.setDestdir(srcDir);
 		groovyc.addConfiguredJavac(javac);
 		groovyc.execute();
