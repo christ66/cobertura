@@ -38,7 +38,7 @@ public abstract class AbstractSourceLocationListener implements SourceLocationLi
 
         // Check sanity
         Validate.notNull(location, "Cannot handle null location argument.");
-        Validate.isTrue(numSteps >= 1, "Cannot handle 0 or negative numSteps argument. (Got: " + numSteps + ").");
+        Validate.isTrue(numSteps >= 0, "Cannot handle negative numSteps argument. (Got: " + numSteps + ").");
 
         // Delegate and return.
         addInternalExecutionSteps(location, numSteps);
@@ -54,7 +54,7 @@ public abstract class AbstractSourceLocationListener implements SourceLocationLi
      * @param nonNullLocation  The SourceLocation where 1 execution step should be added.
      *                         Guaranteed never to be {@code null}.
      * @param positiveNumSteps The number of execution steps to add to the supplied SourceLocation.
-     *                         Guaranteed to be greater than 0.
+     *                         Guaranteed not to be negative.
      */
     protected abstract void addInternalExecutionSteps(final SourceLocation nonNullLocation,
                                                       final int positiveNumSteps);

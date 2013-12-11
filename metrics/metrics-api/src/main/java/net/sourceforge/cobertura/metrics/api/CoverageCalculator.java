@@ -20,13 +20,13 @@
 package net.sourceforge.cobertura.metrics.api;
 
 import net.sourceforge.cobertura.metrics.api.event.SourceLocationListener;
+import net.sourceforge.cobertura.metrics.api.location.SourceLocationFilter;
 import net.sourceforge.cobertura.metrics.model.coverage.Rate;
-import net.sourceforge.cobertura.metrics.model.location.SourceLocation;
 
 /**
  * Specification for how to calculate test coverage rates. Typical usage
  * would be along the lines in the example shown below:
- *
+ * <p/>
  * <pre>
  *     <code>
  *         // Acquire a CoverageCalculator
@@ -49,9 +49,15 @@ import net.sourceforge.cobertura.metrics.model.location.SourceLocation;
  *             runner.execute(currentTest);
  *         }
  *
- *         // All done. Calculate coverage rates.
- *         double lineCoverage = calc.getCoverage(CoverageType.LINE);
- *         double branchCoverage = calc.getCoverage(CoverageType.BRANCH);
+ *         // Create some filters to define which measurements we are interested in.
+ *         final SourceLocationFilter somePackageFilter = new SourceLocationFilter("some\\.package\\.name");
+ *         final SourceLocationFilter someClassFilter = new SourceLocationFilter("some\\.package\\.name, "SomeClass");
+ *
+ *         // Calculate some coverage rates.
+ *         double allPackageLineCoverage = calc.getCoverage(somePackageFilter, CoverageType.LINE);
+ *         double allPackageBranchCoverage = calc.getCoverage(somePackageFilter, CoverageType.BRANCH);
+ *         double allClassLineCoverage = calc.getCoverage(someClassFilter, CoverageType.LINE);
+ *         double allClassBranchCoverage = calc.getCoverage(someClassFilter, CoverageType.BRANCH);
  *     </code>
  * </pre>
  *
@@ -62,18 +68,22 @@ public interface CoverageCalculator {
     /**
      * Retrieves the coverage rate for the supplied CoverageType.
      *
-     * @param type The CoverageType for which coverage is desired.
+     * @param filter The SourceLocationFilter defining which CoverageRecords should be
+     *               included in the retrieved Rate.
+     * @param type   The CoverageType for which coverage is desired.
      * @return the coverage Rate for the given CoverageType.
      */
-    Rate getCoverageRate(CoverageType type);
+    Rate getCoverageRate(SourceLocationFilter filter, CoverageType type);
 
     /**
      * Convenience method, retrieving Coverage rate as a supplied type
      *
-     * @param type The CoverageType for which coverage is desired.
+     * @param filter The SourceLocationFilter defining which CoverageRecords should be
+     *               included in the retrieved Rate.
+     * @param type   The CoverageType for which coverage is desired.
      * @return the coverage, given as a value between 0 and 1.
      */
-    double getCoverage(CoverageType type);
+    double getCoverage(SourceLocationFilter filter, CoverageType type);
 
     /**
      * Retrieves a SourceLocationListener used to record execution steps ("hits"/"touches")

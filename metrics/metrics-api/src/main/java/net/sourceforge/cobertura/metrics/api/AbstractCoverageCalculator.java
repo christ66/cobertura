@@ -19,6 +19,7 @@
  */
 package net.sourceforge.cobertura.metrics.api;
 
+import net.sourceforge.cobertura.metrics.api.location.SourceLocationFilter;
 import net.sourceforge.cobertura.metrics.model.coverage.Rate;
 import org.apache.commons.lang3.Validate;
 
@@ -34,13 +35,14 @@ public abstract class AbstractCoverageCalculator implements CoverageCalculator {
      * {@inheritDoc}
      */
     @Override
-    public final Rate getCoverageRate(final CoverageType type) {
+    public final Rate getCoverageRate(final SourceLocationFilter filter, final CoverageType type) {
 
         // Check sanity
-        Validate.notNull(type, "Cannot handle null CoverageType argument.");
+        Validate.notNull(type, "Cannot handle null type argument.");
+        Validate.notNull(filter, "Cannot handle null filter argument.");
 
         // Delegate
-        return getRate(type);
+        return getRate(filter, type);
     }
 
     /**
@@ -52,19 +54,20 @@ public abstract class AbstractCoverageCalculator implements CoverageCalculator {
      * storage state before enabling the {@code getRate } method to calculate its value.
      *
      * @param nonNullCoverageType The CoverageType for which coverage is desired. Guaranteed not to be {@code null}.
+     * @param nonNullFilter       The SourceLocationFilter instance used to filter out all relevant CoverageRate
+     *                            object on record, and collect a correct Rate from them all.
      * @return the coverage Rate for the given CoverageType.
      */
-    protected abstract Rate getRate(CoverageType nonNullCoverageType);
+    protected abstract Rate getRate(final SourceLocationFilter nonNullFilter, final CoverageType nonNullCoverageType);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public double getCoverage(final CoverageType type) {
-
+    public final double getCoverage(final SourceLocationFilter filter, final CoverageType type) {
 
         // Delegate
-        final Rate coverageRate = getCoverageRate(type);
+        final Rate coverageRate = getCoverageRate(filter, type);
 
         // Handle fringe cases.
         if (coverageRate == null) {

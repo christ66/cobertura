@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * XML adapter for converter for AtomicLong instances.
+ * XML adapter for AtomicLong instances.
  *
  * @author <a href="mailto:lj@jguru.se">Lennart J&ouml;relid</a>, jGuru Europe AB
  */

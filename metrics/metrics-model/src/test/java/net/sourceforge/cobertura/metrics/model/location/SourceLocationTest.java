@@ -20,6 +20,7 @@
 package net.sourceforge.cobertura.metrics.model.location;
 
 import net.sourceforge.cobertura.metrics.model.JaxbUtils;
+import net.sourceforge.cobertura.metrics.model.LocationScope;
 import net.sourceforge.cobertura.metrics.model.coverage.Rate;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
@@ -116,6 +117,21 @@ public class SourceLocationTest {
         Assert.assertEquals(Integer.MIN_VALUE, sl1.compareTo(null));
 
         Assert.assertEquals(sl1.hashCode(), sl2.hashCode());
+    }
+
+    @Test
+    public void validateLocationScopeAddressing() {
+
+        // Assemble
+        final SourceLocation unitUnderTest = new SourceLocation(
+                packageName, className, methodName, lineNumber, branchSegment);
+
+        // Act & Assert
+        Assert.assertEquals(packageName, unitUnderTest.get(LocationScope.PACKAGE));
+        Assert.assertEquals(className, unitUnderTest.get(LocationScope.CLASS));
+        Assert.assertEquals(methodName, unitUnderTest.get(LocationScope.METHOD));
+        Assert.assertEquals(lineNumber, unitUnderTest.get(LocationScope.LINE));
+        Assert.assertEquals(branchSegment, unitUnderTest.get(LocationScope.SEGMENT));
     }
 
     @Test

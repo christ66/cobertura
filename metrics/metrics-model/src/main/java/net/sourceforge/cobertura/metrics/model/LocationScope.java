@@ -1,10 +1,17 @@
-package net.sourceforge.cobertura.metrics.api.location;
+package net.sourceforge.cobertura.metrics.model;
+
+import net.sourceforge.cobertura.metrics.model.Namespace;
+
+import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * Scope definition for filtering/ordering SourceLocations.
  *
  * @author <a href="mailto:lj@jguru.se">Lennart J&ouml;relid, jGuru Europe AB</a>
  */
+@XmlType(namespace = Namespace.COBERTURA_NAMESPACE)
+@XmlEnum
 public enum LocationScope {
 
     /**
