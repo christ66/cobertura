@@ -35,10 +35,11 @@
 
   <properties>
     <asmVersion>4.1</asmVersion>
-    <xercesVersion>2.6.2</xercesVersion>
-    <xalanVersion>2.6.0</xalanVersion>
+    <!-- The 2.9.0 Xerces version is used by the latest Xalan (i.e. 2.7.1). -->
+    <xercesVersion>2.9.0</xercesVersion>
+    <xalanVersion>2.7.1</xalanVersion>
     <oroVersion>2.0.8</oroVersion>
-    <jaxenVersion>1.1-beta-8</jaxenVersion>
+    <jaxenVersion>1.1.4</jaxenVersion>
     <commonsioVersion>2.4</commonsioVersion>
     <antVersion>1.8.3</antVersion>
     <jettyVersion>6.1.14</jettyVersion>
@@ -52,6 +53,7 @@
     <jdkVersion>1.5</jdkVersion>
     <surefireVersion>2.12.3</surefireVersion>
     <slf4jVersion>1.7.5</slf4jVersion>
+    <jdomVersion>1.1.3</jdomVersion>
     <plugin.java.formatter.version>0.3.1</plugin.java.formatter.version>
     <plugin.mvn.compiler.version>2.3.2</plugin.mvn.compiler.version>
     <plugin.mvn.jar.version>2.3.2</plugin.mvn.jar.version>
@@ -98,6 +100,12 @@
       <version>${xalanVersion}</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.jdom</groupId>
+          <artifactId>jdom</artifactId>
+          <version>${jdomVersion}</version>
+          <scope>test</scope>
+      </dependency>
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
