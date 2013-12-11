@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package net.sourceforge.cobertura.metrics.model.coverage;
+package net.sourceforge.cobertura.metrics.model.coverage.scope;
 
 import net.sourceforge.cobertura.metrics.model.LocationScope;
 
@@ -61,7 +61,7 @@ public class MethodCoverageScope extends AbstractCoverageScope {
      * {@inheritDoc}
      */
     @Override
-    protected void setupPatternMap(EnumMap<LocationScope, Pattern> patternMap) {
+    protected void setupPatternMap(final EnumMap<LocationScope, Pattern> patternMap) {
 
         final Class<?> theClass = theMethod.getDeclaringClass();
         final String packagePattern = theClass.getPackage().getName().replaceAll("\\.", "\\\\.");

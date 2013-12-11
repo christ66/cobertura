@@ -99,7 +99,7 @@
         <module>interaction</module>
         <module>conversion</module>
         <module>metrics</module>
-        <!-- module>cobertura</module -->
+        <module>cobertura</module>
     </modules>
 
     <!--

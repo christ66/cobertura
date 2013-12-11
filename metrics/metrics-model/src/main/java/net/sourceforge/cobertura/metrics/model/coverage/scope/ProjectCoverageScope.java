@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package net.sourceforge.cobertura.metrics.model.coverage;
+package net.sourceforge.cobertura.metrics.model.coverage.scope;
 
 import net.sourceforge.cobertura.metrics.model.LocationScope;
 
