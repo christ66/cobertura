@@ -33,7 +33,7 @@ import java.util.*;
  * Arguments builder - provides a DSL to build cobertura Arguments
  */
 public class ArgumentsBuilder {
-	//Visible for testing
+	// Visible for testing
 	static final String DEFAULT_ENCODING = "UTF-8";
 	static final double DEFAULT_THRESHOLD = 0.;
 	static final boolean DEFAULT_FAIL_ON_ERROR = false;
@@ -69,6 +69,7 @@ public class ArgumentsBuilder {
 	private Set<CoberturaFile> filesToInstrument;
 	private Set<File> filesToMerge;
 	private Set<String> ignoreMethodAnnotations;
+	private Set<String> ignoreClassAnnotations;
 
 	public ArgumentsBuilder() {
 		initVariables();
@@ -107,6 +108,12 @@ public class ArgumentsBuilder {
 	public ArgumentsBuilder addIgnoreMethodAnnotation(
 			String ignoreMethodAnnotation) {
 		ignoreMethodAnnotations.add(ignoreMethodAnnotation);
+		return this;
+	}
+
+	public ArgumentsBuilder addIgnoreClassAnnotation(
+			String ignoreClassAnnotation) {
+		ignoreClassAnnotations.add(ignoreClassAnnotation);
 		return this;
 	}
 
@@ -227,7 +234,7 @@ public class ArgumentsBuilder {
 				classLineThreshold, classBranchThreshold, packageLineThreshold,
 				packageBranchThreshold, totalLineThreshold,
 				totalBranchThreshold, filesToInstrument, filesToMerge,
-				ignoreMethodAnnotations, sources);
+				ignoreMethodAnnotations, ignoreClassAnnotations, sources);
 	}
 
 	private double inRange(double coverageRate) {
@@ -245,14 +252,15 @@ public class ArgumentsBuilder {
 		ignoreRegexes = new Vector();
 		ignoreBranchesRegexes = new Vector<Pattern>();
 		ignoreMethodAnnotations = new HashSet<String>();
+		ignoreClassAnnotations = new HashSet<String>();
 		classPatternExcludeClassesRegexes = new HashSet<Pattern>();
 		classPatternIncludeClassesRegexes = new HashSet<Pattern>();
 		filesToInstrument = new HashSet<CoberturaFile>();
 		filesToMerge = new HashSet<File>();
 		minimumCoverageThresholds = new HashSet<CoverageThreshold>();
 
-		//previous rule was: default threshold is 0.5 for all
-		//if a threshold is specified, the others are defaulted to 0
+		// previous rule was: default threshold is 0.5 for all
+		// if a threshold is specified, the others are defaulted to 0
 		classBranchThreshold = DEFAULT_THRESHOLD;
 		classLineThreshold = DEFAULT_THRESHOLD;
 		packageBranchThreshold = DEFAULT_THRESHOLD;

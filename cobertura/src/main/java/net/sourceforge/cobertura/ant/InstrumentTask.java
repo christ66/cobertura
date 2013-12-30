@@ -91,6 +91,8 @@ public class InstrumentTask extends CommonMatchingTask {
 
 	final List<IgnoreMethodAnnotation> ignoreMethodAnnotations = new ArrayList<IgnoreMethodAnnotation>();
 
+	final List<IgnoreClassAnnotation> ignoreClassAnnotations = new ArrayList<IgnoreClassAnnotation>();
+
 	final List<IncludeClasses> includeClassesRegexs = new ArrayList<IncludeClasses>();
 
 	final List<ExcludeClasses> excludeClassesRegexs = new ArrayList<ExcludeClasses>();
@@ -129,6 +131,12 @@ public class InstrumentTask extends CommonMatchingTask {
 		return ignoreAnnotation;
 	}
 
+	public IgnoreClassAnnotation createIgnoreClassAnnotation() {
+		IgnoreClassAnnotation ignoreAnnotation = new IgnoreClassAnnotation();
+		ignoreClassAnnotations.add(ignoreAnnotation);
+		return ignoreAnnotation;
+	}
+
 	public IncludeClasses createIncludeClasses() {
 		IncludeClasses includeClassesRegex = new IncludeClasses();
 		includeClassesRegexs.add(includeClassesRegex);
@@ -149,14 +157,12 @@ public class InstrumentTask extends CommonMatchingTask {
 	}
 
 	/*
-	 * TODO: Is the following method needed to use a classpath ref?  If so,
-	 *       test it and uncomment it.
+	 * TODO: Is the following method needed to use a classpath ref? If so, test
+	 * it and uncomment it.
 	 */
 	/*
-	public void setInstrumentationClasspathRef(Reference r)
-	{
-		createInstrumentationClasspath().setRefid(r);
-	}
+	 * public void setInstrumentationClasspathRef(Reference r) {
+	 * createInstrumentationClasspath().setRefid(r); }
 	 */
 
 	@Override
@@ -179,29 +185,36 @@ public class InstrumentTask extends CommonMatchingTask {
 			for (int i = 0; i < ignoreBranchesRegexs.size(); i++) {
 				IgnoreBranches ignoreBranchesRegex = ignoreBranchesRegexs
 						.get(i);
-				builder.addArg("--ignoreBranches", ignoreBranchesRegex
-						.getRegex());
+				builder.addArg("--ignoreBranches",
+						ignoreBranchesRegex.getRegex());
 			}
 
 			for (int i = 0; i < ignoreMethodAnnotations.size(); i++) {
 				IgnoreMethodAnnotation ignoreMethodAnn = ignoreMethodAnnotations
 						.get(i);
-				builder.addArg("--ignoreMethodAnnotation", ignoreMethodAnn
-						.getAnnotationName());
+				builder.addArg("--ignoreMethodAnnotation",
+						ignoreMethodAnn.getAnnotationName());
+			}
+
+			for (int i = 0; i < ignoreClassAnnotations.size(); i++) {
+				IgnoreClassAnnotation ignoreClassAnn = ignoreClassAnnotations
+						.get(i);
+				builder.addArg("--ignoreClassAnnotation",
+						ignoreClassAnn.getAnnotationName());
 			}
 
 			for (int i = 0; i < includeClassesRegexs.size(); i++) {
 				IncludeClasses includeClassesRegex = includeClassesRegexs
 						.get(i);
-				builder.addArg("--includeClasses", includeClassesRegex
-						.getRegex());
+				builder.addArg("--includeClasses",
+						includeClassesRegex.getRegex());
 			}
 
 			for (int i = 0; i < excludeClassesRegexs.size(); i++) {
 				ExcludeClasses excludeClassesRegex = excludeClassesRegexs
 						.get(i);
-				builder.addArg("--excludeClasses", excludeClassesRegex
-						.getRegex());
+				builder.addArg("--excludeClasses",
+						excludeClassesRegex.getRegex());
 			}
 
 			if (ignoreTrivial) {
@@ -254,8 +267,8 @@ public class InstrumentTask extends CommonMatchingTask {
 	}
 
 	/**
-	 * Creates a classpath to be used by the instrumenter because
-	 * asm uses Class.forName() in its own classpath to determine common super classes.
+	 * Creates a classpath to be used by the instrumenter because asm uses
+	 * Class.forName() in its own classpath to determine common super classes.
 	 */
 	private Path createClasspathForInstrumenter() {
 		Path path = (Path) createInstrumentationClasspath().clone();

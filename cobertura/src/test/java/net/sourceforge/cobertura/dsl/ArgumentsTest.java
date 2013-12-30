@@ -44,6 +44,7 @@ public class ArgumentsTest {
 			".", "fileToInstrument");
 	private static final File FILE_TO_MERGE = new File("fileToMerge");
 	private static final String IGNORE_METHOD_ANNOTATIONS = "ignoreMethodAnnotations";
+	private static final String IGNORE_CLASS_ANNOTATIONS = "ignoreClassAnnotations";
 	private static final FileFinder SOURCES = new FileFinder();
 	private static final double DELTA = 0.001;
 	private Arguments arguments;
@@ -56,6 +57,7 @@ public class ArgumentsTest {
 	private Set<CoberturaFile> filesToInstrument = new HashSet<CoberturaFile>();
 	private Set<File> filesToMerge = new HashSet<File>();
 	private Set<String> ignoreMethodAnnotations = new HashSet<String>();
+	private Set<String> ignoreClassAnnotations = new HashSet<String>();
 
 	@Before
 	public void setUp() throws Exception {
@@ -71,6 +73,7 @@ public class ArgumentsTest {
 		filesToInstrument.add(FILE_TO_INSTRUMENT);
 		filesToMerge.add(FILE_TO_MERGE);
 		ignoreMethodAnnotations.add(IGNORE_METHOD_ANNOTATIONS);
+		ignoreClassAnnotations.add(IGNORE_CLASS_ANNOTATIONS);
 
 		this.arguments = new Arguments(BASEDIR, DATA_FILE,
 				DESTINATION_DIRECTORY, COMMANDS_FILE, ignoreRegexes,
@@ -81,7 +84,7 @@ public class ArgumentsTest {
 				CLASS_BRANCH_THRESHOLD, PACKAGE_LINE_THRESHOLD,
 				PACKAGE_BRANCH_THRESHOLD, TOTAL_LINE_THRESHOLD,
 				TOTAL_BRANCH_THRESHOLD, filesToInstrument, filesToMerge,
-				ignoreMethodAnnotations, SOURCES);
+				ignoreMethodAnnotations, ignoreClassAnnotations, SOURCES);
 	}
 
 	@Test
@@ -214,6 +217,12 @@ public class ArgumentsTest {
 	public void testGetIgnoreMethodAnnotations() throws Exception {
 		assertTrue(arguments.getIgnoreMethodAnnotations().contains(
 				IGNORE_METHOD_ANNOTATIONS));
+	}
+
+	@Test
+	public void testGetIgnoreClassAnnotations() throws Exception {
+		assertTrue(arguments.getIgnoreClassAnnotations().contains(
+				IGNORE_CLASS_ANNOTATIONS));
 	}
 
 	@Test
