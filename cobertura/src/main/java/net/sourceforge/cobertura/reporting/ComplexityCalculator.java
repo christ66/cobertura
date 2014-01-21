@@ -69,6 +69,8 @@ public class ComplexityCalculator {
 	// Contains pairs (String packageName, Complexity complexity)
 	private Map packageCNNCache = new HashMap();
 
+	private String encoding;
+
 	/**
 	 * Creates new calculator. Passed {@link FileFinder} will be used to
 	 * map source file names to existing files when needed.
@@ -103,7 +105,7 @@ public class ComplexityCalculator {
 		if (!sourceFileName.endsWith(".java")) {
 			return ZERO_COMPLEXITY;
 		}
-		Javancss javancss = new Javancss(source.getInputStream());
+		Javancss javancss = new Javancss(source.getInputStream(), encoding);
 
 		if (javancss.getLastErrorMessage() != null) {
 			//there is an error while parsing the java file. log it
@@ -255,6 +257,16 @@ public class ComplexityCalculator {
 	public double getCCNForClass(ClassData classData) {
 		return getCCNForSourceFileNameInternal(classData.getSourceFileName())
 				.averageCCN();
+	}
+
+	/**
+	 * Set the encoding to be used when reading input streams.
+	 * 
+	 * @param encoding
+	 *            The encoding to use
+	 */
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
 	}
 
 	/**
