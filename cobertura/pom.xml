@@ -300,6 +300,10 @@
                   <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
                 </manifestEntries>
           </archive>
+          <excludes>
+            <exclude>*.sh</exclude>
+            <exclude>*.bat</exclude>
+          </excludes>
         </configuration>
       </plugin>
 
