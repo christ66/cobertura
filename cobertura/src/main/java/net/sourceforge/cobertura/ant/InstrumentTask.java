@@ -223,7 +223,7 @@ public class InstrumentTask extends CommonMatchingTask {
 
 			Path classPath = createClasspathForInstrumenter();
 			if (classPath != null && classPath.toString() != null
-					&& !classPath.toString().isEmpty()) {
+					&& !classPath.toString().equals("")) {
 
 				builder.addArg("--auxClasspath", classPath.toString());
 			}
