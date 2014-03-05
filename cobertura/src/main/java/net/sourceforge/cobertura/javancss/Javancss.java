@@ -336,11 +336,12 @@ public class Javancss implements Exitable {
 	 * make sure _vJavaSourceFiles is null.   _measureRoot will
 	 * use the input stream if it is null.
 	 */
-	public Javancss(InputStream isJavaSource_) {
+	public Javancss(InputStream isJavaSource_, String encoding) {
 		Util.debug("Javancss.<init>(InputStream).sJavaSourceFile_: "
 				+ isJavaSource_);
 		_sErrorMessage = null;
 		_vJavaSourceFiles = null;
+		this.encoding = encoding;
 
 		try {
 			_measureRoot(newReader(isJavaSource_));

@@ -149,10 +149,11 @@ public class MultipleClassloaderFunctionalTest {
 				+ "\n 	public static void createClassloaderAndCallMethod() throws Throwable"
 				+ "\n 	{"
 				+ "\n 		File instrumentDir = new File(\""
-				+ instrumentDir.getAbsolutePath()
+				+ instrumentDir.getAbsolutePath().replace('\\', '/')
 				+ "\");"
 				+ "\n 		File coberturaClassDir = new File(\""
 				+ TestUtils.getCoberturaClassDir().getAbsolutePath()
+						.replace('\\', '/')
 				+ "\");"
 				+ "\n "
 				+ "\n 		/*"
