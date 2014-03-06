@@ -34,7 +34,7 @@
   </pluginRepositories>
 
   <properties>
-    <asmVersion>4.1</asmVersion>
+    <asmVersion>4.2</asmVersion>
     <xercesVersion>2.11.0</xercesVersion>
     <xalanVersion>2.7.1</xalanVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -191,61 +191,43 @@
 
 
   <profiles>
-    <profile>
-      <id>WindowsProfile</id>
-      <activation>
-        <os>
-          <family>Windows</family>
-        </os>
-      </activation>
-      <properties>
-        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-      </properties>
-    </profile>
-    <profile>
-      <id>LinuxProfile</id>
-      <activation>
-        <os>
-          <family>unix</family>
-          <name>Linux</name>
-        </os>
-      </activation>
-      <properties>
-        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-      </properties>
-    </profile>
-    <profile>
-      <id>SolarisProfile</id>
-      <activation>
-        <os>
-          <family>unix</family>
-          <name>SunOS</name>
-        </os>
-      </activation>
-      <properties>
-        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-      </properties>
-    </profile>    
-	<profile>
-      <id>OSXProfile</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-      <properties>
-        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-      </properties>
-    </profile>
+      <profile>
+          <id>standardToolsJar-profile</id>
+          <activation>
+              <activeByDefault>true</activeByDefault>
+              <file>
+                  <exists>${java.home}/../lib/tools.jar</exists>
+              </file>
+          </activation>
+          <properties>
+              <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+          </properties>
+      </profile>
+      <profile>
+          <id>appleJdkToolsJar-profile</id>
+          <activation>
+              <activeByDefault>false</activeByDefault>
+              <file>
+                  <exists>${java.home}/../Classes/classes.jar</exists>
+              </file>
+          </activation>
+          <properties>
+              <toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
+          </properties>
+      </profile>
+
   </profiles>
 
   <build>
     <plugins>
       <!--
+        This plugin seems presently to cause more problems than
+        it solves, due to its constant reformatting of code.
+
         https://code.google.com/p/maven-java-formatter-plugin/
         https://github.com/treymarc/maven-java-formatter-plugin
       -->
-      <plugin>
+      <!-- plugin>
         <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
         <artifactId>maven-java-formatter-plugin</artifactId>
         <version>${plugin.java.formatter.version}</version>
@@ -259,13 +241,13 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin -->
       
       <!-- Cobertura requires custom jdk version for providing the support for the latest jdk. -->
       <plugin>
         <groupId>com.code54.mojo</groupId>
         <artifactId>buildversion-plugin</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
         <executions>
           <execution>
             <goals>
