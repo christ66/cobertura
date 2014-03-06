@@ -203,7 +203,7 @@
       </properties>
     </profile>
     <profile>
-      <id>UnixProfile</id>
+      <id>LinuxProfile</id>
       <activation>
         <os>
           <family>unix</family>
@@ -215,6 +215,18 @@
       </properties>
     </profile>
     <profile>
+      <id>SolarisProfile</id>
+      <activation>
+        <os>
+          <family>unix</family>
+          <name>SunOS</name>
+        </os>
+      </activation>
+      <properties>
+        <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+      </properties>
+    </profile>    
+	<profile>
       <id>OSXProfile</id>
       <activation>
         <os>
