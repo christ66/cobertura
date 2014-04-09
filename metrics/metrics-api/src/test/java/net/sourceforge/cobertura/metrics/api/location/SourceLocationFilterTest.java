@@ -74,14 +74,14 @@ public class SourceLocationFilterTest {
     public void validateConveniencePatternMethods() {
 
         // Assemble
-        final Package ratePackage = Rate.class.getPackage(); // "net.sourceforge.cobertura.metrics.model"
+        final Package ratePackage = Rate.class.getPackage(); // "net.sourceforge.cobertura.metrics.model.coverage"
         final String noSubpackagesExpectedPattern = ratePackage.getName().replaceAll("\\.", "\\\\.");
         final String withSubpackagesExpectedPattern = noSubpackagesExpectedPattern + "(\\.\\w*)*";
 
         final String invalidPackage = "net.sourceforge_cobertura.metrics.model.coverage";
         final String parentPackage  = "net.sourceforge.cobertura.metrics.model";
-        final String exactPackage  = "net.sourceforge.cobertura.metrics.model";
-        final String subPackage  = "net.sourceforge.cobertura.metrics.model.foobar";
+        final String exactPackage  = "net.sourceforge.cobertura.metrics.model.coverage";
+        final String subPackage  = "net.sourceforge.cobertura.metrics.model.coverage.foobar";
 
         // Act
         final Pattern noSubpackages = Pattern.compile(SourceLocationFilter.getPattern(ratePackage, false));
