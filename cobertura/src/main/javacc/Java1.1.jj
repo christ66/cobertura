@@ -2972,7 +2972,7 @@ void TryStatement() :
 void TryWithResources() :
 {}
 {
- ["(" (Expression() [";"] )* ")"]
+ ["(" ( "final" )* (Expression() [";"] )* ")"]
 }
 
 /** Multi-catch parameter with jdk 7 **/
