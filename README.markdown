@@ -20,7 +20,7 @@ Cobertura is free software.  Most of it is licensed under the GNU
 GPL, and you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
 Foundation; either version 2 of the License, or (at your option)
-any later version.  Please review the file COPYING included in this
+any later version.  Please review the file LICENSE.txt included in this
 distribution for further details.
 Parts of Cobertura are licensed under the Apache Software License,
 Version 1.1.
