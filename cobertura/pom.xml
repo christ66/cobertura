@@ -219,6 +219,15 @@
   </profiles>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>executables</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <!--
         This plugin seems presently to cause more problems than
@@ -292,6 +301,10 @@
                   <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
                 </manifestEntries>
           </archive>
+          <excludes>
+            <exclude>*.sh</exclude>
+            <exclude>*.bat</exclude>
+          </excludes>
         </configuration>
       </plugin>
 
