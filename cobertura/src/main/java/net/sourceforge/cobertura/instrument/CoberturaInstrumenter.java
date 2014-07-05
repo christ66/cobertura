@@ -87,6 +87,12 @@ public class CoberturaInstrumenter {
 	private Set<String> ignoreMethodAnnotations = new HashSet<String>();
 
 	/**
+	 * Classes annotated by this annotations will be ignored during
+	 * instrumentation
+	 */
+	private Set<String> ignoreClassAnnotations = new HashSet<String>();
+
+	/**
 	 * If true: Getters, Setters and simple initialization will be ignored by coverage measurement
 	 */
 	private boolean ignoreTrivial;
@@ -157,7 +163,8 @@ public class CoberturaInstrumenter {
 		ClassReader cr = new ClassReader(cw0.toByteArray());
 		ClassWriter cw = new ClassWriter(0);
 		BuildClassMapClassVisitor cv = new BuildClassMapClassVisitor(cw,
-				ignoreRegexes, cv0.getDuplicatesLinesCollector(),
+				ignoreRegexes, ignoreClassAnnotations,
+				cv0.getDuplicatesLinesCollector(),
 				detectIgnoredCv.getIgnoredMethodNamesAndSignatures());
 
 		cr.accept(cv, ClassReader.EXPAND_FRAMES);
@@ -191,8 +198,8 @@ public class CoberturaInstrumenter {
 
 		if (cv.shouldBeInstrumented()) {
 			/*
-			 *  BuildClassMapClassInstrumenter and DetectDuplicatedCodeClassVisitor has not modificated bytecode, 
-			 *  so we can use any bytecode representation of that class. 
+			 *  BuildClassMapClassInstrumenter and DetectDuplicatedCodeClassVisitor has not modificated bytecode,
+			 *  so we can use any bytecode representation of that class.
 			 */
 			ClassReader cr2 = new ClassReader(cw0.toByteArray());
 			ClassWriter cw2 = new CoberturaClassWriter(
@@ -265,7 +272,7 @@ public class CoberturaInstrumenter {
 		}
 	}
 
-	// ----------------- Getters and setters -------------------------------------	
+	// ----------------- Getters and setters -------------------------------------
 
 	/**
 	 * Gets the root directory for instrumented classes. If it is null, the instrumented classes are overwritten.
@@ -301,6 +308,10 @@ public class CoberturaInstrumenter {
 
 	public void setIgnoreMethodAnnotations(Set<String> ignoreMethodAnnotations) {
 		this.ignoreMethodAnnotations = ignoreMethodAnnotations;
+	}
+
+	public void setIgnoreClassAnnotations(Set<String> ignoreClassAnnotations) {
+		this.ignoreClassAnnotations = ignoreClassAnnotations;
 	}
 
 	public void setThreadsafeRigorous(boolean threadsafeRigorous) {

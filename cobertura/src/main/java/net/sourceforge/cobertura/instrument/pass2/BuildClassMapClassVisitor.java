@@ -68,25 +68,38 @@ public class BuildClassMapClassVisitor
 	private boolean toInstrument = true;
 
 	private final Set<String> ignoredMethods;
+	private final Set<String> ignoredClassAnnotations;
 
 	/**
 	 * @param cv                 - a listener for code-instrumentation events
-	 * @param ignoreRegexp       - list of patters of method calls that should be ignored from line-coverage-measurement
-	 * @param duplicatedLinesMap - map of found duplicates in the class. You should use {@link DetectDuplicatedCodeClassVisitor} to find the duplicated lines.
+	 * @param ignoreRegexes       - list of patters of method calls that should be ignored from line-coverage-measurement
+	 * @param ignoreClassAnnotations - list of class annotations to exclude them from instrumentation at all
+     * @param duplicatedLinesMap - map of found duplicates in the class. You should use {@link DetectDuplicatedCodeClassVisitor} to find the duplicated lines.
 	 */
 	public BuildClassMapClassVisitor(ClassVisitor cv,
 			Collection<Pattern> ignoreRegexes,
+			Set<String> ignoreClassAnnotations,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
 			Set<String> ignoredMethods) {
 		super(cv, ignoreRegexes, duplicatedLinesMap);
 		this.ignoredMethods = ignoredMethods;
+		this.ignoredClassAnnotations = ignoreClassAnnotations;
 	}
 
 	@Override
 	public AnnotationVisitor visitAnnotation(String name, boolean arg1) {
 		if (Type.getDescriptor(CoverageIgnore.class).equals(name)) {
 			toInstrument = false;
+		} else if (ignoredClassAnnotations != null) {
+			String className = Type.getObjectType(name).getClassName();
+			// Class name contains artifacts anyway so trimming them out before
+			// matching
+			String normalizedClassName = className.replaceAll("[L;]", "");
+			if (ignoredClassAnnotations.contains(normalizedClassName)) {
+				toInstrument = false;
+			}
 		}
+
 		return super.visitAnnotation(name, arg1);
 	}
 

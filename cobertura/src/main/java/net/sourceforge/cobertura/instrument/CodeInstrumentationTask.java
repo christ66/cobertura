@@ -68,6 +68,8 @@ public class CodeInstrumentationTask {
 		coberturaInstrumenter.setIgnoreTrivial(arguments.isIgnoreTrivial());
 		coberturaInstrumenter.setIgnoreMethodAnnotations(arguments
 				.getIgnoreMethodAnnotations());
+		coberturaInstrumenter.setIgnoreClassAnnotations(arguments
+				.getIgnoreClassAnnotations());
 		coberturaInstrumenter.setThreadsafeRigorous(arguments
 				.isThreadsafeRigorous());
 		coberturaInstrumenter.setFailOnError(arguments.isFailOnError());

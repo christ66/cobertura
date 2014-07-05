@@ -60,6 +60,7 @@ public class Arguments {
 	private Set<CoberturaFile> filesToInstrument;
 	private Set<File> filesToMerge;
 	private Set<String> ignoreMethodAnnotations;
+	private Set<String> ignoreClassAnnotations;
 
 	Arguments(File baseDirectory, File dataFile, File destinationDirectory,
 			File commandsFile, Collection ignoreRegexes,
@@ -73,7 +74,8 @@ public class Arguments {
 			double packageLineThreshold, double packageBranchThreshold,
 			double totalLineThreshold, double totalBranchThreshold,
 			Set<CoberturaFile> filesToInstrument, Set<File> filesToMerge,
-			Set<String> ignoreMethodAnnotations, FileFinder sources) {
+			Set<String> ignoreMethodAnnotations,
+			Set<String> ignoreClassAnnotations, FileFinder sources) {
 		this.baseDirectory = baseDirectory;
 		this.dataFile = dataFile;
 		this.destinationDirectory = destinationDirectory;
@@ -102,6 +104,8 @@ public class Arguments {
 		this.filesToMerge = Collections.unmodifiableSet(filesToMerge);
 		this.ignoreMethodAnnotations = Collections
 				.unmodifiableSet(ignoreMethodAnnotations);
+		this.ignoreClassAnnotations = Collections
+				.unmodifiableSet(ignoreClassAnnotations);
 	}
 
 	public File getBaseDirectory() {
@@ -194,5 +198,9 @@ public class Arguments {
 
 	public FileFinder getSources() {
 		return sources;
+	}
+
+	public Set<String> getIgnoreClassAnnotations() {
+		return ignoreClassAnnotations;
 	}
 }

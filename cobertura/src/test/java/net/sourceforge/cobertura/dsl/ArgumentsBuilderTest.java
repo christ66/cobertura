@@ -73,6 +73,14 @@ public class ArgumentsBuilderTest {
 	}
 
 	@Test
+	public void testAddIgnoreClassAnnotation() throws Exception {
+		String someValue = "someValue";
+		assertEquals(someValue, new ArgumentsBuilder()
+				.addIgnoreClassAnnotation(someValue).build()
+				.getIgnoreClassAnnotations().iterator().next());
+	}
+
+    @Test
 	public void testAddExcludeClassesRegex() throws Exception {
 		String someRegex = "someRegex";
 		assertEquals(someRegex, new ArgumentsBuilder().addExcludeClassesRegex(
@@ -287,6 +295,8 @@ public class ArgumentsBuilderTest {
 		assertTrue(defaultArgs.getIgnoreBranchesRegexes().isEmpty());
 		assertNotNull(defaultArgs.getIgnoreMethodAnnotations());
 		assertTrue(defaultArgs.getIgnoreMethodAnnotations().isEmpty());
+		assertNotNull(defaultArgs.getIgnoreClassAnnotations());
+		assertTrue(defaultArgs.getIgnoreClassAnnotations().isEmpty());
 		assertNotNull(defaultArgs.getClassPatternExcludeClassesRegexes());
 		assertTrue(defaultArgs.getClassPatternExcludeClassesRegexes().isEmpty());
 		assertNotNull(defaultArgs.getClassPatternIncludeClassesRegexes());

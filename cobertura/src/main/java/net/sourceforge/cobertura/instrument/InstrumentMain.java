@@ -108,6 +108,8 @@ public class InstrumentMain {
 				builder.addIgnoreRegex(args[++i]);
 			} else if (args[i].equals("--ignoreMethodAnnotation")) {
 				builder.addIgnoreMethodAnnotation(args[++i]);
+			} else if (args[i].equals("--ignoreClassAnnotation")) {
+				builder.addIgnoreClassAnnotation(args[++i]);
 			} else if (args[i].equals("--ignoreTrivial")) {
 				builder.ignoreTrivial(true);
 			} else if (args[i].equals("--includeClasses")) {
