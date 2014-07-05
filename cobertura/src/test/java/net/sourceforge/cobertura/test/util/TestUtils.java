@@ -4,6 +4,8 @@ import groovy.util.AntBuilder;
 import groovy.util.Node;
 import groovy.util.XmlParser;
 import net.sourceforge.cobertura.ant.InstrumentTask;
+import net.sourceforge.cobertura.javancss.ccl.FileUtil;
+import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Javac;
@@ -19,6 +21,8 @@ import org.apache.tools.ant.types.Path.PathElement;
 import org.codehaus.groovy.ant.Groovyc;
 import org.xml.sax.SAXException;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -55,13 +59,7 @@ public class TestUtils {
 			coberturaClassDir = new File("target/test/cobertura_classes");
 			coberturaClassDir.mkdirs();
 
-			Javac javac = new Javac();
-			javac.setProject(project);
-			javac.setSrcdir(new Path(project, SRC_DIR));
-			javac.setDestdir(coberturaClassDir);
-			javac.setDebug(true);
-			javac.setTarget("1.5");
-			javac.execute();
+            compileSource(new File(SRC_DIR), coberturaClassDir, "1.5");
 		}
 
 		return coberturaClassDir;
@@ -261,6 +259,7 @@ public class TestUtils {
 		return sum;
 	}
 
+    //TODO: remove
 	public static void instrumentClasses(AntBuilder ant, File srcDir,
 			File datafile, File instrumentDir, Map arguments) {
 		FileSet fileSet = new FileSet();
@@ -299,21 +298,61 @@ public class TestUtils {
 		instrumentTask.execute();
 	}
 
-	public static void compileSource(AntBuilder ant, File srcDir) {
-		compileSource(ant, srcDir, "1.7");
+	public static void compileSource(File srcDir, File destDir) {
+		compileSource(srcDir, destDir, "1.7");
 	}
 
-	public static void compileSource(AntBuilder ant, File srcDir,
-			String jdkVersion) {
-		Javac javac = new Javac();
-		javac.setDebug(true);
-		javac.setSource(jdkVersion);
-		javac.setTarget(jdkVersion);
+    public static void compileSource(File srcDir) {
+        compileSource(srcDir, srcDir);
+    }
 
-		javac.setProject(project);
-		javac.setSrcdir(new Path(project, srcDir.getAbsolutePath()));
-		javac.setDestdir(srcDir);
-		javac.execute();
+    //TODO: remove
+    public static void compileSource(AntBuilder builder, File srcDir) {
+        compileSource(srcDir);
+    }
+
+    //TODO: remove
+    public static void compileSource(AntBuilder builder, File srcDir,
+                                     String jdkVersion) {
+        compileSource(srcDir, srcDir, jdkVersion);
+    }
+
+	public static void compileSource(File srcDir, File destDir,
+			String jdkVersion) {
+
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
+
+        List jvmArguments = new LinkedList();
+
+        jvmArguments.add("-sourcepath");
+        jvmArguments.add(srcDir.getAbsolutePath());
+        jvmArguments.add("-g");
+        jvmArguments.add("-verbose");
+        jvmArguments.add("-d");
+        jvmArguments.add(srcDir.getAbsolutePath());
+        jvmArguments.add("-source");
+        jvmArguments.add(jdkVersion);
+        jvmArguments.add("-target");
+        jvmArguments.add(jdkVersion);
+
+        for (File file : files) {
+            jvmArguments.add(file.getAbsolutePath());
+        }
+
+        System.out.println("====== Compiling ======");
+        System.out.print("JDK VERSION: ");
+        compiler.run(System.in, System.out, System.err, "-version");
+
+        System.out.println("JVM ARGS: " + jvmArguments);
+
+        int result = compiler.run(System.in, System.out, System.err,
+                (String[]) jvmArguments.toArray(new String[jvmArguments.size()]));
+        if (result == 0) {
+            System.out.println("Successful Compilation.");
+        } else {
+            System.err.println("======= Failed to compile =======");
+        }
 	}
 
 	public static void compileGroovy(AntBuilder ant, File srcDir) {
