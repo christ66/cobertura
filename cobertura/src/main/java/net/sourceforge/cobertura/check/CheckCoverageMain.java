@@ -48,6 +48,52 @@ public class CheckCoverageMain {
 			.getLogger(CheckCoverageMain.class);
 
 	public CheckCoverageMain(String[] args) throws MalformedPatternException {
+		int exitStatus = checkCoverage(args);
+		System.exit(exitStatus);
+	}
+
+	private static int checkCoverageTypeStatusAndLogMessage(
+			CoverageResultEntry entry, int branchStatus, int lineStatus) {
+		if (entry.getCoverageType().equals(BRANCH)) {
+			logger
+					.error(String
+							.format(
+									"%s failed coverage check. Branch coverage rate of %s is below %s",
+									entry.getName(),
+									entry.getCurrentCoverage(), entry
+											.getExpectedCoverage()));
+			return branchStatus;
+		} else {
+			logger
+					.error(String
+							.format(
+									"%s failed coverage check. Line coverage rate of %s is below %s",
+									entry.getName(),
+									entry.getCurrentCoverage(), entry
+											.getExpectedCoverage()));
+			return lineStatus;
+		}
+	}
+
+	private static double inRangeAndDivideByOneHundred(
+			String coverageRateAsPercentage) {
+		return inRangeAndDivideByOneHundred(Integer
+				.valueOf(coverageRateAsPercentage));
+	}
+
+	private static double inRangeAndDivideByOneHundred(
+			int coverageRateAsPercentage) {
+		if ((coverageRateAsPercentage >= 0)
+				&& (coverageRateAsPercentage <= 100)) {
+			return (double) coverageRateAsPercentage / 100;
+		}
+		throw new IllegalArgumentException("The value "
+				+ coverageRateAsPercentage
+				+ "% is invalid.  Percentages must be between 0 and 100.");
+	}
+
+	public static int checkCoverage(String[] args)
+			throws MalformedPatternException {
 		Header.print(System.out);
 
 		ArgumentsBuilder builder = new ArgumentsBuilder();
@@ -108,48 +154,11 @@ public class CheckCoverageMain {
 				}
 			}
 		}
-		System.exit(exitStatus);
-	}
-
-	private int checkCoverageTypeStatusAndLogMessage(CoverageResultEntry entry,
-			int branchStatus, int lineStatus) {
-		if (entry.getCoverageType().equals(BRANCH)) {
-			logger
-					.error(String
-							.format(
-									"%s failed coverage check. Branch coverage rate of %s is below %s",
-									entry.getName(),
-									entry.getCurrentCoverage(), entry
-											.getExpectedCoverage()));
-			return branchStatus;
-		} else {
-			logger
-					.error(String
-							.format(
-									"%s failed coverage check. Line coverage rate of %s is below %s",
-									entry.getName(),
-									entry.getCurrentCoverage(), entry
-											.getExpectedCoverage()));
-			return lineStatus;
-		}
-	}
-
-	private double inRangeAndDivideByOneHundred(String coverageRateAsPercentage) {
-		return inRangeAndDivideByOneHundred(Integer
-				.valueOf(coverageRateAsPercentage));
-	}
-
-	private double inRangeAndDivideByOneHundred(int coverageRateAsPercentage) {
-		if ((coverageRateAsPercentage >= 0)
-				&& (coverageRateAsPercentage <= 100)) {
-			return (double) coverageRateAsPercentage / 100;
-		}
-		throw new IllegalArgumentException("The value "
-				+ coverageRateAsPercentage
-				+ "% is invalid.  Percentages must be between 0 and 100.");
+		return exitStatus;
 	}
 
 	public static void main(String[] args) throws MalformedPatternException {
-		new CheckCoverageMain(args);
+		int exitStatus = checkCoverage(args);
+		System.exit(exitStatus);
 	}
 }
