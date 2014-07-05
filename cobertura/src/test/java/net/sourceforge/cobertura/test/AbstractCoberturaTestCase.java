@@ -77,7 +77,7 @@ public class AbstractCoberturaTestCase {
 			String fileContent, String mainMethod, String format)
 			throws Exception {
 
-		FileUtils.write(new File(srcDir, fileName + ".java"), fileContent);
+		FileUtils.write(new File(srcDir, packageName + "/" + fileName + ".java"), fileContent);
 
 		TestUtils.compileSource(TestUtils.antBuilder, srcDir);
 
@@ -103,6 +103,7 @@ public class AbstractCoberturaTestCase {
 		ReportTask reportTask = new ReportTask();
 		reportTask.setProject(TestUtils.project);
 		reportTask.setDataFile(datafile.getAbsolutePath());
+        reportTask.setSrcDir(srcDir.getAbsolutePath());
 		reportTask.setFormat("xml");
 		reportTask.setDestDir(new File(reportDir, "/coverage-xml"));
 		reportTask.execute();
@@ -110,6 +111,7 @@ public class AbstractCoberturaTestCase {
 		reportTask = new ReportTask();
 		reportTask.setProject(TestUtils.project);
 		reportTask.setDataFile(datafile.getAbsolutePath());
+        reportTask.setSrcDir(srcDir.getAbsolutePath());
 		reportTask.setFormat("html");
 		reportTask.setDestDir(new File(reportDir, "/coverage-html"));
 		reportTask.execute();
