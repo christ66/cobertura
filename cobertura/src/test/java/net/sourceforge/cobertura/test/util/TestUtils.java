@@ -200,7 +200,7 @@ public class TestUtils {
 		return sum;
 	}
 
-    public static int getMethodBranchCoverage(Node dom, String className, String methodName) {
+    public static double getMethodBranchCoverage(Node dom, String className, String methodName) {
         for (Iterator<Node> packagesIterator = dom.iterator(); packagesIterator.hasNext();) {
             Node packagesNode = packagesIterator.next();
             if ("packages".equals(packagesNode.name())) {
@@ -221,7 +221,7 @@ public class TestUtils {
                                                         Node methodNode = methodIterator.next();
                                                         if ("method".equals(methodNode.name())) {
                                                             if (methodName.equals(methodNode.attribute("name"))) {
-                                                                return (Integer) methodNode.attribute("branch-rate");
+                                                                return Double.valueOf((String)methodNode.attribute("branch-rate"));
                                                             }
                                                         }
                                                     }

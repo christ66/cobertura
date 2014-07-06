@@ -28,7 +28,9 @@ import net.sourceforge.cobertura.test.AbstractCoberturaTestCase;
 import net.sourceforge.cobertura.test.util.TestUtils;
 import org.junit.Test;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -50,11 +52,13 @@ public class GithubIssue170 extends AbstractCoberturaTestCase {
         assertTrue(TestUtils.getTotalHitCount(dom,
                 "mypackage.GithubIssue170Test",
                 "test170") > 0);
-        assertEquals(3, TestUtils.getTotalHitCount(dom,
+        assertEquals(4, TestUtils.getTotalHitCount(dom,
                 "mypackage.GithubIssue170Test",
                 "main"));
         assertEquals(2, TestUtils.getTotalHitCount(dom, "mypackage.GithubIssue170Test",
                 "<init>"));
+        assertThat(TestUtils.getMethodBranchCoverage(dom, "mypackage.GithubIssue170Test",
+                "test170"), is(0.5));
     }
 
     static final String packageName = "mypackage";

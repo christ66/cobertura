@@ -9,6 +9,7 @@ import net.sourceforge.cobertura.reporting.ReportMain;
 import net.sourceforge.cobertura.test.util.TestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.types.Path;
 import org.junit.After;
 import org.junit.Before;
 import java.io.File;
@@ -79,7 +80,7 @@ public class AbstractCoberturaTestCase {
 
 		FileUtils.write(new File(srcDir, packageName + "/" + fileName + ".java"), fileContent);
 
-		TestUtils.compileSource(TestUtils.antBuilder, srcDir);
+		TestUtils.compileSource(srcDir);
 
 		TestUtils.instrumentClasses(TestUtils.antBuilder, srcDir, datafile,
 				instrumentDir);
@@ -93,7 +94,7 @@ public class AbstractCoberturaTestCase {
 		java.setDir(srcDir);
 		java.setFork(true);
 		java.setFailonerror(true);
-		java.setClasspath(TestUtils.getCoberturaDefaultClasspath());
+        java.setClasspath(TestUtils.getCoberturaDefaultClasspath());
 		java.execute();
 		/*
 		 * Now create a cobertura xml file and make sure the correct counts are in it.
