@@ -104,58 +104,30 @@ public class TestUtils {
 				.hasNext();) {
 			Node packagesNode = packagesIterator.next();
 			if ("packages".equals(packagesNode.name())) {
-				for (Iterator<Node> packageIterator = packagesNode.iterator(); packageIterator
-						.hasNext();) {
+				for (Iterator<Node> packageIterator = packagesNode.iterator(); packageIterator.hasNext();) {
 					Node packageNode = packageIterator.next();
 					if ("package".equals(packageNode.name())) {
-						for (Iterator<Node> classesIterator = packageNode
-								.iterator(); classesIterator.hasNext();) {
+						for (Iterator<Node> classesIterator = packageNode.iterator(); classesIterator.hasNext();) {
 							Node classesNode = classesIterator.next();
 							if ("classes".equals(classesNode.name())) {
-								for (Iterator<Node> classIterator = classesNode
-										.iterator(); classIterator.hasNext();) {
+								for (Iterator<Node> classIterator = classesNode.iterator(); classIterator.hasNext();) {
 									Node classNode = classIterator.next();
 									if ("class".equals(classNode.name())) {
-										if (className.equals(classNode
-												.attribute("name"))) {
-											for (Iterator<Node> methodsIterator = classNode
-													.iterator(); methodsIterator
-													.hasNext();) {
-												Node methodsNode = methodsIterator
-														.next();
-												if ("methods"
-														.equals(methodsNode
-																.name())) {
-													for (Iterator<Node> methodIterator = methodsNode
-															.iterator(); methodIterator
-															.hasNext();) {
-														Node methodNode = methodIterator
-																.next();
-														if ("method"
-																.equals(methodNode
-																		.name())) {
-															if (methodName
-																	.equals(methodNode
-																			.attribute("name"))) {
-																for (Iterator<Node> linesIterator = methodNode
-																		.iterator(); linesIterator
-																		.hasNext();) {
-																	Node linesNode = linesIterator
-																			.next();
-																	if ("lines"
-																			.equals(linesNode
-																					.name())) {
-																		for (Iterator<Node> lineIterator = linesNode
-																				.iterator(); lineIterator
-																				.hasNext();) {
-																			Node lineNode = lineIterator
-																					.next();
-																			if ("line"
-																					.equals(lineNode
-																							.name())) {
-																				return Integer
-																						.valueOf((String) lineNode
-																								.attribute("hits"));
+										if (className.equals(classNode.attribute("name"))) {
+											for (Iterator<Node> methodsIterator = classNode.iterator(); methodsIterator.hasNext();) {
+												Node methodsNode = methodsIterator.next();
+												if ("methods".equals(methodsNode.name())) {
+													for (Iterator<Node> methodIterator = methodsNode.iterator(); methodIterator.hasNext();) {
+														Node methodNode = methodIterator.next();
+														if ("method".equals(methodNode.name())) {
+															if (methodName.equals(methodNode.attribute("name"))) {
+																for (Iterator<Node> linesIterator = methodNode.iterator(); linesIterator.hasNext();) {
+																	Node linesNode = linesIterator.next();
+																	if ("lines".equals(linesNode.name())) {
+																		for (Iterator<Node> lineIterator = linesNode.iterator(); lineIterator.hasNext();) {
+																			Node lineNode = lineIterator.next();
+																			if ("line".equals(lineNode.name())) {
+																				return Integer.valueOf((String) lineNode.attribute("hits"));
 																			}
 																		}
 																	}
@@ -181,62 +153,33 @@ public class TestUtils {
 	public static int getTotalHitCount(Node dom, String className,
 			String methodName) {
 		int sum = 0;
-		for (Iterator<Node> packagesIterator = dom.iterator(); packagesIterator
-				.hasNext();) {
+		for (Iterator<Node> packagesIterator = dom.iterator(); packagesIterator.hasNext();) {
 			Node packagesNode = packagesIterator.next();
 			if ("packages".equals(packagesNode.name())) {
-				for (Iterator<Node> packageIterator = packagesNode.iterator(); packageIterator
-						.hasNext();) {
+				for (Iterator<Node> packageIterator = packagesNode.iterator(); packageIterator.hasNext();) {
 					Node packageNode = packageIterator.next();
 					if ("package".equals(packageNode.name())) {
-						for (Iterator<Node> classesIterator = packageNode
-								.iterator(); classesIterator.hasNext();) {
+						for (Iterator<Node> classesIterator = packageNode.iterator(); classesIterator.hasNext();) {
 							Node classesNode = classesIterator.next();
 							if ("classes".equals(classesNode.name())) {
-								for (Iterator<Node> classIterator = classesNode
-										.iterator(); classIterator.hasNext();) {
+								for (Iterator<Node> classIterator = classesNode.iterator(); classIterator.hasNext();) {
 									Node classNode = classIterator.next();
 									if ("class".equals(classNode.name())) {
-										if (className.equals(classNode
-												.attribute("name"))) {
-											for (Iterator<Node> methodsIterator = classNode
-													.iterator(); methodsIterator
-													.hasNext();) {
-												Node methodsNode = methodsIterator
-														.next();
-												if ("methods"
-														.equals(methodsNode
-																.name())) {
-													for (Iterator<Node> methodIterator = methodsNode
-															.iterator(); methodIterator
-															.hasNext();) {
-														Node methodNode = methodIterator
-																.next();
-														if ("method"
-																.equals(methodNode
-																		.name())) {
-															if (methodName
-																	.equals(methodNode
-																			.attribute("name"))) {
-																for (Iterator<Node> linesIterator = methodNode
-																		.iterator(); linesIterator
-																		.hasNext();) {
-																	Node linesNode = linesIterator
-																			.next();
-																	if ("lines"
-																			.equals(linesNode
-																					.name())) {
-																		for (Iterator<Node> lineIterator = linesNode
-																				.iterator(); lineIterator
-																				.hasNext();) {
-																			Node lineNode = lineIterator
-																					.next();
-																			if ("line"
-																					.equals(lineNode
-																							.name())) {
-																				sum += Integer
-																						.valueOf((String) lineNode
-																								.attribute("hits"));
+										if (className.equals(classNode.attribute("name"))) {
+											for (Iterator<Node> methodsIterator = classNode.iterator(); methodsIterator.hasNext();) {
+												Node methodsNode = methodsIterator.next();
+												if ("methods".equals(methodsNode.name())) {
+													for (Iterator<Node> methodIterator = methodsNode.iterator(); methodIterator.hasNext();) {
+														Node methodNode = methodIterator.next();
+														if ("method".equals(methodNode.name())) {
+															if (methodName.equals(methodNode.attribute("name"))) {
+																for (Iterator<Node> linesIterator = methodNode.iterator(); linesIterator.hasNext();) {
+																	Node linesNode = linesIterator.next();
+																	if ("lines".equals(linesNode.name())) {
+																		for (Iterator<Node> lineIterator = linesNode.iterator(); lineIterator.hasNext();) {
+																			Node lineNode = lineIterator.next();
+																			if ("line".equals(lineNode.name())) {
+																				sum += Integer.valueOf((String) lineNode.attribute("hits"));
 																			}
 																		}
 																	}
@@ -258,6 +201,47 @@ public class TestUtils {
 
 		return sum;
 	}
+
+    public static int getMethodBranchCoverage(Node dom, String className, String methodName) {
+        for (Iterator<Node> packagesIterator = dom.iterator(); packagesIterator.hasNext();) {
+            Node packagesNode = packagesIterator.next();
+            if ("packages".equals(packagesNode.name())) {
+                for (Iterator<Node> packageIterator = packagesNode.iterator(); packageIterator.hasNext();) {
+                    Node packageNode = packageIterator.next();
+                    if ("package".equals(packageNode.name())) {
+                        for (Iterator<Node> classesIterator = packageNode.iterator(); classesIterator.hasNext();) {
+                            Node classesNode = classesIterator.next();
+                            if ("classes".equals(classesNode.name())) {
+                                for (Iterator<Node> classIterator = classesNode.iterator(); classIterator.hasNext();) {
+                                    Node classNode = classIterator.next();
+                                    if ("class".equals(classNode.name())) {
+                                        if (className.equals(classNode.attribute("name"))) {
+                                            for (Iterator<Node> methodsIterator = classNode.iterator(); methodsIterator.hasNext();) {
+                                                Node methodsNode = methodsIterator.next();
+                                                if ("methods".equals(methodsNode.name())) {
+                                                    for (Iterator<Node> methodIterator = methodsNode.iterator(); methodIterator.hasNext();) {
+                                                        Node methodNode = methodIterator.next();
+                                                        if ("method".equals(methodNode.name())) {
+                                                            if (methodName.equals(methodNode.attribute("name"))) {
+                                                                return (Integer) methodNode.attribute("branch-rate");
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Could not find branch
+        return 0;
+    }
 
     //TODO: remove
 	public static void instrumentClasses(AntBuilder ant, File srcDir,
@@ -282,7 +266,7 @@ public class TestUtils {
 
 		if (arguments != null && arguments.containsKey("ignoreAnnotationNames")) {
 			List<String> ignoreAnnotations = (List<String>) arguments
-					.get("ignoreAnnotationNames");
+				.get("ignoreAnnotationNames");
 			for (String annotation : ignoreAnnotations) {
 				instrumentTask.createIgnoreMethodAnnotation()
 						.setAnnotationName(annotation);
