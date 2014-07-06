@@ -56,10 +56,8 @@ public class TestUtils {
 
 	public synchronized static File getCoberturaClassDir() {
 		if (coberturaClassDir == null) {
-			coberturaClassDir = new File("target/test/cobertura_classes");
-			coberturaClassDir.mkdirs();
-
-            compileSource(new File(SRC_DIR), coberturaClassDir, "1.5");
+            // Should already be compiled
+            coberturaClassDir = new File("target/classes");
 		}
 
 		return coberturaClassDir;
