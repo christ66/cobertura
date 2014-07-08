@@ -79,7 +79,7 @@ public class TouchCollector {
 			boolean found = false;
 			Class<?> clazz;
             try {
-                Class.forName(classa.replace("/", "."), false,
+                clazz = Class.forName(classa.replace("/", "."), false,
                         Thread.currentThread().getContextClassLoader());
                 for (Method meth : clazz.getMethods()) {
                     if (meth.toString().contains("net.sourceforge.cobertura")) {
