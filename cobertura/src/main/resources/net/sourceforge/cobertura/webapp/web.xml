@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <!--
  Copyright (C) 2009 Amit Nithianandan
 
@@ -26,9 +25,9 @@
 
 
   <servlet>
-    <servlet-name>CoberturaFlushServlet</servlet-name>
-    <display-name>CoberturaFlushServlet</display-name>
     <description>CoberturaFlushServlet</description>
+    <display-name>CoberturaFlushServlet</display-name>
+    <servlet-name>CoberturaFlushServlet</servlet-name>
     <servlet-class>net.sourceforge.cobertura.webapp.FlushCoberturaServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>

@@ -296,7 +296,7 @@ public class WebAppFunctionalTest {
 		antWar.setProject(TestUtils.project);
 		antWar.setDestFile(war);
 		antWar.setWebxml(new File(
-				"src/main/java/net/sourceforge/cobertura/webapp/web.xml"));
+				"src/main/resources/net/sourceforge/cobertura/webapp/web.xml"));
 
 		ZipFileSet classesFileSet = new ZipFileSet();
 		classesFileSet.setDir(classesDir);
