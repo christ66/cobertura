@@ -77,14 +77,19 @@ public class TouchCollector {
 			// classloaders might be invoked and it requires the check of multiple classloaders.
 
 			boolean found = false;
-			Class<?> clazz = Class.forName(classa.replace("/", "."), false,
-					Thread.currentThread().getContextClassLoader());
-			for (Method meth : clazz.getMethods()) {
-				if (meth.toString().contains("net.sourceforge.cobertura")) {
-					registerClass(clazz);
-					found = true;
-				}
-			}
+			Class<?> clazz;
+            try {
+                Class.forName(classa.replace("/", "."), false,
+                        Thread.currentThread().getContextClassLoader());
+                for (Method meth : clazz.getMethods()) {
+                    if (meth.toString().contains("net.sourceforge.cobertura")) {
+                        registerClass(clazz);
+                        found = true;
+                    }
+                }
+            } catch (NoClassDefFoundError ncdfe) {
+                // "Expected", try described fallback
+            }
 
 			if (!found) {
 				clazz = Class.forName(classa.replace("/", "."));
