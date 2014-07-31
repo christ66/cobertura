@@ -66,7 +66,7 @@ public class InstrumentMain {
 	private static final LoggerWrapper logger = new LoggerWrapper();
 	public static URLClassLoader urlClassLoader;
 
-	public static void main(String[] args) {
+	public static int instrument(String[] args) {
 		Header.print(System.out);
 
 		long startTime = System.currentTimeMillis();
@@ -76,7 +76,7 @@ public class InstrumentMain {
 		} catch (Exception ex) {
 			System.err.println("Error: Cannot process arguments: "
 					+ ex.getMessage());
-			System.exit(1);
+			return 1;
 		}
 		try {
 			new Cobertura(createArgumentsFromCMDParams(args).build())
@@ -86,10 +86,20 @@ public class InstrumentMain {
 					"Failed while instrumenting code: %s", throwable
 							.getMessage()));
 			throwable.printStackTrace();
+			// This should probably return 1, but the old code didn't exit
+			// here, so we won't either...
 		}
 
 		long stopTime = System.currentTimeMillis();
 		logger.info("Instrument time: " + (stopTime - startTime) + "ms");
+		return 0;
+	}
+
+	public static void main(String[] args) {
+		int returnValue = instrument(args);
+		if ( returnValue != 0 ) {
+			System.exit(returnValue);
+		}
 	}
 
 	private static ArgumentsBuilder createArgumentsFromCMDParams(String[] args) {

@@ -123,7 +123,7 @@ public class ReportMain {
 		destinationDir.mkdirs();
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static int generateReport(String[] args) throws Exception {
 		Header.print(System.out);
 
 		long startTime = System.currentTimeMillis();
@@ -133,12 +133,26 @@ public class ReportMain {
 		} catch (Exception ex) {
 			System.err.println("Error: Cannot process arguments: "
 					+ ex.getMessage());
-			System.exit(1);
+			return 1;
 		}
 
 		parseArgumentsAndReport(args);
 
 		long stopTime = System.currentTimeMillis();
 		System.out.println("Report time: " + (stopTime - startTime) + "ms");
+		return 0;
 	}
+
+	public static void main(String[] args) throws Exception {
+		int returnValue;
+		try {
+			returnValue = generateReport(args);
+		} catch (Exception e) {
+			returnValue = 1;
+		}
+		if ( returnValue != 0 ) {
+			System.exit(returnValue);
+		}
+	}
+
 }
