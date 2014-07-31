@@ -12,6 +12,7 @@ import net.sourceforge.cobertura.test.util.TestUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.taskdefs.Java;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -84,7 +85,7 @@ public class JDKTest {
 				+ "/coverage.xml");
 	}
 
-	@Test
+	@Ignore("JDK 7 no longer supports a 1.1 source")
 	public void testJDK1() throws Exception {
 		setupAndExecuteTest("1.1");
 		int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
