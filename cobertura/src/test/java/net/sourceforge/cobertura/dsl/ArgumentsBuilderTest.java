@@ -20,7 +20,7 @@ public class ArgumentsBuilderTest {
 	public void testSetBaseDirectory() throws Exception {
 		String baseDir = "somedir";
 		assertEquals(baseDir, new ArgumentsBuilder().setBaseDirectory(baseDir)
-				.build().getBaseDirectory().getPath());
+				.build().getBaseDirectory());
 	}
 
 	@Test
@@ -272,7 +272,7 @@ public class ArgumentsBuilderTest {
 		CoberturaFile file = new ArgumentsBuilder().addFileToInstrument(
 				fileToInstrument).build().getFilesToInstrument().iterator()
 				.next();
-		assertEquals(new File(".", fileToInstrument).getPath(), file.getPath());
+		assertEquals(new File((String)null, fileToInstrument).getPath(), file.getPath());
 	}
 
 	@Test
@@ -287,7 +287,7 @@ public class ArgumentsBuilderTest {
 	public void testDefaultValues() throws Exception {
 		Arguments defaultArgs = new ArgumentsBuilder().build();
 
-		assertEquals(".", defaultArgs.getBaseDirectory().getPath());
+		assertNull(defaultArgs.getBaseDirectory());
 		assertEquals(CoverageDataFileHandler.getDefaultDataFile().getPath(),
 				defaultArgs.getDataFile().getPath());
 

@@ -42,7 +42,7 @@ public class ArgumentsBuilder {
 
 	private Arguments arguments;
 
-	private File baseDirectory;
+	private String baseDirectory;
 	private File dataFile;
 	private File destinationDirectory;
 	private File commandsFile;
@@ -76,7 +76,7 @@ public class ArgumentsBuilder {
 	}
 
 	public ArgumentsBuilder setBaseDirectory(String baseDir) {
-		baseDirectory = new File(baseDir);
+		baseDirectory = baseDir;
 		return this;
 	}
 
@@ -191,9 +191,10 @@ public class ArgumentsBuilder {
 	}
 
 	public ArgumentsBuilder addFileToInstrument(String file) {
-		String baseDir = getBaseDirectory().getPath();
-
-		file = file.replace(baseDir, "");
+		String baseDir = getBaseDirectory();
+		if ( baseDir != null ) {
+			file = file.replace(baseDir, "");
+		}
 
 		filesToInstrument.add(new CoberturaFile(baseDir, file));
 		return this;
@@ -220,7 +221,7 @@ public class ArgumentsBuilder {
 				if (codeSource.isDirectory()) {
 					sources.addSourceDirectory(codeSource.getPath());
 				} else {
-					sources.addSourceFile(getBaseDirectory().getPath(),
+					sources.addSourceFile(getBaseDirectory(),
 							codeSource.getPath());
 				}
 			}
@@ -248,7 +249,7 @@ public class ArgumentsBuilder {
 
 	private void initVariables() {
 		dataFile = CoverageDataFileHandler.getDefaultDataFile();
-		baseDirectory = new File(".");
+//		baseDirectory = new File(".");
 		ignoreRegexes = new Vector();
 		ignoreBranchesRegexes = new Vector<Pattern>();
 		ignoreMethodAnnotations = new HashSet<String>();
@@ -274,7 +275,7 @@ public class ArgumentsBuilder {
 		encoding = DEFAULT_ENCODING;
 	}
 
-	private File getBaseDirectory() {
+	private String getBaseDirectory() {
 		return baseDirectory;
 	}
 
