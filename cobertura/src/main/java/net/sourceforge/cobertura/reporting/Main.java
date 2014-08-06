@@ -32,6 +32,7 @@ package net.sourceforge.cobertura.reporting;
  *
  * @author Steven C. Saliman
  */
+@Deprecated
 public class Main {
 	public static void main(String[] args) throws Exception {
 		System.err.println("net.sourceforge.cobertura.reporting.Main is a deprecated class.");
