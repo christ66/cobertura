@@ -33,7 +33,7 @@ import org.apache.oro.text.regex.Pattern;
  */
 public class Arguments {
 
-	private File baseDirectory;
+	private String baseDirectory;
 	private File dataFile;
 	private File destinationDirectory;
 	private File commandsFile;
@@ -62,7 +62,7 @@ public class Arguments {
 	private Set<String> ignoreMethodAnnotations;
 	private Set<String> ignoreClassAnnotations;
 
-	Arguments(File baseDirectory, File dataFile, File destinationDirectory,
+	Arguments(String baseDirectory, File dataFile, File destinationDirectory,
 			File commandsFile, Collection ignoreRegexes,
 			Collection<Pattern> ignoreBranchesRegexes,
 			Collection<Pattern> classPatternIncludeClassesRegexes,
@@ -108,7 +108,7 @@ public class Arguments {
 				.unmodifiableSet(ignoreClassAnnotations);
 	}
 
-	public File getBaseDirectory() {
+	public String getBaseDirectory() {
 		return baseDirectory;
 	}
 

@@ -59,7 +59,7 @@ public class MergeMain {
 		new Cobertura(builder.build()).merge().saveProjectData();
 	}
 
-	public static void main(String[] args) {
+	public static int merge(String[] args) {
 		Header.print(System.out);
 
 		try {
@@ -67,8 +67,17 @@ public class MergeMain {
 		} catch (Exception ex) {
 			System.err.println("Error: Cannot process arguments: "
 					+ ex.getMessage());
-			System.exit(1);
+			return 1;
 		}
 		new MergeMain(args);
+		return 0;
 	}
+
+	public static void main(String[] args) {
+		int returnValue = merge(args);
+		if ( returnValue != 0 ) {
+			System.exit(returnValue);
+		}
+	}
+
 }

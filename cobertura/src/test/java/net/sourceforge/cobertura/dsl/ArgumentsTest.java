@@ -24,7 +24,7 @@ public class ArgumentsTest {
 	private static final double PACKAGE_BRANCH_THRESHOLD = 0.8;
 	private static final double TOTAL_LINE_THRESHOLD = 0.9;
 	private static final double TOTAL_BRANCH_THRESHOLD = 0.95;
-	private static final File BASEDIR = new File("basedir");
+	private static final String BASEDIR = "basedir";
 	private static final File DATA_FILE = new File("dataFile");
 	private static final File DESTINATION_DIRECTORY = new File(
 			"destinationDirectory");
