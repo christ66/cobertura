@@ -135,14 +135,14 @@ public class ArgumentsBuilderTest {
 	@Test
 	public void testAddMinimumCoverageRates() throws Exception {
 		String regex = "regex";
-		int lineCoverage = 50;
-		int branchCoverage = 55;
+		double lineCoverage = .5;
+		double branchCoverage = .55;
 		CoverageThreshold threshold = new ArgumentsBuilder()
 				.addMinimumCoverageRates(regex, branchCoverage, lineCoverage)
 				.build().getMinimumCoverageThresholds().iterator().next();
 		assertEquals(regex, threshold.getRegex());
-		assertEquals(lineCoverage, threshold.getMinLinePercentage());
-		assertEquals(branchCoverage, threshold.getMinBranchPercentage());
+		assertEquals(lineCoverage, threshold.getMinLinePercentage(), DELTA);
+		assertEquals(branchCoverage, threshold.getMinBranchPercentage(), DELTA);
 	}
 
 	@Test

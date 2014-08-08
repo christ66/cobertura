@@ -7,9 +7,10 @@ import static org.junit.Assert.assertEquals;
 
 public class CoverageThresholdTest {
 
-	public static final int MIN_LINE_PERCENTAGE = 50;
-	public static final int MIN_BRANCH_PERCENTAGE = 50;
-	public static final String REGEX = "*";
+	private static final double MIN_LINE_PERCENTAGE = .5;
+	private static final double MIN_BRANCH_PERCENTAGE = .5;
+	private static final String REGEX = "*";
+	private static final double DELTA = .001;
 	private CoverageThreshold coverageThreshold;
 
 	@Before
@@ -26,12 +27,12 @@ public class CoverageThresholdTest {
 	@Test
 	public void testGetMinBranchPercentage() throws Exception {
 		assertEquals(MIN_BRANCH_PERCENTAGE, coverageThreshold
-				.getMinBranchPercentage());
+				.getMinBranchPercentage(), DELTA);
 	}
 
 	@Test
 	public void testGetMinLinePercentage() throws Exception {
 		assertEquals(MIN_LINE_PERCENTAGE, coverageThreshold
-				.getMinLinePercentage());
+				.getMinLinePercentage(), DELTA);
 	}
 }
