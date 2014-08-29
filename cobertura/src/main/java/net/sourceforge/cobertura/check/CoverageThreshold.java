@@ -5,8 +5,8 @@ package net.sourceforge.cobertura.check;
  */
 public class CoverageThreshold {
 	private String regex;
-	private int minBranchPercentage;
-	private int minLinePercentage;
+	private double minBranchPercentage;
+	private double minLinePercentage;
 
 	/**
 	 * Costructor
@@ -14,8 +14,8 @@ public class CoverageThreshold {
 	 * @param minBranchPercentage -minimum expected branch coverage percentage
 	 * @param minLinePercentage -minimum expected line coverage percentage
 	 */
-	public CoverageThreshold(String regex, int minBranchPercentage,
-			int minLinePercentage) {
+	public CoverageThreshold(String regex, double minBranchPercentage,
+			double minLinePercentage) {
 		this.regex = regex;
 		this.minBranchPercentage = minBranchPercentage;
 		this.minLinePercentage = minLinePercentage;
@@ -25,11 +25,11 @@ public class CoverageThreshold {
 		return regex;
 	}
 
-	public int getMinBranchPercentage() {
+	public double getMinBranchPercentage() {
 		return minBranchPercentage;
 	}
 
-	public int getMinLinePercentage() {
+	public double getMinLinePercentage() {
 		return minLinePercentage;
 	}
 }

@@ -38,8 +38,8 @@ public class ArgumentsTest {
 	private static final String CLASS_PATTERN_INCLUDE_CLASSES_REGEXES = "classPatternIncludeClassesRegexes";
 	private static final String CLASS_PATTERN_EXCLUDE_CLASSES_REGEXES = "classPatternExcludeClassesRegexes";
 	private static final String COVERAGE_THRESHOLD_REGEX = "coverageThresholdRegex";
-	private static final int MIN_BRANCH_PERCENTAGE = 50;
-	private static final int MIN_LINE_PERCENTAGE = 50;
+	private static final double MIN_BRANCH_PERCENTAGE = .5;
+	private static final double MIN_LINE_PERCENTAGE = .5;
 	private static final CoberturaFile FILE_TO_INSTRUMENT = new CoberturaFile(
 			".", "fileToInstrument");
 	private static final File FILE_TO_MERGE = new File("fileToMerge");
@@ -161,8 +161,8 @@ public class ArgumentsTest {
 	public void testGetMinimumCoverageThresholds() throws Exception {
 		CoverageThreshold threshold = arguments.getMinimumCoverageThresholds()
 				.iterator().next();
-		assertEquals(MIN_LINE_PERCENTAGE, threshold.getMinLinePercentage());
-		assertEquals(MIN_BRANCH_PERCENTAGE, threshold.getMinBranchPercentage());
+		assertEquals(MIN_LINE_PERCENTAGE, threshold.getMinLinePercentage(), DELTA);
+		assertEquals(MIN_BRANCH_PERCENTAGE, threshold.getMinBranchPercentage(), DELTA);
 		assertEquals(COVERAGE_THRESHOLD_REGEX, threshold.getRegex());
 	}
 

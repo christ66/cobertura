@@ -148,7 +148,7 @@ public class ArgumentsBuilder {
 	}
 
 	public ArgumentsBuilder addMinimumCoverageRates(String regex,
-			int branchPercentage, int linePercentage) {
+			double branchPercentage, double linePercentage) {
 		minimumCoverageThresholds.add(new CoverageThreshold(regex,
 				branchPercentage, linePercentage));
 		return this;

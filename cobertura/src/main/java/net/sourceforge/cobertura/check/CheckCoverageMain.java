@@ -30,14 +30,11 @@ import net.sourceforge.cobertura.dsl.Cobertura;
 import net.sourceforge.cobertura.reporting.CoverageThresholdsReport;
 import net.sourceforge.cobertura.reporting.ReportName;
 import net.sourceforge.cobertura.util.Header;
-
 import org.apache.oro.text.regex.MalformedPatternException;
-import org.apache.oro.text.regex.Pattern;
-import org.apache.oro.text.regex.Perl5Compiler;
-import org.apache.oro.text.regex.Perl5Matcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -56,21 +53,21 @@ public class CheckCoverageMain {
 			CoverageResultEntry entry, int branchStatus, int lineStatus) {
 		if (entry.getCoverageType().equals(BRANCH)) {
 			logger
-					.error(String
-							.format(
-									"%s failed coverage check. Branch coverage rate of %s is below %s",
-									entry.getName(),
-									entry.getCurrentCoverage(), entry
-											.getExpectedCoverage()));
+					.error(entry.getName() +
+						   " failed coverage check. Branch coverage rate of "+
+						   percentage(entry.getCurrentCoverage()) +
+					       "% is below " +
+						   percentage(entry.getExpectedCoverage()) +
+						   "%");
 			return branchStatus;
 		} else {
 			logger
-					.error(String
-							.format(
-									"%s failed coverage check. Line coverage rate of %s is below %s",
-									entry.getName(),
-									entry.getCurrentCoverage(), entry
-											.getExpectedCoverage()));
+					.error(entry.getName() +
+						   " failed coverage check. Line coverage rate of " +
+						   percentage(entry.getCurrentCoverage()) +
+					       "% is below " +
+						   percentage(entry.getExpectedCoverage()) +
+					       "%");
 			return lineStatus;
 		}
 	}
@@ -92,6 +89,11 @@ public class CheckCoverageMain {
 				+ "% is invalid.  Percentages must be between 0 and 100.");
 	}
 
+    private static String percentage(double coverateRate) {
+        BigDecimal decimal = new BigDecimal(coverateRate * 100);
+        return decimal.setScale(1, BigDecimal.ROUND_DOWN).toString();
+    }
+
 	public static int checkCoverage(String[] args)
 			throws MalformedPatternException {
 		Header.print(System.out);
@@ -109,9 +111,9 @@ public class CheckCoverageMain {
 						.setClassLineCoverageThreshold(inRangeAndDivideByOneHundred(args[++i]));
 			} else if (args[i].equals("--regex")) {
 				StringTokenizer tokenizer = new StringTokenizer(args[++i], ":");
-				builder.addMinimumCoverageRates(tokenizer.nextToken(), Integer
-						.valueOf(tokenizer.nextToken()), Integer
-						.valueOf(tokenizer.nextToken()));
+				builder.addMinimumCoverageRates(tokenizer.nextToken(),
+						inRangeAndDivideByOneHundred(tokenizer.nextToken()),
+						inRangeAndDivideByOneHundred(tokenizer.nextToken()));
 			} else if (args[i].equals("--packagebranch")) {
 				builder
 						.setPackageBranchCoverageThreshold(inRangeAndDivideByOneHundred(args[++i]));
