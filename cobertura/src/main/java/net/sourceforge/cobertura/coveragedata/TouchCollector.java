@@ -117,7 +117,7 @@ public class TouchCollector {
 
 	private static void applyTouchesToSingleClassOnProjectData(
 			final ClassData classData, final Class<?> c) {
-		logger.finer("----------- " + c.getCanonicalName()
+		logger.finer("----------- " + maybeCanonicalName(c)
 				+ " ---------------- ");
 		try {
 			Method m0 = c
@@ -136,6 +136,26 @@ public class TouchCollector {
 			logger.log(Level.SEVERE, "Cannot apply touches", e);
 		}
 	}
+
+    private static String maybeCanonicalName(final Class<?> c) {
+
+        /* observed getCanonicalName throwing a
+
+           java.lang.InternalError: Malformed class name
+
+           on the scala generated class name
+
+           com.twitter.dataproducts.authcache.storage.GnipStream$Visibility$IsExternal$
+
+           Conclusion: getCanonicalName is flaky
+        */
+
+        try {
+            return c.getCanonicalName();
+        } catch (Throwable t) {
+            return c.getName();
+        }
+    }
 
 	@CoverageIgnore
 	private static class ApplyToClassDataLightClassmapListener
