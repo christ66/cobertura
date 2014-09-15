@@ -47,4 +47,13 @@ public class CoberturaInstrumenterTest {
 		coberturaInstrumenter.addInstrumentationToSingleClass(new File(
 				"src/test/resources/coberturaInstrumenterTest/Test1.class"));
 	}
+	
+	@Test
+	public void instrumentFailing() throws ClassNotFoundException {
+		coberturaInstrumenter.setFailOnError(true);
+		coberturaInstrumenter.setDestinationDirectory(new File("target",
+				"build"));
+		coberturaInstrumenter.addInstrumentationToSingleClass(new File(
+				"src/test/resources/coberturaInstrumenterTest/Test1.class"));
+	}
 }
