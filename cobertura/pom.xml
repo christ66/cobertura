@@ -40,6 +40,7 @@
     <oroVersion>2.0.8</oroVersion>
     <jaxenVersion>1.1.4</jaxenVersion>
     <commonsioVersion>2.2</commonsioVersion>
+    <commonslangVersion>3.3.2</commonslangVersion>
     <antVersion>1.8.3</antVersion>
     <jettyVersion>6.1.14</jettyVersion>
     <simplexmlVersion>2.6.2</simplexmlVersion>
@@ -49,6 +50,7 @@
     <javaccVersion>5.0</javaccVersion>
     <logbackVersion>1.0.13</logbackVersion>
     <junitVersion>4.11</junitVersion>
+    <mockitoVersion>1.9.5</mockitoVersion>
     <jdkVersion>1.5</jdkVersion>
     <surefireVersion>2.16</surefireVersion>
     <slf4jVersion>1.7.5</slf4jVersion>
@@ -186,6 +188,17 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junitVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>${mockitoVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commonslangVersion}</version>
     </dependency>
   </dependencies>
 
