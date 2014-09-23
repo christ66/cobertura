@@ -217,10 +217,11 @@ public class XMLReport {
 		String signature = nameAndSig.substring(nameAndSig.indexOf('('));
 		double lineRate = classData.getLineCoverageRate(nameAndSig);
 		double branchRate = classData.getBranchCoverageRate(nameAndSig);
+		int methodComplexity = complexity.getCCNForMethod(classData, name, signature);
 
 		println("<method name=\"" + xmlEscape(name) + "\" signature=\""
 				+ xmlEscape(signature) + "\" line-rate=\"" + lineRate
-				+ "\" branch-rate=\"" + branchRate + "\">");
+		    		+ "\" branch-rate=\"" + branchRate + "\" complexity=\"" + methodComplexity + "\">");
 		increaseIndentation();
 		dumpLines(classData, nameAndSig);
 		decreaseIndentation();
