@@ -1970,7 +1970,7 @@ void FormalParameter() :
 {
     //[ "final" ]
            Modifiers()
-    Type() [ "..." ] VariableDeclaratorId()
+    Type() [ "..." { _sName += "[]"; } ] VariableDeclaratorId()
 }
 
 void ConstructorDeclaration() :
@@ -2177,7 +2177,7 @@ void Initializer() :
  */
 
 void Type() :
-{}
+{ _sName = ""; }
 {
    LOOKAHEAD(2) ReferenceType()
  |
@@ -3343,7 +3343,7 @@ void ClassOrInterfaceType():
 {
   <IDENTIFIER>
 {
-                _sName = getToken(0).image;
+                _sName += getToken(0).image;
                 if ( _tmpResultToken == null )
                 {
                   _tmpResultToken = getToken( 0 );
@@ -3408,7 +3408,7 @@ void TypeArguments():
 //    "<" TypeArgument() ( LOOKAHEAD(2) "," TypeArgument() )* [LOOKAHEAD(3)">"] [LOOKAHEAD(3)">>"] [LOOKAHEAD(3)">>>"] //Removed by REYNAUD Sebastien (LOGICA)
 
 //Added by REYNAUD Sebastien (LOGICA)
-	"<" (TypeArgument() ( LOOKAHEAD(2) "," TypeArgument() )* )* ">"
+	"<" { _sName += "<"; } (TypeArgument() ( LOOKAHEAD(2) "," { _sName += ","; } TypeArgument() )* )* ">" { _sName += ">"; }
 //
 
 }
@@ -3430,7 +3430,7 @@ void ReferenceType():
 {}
 {
 /* ccl 2008-01-23 */
-   PrimitiveType() ( LOOKAHEAD(2) "[" "]" { _sName += "[]"; } )+
+   PrimitiveType()  { _sName = getToken(0).image; } ( LOOKAHEAD(2) "[" "]" { _sName += "[]"; } )+
   |
    ( ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" { _sName += "[]"; } )*
 }

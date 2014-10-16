@@ -43,6 +43,7 @@
   <!ATTLIST method signature   CDATA #REQUIRED>
   <!ATTLIST method line-rate   CDATA #REQUIRED>
   <!ATTLIST method branch-rate CDATA #REQUIRED>
+  <!ATTLIST method complexity  CDATA #REQUIRED>
 
   <!ELEMENT lines (line*)>
 
