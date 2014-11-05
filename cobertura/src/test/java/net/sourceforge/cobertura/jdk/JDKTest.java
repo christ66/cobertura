@@ -85,21 +85,8 @@ public class JDKTest {
 				+ "/coverage.xml");
 	}
 
-	@Ignore("JDK 7 no longer supports a 1.1 source")
-	public void testJDK1() throws Exception {
-		setupAndExecuteTest("1.1");
-		int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
-				"main");
-		assertEquals(2, hitCount);
-	}
-
-	@Test
-	public void testJDK2() throws Exception {
-		setupAndExecuteTest("1.2");
-		int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
-				"main");
-		assertEquals(2, hitCount);
-	}
+	// Note: Tests for Java 1.1 and 1.2 has been removed, because using those
+	// values for the javac option -source is not supported in Java 1.5 or newer
 
 	@Test
 	public void testJDK3() throws Exception {
@@ -128,14 +115,6 @@ public class JDKTest {
 	@Test
 	public void testJDK6() throws Exception {
 		setupAndExecuteTest("1.6");
-		int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
-				"main");
-		assertEquals(2, hitCount);
-	}
-
-	@Test
-	public void testJDK7() throws Exception {
-		setupAndExecuteTest("1.7");
 		int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
 				"main");
 		assertEquals(2, hitCount);
