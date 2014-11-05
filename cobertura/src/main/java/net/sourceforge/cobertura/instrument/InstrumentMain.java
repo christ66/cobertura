@@ -8,8 +8,8 @@
  * Copyright (C) 2006 John Lewis
  * Copyright (C) 2006 Jiri Mares
  * Copyright (C) 2008 Scott Frederick
- * Copyright (C) 2010 Tad Smith 
- * Copyright (C) 2010 Piotr Tabor  
+ * Copyright (C) 2010 Tad Smith
+ * Copyright (C) 2010 Piotr Tabor
  * Contact information for the above is given in the COPYRIGHT file.
  *
  * Cobertura is free software; you can redistribute it and/or modify
@@ -133,6 +133,8 @@ public class InstrumentMain {
 				builder.threadsafeRigorous(true);
 			} else if (args[i].equals("--auxClasspath")) {
 				addElementsToJVM(args[++i]);
+                        } else if (args[i].equals("--listOfFilesToInstrument")) {
+                                builder.listOfFilesToInstrument(args[++i]);
 			} else {
 				builder.addFileToInstrument(args[i]);
 			}
