@@ -1,4 +1,4 @@
-package org.test.tesstates;
+package org.test.teststates;
 
 import java.util.List;
 import java.util.Map;
@@ -12,9 +12,9 @@ public abstract class TestState {
     private static java.util.Map<String, TestState> getSubstateMap() {
         if (SUBSTATES == null) {
             java.util.Map<String, TestState> tmpSubstates = new java.util.HashMap<String, TestState>();
-            tmpSubstates.put(org.test.tesstates.TestRunning.INSTANCE.getName(), org.test.tesstates.TestRunning.INSTANCE);
-            tmpSubstates.put(org.test.tesstates.TestDone.INSTANCE.getName(), org.test.tesstates.TestDone.INSTANCE);
-            tmpSubstates.put(org.test.tesstates.TestCreated.INSTANCE.getName(), org.test.tesstates.TestCreated.INSTANCE);
+            tmpSubstates.put(org.test.teststates.TestRunning.INSTANCE.getName(), org.test.teststates.TestRunning.INSTANCE);
+            tmpSubstates.put(org.test.teststates.TestDone.INSTANCE.getName(), org.test.teststates.TestDone.INSTANCE);
+            tmpSubstates.put(org.test.teststates.TestCreated.INSTANCE.getName(), org.test.teststates.TestCreated.INSTANCE);
             SUBSTATES = tmpSubstates;
         }
         return SUBSTATES;

@@ -1,4 +1,4 @@
-package org.test.tesstates;
+package org.test.teststates;
 
 public abstract class TestPending extends TestState {
 
@@ -7,8 +7,8 @@ public abstract class TestPending extends TestState {
     public static java.util.List<TestState> getSubstates() {
         if (SUBSTATES == null) {
             java.util.List<TestState> tmpSubstates = new java.util.ArrayList<TestState>();
-                tmpSubstates.add(org.test.tesstates.TestRunning.INSTANCE);
-                tmpSubstates.add(org.test.tesstates.TestCreated.INSTANCE);
+                tmpSubstates.add(org.test.teststates.TestRunning.INSTANCE);
+                tmpSubstates.add(org.test.teststates.TestCreated.INSTANCE);
             SUBSTATES = tmpSubstates;
         }
         return SUBSTATES;

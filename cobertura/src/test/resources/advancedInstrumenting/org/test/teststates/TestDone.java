@@ -1,4 +1,4 @@
-package org.test.tesstates;
+package org.test.teststates;
 
 public final class TestDone extends TestState {
     public static final TestDone INSTANCE = new TestDone("TestDone");

@@ -1,4 +1,4 @@
-package org.test.tesstates;
+package org.test.teststates;
 
 public final class TestCreated extends TestPending {
 

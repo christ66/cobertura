@@ -1,4 +1,4 @@
-package org.test.tesstates;
+package org.test.teststates;
 
 public final class TestRunning extends TestPending {
     public static final TestRunning INSTANCE = new TestRunning("TestRunning");

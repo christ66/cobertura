@@ -10,20 +10,21 @@ public class AdvancedCoberturaInstrumenterTest {
 	@Test
 	public void testInstrumentation() throws Throwable {
 		File outDir = new File("target/advancedInstrumenting");
+
+		File testSrcdir = new File("src/test/resources/advancedInstrumenting");		
+		if(!testSrcdir.exists()) {
+			throw new IllegalStateException("The input files for the tests are missing.");
+		}
 		
 		File compiled = new File(outDir, "compiled");
-		Compiler compiler = new Compiler(compiled);
+		Compiler compiler = new Compiler(compiled, testSrcdir);
 		
 		File instrumented = new File(outDir, "instrumented");
 		Instrumenter instrumenter = new Instrumenter(instrumented, compiled);
 		
-		File testdir = new File("src/test/resources/advancedInstrumenting");		
-		if(!testdir.exists()) {
-			throw new IllegalStateException("The input files for the tests are missing.");
-		}
 		
 		// compile the files
-		traverseDir(compiler, testdir);
+		traverseDir(compiler, testSrcdir);
 		compiler.compile();
 		
 		// and try to instrument them
