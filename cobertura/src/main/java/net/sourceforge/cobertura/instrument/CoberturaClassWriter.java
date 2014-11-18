@@ -13,7 +13,7 @@ public class CoberturaClassWriter extends ComputeClassWriter {
 		super(flags);
 	}
 
-	@Override
+/*	@Override
 	protected String getCommonSuperClass(final String type1, final String type2) {
 		try {
 			return super.getCommonSuperClass(type1, type2);
@@ -62,5 +62,5 @@ public class CoberturaClassWriter extends ComputeClassWriter {
 			} while (!c.isAssignableFrom(d));
 			return c.getName().replace('.', '/');
 		}
-	}
+	}*/
 }

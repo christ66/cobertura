@@ -29,6 +29,7 @@
  */
 package net.sourceforge.cobertura.instrument;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -190,16 +191,21 @@ public class ComputeClassWriter extends ClassWriter {
      * @param type
      *            the internal name of a class or interface.
      * @return the ClassReader corresponding to 'type'.
+     * @throws FileNotFoundException 
      * @throws IOException
      *             if the bytecode of 'type' cannot be loaded.
      * @throws NullPointerException
      *             if the bytecode of 'type' cannot be found.
      */
-    private ClassReader typeInfo(final String type) throws IOException, NullPointerException {
-        InputStream is = l.getResourceAsStream(type + ".class");
+    private ClassReader typeInfo(final String type) throws IOException {
+        InputStream is = ClassLoader
+				.getSystemClassLoader().getResourceAsStream(type + ".class");
         if(is == null) {
-        	// TODO this should be a FileNotFoundException
-        	throw new NullPointerException("Class not found "+type);
+        	// System class loader failed, let's try the urlClassLoader
+        	is = InstrumentMain.urlClassLoader.getResourceAsStream(type + ".class");
+        }
+        if(null == is) {
+        	throw new FileNotFoundException("could not load class "+type);
         }
         try {
             return new ClassReader(is);
