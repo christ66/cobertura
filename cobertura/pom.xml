@@ -330,7 +330,8 @@
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <excludes>
             <exclude>**/test/condition/**</exclude>
-	    <exclude>**/examples/functionaltest1/**</exclude>
+			<exclude>**/examples/functionaltest1/**</exclude>
+			<exclude>**/advancedInstrumenting/**</exclude>
           </excludes>
         </configuration>
       </plugin>
