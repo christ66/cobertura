@@ -154,6 +154,13 @@ public class JDK7Test {
 		assertEquals(4, hitCount);
 	}
 
+	@Test
+	public void testMain() throws Exception {
+		int hitCount = TestUtils.getTotalHitCount(dom,
+				"mypackage.Java7TestCase", "main");
+		assertEquals(7, hitCount);
+	}
+
 	static final String java7TestFile = "\n package mypackage;"
 			+ "\n "
 			+ "\n import java.util.*;"
