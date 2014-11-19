@@ -357,8 +357,6 @@
         <configuration>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <excludes>
-            <!-- Excluded temporarily due to https://github.com/cobertura/cobertura/issues/201 -->
-            <exclude>net/sourceforge/cobertura/instrument/CoberturaInstrumenterTest.java</exclude>
             <exclude>**/test/condition/**</exclude>
             <exclude>**/examples/functionaltest1/**</exclude>
           </excludes>
