@@ -1340,81 +1340,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Enforce not importing incorrect projects. -->
-            <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.3.1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-imports</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <fail>${breakOnFailure.enforcer}</fail>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>[3.0.5,)</version>
-                                </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>${jdk.version}</version>
-                                </requireJavaVersion>
-                                <requireUpperBoundDeps/>
-
-                                <!--
-                                    Enforce the ProjectType structure, implying that all projects
-                                    must comply with the project template definitions.
-                                -->
-                                <validateProjectTypes
-                                        implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.ValidateProjectType"/>
-
-                                <!--
-                                    Enforce the implementation rules for dependencies, to enforce that
-                                    the level of dependency tanglement is not increased. This implies that
-                                    implementation projects cannot import other implementation projects (but
-                                    instead should import APIs).
-
-                                    While the configuration below reflect the default settings, it is
-                                    reproduced her to serve as an example of how to configure this enforcement rule
-                                    in child reactors - where needs are likely different than here.
-                                -->
-                                <restrictImplDependencies
-                                        implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.RestrictImplDependencies">
-                                    <includedGroupIdPatterns>${enforcer.includedGroupIdPatterns}
-                                    </includedGroupIdPatterns>
-                                    <excludedGroupIdPatterns>${enforcer.excludedGroupIdPatterns}
-                                    </excludedGroupIdPatterns>
-                                </restrictImplDependencies>
-
-                                <!--
-                                    Enforce using correct packages for classes within a NSC project.
-                                    The root package of any project should be identical to its groupId.
-                                    Any package below the root package can safely be used - so ...
-
-                                    if the groupId of a project is "com.acme.foobar",
-                                    then all code within that project must reside within the "com.acme.foobar" package,
-                                    or in any subpackage thereof.
-                                -->
-                                <correctPackaging
-                                        implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.CorrectPackagingRule"/>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>se.jguru.nazgul.tools.codestyle</groupId>
-                        <artifactId>nazgul-codestyle</artifactId>
-                        <version>${nazgul-tools.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>net.sourceforge.cobertura.codestyle</groupId>
-                        <artifactId>cobertura-codestyle</artifactId>
-                        <version>2.1.0-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
             <!-- Generate maven dependencies listing file -->
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
@@ -1670,6 +1595,95 @@
     -->
 
     <profiles>
+
+        <!--
+            Moved to a profile, activated by JDK 1.7 or higher, because the Enforcer rules used require Java 1.7.
+            We must use Java 1.6 when doing a release.
+        -->
+        <profile>
+            <id>enforce-imports</id>
+            <activation>
+                <jdk>[1.7,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Enforce not importing incorrect projects. -->
+                    <plugin>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>1.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-imports</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <fail>${breakOnFailure.enforcer}</fail>
+                                    <rules>
+                                        <requireMavenVersion>
+                                            <version>[3.0.5,)</version>
+                                        </requireMavenVersion>
+                                        <requireJavaVersion>
+                                            <version>${jdk.version}</version>
+                                        </requireJavaVersion>
+                                        <requireUpperBoundDeps/>
+
+                                        <!--
+                                            Enforce the ProjectType structure, implying that all projects
+                                            must comply with the project template definitions.
+                                        -->
+                                        <validateProjectTypes
+                                                implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.ValidateProjectType"/>
+
+                                        <!--
+                                            Enforce the implementation rules for dependencies, to enforce that
+                                            the level of dependency tanglement is not increased. This implies that
+                                            implementation projects cannot import other implementation projects (but
+                                            instead should import APIs).
+
+                                            While the configuration below reflect the default settings, it is
+                                            reproduced her to serve as an example of how to configure this enforcement rule
+                                            in child reactors - where needs are likely different than here.
+                                        -->
+                                        <restrictImplDependencies
+                                                implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.RestrictImplDependencies">
+                                            <includedGroupIdPatterns>${enforcer.includedGroupIdPatterns}
+                                            </includedGroupIdPatterns>
+                                            <excludedGroupIdPatterns>${enforcer.excludedGroupIdPatterns}
+                                            </excludedGroupIdPatterns>
+                                        </restrictImplDependencies>
+
+                                        <!--
+                                            Enforce using correct packages for classes within a NSC project.
+                                            The root package of any project should be identical to its groupId.
+                                            Any package below the root package can safely be used - so ...
+
+                                            if the groupId of a project is "com.acme.foobar",
+                                            then all code within that project must reside within the "com.acme.foobar" package,
+                                            or in any subpackage thereof.
+                                        -->
+                                        <correctPackaging
+                                                implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.CorrectPackagingRule"/>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>se.jguru.nazgul.tools.codestyle</groupId>
+                                <artifactId>nazgul-codestyle</artifactId>
+                                <version>${nazgul-tools.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>net.sourceforge.cobertura.codestyle</groupId>
+                                <artifactId>cobertura-codestyle</artifactId>
+                                <version>2.1.0-SNAPSHOT</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 
         <!--
             Purpose: Use GPG to sign artifacts during release:perform.
