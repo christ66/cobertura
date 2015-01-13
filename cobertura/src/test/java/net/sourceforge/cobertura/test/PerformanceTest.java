@@ -146,6 +146,8 @@ public class PerformanceTest {
 		classpath.addDirset(dirSetInstrumentDir);
 		classpath.addDirset(dirSetSrcDir);
 		classpath.addDirset(TestUtils.getCoberturaClassDirSet());
+		// This is needed to fix issue #213
+		classpath.add(TestUtils.createDependencyPath("org.slf4j", "slf4j-api", "1.7.5"));
 
 		java = new Java();
 		java.setClassname("mypackage.Main");
