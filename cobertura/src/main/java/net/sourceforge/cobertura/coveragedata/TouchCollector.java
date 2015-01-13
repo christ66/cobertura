@@ -27,18 +27,17 @@ package net.sourceforge.cobertura.coveragedata;
 
 import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @CoverageIgnore
 public class TouchCollector {
-	private static final Logger logger = Logger.getLogger(TouchCollector.class
-			.getCanonicalName());
+	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
 	/*In fact - concurrentHashset*/
 	private static Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<Class<?>, Integer>();
 
@@ -96,7 +95,7 @@ public class TouchCollector {
 				registerClass(clazz);
 			}
 		} catch (ClassNotFoundException e) {
-			logger.log(Level.SEVERE, "Exception when registering class: "
+			logger.error("Exception when registering class: "
 					+ classa, e);
 			throw e;
 		}
@@ -104,20 +103,18 @@ public class TouchCollector {
 
 	public static synchronized void applyTouchesOnProjectData(
 			ProjectData projectData) {
-		logger
-				.fine("=================== START OF REPORT ======================== ");
+		logger.debug("=================== START OF REPORT ======================== ");
 		for (Class<?> c : registeredClasses.keySet()) {
-			logger.fine("Report: " + c.getName());
+			logger.debug("Report: " + c.getName());
 			ClassData cd = projectData.getOrCreateClassData(c.getName());
 			applyTouchesToSingleClassOnProjectData(cd, c);
 		}
-		logger
-				.fine("===================  END OF REPORT  ======================== ");
+		logger.debug("===================  END OF REPORT  ======================== ");
 	}
 
 	private static void applyTouchesToSingleClassOnProjectData(
 			final ClassData classData, final Class<?> c) {
-		logger.finer("----------- " + maybeCanonicalName(c)
+		logger.trace("----------- " + maybeCanonicalName(c)
 				+ " ---------------- ");
 		try {
 			Method m0 = c
@@ -133,7 +130,7 @@ public class TouchCollector {
 			m.setAccessible(true);
 			m.invoke(null, lightClassmap);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Cannot apply touches", e);
+			logger.error("Cannot apply touches", e);
 		}
 	}
 
@@ -183,7 +180,7 @@ public class TouchCollector {
 		}
 
 		public void setSource(String source) {
-			logger.fine("source: " + source);
+			logger.debug("source: " + source);
 			classData.setSourceFileName(source);
 
 		}

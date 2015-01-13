@@ -32,17 +32,17 @@ package net.sourceforge.cobertura.coveragedata;
 import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.util.FileLocker;
 import net.sourceforge.cobertura.util.ShutdownHooks;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
 
 @CoverageIgnore
 public class ProjectData extends CoverageDataContainer {
-	private static final Logger logger = Logger.getLogger(ProjectData.class
-			.getCanonicalName());
+	private static final Logger logger = LoggerFactory.getLogger(ProjectData.class);
 	private static final long serialVersionUID = 6;
 
 	private static ProjectData globalProjectData = null;
