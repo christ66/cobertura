@@ -43,6 +43,7 @@ public class Arguments {
 	private Collection<Pattern> ignoreBranchesRegexes;
 	private Collection<Pattern> classPatternIncludeClassesRegexes;
 	private Collection<Pattern> classPatternExcludeClassesRegexes;
+	private boolean calculateMethodComplexity;
 	private boolean failOnError;
 	private boolean ignoreTrivial;
 	private boolean threadsafeRigorous;
@@ -67,6 +68,7 @@ public class Arguments {
 			Collection<Pattern> ignoreBranchesRegexes,
 			Collection<Pattern> classPatternIncludeClassesRegexes,
 			Collection<Pattern> classPatternExcludeClassesRegexes,
+			boolean calculateMethodComplexity,
 			boolean failOnError, boolean ignoreTrivial,
 			boolean threadsafeRigorous, String encoding,
 			Set<CoverageThreshold> minimumCoverageThresholds,
@@ -88,6 +90,7 @@ public class Arguments {
 				.unmodifiableCollection(classPatternIncludeClassesRegexes);
 		this.classPatternExcludeClassesRegexes = Collections
 				.unmodifiableCollection(classPatternExcludeClassesRegexes);
+		this.calculateMethodComplexity = calculateMethodComplexity;
 		this.failOnError = failOnError;
 		this.ignoreTrivial = ignoreTrivial;
 		this.threadsafeRigorous = threadsafeRigorous;
@@ -138,6 +141,10 @@ public class Arguments {
 
 	public Collection<Pattern> getClassPatternExcludeClassesRegexes() {
 		return classPatternExcludeClassesRegexes;
+	}
+
+	public boolean isCalculateMethodComplexity() {
+		return calculateMethodComplexity;
 	}
 
 	public boolean isFailOnError() {

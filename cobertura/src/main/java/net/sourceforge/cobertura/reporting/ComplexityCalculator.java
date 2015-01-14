@@ -98,6 +98,8 @@ public class ComplexityCalculator {
 		}
 	};
 
+	private boolean calculateMethodComplexity;
+
 	private String encoding;
 
 	/**
@@ -302,6 +304,10 @@ public class ComplexityCalculator {
 	 * @throws NullPointerException if <code>classData</code> is <code>null</code>
 	 */
 	public int getCCNForMethod(ClassData classData, String methodName, String methodDescriptor) {
+		if(!calculateMethodComplexity) {
+			return 0;
+		}
+
 		Validate.notNull(classData, "classData must not be null");
 		Validate.notNull(methodName, "methodName must not be null");
 		Validate.notNull(methodDescriptor, "methodDescriptor must not be null");
@@ -492,6 +498,16 @@ public class ComplexityCalculator {
 		}
 
 		return totalMatchPercent / totalParamTypes;
+	}
+
+	/**
+	 * Indicate whether complexity should be calculated for methods.
+	 *
+	 * @param calculateMethodComplexity Whether to calculate method complexity
+	 */
+	public void setCalculateMethodComplexity(boolean calculateMethodComplexity)
+	{
+		this.calculateMethodComplexity = calculateMethodComplexity;
 	}
 
 	/**

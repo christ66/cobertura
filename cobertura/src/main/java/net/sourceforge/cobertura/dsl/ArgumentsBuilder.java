@@ -36,6 +36,7 @@ public class ArgumentsBuilder {
 	// Visible for testing
 	static final String DEFAULT_ENCODING = "UTF-8";
 	static final double DEFAULT_THRESHOLD = 0.;
+	static final boolean DEFAULT_CALCULATE_METHOD_COMPLEXITY = false;
 	static final boolean DEFAULT_FAIL_ON_ERROR = false;
 	static final boolean DEFAULT_IGNORE_TRIVIAL = false;
 	static final boolean DEFAULT_THREADSAFE_RIGOROUS = false;
@@ -52,6 +53,7 @@ public class ArgumentsBuilder {
 	private Collection<Pattern> ignoreBranchesRegexes;
 	private Collection<Pattern> classPatternIncludeClassesRegexes;
 	private Collection<Pattern> classPatternExcludeClassesRegexes;
+	private boolean calculateMethodComplexity;
 	private boolean failOnError;
 	private boolean ignoreTrivial;
 	private boolean threadsafeRigorous;
@@ -124,6 +126,11 @@ public class ArgumentsBuilder {
 
 	public ArgumentsBuilder addIncludeClassesRegex(String regex) {
 		RegexUtil.addRegex(classPatternIncludeClassesRegexes, regex);
+		return this;
+	}
+
+	public ArgumentsBuilder calculateMethodComplexity(boolean calculateMethodComplexity) {
+		this.calculateMethodComplexity = calculateMethodComplexity;
 		return this;
 	}
 
@@ -230,7 +237,8 @@ public class ArgumentsBuilder {
 		return new Arguments(baseDirectory, dataFile, destinationDirectory,
 				commandsFile, ignoreRegexes, ignoreBranchesRegexes,
 				classPatternIncludeClassesRegexes,
-				classPatternExcludeClassesRegexes, failOnError, ignoreTrivial,
+				classPatternExcludeClassesRegexes, calculateMethodComplexity,
+				failOnError, ignoreTrivial,
 				threadsafeRigorous, encoding, minimumCoverageThresholds,
 				classLineThreshold, classBranchThreshold, packageLineThreshold,
 				packageBranchThreshold, totalLineThreshold,
@@ -269,6 +277,7 @@ public class ArgumentsBuilder {
 		totalBranchThreshold = DEFAULT_THRESHOLD;
 		totalLineThreshold = DEFAULT_THRESHOLD;
 
+		calculateMethodComplexity = DEFAULT_CALCULATE_METHOD_COMPLEXITY;
 		failOnError = DEFAULT_FAIL_ON_ERROR;
 		ignoreTrivial = DEFAULT_IGNORE_TRIVIAL;
 		threadsafeRigorous = DEFAULT_THREADSAFE_RIGOROUS;

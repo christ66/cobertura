@@ -117,6 +117,7 @@ public class Cobertura {
 		ComplexityCalculator complexityCalculator = new ComplexityCalculator(
 				args.getSources());
 		complexityCalculator.setEncoding(args.getEncoding());
+		complexityCalculator.setCalculateMethodComplexity(args.isCalculateMethodComplexity());
 
 		report.addReport(new NativeReport(getProjectDataInstance(), args
 				.getDestinationDirectory(), args.getSources(),

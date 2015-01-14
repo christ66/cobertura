@@ -29,6 +29,7 @@ public class ArgumentsTest {
 	private static final File DESTINATION_DIRECTORY = new File(
 			"destinationDirectory");
 	private static final File COMMANDS_FILE = new File("commandsFile");
+	private static final boolean CALCULATE_METHOD_COMPLEXITY = false;
 	private static final boolean FAIL_ON_ERROR = false;
 	private static final boolean IGNORE_TRIVIAL = true;
 	private static final boolean THREADSAFE_RIGOROUS = true;
@@ -78,7 +79,8 @@ public class ArgumentsTest {
 		this.arguments = new Arguments(BASEDIR, DATA_FILE,
 				DESTINATION_DIRECTORY, COMMANDS_FILE, ignoreRegexes,
 				ignoreBranchesRegexes, classPatternIncludeClassesRegexes,
-				classPatternExcludeClassesRegexes, FAIL_ON_ERROR,
+				classPatternExcludeClassesRegexes,
+				CALCULATE_METHOD_COMPLEXITY, FAIL_ON_ERROR,
 				IGNORE_TRIVIAL, THREADSAFE_RIGOROUS, ENCODING,
 				minimumCoverageThresholds, CLASS_LINE_THRESHOLD,
 				CLASS_BRANCH_THRESHOLD, PACKAGE_LINE_THRESHOLD,

@@ -65,6 +65,8 @@ public class ReportMain {
 				validateFormat(format);
 			} else if (args[i].equals("--encoding")) {
 				builder.setEncoding(args[++i]);
+			} else if (args[i].equals("--calculateMethodComplexity")) {
+				builder.calculateMethodComplexity(true);
 			} else {
 				builder.addSources(args[i], baseDir == null);
 			}
