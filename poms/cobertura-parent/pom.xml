@@ -1312,6 +1312,8 @@
             </plugin>
 
             <!-- Fix project license documents -->
+            <!-- Disabled until http://jira.codehaus.org/browse/MLICENSE-90 has been resolved -->
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -1326,6 +1328,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
 
             <!-- Compile the code -->
             <plugin>
