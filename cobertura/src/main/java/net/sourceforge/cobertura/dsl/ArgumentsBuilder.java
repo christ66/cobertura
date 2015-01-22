@@ -7,7 +7,10 @@ import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.RegexUtil;
 import org.apache.oro.text.regex.Pattern;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 /*
@@ -146,6 +149,25 @@ public class ArgumentsBuilder {
 
 	public ArgumentsBuilder threadsafeRigorous(boolean threadsafeRigorous) {
 		this.threadsafeRigorous = threadsafeRigorous;
+		return this;
+	}
+
+	public ArgumentsBuilder listOfFilesToInstrument(String listFileName) {
+		String baseDir = getBaseDirectory();
+		try {
+			File file = new File(listFileName);
+			FileReader fileReader = new FileReader(file);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			StringBuffer stringBuffer = new StringBuffer();
+			String line;
+			while ((line = bufferedReader.readLine()) != null) {
+				line = line.replace(baseDir, "");
+				filesToInstrument.add(new CoberturaFile(baseDir, line));
+			}
+			fileReader.close();
+		} catch (IOException e) {
+		  e.printStackTrace();
+		}
 		return this;
 	}
 

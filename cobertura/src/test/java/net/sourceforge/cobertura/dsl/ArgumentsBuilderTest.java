@@ -5,7 +5,10 @@ import net.sourceforge.cobertura.coveragedata.CoverageDataFileHandler;
 import net.sourceforge.cobertura.instrument.CoberturaFile;
 import org.junit.Test;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.util.Iterator;
 
 import static org.junit.Assert.*;
 
@@ -80,7 +83,7 @@ public class ArgumentsBuilderTest {
 				.getIgnoreClassAnnotations().iterator().next());
 	}
 
-    @Test
+	@Test
 	public void testAddExcludeClassesRegex() throws Exception {
 		String someRegex = "someRegex";
 		assertEquals(someRegex, new ArgumentsBuilder().addExcludeClassesRegex(
@@ -276,6 +279,24 @@ public class ArgumentsBuilderTest {
 	}
 
 	@Test
+	public void testListOfFilesToInstrument() throws Exception {
+		File listOfFilesFile = File.createTempFile("list2instrument", ".txt");
+		BufferedWriter outList = new BufferedWriter(new FileWriter(listOfFilesFile));
+		outList.write("foo\nbar\nbaz\n");
+		outList.close();
+		String tempFilename = listOfFilesFile.getAbsolutePath();
+		String tempDirname = listOfFilesFile.getParent();
+		String tempBasename = listOfFilesFile.getName();
+		Iterator<CoberturaFile> fileIter = new ArgumentsBuilder()
+				.setBaseDirectory(tempDirname).listOfFilesToInstrument(tempFilename)
+				.build().getFilesToInstrument().iterator();
+		assertEquals(new File(tempDirname, "foo").getPath(), fileIter.next().getPath());
+		assertEquals(new File(tempDirname, "bar").getPath(), fileIter.next().getPath());
+		assertEquals(new File(tempDirname, "baz").getPath(), fileIter.next().getPath());
+		assertFalse(fileIter.hasNext());
+	}
+
+	@Test
 	public void testAddFileToMerge() throws Exception {
 		String fileToMerge = "fileToMerge";
 		File file = new ArgumentsBuilder().addFileToMerge(fileToMerge).build()
@@ -286,7 +307,6 @@ public class ArgumentsBuilderTest {
 	@Test
 	public void testDefaultValues() throws Exception {
 		Arguments defaultArgs = new ArgumentsBuilder().build();
-
 		assertNull(defaultArgs.getBaseDirectory());
 		assertEquals(CoverageDataFileHandler.getDefaultDataFile().getPath(),
 				defaultArgs.getDataFile().getPath());
