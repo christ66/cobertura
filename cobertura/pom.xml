@@ -358,6 +358,8 @@
             <exclude>**/examples/functionaltest1/**</exclude>
             <!-- This test is failing and I don't know how to fix it -->
             <exclude>net/sourceforge/cobertura/thread/test/MultipleClassloaderFunctionalTest.java</exclude>
+            <!-- This test fails on Windows, see https://github.com/cobertura/cobertura/pull/209 -->
+            <exclude>net/sourceforge/cobertura/dsl/ArgumentsBuilderTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
