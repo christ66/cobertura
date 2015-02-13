@@ -2880,7 +2880,7 @@ void DoStatement() :
 void ForStatement() :
 {}
 {
-  "for" "("
+  "for" "(" (Annotation())?
   (
       LOOKAHEAD(Modifiers() Type() <IDENTIFIER> ":")
       Modifiers() Type() <IDENTIFIER> ":" Expression()
