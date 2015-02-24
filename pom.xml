@@ -59,6 +59,15 @@
             </roles>
             <timezone>+1</timezone>
         </developer>
+        <developer>
+            <id>dennisl</id>
+            <name>Dennis Lundberg</name>
+            <email>dennisl@apache.org</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
     </developers>
 
     <properties>
