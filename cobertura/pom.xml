@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sourceforge.cobertura</groupId>
   <artifactId>cobertura</artifactId>
-  <version>2.1.0-SNAPSHOT</version>
+  <version>2.1.0</version>
   <packaging>jar</packaging>
   <name>Cobertura code coverage</name>
   
@@ -12,7 +12,7 @@
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
     <version>7</version>
-    <relativePath/>
+    <relativePath />
   </parent>
   
   <description>
@@ -509,7 +509,7 @@
     <connection>scm:git:git://github.com/cobertura/cobertura</connection>
     <developerConnection>scm:git:git@github.com:cobertura/cobertura.git</developerConnection>
     <url>http://github.com/cobertura/cobertura</url>
-    <tag>HEAD</tag>
+    <tag>cobertura-2.1.0</tag>
   </scm>
   
   <developers>

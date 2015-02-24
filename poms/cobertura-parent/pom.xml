@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!--
@@ -12,12 +11,12 @@
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>net.sourceforge.cobertura.poms</groupId>
     <artifactId>cobertura-parent</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.1.0</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <url>${url.prefix}/${path.in.reactor}</url>
@@ -66,7 +65,7 @@
         <!-- Build-controlling properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <build.number/>
+        <build.number />
         <artifact.distribution.directory>${project.build.outputDirectory}</artifact.distribution.directory>
         <check.plugins.phase>package</check.plugins.phase>
         <jdk.version>1.6</jdk.version>
@@ -533,7 +532,7 @@
                                         <versionRange>2.5</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -547,7 +546,7 @@
                                         <versionRange>[0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -586,7 +585,7 @@
                                         <versionRange>[0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -600,7 +599,7 @@
                                         <versionRange>[0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -617,7 +616,7 @@
                                         <versionRange>[0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -632,7 +631,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute/>
+                                        <execute />
                                     </action>
                                 </pluginExecution>
 
@@ -646,7 +645,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute/>
+                                        <execute />
                                     </action>
                                 </pluginExecution>
 
@@ -660,7 +659,7 @@
                                         <versionRange>[1.0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -674,7 +673,7 @@
                                         <versionRange>[1.2,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -689,7 +688,7 @@
                                         <versionRange>[1.2,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -1096,7 +1095,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.1.0-SNAPSHOT</version>
+                            <version>2.1.0</version>
                         </dependency>
                         <dependency>
                             <groupId>log4j</groupId>
@@ -1147,7 +1146,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.1.0-SNAPSHOT</version>
+                            <version>2.1.0</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1182,7 +1181,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.1.0-SNAPSHOT</version>
+                            <version>2.1.0</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1208,8 +1207,7 @@
                         <!-- licenseResolver>${license.licenseResolver}</licenseResolver -->
                         <!--
                             descriptionTemplate>/codestyle/license/${license.id}/
-                            licenseDescriptionTemplate.ftl</descriptionTemplate
-                        -->
+                            licenseDescriptionTemplate.ftl</descriptionTemplate -->
                         <canUpdateDescription>true</canUpdateDescription>
                         <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
                         <licenseFile>${project.build.directory}/LICENSE.TXT</licenseFile>
@@ -1244,7 +1242,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.1.0-SNAPSHOT</version>
+                            <version>2.1.0</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1564,7 +1562,7 @@
         <connection>${scm.conn}</connection>
         <developerConnection>${scm.devConnection}</developerConnection>
         <url>${reactor.url.remote.prefix}/${reactor.name}</url>
-        <tag>HEAD</tag>
+        <tag>cobertura-2.1.0</tag>
     </scm>
 
     <!--
@@ -1629,14 +1627,13 @@
                                         <requireJavaVersion>
                                             <version>${jdk.version}</version>
                                         </requireJavaVersion>
-                                        <requireUpperBoundDeps/>
+                                        <requireUpperBoundDeps />
 
                                         <!--
                                             Enforce the ProjectType structure, implying that all projects
                                             must comply with the project template definitions.
                                         -->
-                                        <validateProjectTypes
-                                                implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.ValidateProjectType"/>
+                                        <validateProjectTypes implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.ValidateProjectType" />
 
                                         <!--
                                             Enforce the implementation rules for dependencies, to enforce that
@@ -1648,8 +1645,7 @@
                                             reproduced her to serve as an example of how to configure this enforcement rule
                                             in child reactors - where needs are likely different than here.
                                         -->
-                                        <restrictImplDependencies
-                                                implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.RestrictImplDependencies">
+                                        <restrictImplDependencies implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.RestrictImplDependencies">
                                             <includedGroupIdPatterns>${enforcer.includedGroupIdPatterns}
                                             </includedGroupIdPatterns>
                                             <excludedGroupIdPatterns>${enforcer.excludedGroupIdPatterns}
@@ -1665,8 +1661,7 @@
                                             then all code within that project must reside within the "com.acme.foobar" package,
                                             or in any subpackage thereof.
                                         -->
-                                        <correctPackaging
-                                                implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.CorrectPackagingRule"/>
+                                        <correctPackaging implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.CorrectPackagingRule" />
                                     </rules>
                                 </configuration>
                             </execution>
@@ -1680,7 +1675,7 @@
                             <dependency>
                                 <groupId>net.sourceforge.cobertura.codestyle</groupId>
                                 <artifactId>cobertura-codestyle</artifactId>
-                                <version>2.1.0-SNAPSHOT</version>
+                                <version>2.1.0</version>
                             </dependency>
                         </dependencies>
                     </plugin>
