@@ -753,6 +753,7 @@
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${maven.release.plugin.version}</version>
                     <configuration combine.self="override">
+                        <goals>deploy</goals>
                         <localCheckout>true</localCheckout>
                         <mavenExecutorId>forked-path</mavenExecutorId>
                         <tagNameFormat>${reactor.name}-@{project.version}</tagNameFormat>
@@ -1731,6 +1732,7 @@
                         <artifactId>maven-release-plugin</artifactId>
                         <version>${maven.release.plugin.version}</version>
                         <configuration>
+                            <goals>deploy</goals>
                             <mavenExecutorId>forked-path</mavenExecutorId>
                             <preparationGoals>-B clean install</preparationGoals>
                             <localCheckout>true</localCheckout>
