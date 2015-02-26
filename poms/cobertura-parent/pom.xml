@@ -135,7 +135,7 @@
         <url.prefix>${reactor.url.remote.prefix}/${reactor.name}/${project.version}</url.prefix>
         <distro.url.prefix>${site.url.prefix}/${reactor.name}/${project.version}</distro.url.prefix>
         <scm.conn>scm:git:git://${scm.host}/${reactor.name}/${reactor.name}</scm.conn>
-        <scm.devConnection>scm:git:git@${scm.host}/${reactor.name}/${reactor.name}.git</scm.devConnection>
+        <scm.devConnection>scm:git:git@${scm.host}:${reactor.name}/${reactor.name}.git</scm.devConnection>
         <nazgul-tools.version>2.0.9</nazgul-tools.version>
         <nazgul-core.version>1.6.0</nazgul-core.version>
     </properties>

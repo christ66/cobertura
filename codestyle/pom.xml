@@ -63,7 +63,7 @@
         <url.prefix>${reactor.url.remote.prefix}/${reactor.name}/${project.version}</url.prefix>
         <distro.url.prefix>${site.url.prefix}/${reactor.name}/${project.version}</distro.url.prefix>
         <scm.conn>scm:git:git://${scm.host}/${reactor.name}/${reactor.name}</scm.conn>
-        <scm.devConnection>scm:git:git@${scm.host}/${reactor.name}/${reactor.name}.git</scm.devConnection>
+        <scm.devConnection>scm:git:git@${scm.host}:${reactor.name}/${reactor.name}.git</scm.devConnection>
     </properties>
 
     <developers>
