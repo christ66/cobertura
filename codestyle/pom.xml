@@ -16,7 +16,7 @@
 
     <groupId>net.sourceforge.cobertura.codestyle</groupId>
     <artifactId>cobertura-codestyle</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.1.0</version>
     <name>${project.artifactId}</name>
     <packaging>jar</packaging>
     <url>${url.prefix}/${path.in.reactor}</url>
@@ -388,7 +388,7 @@
         <connection>${scm.conn}</connection>
         <developerConnection>${scm.devConnection}</developerConnection>
         <url>${reactor.url.remote.prefix}/${reactor.name}</url>
-        <tag>HEAD</tag>
+        <tag>cobertura-2.1.0</tag>
     </scm>
 
     <!--
