@@ -8,7 +8,7 @@
     <parent>
         <groupId>net.sourceforge.cobertura.poms</groupId>
         <artifactId>cobertura-api-parent</artifactId>
-        <version>2.1.1</version>
+        <version>2.1.2-SNAPSHOT</version>
         <relativePath>../../poms/cobertura-api-parent</relativePath>
     </parent>
 
@@ -87,6 +87,6 @@
         <connection>${scm.conn}</connection>
         <developerConnection>${scm.devConnection}</developerConnection>
         <url>${reactor.url.remote.prefix}/${reactor.name}</url>
-        <tag>cobertura-2.1.1</tag>
+        <tag>HEAD</tag>
     </scm>
 </project>
