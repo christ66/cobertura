@@ -31,6 +31,11 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
+## DOWNLOAD
+You can download Cobertura 2.1.1 from 
+[The Central Repository](http://repo1.maven.org/maven2/net/sourceforge/cobertura/cobertura/).
+That includes the distributions for stand-alone command line usage.
+
 ## CONVENTIONS
 Before committing
 * check all tests pass
