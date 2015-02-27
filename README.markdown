@@ -79,9 +79,14 @@ Use "git blame --follow" nameOfFile.java
 ### version 2.1.1, 2015-02-26:
   * [62](https://github.com/cobertura/cobertura/issues/62)   Parse error on Java 1.7 combined exception
   * [69](https://github.com/cobertura/cobertura/issues/69)   Branch coverage may exceed 100%, resulting in awkward HTML reports
+  * [104](https://github.com/cobertura/cobertura/issues/104) Some tests fail on Windows due to incorrect Escape characters
+  * [111](https://github.com/cobertura/cobertura/issues/111) Lexical error at line xxx, column xxx.
+  * [137](https://github.com/cobertura/cobertura/issues/137) Incorrect (it seems) bat and SH files
   * [166](https://github.com/cobertura/cobertura/issues/166) Error when using Java 8
   * [175](https://github.com/cobertura/cobertura/issues/175) Cobertura 2.0.4 will create breaking changes to plugins
+  * [179](https://github.com/cobertura/cobertura/issues/179) Instrumentation fails when there is no base directory
   * [187](https://github.com/cobertura/cobertura/issues/187) Error: Could not find or load main class net.sourceforge.cobertura.instrument.Main in Cobertura 2.0.3
+  * [190](https://github.com/cobertura/cobertura/issues/190) Will Cobertura (or ASM) Support Java 7 with Correct Coverage?
   * [201](https://github.com/cobertura/cobertura/issues/201) Test failure in current 2.1.0-SNAPSHOT
   * [202](https://github.com/cobertura/cobertura/issues/202) Cobertura needs to update minimum Java requirement to Java 6
   * [203](https://github.com/cobertura/cobertura/issues/203) Cobertura needs an SLF4J binding in compile scope
