@@ -77,18 +77,18 @@ Use "git blame --follow" nameOfFile.java
 ## CHANGELOG
 
 ### version 2.1.1, 2015-02-26:
-  * \#62 Parse error on Java 1.7 combined exception
-  * \#69 Branch coverage may exceed 100%, resulting in awkward HTML reports
-  * \#166 Error when using Java 8
-  * \#175 Cobertura 2.0.4 will create breaking changes to plugins
-  * \#187 Error: Could not find or load main class net.sourceforge.cobertura.instrument.Main in Cobertura 2.0.3
-  * \#201 Test failure in current 2.1.0-SNAPSHOT
-  * \#202 Cobertura needs to update minimum Java requirement to Java 6
-  * \#203 Cobertura needs an SLF4J binding in compile scope
-  * \#204 Add a limited runtime project for Cobertura, like the one that was available in 2.0.3
-  * \#206 Multiple tests fail when building with Java 6
-  * \#229 ERROR - loadCoverageData
-  * \#213 Replace all usages of java.util.logging with SLF4J
+  * [62](https://github.com/cobertura/cobertura/issues/62)   Parse error on Java 1.7 combined exception
+  * [69](https://github.com/cobertura/cobertura/issues/69)   Branch coverage may exceed 100%, resulting in awkward HTML reports
+  * [166](https://github.com/cobertura/cobertura/issues/166) Error when using Java 8
+  * [175](https://github.com/cobertura/cobertura/issues/175) Cobertura 2.0.4 will create breaking changes to plugins
+  * [187](https://github.com/cobertura/cobertura/issues/187) Error: Could not find or load main class net.sourceforge.cobertura.instrument.Main in Cobertura 2.0.3
+  * [201](https://github.com/cobertura/cobertura/issues/201) Test failure in current 2.1.0-SNAPSHOT
+  * [202](https://github.com/cobertura/cobertura/issues/202) Cobertura needs to update minimum Java requirement to Java 6
+  * [203](https://github.com/cobertura/cobertura/issues/203) Cobertura needs an SLF4J binding in compile scope
+  * [204](https://github.com/cobertura/cobertura/issues/204) Add a limited runtime project for Cobertura, like the one that was available in 2.0.3
+  * [206](https://github.com/cobertura/cobertura/issues/206) Multiple tests fail when building with Java 6
+  * [213](https://github.com/cobertura/cobertura/issues/213) Replace all usages of java.util.logging with SLF4J
+  * [229](https://github.com/cobertura/cobertura/issues/229) ERROR - loadCoverageData
 
 ### version 2.0.3:
 	* Fixed null version in reports. (Github Issue 37)
