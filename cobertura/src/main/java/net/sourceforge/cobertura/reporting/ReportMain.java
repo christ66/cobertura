@@ -68,7 +68,11 @@ public class ReportMain {
 			} else if (args[i].equals("--calculateMethodComplexity")) {
 				builder.calculateMethodComplexity(true);
 			} else {
-				builder.addSources(args[i], baseDir == null);
+				if (baseDir == null) {
+					builder.addSources(args[i], null);
+				} else {
+					builder.addSources(baseDir, args[i]);
+				}
 			}
 		}
 
