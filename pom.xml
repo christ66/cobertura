@@ -78,7 +78,7 @@
         <!-- Code style properties -->
         <wtp.version>2.0</wtp.version>
         <clean.plugin.version>2.5</clean.plugin.version>
-        <maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
+        <maven-project-info-reports-plugin.version>2.8</maven-project-info-reports-plugin.version>
 
         <!--
             Define the URL prefixes for Site Deployment and DistributionManagement.
