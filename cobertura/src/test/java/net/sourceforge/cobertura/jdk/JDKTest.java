@@ -120,6 +120,22 @@ public class JDKTest {
 		assertEquals(2, hitCount);
 	}
 
+    @Test
+    public void testJDK7() throws Exception {
+        setupAndExecuteTest("1.7");
+        int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
+                "main");
+        assertEquals(2, hitCount);
+    }
+
+    @Test
+    public void testJDK8() throws Exception {
+        setupAndExecuteTest("1.8");
+        int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
+                "main");
+        assertEquals(2, hitCount);
+    }
+
 	static final String JDKTEST = "\n package mypackage;" + "\n "
 			+ "\n public class JDKTEST {"
 			+ "\n   public static void main(String[] args) {"
