@@ -154,11 +154,23 @@ public class JDK7Test {
 		assertEquals(4, hitCount);
 	}
 
+    /**
+     *    public void binary_literals() {
+     *      int yesThisIsAnInt = 0b10100001010001011010000101000101;
+     *    }
+     */
+    @Test
+    public void testBinaryLiteral() {
+        int hitCount = TestUtils.getTotalHitCount(dom,
+                "mypackage.Java7TestCase", "binary_literals");
+        assertEquals(2, hitCount);
+    }
+
 	@Test
 	public void testMain() throws Exception {
 		int hitCount = TestUtils.getTotalHitCount(dom,
 				"mypackage.Java7TestCase", "main");
-		assertEquals(7, hitCount);
+		assertEquals(8, hitCount);
 	}
 
 	static final String java7TestFile = "\n package mypackage;"
@@ -174,6 +186,7 @@ public class JDK7Test {
 			+ "\n     t.diamond_operator();"
 			+ "\n     t.string_in_switch();"
 			+ "\n     t.numerical_literals_underscores();"
+            + "\n     t.binary_literals();"
 			+ "\n     t.multi_catch();"
 			+ "\n   }"
 			+ "\n   "
@@ -201,6 +214,10 @@ public class JDK7Test {
 			+ "\n     int thousand = 1_000;"
 			+ "\n     int million  = 1_000_000;"
 			+ "\n   }"
+            + "\n "
+            + "\n   public void binary_literals() {"
+            + "\n     int yesThisIsAnInt = 0b10100001010001011010000101000101;"
+            + "\n   }"
 			+ "\n   "
 			+ "\n   public void multi_catch() {"
 			+ "\n     try {"
