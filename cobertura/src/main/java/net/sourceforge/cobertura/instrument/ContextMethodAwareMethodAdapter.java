@@ -60,7 +60,7 @@ public abstract class ContextMethodAwareMethodAdapter extends MethodVisitor {
 	public ContextMethodAwareMethodAdapter(MethodVisitor mv, String className,
 			String methodName, String methodSignature,
 			AtomicInteger lineIdGenerator) {
-		super(Opcodes.ASM4, mv);
+		super(Opcodes.ASM5, mv);
 		this.className = className;
 		this.methodName = methodName;
 		this.methodSignature = methodSignature;

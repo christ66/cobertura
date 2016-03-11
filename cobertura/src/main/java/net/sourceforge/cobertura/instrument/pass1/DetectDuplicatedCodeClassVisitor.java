@@ -196,7 +196,7 @@ public class DetectDuplicatedCodeClassVisitor extends ClassVisitor {
 	private final AtomicInteger lineIdGenerator = new AtomicInteger(0);
 
 	public DetectDuplicatedCodeClassVisitor(ClassVisitor cv) {
-		super(Opcodes.ASM4, new CheckClassAdapter(cv, false));
+		super(Opcodes.ASM5, new CheckClassAdapter(cv, false));
 	}
 
 	@Override
