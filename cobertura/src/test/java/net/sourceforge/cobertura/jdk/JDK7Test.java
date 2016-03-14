@@ -17,67 +17,12 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 
 public class JDK7Test {
-	static AntBuilder ant = TestUtils.getCoberturaAntBuilder(TestUtils
-			.getCoberturaClassDir());
-	static Node dom;
+    static Node dom;
 
-	@BeforeClass
+    @BeforeClass
 	public static void setUpBeforeClass() throws IOException,
 			ParserConfigurationException, SAXException {
-		FileUtils.deleteDirectory(TestUtils.getTempDir());
-
-		/*
-		 * First create the junit test structure.
-		 */
-		File tempDir = TestUtils.getTempDir();
-		File srcDir = new File(tempDir, "src");
-		File instrumentDir = new File(tempDir, "instrument");
-
-		File mainSourceFile = new File(srcDir, "mypackage/Java7TestCase.java");
-
-		File datafile = new File(srcDir, "cobertura.ser");
-		mainSourceFile.getParentFile().mkdirs();
-
-		FileUtils.write(mainSourceFile, java7TestFile);
-
-		/*
-		 * Next let's compile the test code we just made.
-		 */
-		TestUtils.compileSource(ant, srcDir);
-
-		/*
-		 * Let's now instrument all the classes. In this case we instrument with default items.
-		 */
-		TestUtils.instrumentClasses(ant, srcDir, datafile, instrumentDir);
-
-		/*
-		 * Kick off the Main (instrumented) class.
-		 */
-		Java java = new Java();
-		java.setProject(TestUtils.project);
-		java.setClassname("mypackage.Java7TestCase");
-		java.setDir(srcDir);
-		java.setFork(true);
-		java.setFailonerror(true);
-		java.setClasspath(TestUtils.getCoberturaDefaultClasspath());
-		java.execute();
-
-		/*
-		 * Now create a cobertura xml file and make sure the correct counts are in it.
-		 */
-		ReportTask reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(datafile.getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(srcDir);
-		reportTask.execute();
-
-		/*
-		 * 
-		 */
-		System.out.println(srcDir.getAbsolutePath());
-		dom = TestUtils.getXMLReportDOM(srcDir.getAbsolutePath()
-				+ "/coverage.xml");
+        dom = JDKUtils.setUpBeforeClass(java7TestFile, "1.7", "mypackage.Java7TestCase", "mypackage/Java7TestCase.java");
 	}
 
 	/**
