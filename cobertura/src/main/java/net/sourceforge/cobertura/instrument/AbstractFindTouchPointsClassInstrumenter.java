@@ -91,7 +91,7 @@ public class AbstractFindTouchPointsClassInstrumenter extends ClassVisitor {
 	public AbstractFindTouchPointsClassInstrumenter(ClassVisitor cv,
 			Collection<Pattern> ignoreRegexp,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap) {
-		super(Opcodes.ASM4, new CheckClassAdapter(cv, false));
+		super(Opcodes.ASM5, new CheckClassAdapter(cv, false));
 		this.ignoreRegexp = ignoreRegexp;
 		this.duplicatedLinesMap = duplicatedLinesMap;
 	}

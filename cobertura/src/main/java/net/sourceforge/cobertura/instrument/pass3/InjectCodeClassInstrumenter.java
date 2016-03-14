@@ -157,7 +157,7 @@ public class InjectCodeClassInstrumenter
 		private String className;
 		public GenerateCallCoberturaInitMethodVisitor(MethodVisitor arg0,
 				String className) {
-			super(Opcodes.ASM4, arg0);
+			super(Opcodes.ASM5, arg0);
 			this.className = className;
 		}
 

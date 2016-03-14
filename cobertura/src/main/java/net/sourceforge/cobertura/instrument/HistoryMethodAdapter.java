@@ -45,7 +45,7 @@ public class HistoryMethodAdapter extends MethodVisitor {
 	private final int eventsToTrace;
 
 	public HistoryMethodAdapter(MethodVisitor mv, int eventsToTrace) {
-		super(Opcodes.ASM4, mv);
+		super(Opcodes.ASM5, mv);
 		this.eventsToTrace = eventsToTrace;
 	}
 	public List<AbstractInsnNode> backlog() {

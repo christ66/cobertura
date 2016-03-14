@@ -68,7 +68,7 @@ public class DetectIgnoredCodeClassVisitor extends ClassVisitor {
 
 	public DetectIgnoredCodeClassVisitor(ClassVisitor cv,
 			boolean ignoreTrivial, Set<String> ignoreAnnotations) {
-		super(Opcodes.ASM4, new CheckClassAdapter(cv, false));
+		super(Opcodes.ASM5, new CheckClassAdapter(cv, false));
 		this.ignoreTrivial = ignoreTrivial;
 		this.ignoreAnnotations = ignoreAnnotations;
 	}
