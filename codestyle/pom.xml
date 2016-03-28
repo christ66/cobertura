@@ -47,7 +47,7 @@
         <wtp.version>2.0</wtp.version>
         <clean.plugin.version>2.5</clean.plugin.version>
         <maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
-        <pmd.plugin.version>3.0.1</pmd.plugin.version>
+        <pmd.plugin.version>3.6</pmd.plugin.version>
         <checkstyle.plugin.version>2.10</checkstyle.plugin.version>
 
         <!--

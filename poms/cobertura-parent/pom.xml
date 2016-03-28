@@ -100,7 +100,7 @@
         <checkstyle.violationSeverity>error</checkstyle.violationSeverity>
 
         <!-- PMD configuration parameters. -->
-        <pmd.plugin.version>3.0.1</pmd.plugin.version>
+        <pmd.plugin.version>3.6</pmd.plugin.version>
         <pmd.ruleset>/codestyle/cobertura/pmd-rules.xml</pmd.ruleset>
 
         <!-- Findbugs configuration parameters. -->
