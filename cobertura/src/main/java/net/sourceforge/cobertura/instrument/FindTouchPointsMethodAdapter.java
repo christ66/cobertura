@@ -191,9 +191,11 @@ public class FindTouchPointsMethodAdapter
 			Map<Integer, LinkedList<Integer>> m = line2eventIds
 					.get(currentLine);
 			LinkedList<Integer> eventIds = m.get(orgin);
-
+			replyEventIdList = null;
 			/* copy of  current list */
-			replyEventIdList = new LinkedList<Integer>(eventIds);
+			if(eventIds != null) {
+				replyEventIdList = new LinkedList<Integer>(eventIds);
+			}	
 			saveEventIdList = null;
 		}
 
