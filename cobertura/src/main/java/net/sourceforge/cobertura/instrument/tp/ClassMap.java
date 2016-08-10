@@ -97,7 +97,7 @@ public class ClassMap {
 
 	public void registerNewJump(int eventId, int currentLine,
 			Label destinationLabel) {
-		if (alreadyRegisteredEvents.add(eventId)) {
+		if (alreadyRegisteredEvents.add(eventId) && !blockedLines.contains(currentLine)) {
 			logger.debug(className + ":" + currentLine + ": Registering JUMP ("
 					+ eventId + ") to " + destinationLabel);
 			JumpTouchPointDescriptor descriptor = new JumpTouchPointDescriptor(
@@ -134,7 +134,7 @@ public class ClassMap {
 	public void registerNewLabel(int eventId, int currentLine, Label label) {
 		logger.debug(className + ":" + currentLine + ": Registering label ("
 				+ eventId + ") " + label);
-		if (alreadyRegisteredEvents.add(eventId)) {
+		if (alreadyRegisteredEvents.add(eventId) && !blockedLines.contains(currentLine)) {
 			eventId2label.put(eventId, label);
 			putIntoDuplicatesMaps(label, label);
 		} else {
@@ -156,14 +156,12 @@ public class ClassMap {
 			String methodName, String methodSignature) {
 		logger.debug(className + ":" + currentLine + ": Registering line ("
 				+ eventId + ") " + label);
-		if (alreadyRegisteredEvents.add(eventId)) {
-			if (!blockedLines.contains(currentLine)) {
-				LineTouchPointDescriptor line = new LineTouchPointDescriptor(
-						eventId, currentLine, methodName, methodSignature);
-				eventId2label.put(eventId, label);
-				eventId2touchPointDescriptor.put(eventId, line);
-				getOrCreateLineTouchPoints(currentLine).add(line);
-			}
+		if (alreadyRegisteredEvents.add(eventId) && !blockedLines.contains(currentLine)) {
+			LineTouchPointDescriptor line = new LineTouchPointDescriptor(
+					eventId, currentLine, methodName, methodSignature);
+			eventId2label.put(eventId, label);
+			eventId2touchPointDescriptor.put(eventId, line);
+			getOrCreateLineTouchPoints(currentLine).add(line);
 		}
 	}
 
@@ -175,19 +173,17 @@ public class ClassMap {
 				Iterator<TouchPointDescriptor> iter = res.iterator();
 				while (iter.hasNext()) {
 					TouchPointDescriptor desc = iter.next();
-					if (desc instanceof LineTouchPointDescriptor) {
-						iter.remove();
-						eventId2touchPointDescriptor.remove(desc.getEventId());
-						eventId2label.remove(desc.getEventId());
-					}
+					eventId2touchPointDescriptor.remove(desc.getEventId());
+					eventId2label.remove(desc.getEventId());
 				}
+				line2touchPoints.remove(currentLine);
 			}
 		}
 	}
 
 	public void registerSwitch(int eventId, int currentLine, Label def,
 			Label[] labels, String conditionType) {
-		if (alreadyRegisteredEvents.add(eventId)) {
+		if (alreadyRegisteredEvents.add(eventId) && !blockedLines.contains(currentLine)) {
 			SwitchTouchPointDescriptor swi = new SwitchTouchPointDescriptor(
 					eventId, currentLine, def, labels, conditionType);
 			eventId2touchPointDescriptor.put(eventId, swi);

@@ -253,8 +253,8 @@ public class FindTouchPointsMethodAdapter
 
 	@Override
 	public void visitMethodInsn(int opcode, String owner, String method,
-			String descr) {
-		super.visitMethodInsn(opcode, owner, method, descr);
+			String descr, boolean intf) {
+		super.visitMethodInsn(opcode, owner, method, descr, intf);
 		//We skip lines that contains call to methods that are specified inside ignoreRegexp
 		if (RegexUtil.matches(ignoreRegexp, owner)) {
 			touchPointListener.ignoreLine(getEventId(), currentLine);
