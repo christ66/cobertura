@@ -176,7 +176,8 @@ public class InjectCodeClassInstrumenter
 	public void visitEnd() {
 		if (!wasStaticInitMethodVisited) {
 			//We need to generate new method
-			MethodVisitor mv = super.visitMethod(Opcodes.ACC_STATIC,
+			MethodVisitor mv = super.visitMethod(
+					Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC,
 					"<clinit>", "()V", null, null);
 			mv.visitCode();
 			codeProvider.generateCallCoberturaInitMethod(mv, classMap
