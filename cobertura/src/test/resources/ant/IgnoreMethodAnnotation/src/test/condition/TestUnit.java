@@ -1,9 +1,9 @@
 package test.condition;
 
-import org.junit.Test;
+import junit.framework.TestCase;
 
-public class TestUnit {
-	@Test
+public class TestUnit extends TestCase {
+
 	public void testMethod() {
 		IgnoreMeAlso.foo();
 		IgnoreMeNot.foo();
