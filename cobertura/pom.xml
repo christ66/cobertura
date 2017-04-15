@@ -34,7 +34,7 @@
   </pluginRepositories>
 
   <properties>
-    <asmVersion>4.1</asmVersion>
+    <asmVersion>5.2</asmVersion>
     <xercesVersion>2.6.2</xercesVersion>
     <xalanVersion>2.6.0</xalanVersion>
     <oroVersion>2.0.8</oroVersion>
