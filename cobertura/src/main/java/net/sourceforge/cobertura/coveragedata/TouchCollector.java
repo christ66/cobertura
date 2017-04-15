@@ -29,9 +29,6 @@ import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.instrument.pass3.AbstractCodeProvider;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -112,6 +109,8 @@ public class TouchCollector {
 				.fine("===================  END OF REPORT  ======================== ");
 	}
 
+	private static final Object[] NO_ARGS = new Object[0];
+
 	private static void applyTouchesToSingleClassOnProjectData(
 			final ClassData classData, final Class<?> c) {
 		logger.finer("----------- " + c.getCanonicalName()
@@ -121,30 +120,17 @@ public class TouchCollector {
 			Method m0 = c
 					.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
 			m0.setAccessible(true);
-			final TestUnitInformationHolder[] res = (TestUnitInformationHolder[]) m0
-					.invoke(null, new Object[]{});
+			final Object res = m0.invoke(null, NO_ARGS);
 
-			LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
-					classData, res);
-			Method m = c.getDeclaredMethod(
-					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
-					LightClassmapListener.class);
-			m.setAccessible(true);
-			m.invoke(null, lightClassmap);
-		} catch (Exception e) {
-			// Ignore exception. We are not using Junit testing method.
-			// TODO: Fix this so we don't duplicate code and can probably make more efficient.
-			e.printStackTrace();
-		}
-		
-		try {
-			Method m0 = c
-					.getDeclaredMethod(AbstractCodeProvider.COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME);
-			m0.setAccessible(true);
-			final int[] res = (int[]) m0.invoke(null, new Object[]{});
+			LightClassmapListener lightClassmap = null;
+			if (res instanceof int[]) {
+				lightClassmap = new ApplyToClassDataLightClassmapListener(
+						classData, (int[]) res);
+			} else /* if(res instanceof TestUnitInformationHolder[]) */{
+				lightClassmap = new ApplyToClassDataLightClassmapListener(
+						classData, (TestUnitInformationHolder[]) res);
+			}
 
-			LightClassmapListener lightClassmap = new ApplyToClassDataLightClassmapListener(
-					classData, res);
 			Method m = c.getDeclaredMethod(
 					AbstractCodeProvider.COBERTURA_CLASSMAP_METHOD_NAME,
 					LightClassmapListener.class);

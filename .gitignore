@@ -26,3 +26,8 @@ cobertura/src/test/resources/ant/IgnoreMethodAnnotation/cobertura.ser
 *.classpath
 **/target/
 *.idea
+*/.settings/
+*/.pmd
+*/.pmdruleset.xml
+.settings/
+

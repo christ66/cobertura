@@ -34,13 +34,13 @@
   </pluginRepositories>
 
   <properties>
-    <asmVersion>4.1</asmVersion>
+    <asmVersion>5.2</asmVersion>
     <xercesVersion>2.6.2</xercesVersion>
     <xalanVersion>2.6.0</xalanVersion>
     <oroVersion>2.0.8</oroVersion>
     <jaxenVersion>1.1-beta-8</jaxenVersion>
     <commonsioVersion>2.4</commonsioVersion>
-    <antVersion>1.8.3</antVersion>
+    <antVersion>1.10.1</antVersion>
     <jettyVersion>6.1.14</jettyVersion>
     <simplexmlVersion>2.6.2</simplexmlVersion>
     <guavaVersion>13.0.1</guavaVersion>
@@ -56,7 +56,7 @@
     <plugin.mvn.jar.version>2.3.2</plugin.mvn.jar.version>
     <plugin.pmd.version>3.0.1</plugin.pmd.version>
     <plugin.jdoc.version>2.9</plugin.jdoc.version>
-    <plugin.findbugs.version>2.5.2</plugin.findbugs.version>
+    <plugin.findbugs.version>3.0.4</plugin.findbugs.version>
   </properties>
 
   <dependencies>

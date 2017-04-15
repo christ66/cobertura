@@ -11,7 +11,9 @@
     Cobertura comes with ABSOLUTELY NO WARRANTY
     </description>
 
-	<loadproperties srcFile="src/test/resources/ant/IgnoreMethodAnnotation/build.properties" />
+	<dirname file="${ant.file.test.ant.IgnoreMethodAnnotation}" property="dir.project"/>
+	
+	<loadproperties srcFile="${dir.project}/build.properties" />
 
 	<path id="project.classpath">
 		<path path="${java.class.path}" />
@@ -19,8 +21,8 @@
 		The next two should only come into play when running this script directly as
 		opposed to being called by a functional test.
 		-->
-		<pathelement location="../../etc" />
-		<pathelement location="../../../../../target/classes" />
+		<pathelement location="${dir.project}/../../etc" />
+		<pathelement location="${dir.project}/../../../../../target/classes" />
 	</path>
 
 	<taskdef resource="tasks.properties" classpathref="project.classpath"/>
@@ -58,9 +60,8 @@
 			<classpath location="${classes.dir}" />
 			<classpath path="${java.class.path}" />
 			<classpath refid="project.classpath" />
-
 			<formatter type="plain" usefile="false" />
-			<test name="test.condition.TestUnit" />
+			<test name="test.condition.TestUnit"></test>
 		</junit>
 	</target>
 
