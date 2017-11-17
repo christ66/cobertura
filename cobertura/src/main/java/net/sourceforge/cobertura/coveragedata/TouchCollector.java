@@ -88,7 +88,10 @@ public class TouchCollector {
                 }
             } catch (NoClassDefFoundError ncdfe) {
                 // "Expected", try described fallback
+            } catch (ClassNotFoundException cnfe) {
+	        // fallback. This is required for multi module jboss environment
             }
+
 
 			if (!found) {
 				clazz = Class.forName(classa.replace("/", "."));
