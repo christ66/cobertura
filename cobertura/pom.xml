@@ -59,9 +59,9 @@
     <plugin.java.formatter.version>0.4</plugin.java.formatter.version>
     <plugin.mvn.compiler.version>2.3.2</plugin.mvn.compiler.version>
     <plugin.mvn.jar.version>2.3.2</plugin.mvn.jar.version>
-    <plugin.pmd.version>3.0.1</plugin.pmd.version>
+    <plugin.pmd.version>3.6</plugin.pmd.version>
     <plugin.jdoc.version>2.9.1</plugin.jdoc.version>
-    <plugin.findbugs.version>2.5.2</plugin.findbugs.version>
+    <plugin.findbugs.version>3.0.3</plugin.findbugs.version>
   </properties>
 
   <dependencies>

@@ -100,11 +100,11 @@
         <checkstyle.violationSeverity>error</checkstyle.violationSeverity>
 
         <!-- PMD configuration parameters. -->
-        <pmd.plugin.version>3.0.1</pmd.plugin.version>
+        <pmd.plugin.version>3.6</pmd.plugin.version>
         <pmd.ruleset>/codestyle/cobertura/pmd-rules.xml</pmd.ruleset>
 
         <!-- Findbugs configuration parameters. -->
-        <findbugs.plugin.version>2.5.2</findbugs.plugin.version>
+        <findbugs.plugin.version>3.0.3</findbugs.plugin.version>
         <findbugs.only.analyze>net.sourceforge.cobertura.*</findbugs.only.analyze>
         <findbugs.includeFilterFile>codestyle/cobertura/findbugs.xml</findbugs.includeFilterFile>
         <findbugs.excludeFilterFile>codestyle/cobertura/findbugs-excludes.xml</findbugs.excludeFilterFile>
