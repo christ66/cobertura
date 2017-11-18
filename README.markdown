@@ -71,7 +71,7 @@ List of all contributors to Cobertura listed alphabetically by last name
 * Copyright (C) 2006 Srivathsan Varadarajan <vatsanv a.t users d.o.t sourceforge d.o.t net>
 * Copyright (C) 2005 Nathan Wilson      <ndciwilson a.t users d.o.t sourceforge d.o.t net>
 * Copyright (C) 2005 Alexei Yudichev    <sflexus a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2013 Joze Rozanec    <jmrozanec a.t gmail d.o.t com>
+* Copyright (C) 2013 Jože Rožanec    <jmrozanec a.t gmail d.o.t com>
 * Copyright (C) 2013 Steven Christou    <schristou88 a.t gmail d.o.t com>
 
 
