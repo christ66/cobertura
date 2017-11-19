@@ -122,9 +122,10 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 			parts++;
 		}
 
-		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
-				| Opcodes.ACC_STATIC, COBERTURA_CLASSMAP_METHOD_NAME, "("
-				+ Type.getType(LightClassmapListener.class).toString() + ")V",
+		MethodVisitor mv = cv.visitMethod(
+				Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC,
+				COBERTURA_CLASSMAP_METHOD_NAME,
+				"(" + Type.getType(LightClassmapListener.class).toString() + ")V",
 				null, null);
 		mv.visitCode();
 		mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -163,8 +164,8 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 
 	private void classMapContent(ClassVisitor cv, int nr,
 			List<TouchPointDescriptor> touchPointDescriptors) {
-		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
-				| Opcodes.ACC_STATIC,
+		MethodVisitor mv = cv.visitMethod(
+				Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC,
 				COBERTURA_CLASSMAP_METHOD_NAME + "_" + nr, "("
 						+ Type.getType(LightClassmapListener.class).toString()
 						+ ")V", null, null);
@@ -244,8 +245,9 @@ public abstract class AbstractCodeProvider implements CodeProvider {
 
 	public void generateCoberturaInitMethod(ClassVisitor cv, String className,
 			int countersCnt) {
-		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
-				| Opcodes.ACC_STATIC, COBERTURA_INIT_METHOD_NAME, "()V", null,
+		MethodVisitor mv = cv.visitMethod(
+				Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC,
+				COBERTURA_INIT_METHOD_NAME, "()V", null,
 				null);
 		mv.visitCode();
 		generateCINITmethod(mv, className, countersCnt);
