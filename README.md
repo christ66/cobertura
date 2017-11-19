@@ -55,5 +55,8 @@ Use "git blame --follow" nameOfFile.java
 
 
 Cobertura is built on Cloudbees servers. 
+
+
+
 [![Build Status](http://www.cloudbees.com/sites/default/files/Button-Built-on-CB-1.png)](https://cobertura.ci.cloudbees.com/job/Cobertura/)
 [![Build Status](http://www.cloudbees.com/sites/default/files/Button-Powered-by-CB.png)](http://www.cloudbees.com/)
