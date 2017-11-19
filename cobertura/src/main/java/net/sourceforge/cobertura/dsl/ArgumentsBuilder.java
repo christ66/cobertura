@@ -234,11 +234,11 @@ public class ArgumentsBuilder {
 		return this;
 	}
 
-	public ArgumentsBuilder addSources(String sourcePath, boolean isDirectory) {
+	public ArgumentsBuilder addSources(String basePath, String sourcePath) {
 		if (this.sources == null) {
 			this.sources = new ArrayList<CodeSource>();
 		}
-		this.sources.add(new CodeSource(isDirectory, sourcePath));
+		this.sources.add(new CodeSource(basePath, sourcePath));
 		return this;
 	}
 
@@ -248,9 +248,9 @@ public class ArgumentsBuilder {
 		if (this.sources != null) {
 			for (CodeSource codeSource : this.sources) {
 				if (codeSource.isDirectory()) {
-					sources.addSourceDirectory(codeSource.getPath());
+					sources.addSourceDirectory(codeSource.getBasePath());
 				} else {
-					sources.addSourceFile(getBaseDirectory(),
+					sources.addSourceFile(codeSource.getBasePath(),
 							codeSource.getPath());
 				}
 			}
@@ -311,17 +311,21 @@ public class ArgumentsBuilder {
 	}
 
 	private static class CodeSource {
-		private boolean directory;
+		private String basePath;
 		private String path;
 
-		private CodeSource(boolean directory, String path) {
-			this.directory = directory;
+		private CodeSource(String basePath, String path) {
+			this.basePath = basePath;
 			this.path = path;
 		}
 
 		public boolean isDirectory() {
-			return directory;
+			return path == null || path.isEmpty();
 		}
+
+        public String getBasePath() {
+            return basePath;
+        }
 
 		public String getPath() {
 			return path;
