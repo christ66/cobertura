@@ -37,9 +37,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @CoverageIgnore
 public class TouchCollector {
-	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
 	/*In fact - concurrentHashset*/
 	private static Map<Class<?>, Integer> registeredClasses = new ConcurrentHashMap<Class<?>, Integer>();
+
+	private static final Logger logger = LoggerFactory.getLogger(TouchCollector.class);
 
 	static {
 		ProjectData.getGlobalProjectData(); // To call ProjectData.initialize();
