@@ -32,9 +32,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
 ## DOWNLOAD
-You can download Cobertura 2.1.1 from 
-[The Central Repository](http://repo1.maven.org/maven2/net/sourceforge/cobertura/cobertura/).
+You can download Cobertura from [The Central Repository](http://repo1.maven.org/maven2/net/sourceforge/cobertura/cobertura/).
 That includes the distributions for stand-alone command line usage.
+
+To use it as Maven dependency, you can use the following snippet:
+
+	<dependency>
+	    <groupId>net.sourceforge.cobertura</groupId>
+	    <artifactId>cobertura</artifactId>
+	    <version>2.1.1</version>
+	    <scope>test</scope>
+	</dependency>
+
 
 ## CONVENTIONS
 Before committing
