@@ -1,6 +1,4 @@
 # COBERTURA
-[![Build Status](http://www.cloudbees.com/sites/default/files/Button-Built-on-CB-1.png)](https://cobertura.ci.cloudbees.com/job/Cobertura/)
-[![Build Status](http://www.cloudbees.com/sites/default/files/Button-Powered-by-CB.png)](http://www.cloudbees.com/)
 
 ## ABOUT
 Cobertura is a free Java code coverage reporting tool.  It is
@@ -8,6 +6,20 @@ based on jcoverage 1.0.5.  See the [Cobertura web page](http://cobertura.sourcef
 and [wiki](https://github.com/cobertura/cobertura/wiki) for more details.
 
 Since 2.0.0, Cobertura versions follow the [Semantic versioning](http://semver.org/) guidelines.
+
+## DOWNLOAD
+You can download Cobertura from [The Central Repository](http://repo1.maven.org/maven2/net/sourceforge/cobertura/cobertura/).
+That includes the distributions for stand-alone command line usage.
+
+To use it as Maven dependency, you can use the following snippet:
+
+	<dependency>
+	    <groupId>net.sourceforge.cobertura</groupId>
+	    <artifactId>cobertura</artifactId>
+	    <version>2.1.1</version>
+	    <scope>test</scope>
+	</dependency>
+
 
 ## COPYRIGHT
 Code in the net.sourceforge.cobertura.javancss package is
@@ -31,20 +43,6 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 General Public License for more details.
 
-## DOWNLOAD
-You can download Cobertura from [The Central Repository](http://repo1.maven.org/maven2/net/sourceforge/cobertura/cobertura/).
-That includes the distributions for stand-alone command line usage.
-
-To use it as Maven dependency, you can use the following snippet:
-
-	<dependency>
-	    <groupId>net.sourceforge.cobertura</groupId>
-	    <artifactId>cobertura</artifactId>
-	    <version>2.1.1</version>
-	    <scope>test</scope>
-	</dependency>
-
-
 ## CONVENTIONS
 Before committing
 * check all tests pass
@@ -54,3 +52,6 @@ Before committing
 * *How do we get a good blame while all files were moved?*
 
 Use "git blame --follow" nameOfFile.java
+
+[![Build Status](http://www.cloudbees.com/sites/default/files/Button-Built-on-CB-1.png)](https://cobertura.ci.cloudbees.com/job/Cobertura/)
+[![Build Status](http://www.cloudbees.com/sites/default/files/Button-Powered-by-CB.png)](http://www.cloudbees.com/)
