@@ -185,13 +185,13 @@ public class DetectIgnoredCodeMethodVisitor
 
 	@Override
 	public void visitMethodInsn(int opcode, String owner, String name,
-			String desc) {
+                                String desc, boolean intf) {
 		if (ignoredStatus.isTrivial()
 				&& !(ignoredStatus == IgnoredStatus.POSSIBLE_TRIVIAL_INIT
 						&& name.equals("<init>") && owner.equals(superName) && opcode == Opcodes.INVOKESPECIAL)) {
 			markNotTrivial();
 		}
-		super.visitMethodInsn(opcode, owner, name, desc);
+            super.visitMethodInsn(opcode, owner, name, desc, intf);
 	}
 
 	@Override

@@ -131,6 +131,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
+      <artifactId>ant-junit4</artifactId>
+      <version>${antVersion}</version>
+    </dependency>    
+    <dependency>
+      <groupId>org.apache.ant</groupId>
       <artifactId>ant-junit</artifactId>
       <version>${antVersion}</version>
     </dependency>
@@ -183,7 +188,6 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <version>${logbackVersion}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
