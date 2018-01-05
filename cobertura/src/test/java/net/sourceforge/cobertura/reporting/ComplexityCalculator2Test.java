@@ -151,5 +151,39 @@ public class ComplexityCalculator2Test extends TestCase {
 		assertEquals(
 				"Javancss issue has been fixed: http://jira.codehaus.org/browse/JAVANCSS-37.   Now fix this test.",
                     1.0, ccn1, 0.01);
-	}
+    }
+
+    /**
+     * This test highlights an issue with Javancss not supporting java8 default method for interfaces.
+     * <p>
+     * @throws Exception
+     * <p>
+     */
+    public void testJava8defaultAndStaticInterface() throws Exception {
+        File tempDir = TestUtils.getTempDir();
+        String filename = "Interface1.java";
+        File sourceFile = new File(tempDir, filename);
+        FileUtils
+                .write(
+                        sourceFile,
+                        "\n interface Interface1 {"
+                        + "\n static void staticTest(String str) {"
+                        + "\n System.out.println(str);"
+                        + "\n }"
+                        + "\n"
+                        + "\n default int defaultTest() {"
+                        + "\n return 1;" + "\n 	}" + "\n }");
+
+        //create a ComplexityCalculator that will use the archive
+        FileFinder fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+
+        double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
+                filename));
+        assertNotNull(ccn1);
+        assertEquals(
+                "Testing default and static interface functions",
+                1.0, ccn1, 0.01);
+    }
 }
