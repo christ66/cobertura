@@ -150,6 +150,6 @@ public class ComplexityCalculator2Test extends TestCase {
 		assertNotNull(ccn1);
 		assertEquals(
 				"Javancss issue has been fixed: http://jira.codehaus.org/browse/JAVANCSS-37.   Now fix this test.",
-				0.0/*should be 2.0?*/, ccn1, 0.01);
+                    1.0, ccn1, 0.01);
 	}
 }
