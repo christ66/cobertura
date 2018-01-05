@@ -1,70 +1,78 @@
-/**
- * Cobertura - http://cobertura.sourceforge.net/
- *
- * This file was taken from JavaNCSS
- * http://www.kclee.com/clemens/java/javancss/
- * Copyright (C) 2000 Chr. Clemens Lee <clemens a.t kclee d.o.t com>
- *
- * Cobertura is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation; either version 2 of the License,
- * or (at your option) any later version.
- *
- * Cobertura is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Cobertura; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- */
+/*
+Copyright (C) 2014 Chr. Clemens Lee <clemens@kclee.com>.
+
+This file is part of JavaNCSS
+(http://javancss.codehaus.org/).
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 
 package net.sourceforge.cobertura.javancss;
 
 /**
  * Base data class to store all metrics common to packages, objects and functions.
  *
- * @author  Herv� Boutemy
- * @version $Id: Metric.java 195 2009-06-23 21:57:59Z hboutemy $
+ * @author  Herve Boutemy
+ * @version $Id$
  */
-public abstract class Metric implements Comparable {
-	public String name = ".";
-	/** Non Commenting Source Statements (NCSS). */
-	public int ncss = 0;
-	public int firstLine = 0;
-	public int javadocs = 0;
-	public int javadocsLn = 0;
-	public int singleLn = 0;
-	public int multiLn = 0;
+public abstract class Metric
+    implements Comparable<Metric>
+{
+    public String name = ".";
 
-	public Metric() {
-		super();
-	}
+    /** Non Commenting Source Statements (NCSS). */
+    public int ncss = 0;
+    public int firstLine = 0;
+    public int javadocs = 0;
+    public int javadocsLn = 0;
+    public int singleLn = 0;
+    public int multiLn = 0;
 
-	public void clear() {
-		name = ".";
-		ncss = 0;
-		javadocs = 0;
-		javadocsLn = 0;
-		singleLn = 0;
-		multiLn = 0;
-	}
+    public Metric()
+    {
+        super();
+    }
 
-	public String toString() {
-		return name;
-	}
+    public void clear()
+    {
+        name = ".";
+        ncss = 0;
+        javadocs = 0;
+        javadocsLn = 0;
+        singleLn = 0;
+        multiLn = 0;
+    }
 
-	public int compareTo(Object o) {
-		return name.compareTo(((Metric) o).name);
-	}
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 
-	public boolean equals(Object o) {
-		return compareTo(o) == 0;
-	}
+    public int compareTo( Metric m )
+    {
+        return name.compareTo( m.name );
+    }
 
-	public int hashCode() {
-		return name.hashCode();
-	}
+    public boolean equals( Metric m )
+    {
+        return compareTo( m ) == 0;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return name.hashCode();
+    }
 }
