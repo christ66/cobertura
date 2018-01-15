@@ -844,6 +844,8 @@ TOKEN :
 | < COMMA: "," >
 | < DOT: "." >
 | < AT: "@" >
+| < LAMBDA: "->" >
+| < DOUBLECOLON: "::" >
 }
 
 /* OPERATORS */
@@ -2324,7 +2326,14 @@ void Expression() :
     //System.out.println( "Expression start" );
 }
 {
+  LOOKAHEAD(LambdaExpression())  LambdaExpression() 
+|
+  AssignmentExpression()
+}
 
+void AssignmentExpression() :
+{}
+{
   LOOKAHEAD( PrimaryExpression() AssignmentOperator() )
   //{ System.out.println( "Expression" ); }
   Assignment()
@@ -2515,6 +2524,8 @@ void PrimaryExpression() :
 //    { System.out.println( "Before PrimaryExpression" ); }
 }
 {
+  LOOKAHEAD(MethodReference()) MethodReference()
+|
   PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
 }
 
@@ -3490,3 +3501,47 @@ void MemberSelector():
   "." TypeArguments() <IDENTIFIER>
 }
 
+void LambdaExpression():
+{}
+{
+   LambdaParameters() "->" LambdaBody()
+}
+
+void LambdaParameters():
+{}
+{
+   <IDENTIFIER> 
+|
+   LOOKAHEAD("(" InferredFormalParameterList() ")") "(" InferredFormalParameterList() ")"
+|
+   LOOKAHEAD( [FormalParameters()] ) [FormalParameters()] 
+}
+
+void InferredFormalParameterList():
+{}
+{
+   <IDENTIFIER> ( ","  <IDENTIFIER> )*
+}
+
+
+void LambdaBody():
+{}
+{
+   Expression()
+|
+   Block()
+}
+
+void MethodReference():
+{}
+{
+   "super" "::" [TypeArguments()] <IDENTIFIER>
+|
+   LOOKAHEAD( 4 ) Name() "." "super" "::" [TypeArguments()] <IDENTIFIER>
+|
+//   ClassType() "::" [TypeArguments()] "new" and ArrayType() "::" "new" is included in below
+   LOOKAHEAD(ReferenceType() "::" [TypeArguments()] ( <IDENTIFIER> | "new" )) ReferenceType() "::" [TypeArguments()] ( <IDENTIFIER> | "new" )
+|
+//   Name() "::" [TypeArguments()] <IDENTIFIER> is included in below
+   PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )* "::" [TypeArguments()] <IDENTIFIER>
+}
