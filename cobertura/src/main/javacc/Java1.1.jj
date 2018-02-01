@@ -2834,9 +2834,25 @@ void SwitchStatement() :
                 _localCases = 0;
         }
   "switch" "(" Expression() ")" "{"
-    ( SwitchLabel() ( BlockStatement() )* )*
+  (SwitchCase())*
   "}"
         { _ncss++;       Util.debug( "_ncss++" );}
+}
+
+void SwitchCase() : 
+{}
+{
+    SwitchLabel() SwitchBlockStatements()
+}
+
+void SwitchBlockStatements() :
+{}
+{
+    LOOKAHEAD(SwitchLabel()) {}
+|
+    BlockStatement() SwitchBlockStatements()
+|
+    {}
 }
 
 void SwitchLabel() :
@@ -2853,7 +2869,7 @@ void SwitchLabel() :
   "default" ":"
         {
                 _ncss++;       Util.debug( "_ncss++" );
-        }
+}
 }
 
 void IfStatement() :
