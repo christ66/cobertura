@@ -7,7 +7,10 @@ import net.sourceforge.cobertura.util.FileFinder;
 import net.sourceforge.cobertura.util.RegexUtil;
 import org.apache.oro.text.regex.Pattern;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 
 /*
@@ -36,6 +39,7 @@ public class ArgumentsBuilder {
 	// Visible for testing
 	static final String DEFAULT_ENCODING = "UTF-8";
 	static final double DEFAULT_THRESHOLD = 0.;
+	static final boolean DEFAULT_CALCULATE_METHOD_COMPLEXITY = false;
 	static final boolean DEFAULT_FAIL_ON_ERROR = false;
 	static final boolean DEFAULT_IGNORE_TRIVIAL = false;
 	static final boolean DEFAULT_THREADSAFE_RIGOROUS = false;
@@ -52,6 +56,7 @@ public class ArgumentsBuilder {
 	private Collection<Pattern> ignoreBranchesRegexes;
 	private Collection<Pattern> classPatternIncludeClassesRegexes;
 	private Collection<Pattern> classPatternExcludeClassesRegexes;
+	private boolean calculateMethodComplexity;
 	private boolean failOnError;
 	private boolean ignoreTrivial;
 	private boolean threadsafeRigorous;
@@ -127,6 +132,11 @@ public class ArgumentsBuilder {
 		return this;
 	}
 
+	public ArgumentsBuilder calculateMethodComplexity(boolean calculateMethodComplexity) {
+		this.calculateMethodComplexity = calculateMethodComplexity;
+		return this;
+	}
+
 	public ArgumentsBuilder failOnError(boolean failOnError) {
 		this.failOnError = failOnError;
 		return this;
@@ -139,6 +149,25 @@ public class ArgumentsBuilder {
 
 	public ArgumentsBuilder threadsafeRigorous(boolean threadsafeRigorous) {
 		this.threadsafeRigorous = threadsafeRigorous;
+		return this;
+	}
+
+	public ArgumentsBuilder listOfFilesToInstrument(String listFileName) {
+		String baseDir = getBaseDirectory();
+		try {
+			File file = new File(listFileName);
+			FileReader fileReader = new FileReader(file);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			StringBuffer stringBuffer = new StringBuffer();
+			String line;
+			while ((line = bufferedReader.readLine()) != null) {
+				line = line.replace(baseDir, "");
+				filesToInstrument.add(new CoberturaFile(baseDir, line));
+			}
+			fileReader.close();
+		} catch (IOException e) {
+		  e.printStackTrace();
+		}
 		return this;
 	}
 
@@ -205,11 +234,11 @@ public class ArgumentsBuilder {
 		return this;
 	}
 
-	public ArgumentsBuilder addSources(String sourcePath, boolean isDirectory) {
+	public ArgumentsBuilder addSources(String basePath, String sourcePath) {
 		if (this.sources == null) {
 			this.sources = new ArrayList<CodeSource>();
 		}
-		this.sources.add(new CodeSource(isDirectory, sourcePath));
+		this.sources.add(new CodeSource(basePath, sourcePath));
 		return this;
 	}
 
@@ -219,9 +248,9 @@ public class ArgumentsBuilder {
 		if (this.sources != null) {
 			for (CodeSource codeSource : this.sources) {
 				if (codeSource.isDirectory()) {
-					sources.addSourceDirectory(codeSource.getPath());
+					sources.addSourceDirectory(codeSource.getBasePath());
 				} else {
-					sources.addSourceFile(getBaseDirectory(),
+					sources.addSourceFile(codeSource.getBasePath(),
 							codeSource.getPath());
 				}
 			}
@@ -230,7 +259,8 @@ public class ArgumentsBuilder {
 		return new Arguments(baseDirectory, dataFile, destinationDirectory,
 				commandsFile, ignoreRegexes, ignoreBranchesRegexes,
 				classPatternIncludeClassesRegexes,
-				classPatternExcludeClassesRegexes, failOnError, ignoreTrivial,
+				classPatternExcludeClassesRegexes, calculateMethodComplexity,
+				failOnError, ignoreTrivial,
 				threadsafeRigorous, encoding, minimumCoverageThresholds,
 				classLineThreshold, classBranchThreshold, packageLineThreshold,
 				packageBranchThreshold, totalLineThreshold,
@@ -269,6 +299,7 @@ public class ArgumentsBuilder {
 		totalBranchThreshold = DEFAULT_THRESHOLD;
 		totalLineThreshold = DEFAULT_THRESHOLD;
 
+		calculateMethodComplexity = DEFAULT_CALCULATE_METHOD_COMPLEXITY;
 		failOnError = DEFAULT_FAIL_ON_ERROR;
 		ignoreTrivial = DEFAULT_IGNORE_TRIVIAL;
 		threadsafeRigorous = DEFAULT_THREADSAFE_RIGOROUS;
@@ -280,17 +311,21 @@ public class ArgumentsBuilder {
 	}
 
 	private static class CodeSource {
-		private boolean directory;
+		private String basePath;
 		private String path;
 
-		private CodeSource(boolean directory, String path) {
-			this.directory = directory;
+		private CodeSource(String basePath, String path) {
+			this.basePath = basePath;
 			this.path = path;
 		}
 
 		public boolean isDirectory() {
-			return directory;
+			return path == null || path.isEmpty();
 		}
+
+        public String getBasePath() {
+            return basePath;
+        }
 
 		public String getPath() {
 			return path;

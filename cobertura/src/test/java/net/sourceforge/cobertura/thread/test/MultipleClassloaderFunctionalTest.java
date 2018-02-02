@@ -155,13 +155,17 @@ public class MultipleClassloaderFunctionalTest {
 				+ TestUtils.getCoberturaClassDir().getAbsolutePath()
 						.replace('\\', '/')
 				+ "\");"
+				+ "\n 		File dependencySlf4j = new File(\""
+				+ TestUtils.createDependencyPath("org.slf4j", "slf4j-api", "1.7.5").toString()
+						.replace('\\', '/')
+				+ "\");"
 				+ "\n "
 				+ "\n 		/*"
 				+ "\n 		 * Create a classloader with a null parent classloader to ensure that this"
 				+ "\n 		 * classloader loads the Cobertura classes itself."
 				+ "\n 		 */"
 				+ "\n          URLClassLoader loader = new URLClassLoader("
-				+ "\n         		new URL[] {instrumentDir.toURL(), coberturaClassDir.toURL()}, null);"
+				+ "\n         		new URL[] {instrumentDir.toURL(), coberturaClassDir.toURL(), dependencySlf4j.toURL()}, null);"
 				+ "\n "
 				+ "\n 		// use reflection to call mypackage.Called.callThis() once."
 				+ "\n         Class calledClass = loader.loadClass(\"mypackage.Called\");"
@@ -222,6 +226,8 @@ public class MultipleClassloaderFunctionalTest {
 		Path classpath = new Path(TestUtils.project);
 		classpath.addDirset(dirSet);
 		classpath.addDirset(TestUtils.getCoberturaClassDirSet());
+		// This is needed to fix issue #213
+		classpath.add(TestUtils.createDependencyPath("org.slf4j", "slf4j-api", "1.7.5"));
 
 		Java java = new Java();
 		java.setProject(TestUtils.project);

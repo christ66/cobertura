@@ -1,80 +1,23 @@
-# COBERTURA
-[![Build Status](http://www.cloudbees.com/sites/default/files/Button-Built-on-CB-1.png)](https://cobertura.ci.cloudbees.com/job/Cobertura/)
-[![Build Status](http://www.cloudbees.com/sites/default/files/Button-Powered-by-CB.png)](http://www.cloudbees.com/)
-
-## ABOUT
-Cobertura is a free Java code coverage reporting tool.  It is
-based on jcoverage 1.0.5.  See the [Cobertura web page](http://cobertura.sourceforge.net/)
-and [wiki](https://github.com/cobertura/cobertura/wiki) for more details.
-
-Since 2.0.0, Cobertura versions follow the [Semantic versioning](http://semver.org/) guidelines.
-
-## COPYRIGHT
-Code in the net.sourceforge.cobertura.javancss package is
-Copyright (C) 2000 Chr. Clemens Lee   <clemens a.t kclee d.o.t com>
-
-See the included file "LICENSE.txt"
-
-## LICENSE
-Cobertura is free software.  Most of it is licensed under the GNU
-GPL, and you can redistribute it and/or modify it under the terms
-of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option)
-any later version.  Please review the file LICENSE.txt included in this
-distribution for further details.
-Parts of Cobertura are licensed under the Apache Software License,
-Version 1.1.
-
-## WARRANTY
-Cobertura is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-General Public License for more details.
-
-## CONVENTIONS
-Before committing
-* check all tests pass
-* build the project, so that all code gets uniformly indented. A Maven plugin ensures this.
-
-## CONTRIBUTORS
-List of all contributors to Cobertura listed alphabetically by last name
-* Copyright (C) 2005 Björn Beskow      <bbeskow a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2008 Matt Cordes        <mcordes a.t visa d.o.t com>
-* Copyright (C) 2005 Erik Dick          <erdick a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2005 Mark Doliner       <thekingant a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2005 Joakim Erdfelt     <joakim a.t erdfelt d.o.t net>
-* Copyright (C) 2008 Scott Frederick    <scottyfred a.t gmail d.o.t com>
-* Copyright (C) 2008 Julian Gamble      <juliangamble a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2006 Dan Godfrey        <dgodfrey99 a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2008 Tri Bao Ho         <hotribao a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2006 Naoki Iwami        <naoki_iwami a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2003 jcoverage ltd.
-* Copyright (C) 2009 John Lewis         <lewijw a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2005 Grzegorz Lukasik   <hauserx a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2006 Jiri Mares         <jirimares a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2009 Amit Nithianandan  <ANithian a.t gmail d.o.t com>
-* Copyright (C) 2005 Olivier Parent     <olivier-parent a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2009 Ed Randall         <ed_randall a.t yahoo d.o.t com>
-* Copyright (C) 2005 Alex Ruiz          <alruiz15 a.t users d.o.t yahoo d.o.t com>
-* Copyright (C) 2005 James Seigel       <cgul a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2005 Mark Sinke         <marksinke a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2010 Tad Smith          <tsmith a.t lw-lmco d.o.t com>
-* Copyright (C) 2009 Charlie Squires    <rockonword a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2010 Piotr Tabor        <piotr.tabor a.t gmail d.o.t com>
-* Copyright (C) 2005 Jeremy Thomerson   <jthomerson a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2009 Chris van Es       <cvanes a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2006 Srivathsan Varadarajan <vatsanv a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2005 Nathan Wilson      <ndciwilson a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2005 Alexei Yudichev    <sflexus a.t users d.o.t sourceforge d.o.t net>
-* Copyright (C) 2013 Steven Christou    <schristou88 a.t gmail d.o.t com>
-
-## MAVEN MIGRATION NOTES
-* *How do we get a good blame while all files were moved?*
-
-Use "git blame --follow" nameOfFile.java
-
-
 ## CHANGELOG
+
+### version 2.1.1, 2015-02-26:
+  * [62](https://github.com/cobertura/cobertura/issues/62)   Parse error on Java 1.7 combined exception
+  * [69](https://github.com/cobertura/cobertura/issues/69)   Branch coverage may exceed 100%, resulting in awkward HTML reports
+  * [104](https://github.com/cobertura/cobertura/issues/104) Some tests fail on Windows due to incorrect Escape characters
+  * [111](https://github.com/cobertura/cobertura/issues/111) Lexical error at line xxx, column xxx.
+  * [137](https://github.com/cobertura/cobertura/issues/137) Incorrect (it seems) bat and SH files
+  * [166](https://github.com/cobertura/cobertura/issues/166) Error when using Java 8
+  * [175](https://github.com/cobertura/cobertura/issues/175) Cobertura 2.0.4 will create breaking changes to plugins
+  * [179](https://github.com/cobertura/cobertura/issues/179) Instrumentation fails when there is no base directory
+  * [187](https://github.com/cobertura/cobertura/issues/187) Error: Could not find or load main class net.sourceforge.cobertura.instrument.Main in Cobertura 2.0.3
+  * [190](https://github.com/cobertura/cobertura/issues/190) Will Cobertura (or ASM) Support Java 7 with Correct Coverage?
+  * [201](https://github.com/cobertura/cobertura/issues/201) Test failure in current 2.1.0-SNAPSHOT
+  * [202](https://github.com/cobertura/cobertura/issues/202) Cobertura needs to update minimum Java requirement to Java 6
+  * [203](https://github.com/cobertura/cobertura/issues/203) Cobertura needs an SLF4J binding in compile scope
+  * [204](https://github.com/cobertura/cobertura/issues/204) Add a limited runtime project for Cobertura, like the one that was available in 2.0.3
+  * [206](https://github.com/cobertura/cobertura/issues/206) Multiple tests fail when building with Java 6
+  * [213](https://github.com/cobertura/cobertura/issues/213) Replace all usages of java.util.logging with SLF4J
+  * [229](https://github.com/cobertura/cobertura/issues/229) ERROR - loadCoverageData
 
 ### version 2.0.3:
 	* Fixed null version in reports. (Github Issue 37)
@@ -91,22 +34,22 @@ Use "git blame --follow" nameOfFile.java
 	* Fix a problem that occurs if class version lower than 49.
 
 ### version 2.0.0:
-	* New --ignoreTrivial switch that tells Cobertura to ignore the 
-	  following in the coverage report: Getter methods that simply 
+	* New --ignoreTrivial switch that tells Cobertura to ignore the
+	  following in the coverage report: Getter methods that simply
 	  read a class field; Setter methods that set a class field;
-	  Constructors that only set class fields and call a super 
+	  Constructors that only set class fields and call a super
 	  class constructor.
 	  (Patch 3010530 from 1576631) (Scott Frederick/Tad Smith)
-	* New --ignoreMethodAnnotation switch used to specify an annotation that, 
-	  when present on a method, will cause Cobertura to ignore the 
+	* New --ignoreMethodAnnotation switch used to specify an annotation that,
+	  when present on a method, will cause Cobertura to ignore the
 	  method in the coverage report.
 	  (Patch 3010530) (Tad Smith)
 
 ### version 1.9.4.1:
-	* Fix a problem that occurs in Tomcat.   When TouchCollector 
-	  initializes, it calls ProjectData.initialize() which (with 
-	  Tomcat only) eventually calls TouchCollector.   However, 
-	  TouchCollector's static members have not been initialized.   
+	* Fix a problem that occurs in Tomcat.   When TouchCollector
+	  initializes, it calls ProjectData.initialize() which (with
+	  Tomcat only) eventually calls TouchCollector.   However,
+	  TouchCollector's static members have not been initialized.
 	  Added a test that highlights this problem.   (Thanks to Jack Cobb
 	  for suggesting the fix).
 	* Runs on Java 5.  (Fix for Bug 2962599).
@@ -125,7 +68,7 @@ Use "git blame --follow" nameOfFile.java
 	  problems.  Bug #2824425. (John Lewis)
 	* Non-Java source files (like Groovy) no longer show the JavaNCSS warnings
 	  during cobertura-report.  Fix of bug #2819844.
-	* Support the case where multiple classloaders each load the Cobertura 
+	* Support the case where multiple classloaders each load the Cobertura
 	  classes.  (Ed Randall)
 	* Fixed bug added with 1.9.2 where a NullPointerException is thrown
 	  if ProjectData.saveGlobalProjectData() is called before any instrumented
@@ -133,7 +76,7 @@ Use "git blame --follow" nameOfFile.java
 
 ### version 1.9.2:
 	* Cobertura is now thread safe.
-	* Fix for FileLocker exception when writing coverage data 
+	* Fix for FileLocker exception when writing coverage data
 	  (java.lang.IllegalStateException: Shutdown in progress) that started
 	  to appear with Java 6 update 14. (Chris van Es)
 	* Fix for bug "Unix scripts behave oddly due to DOS format - ID: 2788621"
@@ -148,24 +91,24 @@ Use "git blame --follow" nameOfFile.java
 	* Removed the bold font from the source-view for uncovered lines to
 	  improve the alignment.  (Jiri Mares)
 	* Support Ant <dirset>s. (Matt Cordes, John Lewis)
-	* Support the antlib mechanism for defining and importing 
+	* Support the antlib mechanism for defining and importing
 	  ant tasks. (Richard Atkins)
 	* Reports now support source encoded in something than UTF-8. (Jiri Mares)
 	* Report generation performance improvement. (Ignat Zapolsky)
-	* Report generation will look in zip and jar files if the 
+	* Report generation will look in zip and jar files if the
 	  source java file is not found. (Charlie Squires, John Lewis)
-	* cobertura-check with linerate=0, branchrate=0, 
+	* cobertura-check with linerate=0, branchrate=0,
 	  packagebranchrate=0, packagelinerate=0, totalbranchrate=0,
 	  totallinerate=0 will no longer default all the values to
 	  50 as before.   Therefore, cobertura-check will always pass.
 	  Note that this still means that <cobertura-check /> (with
 	  no attributes) will still default to 50 for all rates. (Charlie
 	  Squires) (Bug 2152919)
-	* New coberturaFlush.war is created.   Deploy it to a 
+	* New coberturaFlush.war is created.   Deploy it to a
 	  web server and invoke http://<HOST>:<PORT>/coberturaFlush/flushCobertura
 	  for a convenient way of flushing the cobertura data to the
 	  datafile without stopping the web server.  (Amit Nithianandan)
-	* XML report now shows total lines-covered, lines-valid, 
+	* XML report now shows total lines-covered, lines-valid,
 	  branches-covered, branches-valid, and complexity.  (Julian Gamble)
 	* New report option called "summaryXml" will create
 	  a small summary XML report that does not have all the
@@ -173,7 +116,7 @@ Use "git blame --follow" nameOfFile.java
 	  is for large projects where the full XML report gets so
 	  big it impairs continuous build processes.  (Julian Gamble and Dan Godfrey)
 	* Migrated from asm-2.2.1 to asm-3.0. (Jiri Mares)
-	* The percentage coverage of 199 out of 200 lines has been 100%. 
+	* The percentage coverage of 199 out of 200 lines has been 100%.
 	  No more! Now it is 99%.  (Jiri Mares)
 	* Spelling error corrected in main.css file - changed magin to
 	  margin. (Dennis Lundberg)
@@ -198,9 +141,9 @@ Use "git blame --follow" nameOfFile.java
 	  control over system properties is difficult such as
 	  app servers, IoC containers, IDEs, etc.  Setting the
 	  datafile location is difficult in these environments.
-	  To correct this, a cobertura.properties file 
-	  located in the classpath is used to properly set the 
-	  net.sourceforge.cobertura.datafile property.  
+	  To correct this, a cobertura.properties file
+	  located in the classpath is used to properly set the
+	  net.sourceforge.cobertura.datafile property.
 	  (Joakim Erdfelt)
 
 ### version 1.8 (2006-04-10)
@@ -362,6 +305,9 @@ Use "git blame --follow" nameOfFile.java
 	* Fill feature request #1151779 with a patch from Jeremy Thomerson.
 	  This changes the structure of the XML report so that <classes> are
 	  enclosed inside <packages>.
+
+
+* Copyright (C) 2010 Tad Smith          <tsmith a.t lw-lmco d.o.t com>
 
 ### version 1.0 (2005-02-12)
 	* Forked jcoverage 1.0.5 (although the version in the source says 1.0.4).

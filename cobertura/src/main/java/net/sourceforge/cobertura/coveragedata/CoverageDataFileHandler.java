@@ -26,11 +26,11 @@ package net.sourceforge.cobertura.coveragedata;
 
 import net.sourceforge.cobertura.CoverageIgnore;
 import net.sourceforge.cobertura.util.ConfigurationUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This contains methods used for reading and writing the
@@ -38,8 +38,8 @@ import java.util.logging.Logger;
  */
 @CoverageIgnore
 public abstract class CoverageDataFileHandler {
-	private static Logger logger = Logger
-			.getLogger(CoverageDataFileHandler.class.getCanonicalName());
+	private static final Logger logger = LoggerFactory
+			.getLogger(CoverageDataFileHandler.class);
 	private static File defaultFile = null;
 
 	public static File getDefaultDataFile() {
@@ -61,7 +61,7 @@ public abstract class CoverageDataFileHandler {
 			is = new BufferedInputStream(new FileInputStream(dataFile), 16384);
 			return loadCoverageData(is);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Cobertura: Error reading file "
+			logger.error("Cobertura: Error reading file "
 					+ dataFile.getAbsolutePath() + ": "
 					+ e.getLocalizedMessage(), e);
 			return null;
@@ -70,7 +70,7 @@ public abstract class CoverageDataFileHandler {
 				try {
 					is.close();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Cobertura: Error closing file "
+					logger.error("Cobertura: Error closing file "
 							+ dataFile.getAbsolutePath() + ": "
 							+ e.getLocalizedMessage(), e);
 				}
@@ -83,23 +83,21 @@ public abstract class CoverageDataFileHandler {
 		try {
 			objects = new ObjectInputStream(dataFile);
 			ProjectData projectData = (ProjectData) objects.readObject();
-			logger.log(Level.INFO, "Cobertura: Loaded information on "
+			logger.info("Cobertura: Loaded information on "
 					+ projectData.getNumberOfClasses() + " classes.");
 
 			return projectData;
 		} catch (IOException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					"Cobertura: Error reading from object stream.", e);
+			logger.error("Cobertura: Error reading from object stream.", e);
 			return null;
 		} finally {
 			if (objects != null) {
 				try {
 					objects.close();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE,
-							"Cobertura: Error closing object stream.");
+					logger.error("Cobertura: Error closing object stream.");
 				}
 			}
 		}
@@ -116,14 +114,14 @@ public abstract class CoverageDataFileHandler {
 			os = new FileOutputStream(dataFile);
 			saveCoverageData(projectData, os);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Cobertura: Error writing file "
+			logger.error("Cobertura: Error writing file "
 					+ dataFile.getAbsolutePath(), e);
 		} finally {
 			if (os != null) {
 				try {
 					os.close();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Cobertura: Error closing file "
+					logger.error("Cobertura: Error closing file "
 							+ dataFile.getAbsolutePath(), e);
 				}
 			}
@@ -140,15 +138,13 @@ public abstract class CoverageDataFileHandler {
 			logger.info("Cobertura: Saved information on "
 					+ projectData.getNumberOfClasses() + " classes.");
 		} catch (IOException e) {
-			logger.log(Level.SEVERE,
-					"Cobertura: Error writing to object stream.", e);
+			logger.error("Cobertura: Error writing to object stream.", e);
 		} finally {
 			if (objects != null) {
 				try {
 					objects.close();
 				} catch (IOException e) {
-					logger.log(Level.SEVERE,
-							"Cobertura: Error closing object stream.", e);
+					logger.error("Cobertura: Error closing object stream.", e);
 				}
 			}
 		}

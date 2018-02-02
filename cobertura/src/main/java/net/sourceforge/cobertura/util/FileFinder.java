@@ -219,15 +219,9 @@ public class FileFinder {
 					try {
 						LOGGER.debug("Looking for: " + fileName + " in " + jar);
 						JarFile jf = new JarFile(directory + "/" + jar);
-
-						//Get a list of files in the jar
-						Enumeration<JarEntry> files = jf.entries();
-						//See if the jar has the class we need
-						while (files.hasMoreElements()) {
-							JarEntry entry = files.nextElement();
-							if (entry.getName().equals(fileName)) {
-								return new Source(jf.getInputStream(entry), jf);
-							}
+						JarEntry entry = jf.getJarEntry(fileName);
+						if (entry != null) {
+							return new Source(jf.getInputStream(entry), jf);
 						}
 					} catch (Throwable t) {
 						LOGGER.warn("Error while reading " + jar, t);

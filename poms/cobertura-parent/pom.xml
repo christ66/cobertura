@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <!--
@@ -12,12 +11,12 @@
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>net.sourceforge.cobertura.poms</groupId>
     <artifactId>cobertura-parent</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <url>${url.prefix}/${path.in.reactor}</url>
@@ -66,7 +65,7 @@
         <!-- Build-controlling properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <build.number/>
+        <build.number />
         <artifact.distribution.directory>${project.build.outputDirectory}</artifact.distribution.directory>
         <check.plugins.phase>package</check.plugins.phase>
         <jdk.version>1.6</jdk.version>
@@ -75,7 +74,7 @@
         <maven.version>3.0.4</maven.version>
         <openjpa.version>2.3.0</openjpa.version>
         <activemq.version>5.9.0</activemq.version>
-        <maven.release.plugin.version>2.4.2</maven.release.plugin.version>
+        <maven.release.plugin.version>2.5.1</maven.release.plugin.version>
         <aspectj.runtime.version>1.7.4</aspectj.runtime.version>
         <aspectj-maven-plugin.version>1.5</aspectj-maven-plugin.version>
         <osgiVersion>4.3.1</osgiVersion>
@@ -101,11 +100,11 @@
         <checkstyle.violationSeverity>error</checkstyle.violationSeverity>
 
         <!-- PMD configuration parameters. -->
-        <pmd.plugin.version>3.0.1</pmd.plugin.version>
+        <pmd.plugin.version>3.6</pmd.plugin.version>
         <pmd.ruleset>/codestyle/cobertura/pmd-rules.xml</pmd.ruleset>
 
         <!-- Findbugs configuration parameters. -->
-        <findbugs.plugin.version>2.5.2</findbugs.plugin.version>
+        <findbugs.plugin.version>3.0.3</findbugs.plugin.version>
         <findbugs.only.analyze>net.sourceforge.cobertura.*</findbugs.only.analyze>
         <findbugs.includeFilterFile>codestyle/cobertura/findbugs.xml</findbugs.includeFilterFile>
         <findbugs.excludeFilterFile>codestyle/cobertura/findbugs-excludes.xml</findbugs.excludeFilterFile>
@@ -136,7 +135,7 @@
         <url.prefix>${reactor.url.remote.prefix}/${reactor.name}/${project.version}</url.prefix>
         <distro.url.prefix>${site.url.prefix}/${reactor.name}/${project.version}</distro.url.prefix>
         <scm.conn>scm:git:git://${scm.host}/${reactor.name}/${reactor.name}</scm.conn>
-        <scm.devConnection>scm:git:git@${scm.host}/${reactor.name}/${reactor.name}.git</scm.devConnection>
+        <scm.devConnection>scm:git:git@${scm.host}:${reactor.name}/${reactor.name}.git</scm.devConnection>
         <nazgul-tools.version>2.0.9</nazgul-tools.version>
         <nazgul-core.version>1.6.0</nazgul-core.version>
     </properties>
@@ -160,7 +159,6 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>1.0.13</version>
-                <scope>test</scope>
             </dependency>
 
             <!--
@@ -534,7 +532,7 @@
                                         <versionRange>2.5</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -548,7 +546,7 @@
                                         <versionRange>[0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -587,7 +585,7 @@
                                         <versionRange>[0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -601,7 +599,7 @@
                                         <versionRange>[0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -618,7 +616,7 @@
                                         <versionRange>[0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -633,7 +631,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute/>
+                                        <execute />
                                     </action>
                                 </pluginExecution>
 
@@ -647,7 +645,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute/>
+                                        <execute />
                                     </action>
                                 </pluginExecution>
 
@@ -661,7 +659,7 @@
                                         <versionRange>[1.0.0,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -675,7 +673,7 @@
                                         <versionRange>[1.2,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -690,7 +688,7 @@
                                         <versionRange>[1.2,)</versionRange>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore/>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
 
@@ -755,6 +753,7 @@
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${maven.release.plugin.version}</version>
                     <configuration combine.self="override">
+                        <goals>deploy</goals>
                         <localCheckout>true</localCheckout>
                         <mavenExecutorId>forked-path</mavenExecutorId>
                         <tagNameFormat>${reactor.name}-@{project.version}</tagNameFormat>
@@ -763,7 +762,7 @@
                         <dependency>
                             <groupId>org.apache.maven.scm</groupId>
                             <artifactId>maven-scm-provider-hg</artifactId>
-                            <version>1.8.1</version>
+                            <version>1.9.2</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1097,7 +1096,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.1.0-SNAPSHOT</version>
+                            <version>2.1.2-SNAPSHOT</version>
                         </dependency>
                         <dependency>
                             <groupId>log4j</groupId>
@@ -1148,7 +1147,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.1.0-SNAPSHOT</version>
+                            <version>2.1.2-SNAPSHOT</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1183,7 +1182,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.1.0-SNAPSHOT</version>
+                            <version>2.1.2-SNAPSHOT</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1209,8 +1208,7 @@
                         <!-- licenseResolver>${license.licenseResolver}</licenseResolver -->
                         <!--
                             descriptionTemplate>/codestyle/license/${license.id}/
-                            licenseDescriptionTemplate.ftl</descriptionTemplate
-                        -->
+                            licenseDescriptionTemplate.ftl</descriptionTemplate -->
                         <canUpdateDescription>true</canUpdateDescription>
                         <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
                         <licenseFile>${project.build.directory}/LICENSE.TXT</licenseFile>
@@ -1245,7 +1243,7 @@
                         <dependency>
                             <groupId>net.sourceforge.cobertura.codestyle</groupId>
                             <artifactId>cobertura-codestyle</artifactId>
-                            <version>2.1.0-SNAPSHOT</version>
+                            <version>2.1.2-SNAPSHOT</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -1313,6 +1311,8 @@
             </plugin>
 
             <!-- Fix project license documents -->
+            <!-- Disabled until http://jira.codehaus.org/browse/MLICENSE-90 has been resolved -->
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -1327,6 +1327,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
 
             <!-- Compile the code -->
             <plugin>
@@ -1339,81 +1340,6 @@
                     <showDeprecation>true</showDeprecation>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
-            </plugin>
-
-            <!-- Enforce not importing incorrect projects. -->
-            <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.3.1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-imports</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <fail>${breakOnFailure.enforcer}</fail>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>[3.0.5,)</version>
-                                </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>${jdk.version}</version>
-                                </requireJavaVersion>
-                                <requireUpperBoundDeps/>
-
-                                <!--
-                                    Enforce the ProjectType structure, implying that all projects
-                                    must comply with the project template definitions.
-                                -->
-                                <validateProjectTypes
-                                        implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.ValidateProjectType"/>
-
-                                <!--
-                                    Enforce the implementation rules for dependencies, to enforce that
-                                    the level of dependency tanglement is not increased. This implies that
-                                    implementation projects cannot import other implementation projects (but
-                                    instead should import APIs).
-
-                                    While the configuration below reflect the default settings, it is
-                                    reproduced her to serve as an example of how to configure this enforcement rule
-                                    in child reactors - where needs are likely different than here.
-                                -->
-                                <restrictImplDependencies
-                                        implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.RestrictImplDependencies">
-                                    <includedGroupIdPatterns>${enforcer.includedGroupIdPatterns}
-                                    </includedGroupIdPatterns>
-                                    <excludedGroupIdPatterns>${enforcer.excludedGroupIdPatterns}
-                                    </excludedGroupIdPatterns>
-                                </restrictImplDependencies>
-
-                                <!--
-                                    Enforce using correct packages for classes within a NSC project.
-                                    The root package of any project should be identical to its groupId.
-                                    Any package below the root package can safely be used - so ...
-
-                                    if the groupId of a project is "com.acme.foobar",
-                                    then all code within that project must reside within the "com.acme.foobar" package,
-                                    or in any subpackage thereof.
-                                -->
-                                <correctPackaging
-                                        implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.CorrectPackagingRule"/>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>se.jguru.nazgul.tools.codestyle</groupId>
-                        <artifactId>nazgul-codestyle</artifactId>
-                        <version>${nazgul-tools.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>net.sourceforge.cobertura.codestyle</groupId>
-                        <artifactId>cobertura-codestyle</artifactId>
-                        <version>2.1.0-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <!-- Generate maven dependencies listing file -->
@@ -1673,6 +1599,92 @@
     <profiles>
 
         <!--
+            Moved to a profile, activated by JDK 1.7 or higher, because the Enforcer rules used require Java 1.7.
+            We must use Java 1.6 when doing a release.
+        -->
+        <profile>
+            <id>enforce-imports</id>
+            <activation>
+                <jdk>[1.7,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Enforce not importing incorrect projects. -->
+                    <plugin>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>1.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-imports</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <fail>${breakOnFailure.enforcer}</fail>
+                                    <rules>
+                                        <requireMavenVersion>
+                                            <version>[3.0.5,)</version>
+                                        </requireMavenVersion>
+                                        <requireJavaVersion>
+                                            <version>${jdk.version}</version>
+                                        </requireJavaVersion>
+                                        <requireUpperBoundDeps />
+
+                                        <!--
+                                            Enforce the ProjectType structure, implying that all projects
+                                            must comply with the project template definitions.
+                                        -->
+                                        <validateProjectTypes implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.ValidateProjectType" />
+
+                                        <!--
+                                            Enforce the implementation rules for dependencies, to enforce that
+                                            the level of dependency tanglement is not increased. This implies that
+                                            implementation projects cannot import other implementation projects (but
+                                            instead should import APIs).
+
+                                            While the configuration below reflect the default settings, it is
+                                            reproduced her to serve as an example of how to configure this enforcement rule
+                                            in child reactors - where needs are likely different than here.
+                                        -->
+                                        <restrictImplDependencies implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.RestrictImplDependencies">
+                                            <includedGroupIdPatterns>${enforcer.includedGroupIdPatterns}
+                                            </includedGroupIdPatterns>
+                                            <excludedGroupIdPatterns>${enforcer.excludedGroupIdPatterns}
+                                            </excludedGroupIdPatterns>
+                                        </restrictImplDependencies>
+
+                                        <!--
+                                            Enforce using correct packages for classes within a NSC project.
+                                            The root package of any project should be identical to its groupId.
+                                            Any package below the root package can safely be used - so ...
+
+                                            if the groupId of a project is "com.acme.foobar",
+                                            then all code within that project must reside within the "com.acme.foobar" package,
+                                            or in any subpackage thereof.
+                                        -->
+                                        <correctPackaging implementation="se.jguru.nazgul.tools.codestyle.enforcer.rules.CorrectPackagingRule" />
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>se.jguru.nazgul.tools.codestyle</groupId>
+                                <artifactId>nazgul-codestyle</artifactId>
+                                <version>${nazgul-tools.version}</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>net.sourceforge.cobertura.codestyle</groupId>
+                                <artifactId>cobertura-codestyle</artifactId>
+                                <version>2.1.2-SNAPSHOT</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!--
             Purpose: Use GPG to sign artifacts during release:perform.
         -->
         <profile>
@@ -1720,6 +1732,7 @@
                         <artifactId>maven-release-plugin</artifactId>
                         <version>${maven.release.plugin.version}</version>
                         <configuration>
+                            <goals>deploy</goals>
                             <mavenExecutorId>forked-path</mavenExecutorId>
                             <preparationGoals>-B clean install</preparationGoals>
                             <localCheckout>true</localCheckout>

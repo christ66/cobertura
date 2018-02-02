@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000-2002 The Apache Software Foundation.  All rights
  * reserved.
- * Copyright (C) 2010 Piotr Tabor
+ * Copyright (C) 2010 John Lewis
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,143 +56,96 @@
 package net.sourceforge.cobertura.test;
 
 import groovy.util.AntBuilder;
+import groovy.util.Node;
 import net.sourceforge.cobertura.ant.ReportTask;
 import net.sourceforge.cobertura.test.util.TestUtils;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.types.DirSet;
-import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.resources.FileResource;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 
-public class PerformanceTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+public class ParentChildStaticFieldTest extends AbstractCoberturaTestCase {
 	AntBuilder ant = TestUtils.getCoberturaAntBuilder(TestUtils
 			.getCoberturaClassDir());
 
 	@Test
-	public void performanceTest() throws Exception {
+	public void parentChildStaticFieldShouldWorkWithoutInstrumentalizationTest() throws Exception {
 		/*
-		 * Use a temporary directory and create a Main.java source file that
-		 * has trivial methods such as .
+		 * Use a temporary directory and create a few sources files.
 		 */
 		File tempDir = TestUtils.getTempDir();
-
-		FileUtils.deleteDirectory(tempDir);
 		File srcDir = new File(tempDir, "src");
 		File instrumentDir = new File(tempDir, "instrument");
 
-		File mainSourceFile = new File(srcDir, "mypackage/Main.java");
+		File mainSourceFile = new File(srcDir, "mypackage/ParentChildStaticField.java");
 		File datafile = new File(srcDir, "cobertura.ser");
 		mainSourceFile.getParentFile().mkdirs();
 
-		FileUtils
-				.write(
-						mainSourceFile,
-						"\n package mypackage;"
-								+ "\n "
-								+ "\n public class Main extends Thread {"
-								+ "\n 	public static void main(String[] args) {"
-								+ "\n 		long start = System.nanoTime();"
-								+ "\n 		int j = 0;"
-								+ "\n 		for (int i = 0; i < 100000; i++) {"
-								+ "\n 		   if (i % 2 == 0) { j+=2; };"
-								+ "\n 		   switch (i % 4) {"
-								+ "\n 		      case 0 : "
-								+ "\n 		      case 1 : j++;"
-								+ "\n 		      case 2 : j+=2;"
-								+ "\n 		      default: j+=3;"
-								+ "\n 		   } "
-								+ "\n 		}"
-								+ "\n 		long stop = System.nanoTime();"
-								+ "\n 		System.out.println(\"Test took:\" + (stop - start)/100000.0 + \" milis\");"
-								+ "\n 	}" + "\n }");
+		byte[] encoded =  Files.readAllBytes(Paths.get("src/test/resources/examples/basic/src/com/example/simple/ParentChildStaticFieldExample.java"));
+
+		FileUtils.write(mainSourceFile, new String(encoded, "utf8"));
 
 		TestUtils.compileSource(ant, srcDir);
 
 		/*
 		 * Kick off the Main (instrumented) class.
 		 */
-		System.out.println("Run without instrumentation:\n");
-		Path classpath = new Path(TestUtils.project);
-		DirSet dirSetSrcDir = new DirSet();
-		dirSetSrcDir.setDir(srcDir);
-		classpath.addDirset(dirSetSrcDir);
-
-		Java java = new Java();
+		Java java = new Java(); 
 		java.setProject(TestUtils.project);
-		java.setClassname("mypackage.Main");
+		java.setClassname("mypackage.ParentChildStaticField");
 		java.setDir(srcDir);
 		java.setFork(true);
 		java.setFailonerror(true);
-		java.setClasspath(classpath);
-		java.setOutput(new File(tempDir, "PT_uninstrumented.log"));
+		java.setClasspath(TestUtils.getCoberturaDefaultClasspath());
 		java.execute();
+		
 
-		System.out.println(FileUtils.readFileToString(new File(tempDir,
-				"PT_uninstrumented.log")));
+	}
+@Test
+	public void parentChildStaticFieldShouldWorkAfterInstrumentalizationTest() throws Exception {
+		/*
+		 * Use a temporary directory and create a few sources files.
+		 */
+		File tempDir = TestUtils.getTempDir();
+		File srcDir = new File(tempDir, "src");
+		File instrumentDir = new File(tempDir, "instrument");
 
-		TestUtils.instrumentClasses(ant, srcDir, datafile, instrumentDir);
+		File mainSourceFile = new File(srcDir, "mypackage/ParentChildStaticField.java");
+		File datafile = new File(srcDir, "cobertura.ser");
+		mainSourceFile.getParentFile().mkdirs();
 
-		System.out
-				.println("Run with instrumentation (not threadsafe-rigorous):\n");
+		byte[] encoded =  Files.readAllBytes(Paths.get("src/test/resources/examples/basic/src/com/example/simple/ParentChildStaticFieldExample.java"));
 
-		classpath = new Path(TestUtils.project);
-		DirSet dirSetInstrumentDir = new DirSet();
-		dirSetSrcDir = new DirSet();
-		dirSetInstrumentDir.setDir(instrumentDir);
-		dirSetSrcDir.setDir(srcDir);
-		classpath.addDirset(dirSetInstrumentDir);
-		classpath.addDirset(dirSetSrcDir);
-		classpath.addDirset(TestUtils.getCoberturaClassDirSet());
-		// This is needed to fix issue #213
-		classpath.add(TestUtils.createDependencyPath("org.slf4j", "slf4j-api", "1.7.5"));
-
-		java = new Java();
-		java.setClassname("mypackage.Main");
-		java.setDir(srcDir);
-		java.setFork(true);
-		java.setFailonerror(true);
-		java.setClasspath(classpath);
-		java.setProject(TestUtils.project);
-		java.setOutput(new File(tempDir, "PT_instrumentedNonThreadSafe.log"));
-		java.execute();
-
-		System.out.println(FileUtils.readFileToString(
-				new File(tempDir, "PT_instrumentedNonThreadSafe.log"))
-				.toString());
+		FileUtils.write(mainSourceFile, new String(encoded, "utf8"));
 
 		TestUtils.compileSource(ant, srcDir);
 
-		TestUtils.instrumentClasses(ant, srcDir, datafile, instrumentDir,
-				new HashMap() {
-					{
-						put("threadsafeRigorous", true);
-					}
-				});
-
-		System.out.println("Run with instrumentation (threadsafe-rigorous):\n");
-
-		java = new Java();
-		java.setClassname("mypackage.Main");
+		TestUtils.instrumentClasses(ant, srcDir, datafile, instrumentDir);
+		
+		//moving instrumented classes so we don't have to change classpaths
+		FileUtils.copyDirectory(instrumentDir, srcDir);
+		
+		/*
+		 * Kick off the Main (instrumented) class.
+		 */
+		Java java = new Java(); 
+		java.setProject(TestUtils.project);
+		java.setClassname("mypackage.ParentChildStaticField");
 		java.setDir(srcDir);
 		java.setFork(true);
 		java.setFailonerror(true);
-		java.setClasspath(classpath);
-		java.setProject(TestUtils.project);
-		java.setOutput(new File(tempDir, "PT_instrumentedThreadSafe.log"));
+		java.setClasspath(TestUtils.getCoberturaDefaultClasspath());
 		java.execute();
-		System.out.println(FileUtils.readFileToString(new File(tempDir,
-				"PT_instrumentedThreadSafe.log")));
-		/*
-		 * Now create a cobertura xml file and make sure the correct counts are in it.
-		 */
-		ReportTask reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(datafile.getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(srcDir);
-		reportTask.execute();
-	}
-}
+		
+
+	}}

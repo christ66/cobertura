@@ -127,7 +127,7 @@ public class InjectCodeClassInstrumenter
 		if (ignoredMethods.contains(name + desc)) {
 			return mv;
 		}
-		if ((access & Opcodes.ACC_STATIC) != 0) {
+		if (((access & Opcodes.ACC_STATIC) != 0) || "<init>".equals(name)) {
 			mv = new GenerateCallCoberturaInitMethodVisitor(mv, classMap
 					.getClassName());
 			if ("<clinit>".equals(name)) {
@@ -157,7 +157,7 @@ public class InjectCodeClassInstrumenter
 		private String className;
 		public GenerateCallCoberturaInitMethodVisitor(MethodVisitor arg0,
 				String className) {
-			super(Opcodes.ASM4, arg0);
+			super(Opcodes.ASM5, arg0);
 			this.className = className;
 		}
 
@@ -176,7 +176,8 @@ public class InjectCodeClassInstrumenter
 	public void visitEnd() {
 		if (!wasStaticInitMethodVisited) {
 			//We need to generate new method
-			MethodVisitor mv = super.visitMethod(Opcodes.ACC_STATIC,
+			MethodVisitor mv = super.visitMethod(
+					Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC,
 					"<clinit>", "()V", null, null);
 			mv.visitCode();
 			codeProvider.generateCallCoberturaInitMethod(mv, classMap

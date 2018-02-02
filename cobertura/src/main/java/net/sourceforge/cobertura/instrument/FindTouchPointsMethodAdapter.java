@@ -171,13 +171,12 @@ public class FindTouchPointsMethodAdapter
 	public void visitLineNumber(int line, Label label) {
 		super.visitLineNumber(line, label);
 		currentLine = line;
-
+		replyEventIdList = null;
 		if (!isDuplicatedLine(line, lastLineId)) {
 			/*
 			 * It is a new line (first time seen, so we will save all found
 			 * events)
 			 */
-			replyEventIdList = null;
 			saveEventIdList = new LinkedList<Integer>();
 			Map<Integer, LinkedList<Integer>> eventsMap = line2eventIds
 					.get(line);
@@ -191,9 +190,10 @@ public class FindTouchPointsMethodAdapter
 			Map<Integer, LinkedList<Integer>> m = line2eventIds
 					.get(currentLine);
 			LinkedList<Integer> eventIds = m.get(orgin);
-
 			/* copy of  current list */
-			replyEventIdList = new LinkedList<Integer>(eventIds);
+			if(eventIds != null) {
+				replyEventIdList = new LinkedList<Integer>(eventIds);
+			}
 			saveEventIdList = null;
 		}
 
@@ -253,8 +253,8 @@ public class FindTouchPointsMethodAdapter
 
 	@Override
 	public void visitMethodInsn(int opcode, String owner, String method,
-			String descr) {
-		super.visitMethodInsn(opcode, owner, method, descr);
+			String descr, boolean intf) {
+		super.visitMethodInsn(opcode, owner, method, descr, intf);
 		//We skip lines that contains call to methods that are specified inside ignoreRegexp
 		if (RegexUtil.matches(ignoreRegexp, owner)) {
 			touchPointListener.ignoreLine(getEventId(), currentLine);

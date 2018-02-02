@@ -106,6 +106,7 @@ public class ComplexityCalculatorGetCcnForMethodUnitTest {
 		when(javancssFactory.newInstance(any(InputStream.class), any(String.class))).thenReturn(javancss);
 
 		complexityCalculator = new ComplexityCalculator(fileFinder, javancssFactory);
+		complexityCalculator.setCalculateMethodComplexity(true);
 	}
 
 	@Test

@@ -1638,7 +1638,7 @@ void FieldDeclaration() :
 {
   ( "public" { bPublic = true; }        // added by SMS
   | "protected" { bPublic = true; }     // added by SMS
-  | "private" | "static" | "final" | "transient" | "volatile" )*
+  | "private" | "static" | "final" | "transient" | "volatile" | Annotation())*
 
   // added by SMS
   {             tmpToken = getToken( 0 );
@@ -2880,7 +2880,7 @@ void DoStatement() :
 void ForStatement() :
 {}
 {
-  "for" "("
+  "for" "(" (Annotation())?
   (
       LOOKAHEAD(Modifiers() Type() <IDENTIFIER> ":")
       Modifiers() Type() <IDENTIFIER> ":" Expression()

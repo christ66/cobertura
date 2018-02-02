@@ -551,7 +551,35 @@ public class TestUtils {
 		classpath.addDirset(dirSetInstrumentDir);
 		classpath.addDirset(dirSetSrcDir);
 		classpath.addDirset(TestUtils.getCoberturaClassDirSet());
+		// This is needed to fix issue #213
+		classpath.add(createDependencyPath("org.slf4j", "slf4j-api", "1.7.5"));
 		return classpath;
+	}
+
+	/**
+	 * Create the path to a dependency in the current user's local Maven repository.
+	 * For this to work the local Maven repository must exist in the default location:
+	 * <code>${user.home}/.m2/repository</code>
+	 *
+	 * This is a hack, to get tests that build their own classpath using Ant-classes to work.
+	 * Ideally those tests should be rewritten into proper integration tests.
+	 *
+	 * @param groupId The groupId for the dependency
+	 * @param artifactId The artifactId for the dependency
+	 * @param version The version for the dependency
+	 * @return A Path to the dependency in the local Maven repository
+	 */
+	public static Path createDependencyPath(String groupId, String artifactId, String version) {
+		// Create a path to the current user's local Maven repository
+		String userHome = System.getProperty("user.home");
+		String localRepository = userHome + File.separator + ".m2" + File.separator + "repository";
+
+		// Create the path to a dependency within the local Maven repository
+		String dependencyPath = groupId.replace( ".", File.separator ) + File.separator
+			+ artifactId + File.separator + version + File.separator
+			+ artifactId + "-" + version + ".jar";
+
+		return new Path(TestUtils.project, localRepository + File.separator + dependencyPath);
 	}
 
 	/**

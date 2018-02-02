@@ -96,7 +96,7 @@ public class FastArrayCodeProvider extends AbstractCodeProvider
 	public void generateCountersField(ClassVisitor cv) {
 		/*final tooks 270ms, no-modifier 310ms, volatile 500ms*/
 		FieldVisitor fv = cv.visitField(Opcodes.ACC_STATIC | Opcodes.ACC_PUBLIC
-				| Opcodes.ACC_FINAL | Opcodes.ACC_TRANSIENT,
+				| Opcodes.ACC_FINAL | Opcodes.ACC_TRANSIENT | Opcodes.ACC_SYNTHETIC,
 				COBERTURA_COUNTERS_FIELD_NAME, COBERTURA_COUNTERS_FIELD_TYPE,
 				null, null);
 		fv.visitEnd();
@@ -126,8 +126,8 @@ public class FastArrayCodeProvider extends AbstractCodeProvider
 
 	public void generateCoberturaGetAndResetCountersMethod(ClassVisitor cv,
 			String className) {
-		MethodVisitor mv = cv.visitMethod(Opcodes.ACC_PUBLIC
-				| Opcodes.ACC_STATIC,
+		MethodVisitor mv = cv.visitMethod(
+				Opcodes.ACC_PUBLIC | Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC,
 				COBERTURA_GET_AND_RESET_COUNTERS_METHOD_NAME, "()[I", null,
 				null);
 		mv.visitCode();

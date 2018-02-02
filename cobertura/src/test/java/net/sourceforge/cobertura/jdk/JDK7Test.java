@@ -17,67 +17,12 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 
 public class JDK7Test {
-	static AntBuilder ant = TestUtils.getCoberturaAntBuilder(TestUtils
-			.getCoberturaClassDir());
-	static Node dom;
+    static Node dom;
 
-	@BeforeClass
+    @BeforeClass
 	public static void setUpBeforeClass() throws IOException,
 			ParserConfigurationException, SAXException {
-		FileUtils.deleteDirectory(TestUtils.getTempDir());
-
-		/*
-		 * First create the junit test structure.
-		 */
-		File tempDir = TestUtils.getTempDir();
-		File srcDir = new File(tempDir, "src");
-		File instrumentDir = new File(tempDir, "instrument");
-
-		File mainSourceFile = new File(srcDir, "mypackage/Java7TestCase.java");
-
-		File datafile = new File(srcDir, "cobertura.ser");
-		mainSourceFile.getParentFile().mkdirs();
-
-		FileUtils.write(mainSourceFile, java7TestFile);
-
-		/*
-		 * Next let's compile the test code we just made.
-		 */
-		TestUtils.compileSource(ant, srcDir);
-
-		/*
-		 * Let's now instrument all the classes. In this case we instrument with default items.
-		 */
-		TestUtils.instrumentClasses(ant, srcDir, datafile, instrumentDir);
-
-		/*
-		 * Kick off the Main (instrumented) class.
-		 */
-		Java java = new Java();
-		java.setProject(TestUtils.project);
-		java.setClassname("mypackage.Java7TestCase");
-		java.setDir(srcDir);
-		java.setFork(true);
-		java.setFailonerror(true);
-		java.setClasspath(TestUtils.getCoberturaDefaultClasspath());
-		java.execute();
-
-		/*
-		 * Now create a cobertura xml file and make sure the correct counts are in it.
-		 */
-		ReportTask reportTask = new ReportTask();
-		reportTask.setProject(TestUtils.project);
-		reportTask.setDataFile(datafile.getAbsolutePath());
-		reportTask.setFormat("xml");
-		reportTask.setDestDir(srcDir);
-		reportTask.execute();
-
-		/*
-		 * 
-		 */
-		System.out.println(srcDir.getAbsolutePath());
-		dom = TestUtils.getXMLReportDOM(srcDir.getAbsolutePath()
-				+ "/coverage.xml");
+        dom = JDKUtils.setUpBeforeClass(java7TestFile, "1.7", "mypackage.Java7TestCase", "mypackage/Java7TestCase.java");
 	}
 
 	/**
@@ -154,11 +99,23 @@ public class JDK7Test {
 		assertEquals(4, hitCount);
 	}
 
+    /**
+     *    public void binary_literals() {
+     *      int yesThisIsAnInt = 0b10100001010001011010000101000101;
+     *    }
+     */
+    @Test
+    public void testBinaryLiteral() {
+        int hitCount = TestUtils.getTotalHitCount(dom,
+                "mypackage.Java7TestCase", "binary_literals");
+        assertEquals(2, hitCount);
+    }
+
 	@Test
 	public void testMain() throws Exception {
 		int hitCount = TestUtils.getTotalHitCount(dom,
 				"mypackage.Java7TestCase", "main");
-		assertEquals(7, hitCount);
+		assertEquals(8, hitCount);
 	}
 
 	static final String java7TestFile = "\n package mypackage;"
@@ -174,6 +131,7 @@ public class JDK7Test {
 			+ "\n     t.diamond_operator();"
 			+ "\n     t.string_in_switch();"
 			+ "\n     t.numerical_literals_underscores();"
+            + "\n     t.binary_literals();"
 			+ "\n     t.multi_catch();"
 			+ "\n   }"
 			+ "\n   "
@@ -201,6 +159,10 @@ public class JDK7Test {
 			+ "\n     int thousand = 1_000;"
 			+ "\n     int million  = 1_000_000;"
 			+ "\n   }"
+            + "\n "
+            + "\n   public void binary_literals() {"
+            + "\n     int yesThisIsAnInt = 0b10100001010001011010000101000101;"
+            + "\n   }"
 			+ "\n   "
 			+ "\n   public void multi_catch() {"
 			+ "\n     try {"

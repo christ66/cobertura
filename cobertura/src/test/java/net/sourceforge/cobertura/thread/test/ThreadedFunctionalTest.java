@@ -291,6 +291,8 @@ public class ThreadedFunctionalTest {
 		p.addDirset(dirSet);
 		p.setProject(TestUtils.project);
 		p.addDirset(TestUtils.getCoberturaClassDirSet());
+		// This is needed to fix issue #213
+		p.add(TestUtils.createDependencyPath("org.slf4j", "slf4j-api", "1.7.5"));
 
 		for (int i = 0; i < numberOfRetries; i++) {
 			System.out.println("Executing build: " + i);
