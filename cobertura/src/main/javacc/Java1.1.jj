@@ -17,7 +17,7 @@
  *
  *
  * Changes applied to this grammar are for the JavaNCSS
- * application: http://www.kclee.com/clemens/java/javancss/
+ * application: http://www.kclee.de/clemens/java/javancss/
  * Author: Chr. Clemens Lee, 2000-01-31
  * Additional counting of javadoc comments done by
  *    Emilio Gongora, <emilio@sms.nl> and
@@ -66,7 +66,7 @@ import net.sourceforge.cobertura.javancss.PackageMetric;
  *              Emilio Gongora, <emilio@sms.nl> and
  *              Guillermo Rodriguez, <guille@sms.nl>.
  *            Anonymous class count patch by Vesa Karvonnen, <vesa_karvonen@hotmail.com> 2002-10-30.
- * @version   2000-01-31 $Id: Java1.1.jj 193 2009-06-12 13:35:12Z reynaud_seb $
+ * @version   2000-01-31 $Id$
  */
 public class JavaParser implements JavaParserInterface
 {
@@ -109,16 +109,16 @@ public class JavaParser implements JavaParserInterface
      * should instead put your copyright notice).
      */
     private int    _javadocs   = 0;              // global javadocs
-    private List/*<FunctionMetric>*/ _vFunctions = new ArrayList();   // holds the statistics for each method
+    private List<FunctionMetric> _vFunctions = new ArrayList<FunctionMetric>();   // holds the statistics for each method
 
     /**
      * Metrics for each class/interface are stored in this
      * vector.
      */
-    private List/*<ObjectMetric>*/ _vClasses = new ArrayList();
-    private List _vImports = new ArrayList();
+    private List<ObjectMetric> _vClasses = new ArrayList<ObjectMetric>();
+    private List<Object[]> _vImports = new ArrayList<Object[]>();
     private Object[] _aoPackage = null;
-    private Map/*<String,PackageMetric>*/ _htPackage = new HashMap();
+    private Map<String, PackageMetric> _htPackage = new HashMap<String, PackageMetric>();
     private PackageMetric _pPackageMetric;
 
     private Token _tmpToken = null;
@@ -158,14 +158,14 @@ public class JavaParser implements JavaParserInterface
       return _topLevelClasses;
       }*/
 
-    public List/*<FunctionMetric>*/ getFunction() {
+    public List<FunctionMetric> getFunction() {
         return _vFunctions;
     }
 
     /**
      * @return Top level classes in sorted order
      */
-    public List/*<ObjectMetric>*/ getObject() {
+    public List<ObjectMetric> getObject() {
         Collections.sort(_vClasses);
         return _vClasses;
     }
@@ -173,11 +173,11 @@ public class JavaParser implements JavaParserInterface
     /**
      * @return The empty package consists of the name ".".
      */
-    public Map/*<String,PackageMetric>*/ getPackage() {
+    public Map<String, PackageMetric> getPackage() {
         return _htPackage;
     }
 
-    public List getImports() {
+    public List<Object[]> getImports() {
         return _vImports;
     }
 
@@ -215,6 +215,7 @@ public class JavaParser implements JavaParserInterface
      public static final int TRANSIENT = 0x0100;
      public static final int VOLATILE = 0x0200;
      public static final int STRICTFP = 0x1000;
+     public static final int DEFAULT = 0x2000;
 
      /** A set of accessors that indicate whether the specified modifier
          is in the set. */
@@ -259,6 +260,11 @@ public class JavaParser implements JavaParserInterface
        return (modifiers & STRICTFP) != 0;
      }
 
+     public boolean isDefault(int modifiers)
+     {
+       return (modifiers & DEFAULT) != 0;
+     }
+
      public boolean isSynchronized(int modifiers)
      {
        return (modifiers & SYNCHRONIZED) != 0;
@@ -282,6 +288,36 @@ public class JavaParser implements JavaParserInterface
         return modifiers & ~mod;
      }
    }
+
+  public static void main(String args[]) {
+    JavaParser parser;
+    if (args.length == 0) {
+      System.out.println("Java Parser Version 1.1:  Reading from standard input . . .");
+      parser = new JavaParser(System.in);
+    } else if (args.length == 1) {
+      System.out.println("Java Parser Version 1.1:  Reading from file " + args[0] + " . . .");
+      try {
+        parser = new JavaParser(new java.io.FileInputStream(args[0]));
+      } catch (java.io.FileNotFoundException e) {
+        System.out.println("Java Parser Version 1.1:  File " + args[0] + " not found.");
+        return;
+      }
+    } else {
+      System.out.println("Java Parser Version 1.1:  Usage is one of:");
+      System.out.println("         java javancss.parser.JavaParser < inputfile");
+      System.out.println("OR");
+      System.out.println("         java javancss.parser.JavaParser inputfile");
+      return;
+    }
+    try {
+      parser.CompilationUnit();
+      System.out.println("Java Parser Version 1.1:  Java program parsed successfully.");
+    } catch (ParseException e) {
+      System.out.println(e.getMessage());
+      System.out.println("Java Parser Version 1.1:  Encountered errors during parse.");
+    }
+  }
+
 }
 
 PARSER_END(JavaParser)
@@ -305,8 +341,8 @@ SKIP :
 {
   " "
 | "\t"
-| "\n" /*Added by REYNAUD Sebastien (LOGICA)*/ {nbligne++;} //
-| "\r" /*Added by REYNAUD Sebastien (LOGICA)*/ {nbligne++;} //
+| "\n"
+| "\r"
 | "\f"
 | "\u001a"
 | "\r\n" {nbligne++;} //Added by REYNAUD Sebastien (LOGICA)
@@ -432,22 +468,33 @@ TOKEN :
         <DECIMAL_LITERAL> (["l","L"])?
       | <HEX_LITERAL> (["l","L"])?
       | <OCTAL_LITERAL> (["l","L"])?
+      | <BINARY_LITERAL> (["l","L"])?
   >
 |
-  < #DECIMAL_LITERAL: ["1"-"9"] (["_", "0"-"9"])* >
+  < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9","_"])* >
 |
-  < #HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+  < HEX_LITERAL: "0" ["x","X"]
+  (
+    ["0","1"] "." (["0"-"9","a"-"f","A"-"F"])+ <EXPONENT> (["f","F","d","D"])? // hexadecimal floating-point literals
+  |
+    (["0"-"9","a"-"f","A"-"F","_"])+
+  )
+  >
 |
-  < #OCTAL_LITERAL: "0" (["0"-"7"])* >
+  < #OCTAL_LITERAL: "0" (["0"-"7","_"])* >
+|
+  < #BINARY_LITERAL: "0" ["b","B"] (["0"-"1","_"])+ >
+|
+  < #NUMBER_LITERAL_SEQUENCE: (["0"-"9"]) (["0"-"9","_"])* >
 |
   < FLOATING_POINT_LITERAL:
-        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
-      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
-      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
-      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+        <NUMBER_LITERAL_SEQUENCE> "." (<NUMBER_LITERAL_SEQUENCE>)? (<EXPONENT>)? (["f","F","d","D"])?
+      | "." <NUMBER_LITERAL_SEQUENCE> (<EXPONENT>)? (["f","F","d","D"])?
+      | <NUMBER_LITERAL_SEQUENCE> <EXPONENT> (["f","F","d","D"])?
+      | <NUMBER_LITERAL_SEQUENCE> ["f","F","d","D"]
   >
 |
-  < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+  < #EXPONENT: ["e","E","p","P"] (["+","-"])? (["0"-"9"])+ >
 |
   < CHARACTER_LITERAL:
       "'"
@@ -797,6 +844,8 @@ TOKEN :
 | < COMMA: "," >
 | < DOT: "." >
 | < AT: "@" >
+| < LAMBDA: "->" >
+| < DOUBLECOLON: "::" >
 }
 
 /* OPERATORS */
@@ -926,8 +975,7 @@ void CompilationUnit() :
       _pPackageMetric.multiLn    = JavaParserTokenManager._iMultiComments  - oldMulti;
       //
 
-      PackageMetric pckmPrevious = (PackageMetric)_htPackage.
-             get(_formatPackage(_sPackage));
+      PackageMetric pckmPrevious = _htPackage.get(_formatPackage(_sPackage));
       _pPackageMetric.add(pckmPrevious);
       _htPackage.put(_formatPackage(_sPackage),
                      _pPackageMetric);
@@ -1154,7 +1202,7 @@ void ClassDeclaration() :
                  tmpToken = tmpToken.specialToken;
              }
              */
-             metric = (ObjectMetric)_vClasses.get( _vClasses.size() - 1);
+             metric = _vClasses.get( _vClasses.size() - 1);
              metric.javadocs = _javadocs;
 
              // added by SMS
@@ -1174,11 +1222,11 @@ void UnmodifiedClassDeclaration() :
         int oldNcss = _ncss;
         int oldFunctions = _functions;
         int oldClasses = _classes;
-	
+
 	//Added by REYNAUD Sebastien (LOGICA)
 	ObjectMetric metric = new ObjectMetric();
 	if (_classLevel == 0) {
-		//metric.firstLine = JavaParserTokenManager.nbligne;
+		metric.firstLine = JavaParserTokenManager.nbligne;
 	}
 	//
 }
@@ -1206,7 +1254,7 @@ void UnmodifiedClassDeclaration() :
                         metric.ncss = _ncss - oldNcss;
                         metric.functions = _functions - oldFunctions;
                         metric.classes = _classes - oldClasses;
-                        Token lastToken = getToken( 0 );
+                        //Token lastToken = getToken( 0 );
                         //metric.add( new Integer( lastToken.endLine ) );
                         //metric.add( new Integer( lastToken.endColumn ) );
                         //metric.add( new Integer( _javadocs ) );
@@ -1315,55 +1363,39 @@ void ClassBodyDeclaration() :
 |
   LOOKAHEAD(2)
   Initializer()
-
-//Added by REYNAUD Sebastien (LOGICA)
 |
-  LOOKAHEAD((Annotation())* ( "static" | "abstract" | "final" | "public" | "protected" | "private" | "strictfp" )*  "@" "interface")
+  LOOKAHEAD(( "static" | "abstract" | "final" | "public" | "protected" | "private" | "strictfp" | Annotation() )*  "@" "interface")
   modifiers = Modifiers()
   AnnotationTypeDeclaration(modifiers)
 |
   LOOKAHEAD((Annotation())* "@" "interface")
   CreationAnnotation()
-//
-
 |
-  LOOKAHEAD( (Annotation())* ( "static" | "abstract" | "final" | "public" | "protected" | "private" | "strictfp" )* "class" )
-
-	//(Annotation())*	//Removed by REYNAUD Sebastien (LOGICA)
-
+  LOOKAHEAD(( "static" | "abstract" | "final" | "public" | "protected" | "private" | "strictfp" | Annotation() )* "class" )
   NestedClassDeclaration()
 |
   LOOKAHEAD( Modifiers() "interface" )
-  //LOOKAHEAD( ( "static" | "abstract" | "final" | "public" | "protected" | "private" | "strictfp" )* "interface" )
   modifiers = Modifiers()
   NestedInterfaceDeclaration()
-  |
+|
    LOOKAHEAD( Modifiers() "enum" )
    modifiers = Modifiers()
    EnumDeclaration(modifiers)
 |
-         //LOOKAHEAD( [ TypeParameters() ] <IDENTIFIER> "(" )
-         LOOKAHEAD( (Annotation())* [ "public" | "protected" | "private" ] [ TypeParameters() ] Name() "(" )
-         //{ System.out.println( "\n\nClassDeclaration\n" ); }
-
-	//(Annotation())* //Removed by REYNAUD Sebastien (LOGICA)
-
-  ConstructorDeclaration()
+   LOOKAHEAD( ( "public" | "protected" | "private" | Annotation() )* [ TypeParameters() ] Name() "(" )
+   ConstructorDeclaration()
 |
   LOOKAHEAD( MethodDeclarationLookahead() )
-         //{ System.out.println( "\n\nMethodDeclaration\n" ); }
   MethodDeclaration()
 |
-  (Annotation())* FieldDeclaration()
+  FieldDeclaration()
 }
 
 // This production is to determine lookahead only.
 void MethodDeclarationLookahead() :
 {}
 {
-    ( Annotation() )*
-    ( "public" | "protected" | "private" | "static" | "abstract" | "final" | "native" | "synchronized" | "strictfp" )*
-    ( Annotation() )*
+  ( "public" | "protected" | "private" | "static" | "abstract" | "final" | "native" | "synchronized" | "strictfp" | "default" | Annotation() )*
   [ TypeParameters() ]
   ResultType() Identifier() "("
 }
@@ -1458,7 +1490,7 @@ void InterfaceDeclaration() :
                  }
                  tmpToken = tmpToken.specialToken;
                  }*/
-             metric = (ObjectMetric)_vClasses.get( _vClasses.size() - 1 );
+             metric = _vClasses.get( _vClasses.size() - 1 );
              metric.javadocs = _javadocs;
 
              // added by SMS
@@ -1555,7 +1587,7 @@ void UnmodifiedInterfaceDeclaration() :
 
 		//Added by REYNAUD Sebastien (LOGICA)
 	 	ObjectMetric metric = new ObjectMetric();
-	 	//metric.firstLine = JavaParserTokenManager.nbligne;
+	 	metric.firstLine = JavaParserTokenManager.nbligne;
 		//
 }
 {
@@ -1638,7 +1670,7 @@ void FieldDeclaration() :
 {
   ( "public" { bPublic = true; }        // added by SMS
   | "protected" { bPublic = true; }     // added by SMS
-  | "private" | "static" | "final" | "transient" | "volatile" | Annotation())*
+  | "private" | "static" | "final" | "transient" | "volatile" | Annotation() )*
 
   // added by SMS
   {             tmpToken = getToken( 0 );
@@ -1668,7 +1700,7 @@ void FieldDeclaration() :
                     tmpToken = tmpToken.specialToken;
                 }
   }
-  (Annotation())* Type() VariableDeclarator() ( "," VariableDeclarator() )* ";"
+  Type() VariableDeclarator() ( "," VariableDeclarator() )* ";"
   { _ncss++; Util.debug( "_ncss++" ); }
 }
 
@@ -1722,7 +1754,7 @@ void MethodDeclaration() :
 
 	//Added by REYNAUD Sebastien (LOGICA)
 	FunctionMetric functionMetrics = new FunctionMetric();
-	//functionMetrics.firstLine = JavaParserTokenManager.nbligne;
+	functionMetrics.firstLine = JavaParserTokenManager.nbligne;
 	//
 }
 {
@@ -1804,15 +1836,19 @@ void MethodDeclaration() :
           tmpToken = getToken( 0 );
       }
   }
-  )*
-
-    ( Annotation() )*
-
+| "default"
+  {
+      if ( tmpToken == null ) {
+          tmpToken = getToken( 0 );
+      }
+  }
+    | Annotation()
          /*{
       if ( tmpToken == null ) {
           tmpToken = getToken( 0 );
       }
       }*/
+  )*
 
 
   [ TypeParameters() ]
@@ -1922,11 +1958,6 @@ void MethodDeclaration() :
              functionMetrics.multiLn = 0; //JavaParserTokenManager._iMultiComments - oldMulti;
              //
 
-             // specially added for Cobertura
-             // Commenting out for now until the rest of patch 2353196 is applied.
-             //functionMetrics.beginLine = (new Integer(beginLine));
-             //functionMetrics.endLine = (new Integer(endLine));
-
              _vFunctions.add(functionMetrics);
              _sFunction = sOldFunction;
              _functions = oldFunctions + 1;
@@ -1970,7 +2001,15 @@ void FormalParameter() :
 {
     //[ "final" ]
            Modifiers()
-    Type() [ "..." { _sName += "[]"; } ] VariableDeclaratorId()
+    Type() [ "..." ] VariableDeclaratorId()
+}
+
+void CatchParameter() :
+{}
+{
+    //[ "final" ]
+           Modifiers()
+    Type() ( LOOKAHEAD(2) "|" Type() )* [ "|" ] VariableDeclaratorId()
 }
 
 void ConstructorDeclaration() :
@@ -1996,7 +2035,7 @@ void ConstructorDeclaration() :
 
 	//Added by REYNAUD Sebastien (LOGICA)
 	FunctionMetric functionMetrics = new FunctionMetric();
-	//functionMetrics.firstLine = JavaParserTokenManager.nbligne;
+	functionMetrics.firstLine = JavaParserTokenManager.nbligne;
 	//
 
 }
@@ -2128,10 +2167,6 @@ void ConstructorDeclaration() :
                 functionMetrics.singleLn = JavaParserTokenManager._iSingleComments - oldSingle;
                 functionMetrics.multiLn = JavaParserTokenManager._iMultiComments - oldMulti;
                 //
-                // specially added for Cobertura
-                // Commenting out for now until the rest of patch 2353196 is applied.
-                //functionMetrics.endLine = beginLine;
-                //functionMetrics.endLine = endLine;
 
                 _vFunctions.add(functionMetrics);
                 _sFunction = sOldFunction;
@@ -2177,7 +2212,7 @@ void Initializer() :
  */
 
 void Type() :
-{ _sName = ""; }
+{}
 {
    LOOKAHEAD(2) ReferenceType()
  |
@@ -2291,25 +2326,26 @@ void Expression() :
     //System.out.println( "Expression start" );
 }
 {
+  LOOKAHEAD(LambdaExpression())  LambdaExpression() 
+|
+  AssignmentExpression()
+}
 
-/*Removed by REYNAUD Sebastien (LOGICA)
-
+void AssignmentExpression() :
+{}
+{
   LOOKAHEAD( PrimaryExpression() AssignmentOperator() )
   //{ System.out.println( "Expression" ); }
   Assignment()
 |
-*/
-
   ConditionalExpression()
 }
 
-/*Removed by REYNAUD Sebastien (LOGICA)
 void Assignment() :
 {}
 {
   PrimaryExpression() AssignmentOperator() Expression()
 }
-*/
 
 void AssignmentOperator() :
 {}
@@ -2365,7 +2401,7 @@ void EqualityExpression() :
 void EqualityExpression() :
 {}
 {
-  AssigmentExpression() ( ( "==" | "!=" | "+=" | "-=" | "*=" | "/=" | "&=" | "|=" | "^=" | "%=" | "<<=" | ">>=" | ">>>=") AssigmentExpression() )*
+  AssigmentExpression() ( ( "==" | "!=" ) AssigmentExpression() )*
 }
 
 void AssigmentExpression() :
@@ -2440,9 +2476,6 @@ void UnaryExpressionNotPlusMinus() :
 {
   ( "~" | "!" ) UnaryExpression()
 |
-         //  LOOKAHEAD( PostfixLookahead() )
-         //  PostfixExpression()
-         //|
   LOOKAHEAD( CastLookahead() )
   CastExpression()
 |
@@ -2455,21 +2488,13 @@ void UnaryExpressionNotPlusMinus() :
 void CastLookahead() :
 {}
 {
-  LOOKAHEAD(2)
-  "(" PrimitiveType()
+  LOOKAHEAD(3)
+  "(" PrimitiveType() ")"
 |
-         //  LOOKAHEAD("(" Name() "[")
-         //  "(" Name() "[" "]"
-         //|
-         // LOOKAHEAD(3)
-         //  "(" Name() ")" ( "~" | "!" | "(" | Identifier() | "this" | "super" | "new" | Literal() )
   LOOKAHEAD("(" Type() "[")
-  "(" Type() "[" "]"
+  "(" Type() "[" "]" ")"
 |
   "(" Type() ")" ( "~" | "!" | "(" | Identifier() | "this" | "super" | "new" | Literal() )
-         //|
-         // LOOKAHEAD(3)
-         // "(" Type() ")"  UnaryExpressionNotPlusMinus()
 }
 
 // To fix bug Test48.java. Clemens [2000-10-03]
@@ -2499,54 +2524,37 @@ void PrimaryExpression() :
 //    { System.out.println( "Before PrimaryExpression" ); }
 }
 {
+  LOOKAHEAD(MethodReference()) MethodReference()
+|
   PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )*
 }
 
 void PrimaryPrefix() :
 {}
 {
-  Literal()
+    Literal()
 |
 //    { System.out.println( "PrimaryPrefix: this" ); }
-  "this" 
+    "this"
 
-   //Added by REYNAUD Sebastien (LOGICA)
-   (".")? ("new")? (Identifier())?
-   //
-
-         //|
-         //LOOKAHEAD( 2 )
-         //"super" "(" Expression() ")"
-         //{ System.out.println( "\n\nAfter PrimaryPrefix super(Expression)\n" ); }
+    (".")? (TypeParameters())? ("new")? (Identifier())?
 |
-  LOOKAHEAD(2)
-//  { System.out.println( "Before PrimaryPrefix super." ); }
-
-  //"super" "." Identifier() //removed by REYNAUD Sebastien (LOGICA)
-
-
-//Added by REYNAUD Sebastien (LOGICA)
-"super" (".")? (Identifier())?
-//
-
+    LOOKAHEAD(2)
+//    { System.out.println( "Before PrimaryPrefix super." ); }
+    "super" (".")? (TypeParameters())? (Identifier())?
 |
-         //{ System.out.println( "\n\nBefore PrimaryPrefix (Expression)\n" ); }
-  "(" Expression() ")"
+//    { System.out.println( "\n\nBefore PrimaryPrefix (Expression)\n" ); }
+    "(" Expression() ")"
 |
-  AllocationExpression()
-//  { System.out.println( "PrimaryPrefix After AllocationExpression" ); }
+    AllocationExpression()
+//    { System.out.println( "PrimaryPrefix After AllocationExpression" ); }
 |
-  LOOKAHEAD( ResultType() "." "class" )
-//  { System.out.println( "PrimaryPrefix ResultType" ); }
-  ResultType() "." "class"
+    LOOKAHEAD( ResultType() "." "class" )
+//    { System.out.println( "PrimaryPrefix ResultType" ); }
+    ResultType() "." "class"
 |
-         Name() [ LOOKAHEAD(3) "." "super" "." Identifier() ]
-
-         /* The [ "." "super" "." Identifier() ]
-            has been added to fix a bug reported by
-            Chris Williamson. It might cause other problems,
-            maybe. 2002-05-11 */
-//  { System.out.println( "PrimaryPrefix after Name" ); }
+    Name() [ LOOKAHEAD(3) "." "super" "." Identifier() ]
+//    { System.out.println( "PrimaryPrefix after Name" ); }
 }
 
 void PrimarySuffix() :
@@ -2567,9 +2575,6 @@ void PrimarySuffix() :
   "." Identifier()
 |
   Arguments()
-
- [ "{" MethodDeclaration() "}"]
-   
 }
 
 void Literal() :
@@ -2829,9 +2834,25 @@ void SwitchStatement() :
                 _localCases = 0;
         }
   "switch" "(" Expression() ")" "{"
-    ( SwitchLabel() ( BlockStatement() )* )*
+  (SwitchCase())*
   "}"
         { _ncss++;       Util.debug( "_ncss++" );}
+}
+
+void SwitchCase() : 
+{}
+{
+    SwitchLabel() SwitchBlockStatements()
+}
+
+void SwitchBlockStatements() :
+{}
+{
+    LOOKAHEAD(SwitchLabel()) {}
+|
+    BlockStatement() SwitchBlockStatements()
+|
+    {}
 }
 
 void SwitchLabel() :
@@ -2848,7 +2869,7 @@ void SwitchLabel() :
   "default" ":"
         {
                 _ncss++;       Util.debug( "_ncss++" );
-        }
+}
 }
 
 void IfStatement() :
@@ -2882,12 +2903,12 @@ void ForStatement() :
 {
   "for" "(" (Annotation())?
   (
-      LOOKAHEAD(Modifiers() Type() <IDENTIFIER> ":")
-      Modifiers() Type() <IDENTIFIER> ":" Expression()
+      LOOKAHEAD(Modifiers() Type() VariableDeclaratorId() ":")
+      Modifiers() Type() VariableDeclaratorId() ":" Expression()
     |
- [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
-      )
-")" Statement()
+      [ ForInit() ] ";" [ Expression() ] ";" [ ForUpdate() ]
+  )
+  ")" Statement()
         { _ncss++;       Util.debug( "_ncss++" );}
 }
 
@@ -2963,23 +2984,25 @@ void TryStatement() :
  */
 {}
 {
-  "try" TryWithResources() Block()
+  TryBlock()
   ( "catch" "(" CatchParameter() ")" Block() { _ncss++;       Util.debug( "_ncss++" ); _cyc++; } )*
   [ "finally" Block() { _ncss++;       Util.debug( "_ncss++" );} ]
 }
 
-/** Try-with-resource parameter with jdk 7**/
+void TryBlock() :
+{}
+{
+//  LOOKAHEAD(2) "try" "(" ( LocalVariableDeclaration() [ ";" ] ")" | ")" ) Block()
+  LOOKAHEAD(2) "try" "(" ( TryWithResources() ")" | ")" ) Block()
+  |
+  "try" Block()
+}
+
 void TryWithResources() :
 {}
 {
- ["(" ( "final" )* (Expression() [";"] )* ")"]
-}
-
-/** Multi-catch parameter with jdk 7 **/
-void CatchParameter() :
-{}
-{
-  Modifiers() ReferenceType() ("|" ReferenceType())* VariableDeclaratorId()
+//  LocalVariableDeclaration() [ ";" ]
+  LocalVariableDeclaration() ( ";" LocalVariableDeclaration() )*
 }
 
 void Identifier() :
@@ -3188,6 +3211,11 @@ int Modifiers():
       }
 }
   |
+   "default" { modifiers |= ModifierSet.DEFAULT;       if ( _tmpToken == null ) {
+          _tmpToken = getToken( 0 );
+      }
+}
+  |
    Annotation()
   )
  )*
@@ -3247,7 +3275,7 @@ void EnumDeclaration(int modifiers):
                  metric.ncss = _ncss - oldNcss;
                  metric.functions = _functions - oldFunctions;
                  metric.classes = _classes - oldClasses;
-                 Token lastToken = getToken( 0 );
+                 //Token lastToken = getToken( 0 );
                  //metric.add( new Integer( lastToken.endLine ) );
                  //metric.add( new Integer( lastToken.endColumn ) );
                  metric.javadocs = _javadocs;
@@ -3343,7 +3371,7 @@ void ClassOrInterfaceType():
 {
   <IDENTIFIER>
 {
-                _sName += getToken(0).image;
+                _sName = getToken(0).image;
                 if ( _tmpResultToken == null )
                 {
                   _tmpResultToken = getToken( 0 );
@@ -3408,8 +3436,10 @@ void TypeArguments():
 //    "<" TypeArgument() ( LOOKAHEAD(2) "," TypeArgument() )* [LOOKAHEAD(3)">"] [LOOKAHEAD(3)">>"] [LOOKAHEAD(3)">>>"] //Removed by REYNAUD Sebastien (LOGICA)
 
 //Added by REYNAUD Sebastien (LOGICA)
-	"<" { _sName += "<"; } (TypeArgument() ( LOOKAHEAD(2) "," { _sName += ","; } TypeArgument() )* )* ">" { _sName += ">"; }
+	"<" TypeArgument() ( LOOKAHEAD(2) "," TypeArgument() )* ">"
 //
+    |
+    "<>"
 
 }
 
@@ -3430,7 +3460,7 @@ void ReferenceType():
 {}
 {
 /* ccl 2008-01-23 */
-   PrimitiveType()  { _sName = getToken(0).image; } ( LOOKAHEAD(2) "[" "]" { _sName += "[]"; } )+
+   PrimitiveType() ( LOOKAHEAD(2) "[" "]" { _sName += "[]"; } )+
   |
    ( ClassOrInterfaceType() ) ( LOOKAHEAD(2) "[" "]" { _sName += "[]"; } )*
 }
@@ -3487,3 +3517,47 @@ void MemberSelector():
   "." TypeArguments() <IDENTIFIER>
 }
 
+void LambdaExpression():
+{}
+{
+   LambdaParameters() "->" LambdaBody()
+}
+
+void LambdaParameters():
+{}
+{
+   <IDENTIFIER> 
+|
+   LOOKAHEAD("(" InferredFormalParameterList() ")") "(" InferredFormalParameterList() ")"
+|
+   LOOKAHEAD( [FormalParameters()] ) [FormalParameters()] 
+}
+
+void InferredFormalParameterList():
+{}
+{
+   <IDENTIFIER> ( ","  <IDENTIFIER> )*
+}
+
+
+void LambdaBody():
+{}
+{
+   Expression()
+|
+   Block()
+}
+
+void MethodReference():
+{}
+{
+   "super" "::" [TypeArguments()] <IDENTIFIER>
+|
+   LOOKAHEAD( 4 ) Name() "." "super" "::" [TypeArguments()] <IDENTIFIER>
+|
+//   ClassType() "::" [TypeArguments()] "new" and ArrayType() "::" "new" is included in below
+   LOOKAHEAD(ReferenceType() "::" [TypeArguments()] ( <IDENTIFIER> | "new" )) ReferenceType() "::" [TypeArguments()] ( <IDENTIFIER> | "new" )
+|
+//   Name() "::" [TypeArguments()] <IDENTIFIER> is included in below
+   PrimaryPrefix() ( LOOKAHEAD(2) PrimarySuffix() )* "::" [TypeArguments()] <IDENTIFIER>
+}

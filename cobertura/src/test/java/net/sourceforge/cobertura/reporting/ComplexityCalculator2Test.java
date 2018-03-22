@@ -150,6 +150,207 @@ public class ComplexityCalculator2Test extends TestCase {
 		assertNotNull(ccn1);
 		assertEquals(
 				"Javancss issue has been fixed: http://jira.codehaus.org/browse/JAVANCSS-37.   Now fix this test.",
-				0.0/*should be 2.0?*/, ccn1, 0.01);
-	}
+                    1.0, ccn1, 0.01);
+    }
+
+    /**
+     * This test highlights an issue with Javancss not supporting java8 default method for interfaces.
+     * <p>
+     * @throws Exception
+     * <p>
+     */
+    public void testJava8defaultAndStaticInterface() throws Exception {
+        File tempDir = TestUtils.getTempDir();
+        String filename = "Interface1.java";
+        File sourceFile = new File(tempDir, filename);
+        FileUtils
+                .write(
+                        sourceFile,
+                        "\n interface Interface1 {"
+                        + "\n static void staticTest(String str) {"
+                        + "\n System.out.println(str);"
+                        + "\n }"
+                        + "\n"
+                        + "\n default int defaultTest() {"
+                        + "\n return 1;" + "\n 	}" + "\n }");
+
+        //create a ComplexityCalculator that will use the archive
+        FileFinder fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+
+        double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
+                filename));
+        assertNotNull(ccn1);
+        assertEquals(
+                "Testing default and static interface functions",
+                1.0, ccn1, 0.01);
+    }
+
+    /**
+     * This test highlights an issue with Javancss not supporting java8 function pointers and lambdas.
+     * <p>
+     * @throws Exception
+     *                   <p>
+     */
+    public void testJava8functionPointersAndLambdas() throws Exception {
+        File tempDir = TestUtils.getTempDir();
+        String filename = "LamdasAndMethodRefs.java";
+        File sourceFile = new File(tempDir, filename);
+        FileUtils
+                .write(
+                        sourceFile,
+                        "import java.util.ArrayList;\n"
+                        + "import java.util.Arrays;\n"
+                        + "import java.util.Iterator;\n"
+                        + "import java.util.List;\n"
+                        + "import java.util.function.Consumer;\n"
+                        + "import java.util.function.Function;\n"
+                        + "import java.util.function.IntBinaryOperator;\n"
+                        + "import java.util.function.IntFunction;\n"
+                        + "import java.util.function.IntSupplier;\n"
+                        + "import java.util.function.LongSupplier;\n"
+                        + "import java.util.function.Supplier;\n"
+                        + "import java.util.function.ToIntFunction;\n"
+                        + "import java.util.function.UnaryOperator;\n"
+                        + "\n"
+                        + "class MyList<E> extends ArrayList<E> {\n"
+                        + "\n"
+                        + "    public MyList replaceAll2(UnaryOperator<E> operator) {\n"
+                        + "        return this;\n"
+                        + "    }\n"
+                        + "}\n"
+                        + "\n"
+                        + "class T {\n"
+                        + "\n"
+                        + "    public void tvarMember() {\n"
+                        + "    }\n"
+                        + "}\n"
+                        + "\n"
+                        + "class Foo {\n"
+                        + "\n"
+                        + "    public void bar() {\n"
+                        + "    }\n"
+                        + "\n"
+                        + "    static class Bar {\n"
+                        + "    }\n"
+                        + "\n"
+                        + "}\n"
+                        + "\n"
+                        + "class R<A> {\n"
+                        + "\n"
+                        + "    R() {\n"
+                        + "    }\n"
+                        + "\n"
+                        + "    R(Integer a) {\n"
+                        + "    }\n"
+                        + "\n"
+                        + "    R(String a) {\n"
+                        + "    }\n"
+                        + "}\n"
+                        + "\n"
+                        + "public class LamdasAndMethodRefs {\n"
+                        + "\n"
+                        + "    public LamdasAndMethodRefs() {\n"
+                        + "        //Method references\n"
+                        + "        Runnable a = super::toString;\n"
+                        + "        Runnable b = LamdasAndMethodRefs.super::toString;\n"
+                        + "    }\n"
+                        + "\n"
+                        + "    public static void main(String[] args) {\n"
+                        + "        //Method references\n"
+                        + "        LongSupplier a = System::currentTimeMillis; // static method\n"
+                        + "        ToIntFunction<String> b = String::length;             // instance method\n"
+                        + "        ToIntFunction<List> c = List::size;\n"
+                        + "        ToIntFunction<List<String>> d = List<String>::size;  // explicit type arguments for generic type\n"
+                        + "        UnaryOperator<int[]> e = int[]::clone;\n"
+                        + "        Consumer<T> f = T::tvarMember;\n"
+                        + "\n"
+                        + "        Runnable g = System.out::println;\n"
+                        + "        Consumer<Integer> h = String::valueOf; // overload resolution needed\n"
+                        + "        IntSupplier i = \"abc\"::length;\n"
+                        + "        Consumer<int[]> j = Arrays::sort;          // type arguments inferred from context\n"
+                        + "        Consumer<String[]> k = Arrays::<String>sort;          // explicit type arguments\n"
+                        + "        Supplier<ArrayList<String>> l = ArrayList<String>::new;     // constructor for parameterized type\n"
+                        + "        Supplier<ArrayList> m = ArrayList::new;             // inferred type arguments\n"
+                        + "        IntFunction<int[]> n = int[]::new;                 // array creation\n"
+                        + "        Supplier<Foo> o = Foo::<Integer>new; // explicit type arguments\n"
+                        + "        Supplier<Foo.Bar> p = Foo.Bar::new;           // inner class constructor\n"
+                        + "        Supplier<R<String>> q = R<String>::<Integer>new;  // generic class, generic constructor\n"
+                        + "\n"
+                        + "        Foo[] foo = new Foo[2];\n"
+                        + "        int r = 1;\n"
+                        + "        foo[r] = new Foo();\n"
+                        + "        Runnable s = foo[r]::bar;\n"
+                        + "        boolean test = false;\n"
+                        + "        MyList<String> list = new MyList<>();\n"
+                        + "        Supplier<Iterator<String>> fun = (test ? list.replaceAll2(String::trim) : list)::iterator;\n"
+                        + "\n"
+                        + "        // Lamdas\n"
+                        + "        Runnable t = () -> {\n"
+                        + "        }; // No parameters; result is void\n"
+                        + "        IntSupplier u = () -> 42; // No parameters, expression body\n"
+                        + "        Supplier<Object> v = () -> null; // No parameters, expression body\n"
+                        + "        v = () -> {\n"
+                        + "            return 42;\n"
+                        + "        }; // No parameters, block body with return\n"
+                        + "        t = () -> {\n"
+                        + "            System.gc();\n"
+                        + "        }; // No parameters, void block body\n"
+                        + "        v = () -> {                 // Complex block body with returns\n"
+                        + "            if (true) {\n"
+                        + "                return 12;\n"
+                        + "            }\n"
+                        + "            else {\n"
+                        + "                int result = 15;\n"
+                        + "                for (int i2 = 1; i2 < 10; i2++) {\n"
+                        + "                    result *= i2;\n"
+                        + "                }\n"
+                        + "                return result;\n"
+                        + "            }\n"
+                        + "        };\n"
+                        + "        IntFunction<Integer> w = (int x) -> x + 1; // Single declared-type parameter\n"
+                        + "        w = (int x) -> {\n"
+                        + "            return x + 1;\n"
+                        + "        }; // Single declared-type parameter\n"
+                        + "        w = (x) -> x + 1; // Single inferred-type parameter\n"
+                        + "        w = x -> x + 1; // Parentheses optional for\n"
+                        + "                // single inferred-type parameter\n"
+                        + "        Function<String, Integer> z = (String s2) -> s2.length(); // Single declared-type parameter\n"
+                        + "        Consumer<Thread> a2 = (Thread t2) -> {\n"
+                        + "            t2.start();\n"
+                        + "        }; // Single declared-type parameter\n"
+                        + "        z = s3 -> s3.length(); // Single inferred-type parameter\n"
+                        + "        a2 = t3 -> {\n"
+                        + "            t3.start();\n"
+                        + "        }; // Single inferred-type parameter\n"
+                        + "        IntBinaryOperator b2 = (int x, int y) -> x + y; // Multiple declared-type parameters\n"
+                        + "        b2 = (x, y) -> x + y; // Multiple inferred-type parameters\n"
+                        + "\n"
+                        + "        List<String> myList\n"
+                        + "                = Arrays.asList(\"a1\", \"a2\", \"b1\", \"c2\", \"c1\");\n"
+                        + "\n"
+                        + "        myList.stream().filter((s4) -> {\n"
+                        + "            System.out.println(\"filter \" + s4);\n"
+                        + "            return s4.startsWith(\"c\");\n"
+                        + "        }).map(String::toUpperCase).sorted().forEach(\n"
+                        + "                 System.out::println);\n"
+                        + "\n"
+                        + "    }\n"
+                        + "\n"
+                        + "}");
+
+        //create a ComplexityCalculator that will use the archive
+        FileFinder fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+
+        double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
+                filename));
+        assertNotNull(ccn1);
+        assertEquals(
+                "Testing method references and lambda functions",
+                1.875, ccn1, 0.01);
+    }
+
 }

@@ -126,9 +126,9 @@ public class HistoryMethodAdapter extends MethodVisitor {
 	}
 
 	@Override
-	public void visitMethodInsn(int arg0, String arg1, String arg2, String arg3) {
-		super.visitMethodInsn(arg0, arg1, arg2, arg3);
-		appendToBacklog(new MethodInsnNode(arg0, arg1, arg2, arg3));
+    public void visitMethodInsn(int arg0, String arg1, String arg2, String arg3, boolean intf) {
+        super.visitMethodInsn(arg0, arg1, arg2, arg3, intf);
+            appendToBacklog(new MethodInsnNode(arg0, arg1, arg2, arg3, intf));
 	}
 
 	@Override

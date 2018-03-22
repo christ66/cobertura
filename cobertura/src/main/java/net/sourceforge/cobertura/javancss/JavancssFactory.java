@@ -21,6 +21,7 @@
 package net.sourceforge.cobertura.javancss;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Factory for vending instances of {@link Javancss}.
@@ -37,7 +38,7 @@ public class JavancssFactory {
      * @return a new instance of {@link Javancss}
      */
     public Javancss newInstance(InputStream javaSource, String encoding) {
-        return new Javancss(javaSource, encoding);
+        return new Javancss(new InputStreamReader(javaSource), encoding);
     }
 
 }
