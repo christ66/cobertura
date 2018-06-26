@@ -9,7 +9,7 @@ import org.junit.Test;
 import net.sourceforge.cobertura.test.AbstractCoberturaTestCase;
 import net.sourceforge.cobertura.test.util.TestUtils;
 
-public class GithubIssue30 extends AbstractCoberturaTestCase {
+public class GithubIssue30Test extends AbstractCoberturaTestCase {
 
 	Node dom;
 

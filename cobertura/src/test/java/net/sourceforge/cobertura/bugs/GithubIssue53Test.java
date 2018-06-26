@@ -13,7 +13,7 @@ import net.sourceforge.cobertura.test.AbstractCoberturaTestCase;
  * @author schristou88
  *
  */
-public class GithubIssue53 extends AbstractCoberturaTestCase {
+public class GithubIssue53Test extends AbstractCoberturaTestCase {
 	@Test
 	public void testInnersParsing() throws IOException {
 		String imports = "";

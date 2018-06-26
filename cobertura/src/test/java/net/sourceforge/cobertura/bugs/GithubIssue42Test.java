@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import net.sourceforge.cobertura.test.AbstractCoberturaTestCase;
 
-public class GithubIssue42 extends AbstractCoberturaTestCase {
+public class GithubIssue42Test extends AbstractCoberturaTestCase {
 
 	@Test
 	public void testPlusEqualsParsing() throws IOException {

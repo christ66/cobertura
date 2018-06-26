@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * @author schristou88
  */
-public class GithubIssue191 extends AbstractCoberturaTestCase {
+public class GithubIssue191Test extends AbstractCoberturaTestCase {
     @Test
     public void testIssue191() throws IOException {
       String imports = "import java.io.*;" +

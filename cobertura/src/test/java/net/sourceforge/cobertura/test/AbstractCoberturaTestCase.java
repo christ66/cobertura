@@ -36,7 +36,7 @@ public class AbstractCoberturaTestCase {
 	public void setUp() throws Exception {
 		tempDir = TestUtils.getTempDir();
 
-		FileUtils.deleteDirectory(tempDir);
+                FileUtils.deleteDirectory(tempDir);
 
 		srcDir = new File(tempDir, "src");
 		reportDir = new File(tempDir, "report");
@@ -184,6 +184,8 @@ public class AbstractCoberturaTestCase {
 		} finally {
 			System.setErr(dErr);
 			System.setOut(dOut);
+                        err.close();
+                        out.close();
 		}
 	}
 }
