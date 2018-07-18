@@ -2992,7 +2992,6 @@ void TryStatement() :
 void TryBlock() :
 {}
 {
-//  LOOKAHEAD(2) "try" "(" ( LocalVariableDeclaration() [ ";" ] ")" | ")" ) Block()
   LOOKAHEAD(2) "try" "(" ( TryWithResources() ")" | ")" ) Block()
   |
   "try" Block()
@@ -3001,8 +3000,9 @@ void TryBlock() :
 void TryWithResources() :
 {}
 {
-//  LocalVariableDeclaration() [ ";" ]
-  LocalVariableDeclaration() ( ";" LocalVariableDeclaration() )*
+  LocalVariableDeclaration()
+  ( LOOKAHEAD( ";" LocalVariableDeclaration() ) ";" LocalVariableDeclaration() )*
+  [ ";" ]
 }
 
 void Identifier() :
