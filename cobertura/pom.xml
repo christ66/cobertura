@@ -2,17 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>net.sourceforge.cobertura</groupId>
   <artifactId>cobertura</artifactId>
-  <version>2.1.2-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>Cobertura code coverage</name>
+  <name>Cobertura Core Library</name>
   
   <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
-    <relativePath />
+    <groupId>net.sourceforge.cobertura</groupId>
+    <artifactId>cobertura-reactor</artifactId>
+    <version>2.1.2-SNAPSHOT</version>
   </parent>
   
   <description>
@@ -23,48 +20,22 @@
   
   <url>http://cobertura.sourceforge.net</url>
   
-  <pluginRepositories>
-    <pluginRepository>
-      <id>sonatype-releases</id>
-      <url>http://oss.sonatype.org/content/repositories/releases</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>clojars.org</id>
-      <url>http://clojars.org/repo</url>
-    </pluginRepository>
-  </pluginRepositories>
-
-  <properties>
-    <asmVersion>5.0.1</asmVersion>
-    <xercesVersion>2.11.0</xercesVersion>
-    <xalanVersion>2.7.1</xalanVersion>
-    <oroVersion>2.0.8</oroVersion>
-    <jaxenVersion>1.1.4</jaxenVersion>
-    <commonsioVersion>2.2</commonsioVersion>
-    <commonslangVersion>3.3.2</commonslangVersion>
-    <antVersion>1.9.3</antVersion>
-    <jettyVersion>6.1.14</jettyVersion>
-    <simplexmlVersion>2.6.2</simplexmlVersion>
-    <guavaVersion>13.0.1</guavaVersion>
-    <groovyVersion>1.6.9</groovyVersion>
-    <jsr305Version>1.3.2</jsr305Version>
-    <javaccVersion>5.0</javaccVersion>
-    <logbackVersion>1.0.13</logbackVersion>
-    <junitVersion>4.11</junitVersion>
-    <mockitoVersion>1.9.5</mockitoVersion>
-    <jdkVersion>1.6</jdkVersion>
-    <surefireVersion>2.16</surefireVersion>
-    <slf4jVersion>1.7.5</slf4jVersion>
-    <jdomVersion>1.1.3</jdomVersion>
-    <plugin.java.formatter.version>0.4</plugin.java.formatter.version>
-    <plugin.mvn.compiler.version>2.3.2</plugin.mvn.compiler.version>
-    <plugin.mvn.jar.version>2.3.2</plugin.mvn.jar.version>
-    <plugin.pmd.version>3.6</plugin.pmd.version>
-    <plugin.jdoc.version>2.9.1</plugin.jdoc.version>
-    <plugin.findbugs.version>3.0.3</plugin.findbugs.version>
-  </properties>
-
   <dependencies>
+    <dependency>
+      <groupId>com.sun</groupId>
+      <artifactId>tools</artifactId>
+      <version>0</version>
+      <scope>system</scope>
+      <systemPath>${toolsjar}</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
@@ -91,24 +62,6 @@
       <version>${asmVersion}</version>
     </dependency>
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>${xercesVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <version>${xalanVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>${jdomVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
       <version>${oroVersion}</version>
@@ -119,14 +72,13 @@
       <version>${jaxenVersion}</version>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>${commonsioVersion}</version>
-      <scope>test</scope>
+      <groupId>org.apache.ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>${antVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.ant</groupId>
-      <artifactId>ant</artifactId>
+      <artifactId>ant-junit</artifactId>
       <version>${antVersion}</version>
     </dependency>
     <dependency>
@@ -134,30 +86,21 @@
       <artifactId>ant-junit4</artifactId>
       <version>${antVersion}</version>
     </dependency>    
+    <!-- Cobertura actually uses JUnit classes for report processing so scope is compile. -->
     <dependency>
-      <groupId>org.apache.ant</groupId>
-      <artifactId>ant-junit</artifactId>
-      <version>${antVersion}</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>servlet-api-2.5</artifactId>
-      <version>${jettyVersion}</version>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>${jettyVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-util</artifactId>
-      <version>${jettyVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-servlet-tester</artifactId>
-      <version>${jettyVersion}</version>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>${jdomVersion}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -173,37 +116,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.sun</groupId>
-      <artifactId>tools</artifactId>
-      <version>0</version>
-      <scope>system</scope>
-      <systemPath>${toolsjar}</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4jVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logbackVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junitVersion}</version>
-    </dependency>
-    <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
-      <version>${mockitoVersion}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${commonslangVersion}</version>
     </dependency>
   </dependencies>
 
@@ -260,36 +174,6 @@
               <toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
           </properties>
       </profile>
-      <!--
-          Purpose: Use GPG to sign artifacts during release:perform.
-      -->
-      <profile>
-          <id>release-sign-artifacts</id>
-          <activation>
-              <property>
-                  <name>performRelease</name>
-                  <value>true</value>
-              </property>
-          </activation>
-          <build>
-              <plugins>
-                  <plugin>
-                      <groupId>org.apache.maven.plugins</groupId>
-                      <artifactId>maven-gpg-plugin</artifactId>
-                      <version>1.4</version>
-                      <executions>
-                          <execution>
-                              <id>sign-artifacts</id>
-                              <phase>package</phase>
-                              <goals>
-                                  <goal>sign</goal>
-                              </goals>
-                          </execution>
-                      </executions>
-                  </plugin>
-              </plugins>
-          </build>
-      </profile>
   </profiles>
 
   <build>
@@ -297,34 +181,23 @@
       <resource>
         <directory>src/main/resources</directory>
       </resource>
-      <resource>
-        <directory>executables</directory>
-        <filtering>true</filtering>
-      </resource>
     </resources>
     <plugins>
-      <!--
-        This plugin seems presently to cause more problems than
-        it solves, due to its constant reformatting of code.
-
-        https://code.google.com/p/maven-java-formatter-plugin/
-        https://github.com/treymarc/maven-java-formatter-plugin
-      -->
-      <!-- plugin>
-        <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-        <artifactId>maven-java-formatter-plugin</artifactId>
-        <version>${plugin.java.formatter.version}</version>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.5</version>
         <configuration>
-          <lineEnding>LF</lineEnding>
+          <filesets>
+            <fileset>
+              <directory>src/main/java/net/sourceforge/cobertura/javancss/parser</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin -->
+      </plugin>
       
       <!-- Cobertura requires custom jdk version for providing the support for the latest jdk. -->
       <plugin>
@@ -339,150 +212,7 @@
           </execution>
         </executions>
       </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${plugin.mvn.compiler.version}</version>
-        <configuration>
-          <fork>true</fork>
-          <source>${jdkVersion}</source>
-          <target>${jdkVersion}</target>
-          <excludes>
-            <exclude>**/test/*.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>${plugin.mvn.jar.version}</version>
-        <configuration>
-          <archive>
-            <index />
-            <manifest>
-              <addDefaultImplementationEntries />
-              <addDefaultSpecificationEntries />
-            </manifest>
-            <manifestEntries>
-              <Specification-Title>A code coverage analysis tool.</Specification-Title>
-              <Specification-Version>${project.version}</Specification-Version>
-              <Specification-Vendor>Cobertura</Specification-Vendor>
-              <Implementation-Title>A code coverage analysis tool.</Implementation-Title>
-              <Implementation-Version>${project.version}</Implementation-Version>
-              <Implementation-Vendor>Cobertura</Implementation-Vendor>
-              <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
-            </manifestEntries>
-          </archive>
-          <excludes>
-            <exclude>*.sh</exclude>
-            <exclude>*.bat</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefireVersion}</version>
-        <configuration>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <excludes combine.children="append">
-            <exclude>**/test/condition/**</exclude>
-            <exclude>**/examples/functionaltest1/**</exclude>
-            <!-- This test is failing and I don't know how to fix it -->
-            <exclude>net/sourceforge/cobertura/thread/test/MultipleClassloaderFunctionalTest.java</exclude>
-            <!-- This test fails on Windows, see https://github.com/cobertura/cobertura/pull/209 -->
-            <exclude>net/sourceforge/cobertura/dsl/ArgumentsBuilderTest.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-
-      <!-- This is required to assemble all of the binary files. -->
-      <!-- The descriptor has more detailed information about what is included/excluded. -->
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2.1</version>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>packageBins</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>${plugin.pmd.version}</version>
-        <configuration>
-          <failOnViolation>false</failOnViolation>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-              <goal>cpd-check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>${plugin.findbugs.version}</version>
-        <configuration>
-          <failOnError>false</failOnError>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       
-      <!-- This is to build the coberturaFlush.war file necessary for servlets. -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <warName>coberturaFlush</warName>
-          <webXml>src/main/resources/net/sourceforge/cobertura/webapp/web.xml</webXml>
-          <packagingIncludes>WEB-INF/classes/net/sourceforge/cobertura/webapp/FlushCoberturaServlet.class</packagingIncludes>
-        </configuration>
-        <executions>
-          <execution>
-            <id>prepare-war</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>war</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.1</version>
-        <configuration>
-          <goals>deploy</goals>
-          <localCheckout>true</localCheckout>
-          <pushChanges>false</pushChanges>
-       </configuration>
-      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>javacc-maven-plugin</artifactId>
@@ -500,25 +230,60 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>2.5</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <filesets>
-            <fileset>
-              <directory>src/main/java/net/sourceforge/cobertura/javancss/parser</directory>
-              <includes>
-                <include>**/*</include>
-              </includes>
-              <followSymlinks>false</followSymlinks>
-            </fileset>
-          </filesets>
+          <fork>true</fork>
+          <excludes>
+            <exclude>**/test/*.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <index />
+            <manifest>
+              <addDefaultImplementationEntries />
+              <addDefaultSpecificationEntries />
+            </manifest>
+            <manifestEntries>
+              <Specification-Title>A code coverage analysis tool.</Specification-Title>
+              <Specification-Version>${project.version}</Specification-Version>
+              <Specification-Vendor>Cobertura</Specification-Vendor>
+              <Implementation-Title>A code coverage analysis tool.</Implementation-Title>
+              <Implementation-Version>${project.version}</Implementation-Version>
+              <Implementation-Vendor>Cobertura</Implementation-Vendor>
+              <Implementation-Vendor-Id>${project.groupId}</Implementation-Vendor-Id>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <excludes combine.children="append">
+            <exclude>**/test/condition/**</exclude>
+            <exclude>**/examples/functionaltest1/**</exclude>
+            <!-- This test is failing and I don't know how to fix it -->
+            <exclude>net/sourceforge/cobertura/thread/test/MultipleClassloaderFunctionalTest.java</exclude>
+            <!-- This test fails on Windows, see https://github.com/cobertura/cobertura/pull/209 -->
+            <exclude>net/sourceforge/cobertura/dsl/ArgumentsBuilderTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.15</version>
         <executions>
           <execution>
             <goals>
@@ -528,35 +293,16 @@
           </execution>
         </executions>
       </plugin>
-    </plugins>
-  </build>
 
-  <reporting>
-    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>${plugin.jdoc.version}</version>
+        <artifactId>maven-pmd-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
       </plugin>
     </plugins>
-  </reporting>
+  </build>
   
-  <scm>
-    <connection>scm:git:git://github.com/cobertura/cobertura</connection>
-    <developerConnection>scm:git:git@github.com:cobertura/cobertura.git</developerConnection>
-    <url>http://github.com/cobertura/cobertura</url>
-    <tag>HEAD</tag>
-  </scm>
-  
-  <developers>
-    <developer>
-      <id>schristou88</id>
-      <name>Steven Christou</name>
-      <email>schristou88@gmail.com</email>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+6</timezone>
-    </developer>
-  </developers>
 </project>

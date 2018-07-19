@@ -55,43 +55,35 @@
 
 package net.sourceforge.cobertura.test;
 
-import groovy.util.AntBuilder;
-import groovy.util.Node;
-import net.sourceforge.cobertura.ant.ReportTask;
-import net.sourceforge.cobertura.test.util.TestUtils;
+import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.types.resources.FileResource;
 import org.junit.Test;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import groovy.util.AntBuilder;
+import net.sourceforge.cobertura.test.util.TestUtils;
 
 public class ParentChildStaticFieldTest extends AbstractCoberturaTestCase {
-	AntBuilder ant = TestUtils.getCoberturaAntBuilder(TestUtils
-			.getCoberturaClassDir());
+    
+	private static final String TEST_FILE = "test/ParentChildStaticFieldTest/ParentChildStaticFieldExample.java";
+    
+	AntBuilder ant = TestUtils.getCoberturaAntBuilder(TestUtils.getCoberturaClassDir());
 
 	@Test
 	public void parentChildStaticFieldShouldWorkWithoutInstrumentalizationTest() throws Exception {
+	    
 		/*
 		 * Use a temporary directory and create a few sources files.
 		 */
 		File tempDir = TestUtils.getTempDir();
 		File srcDir = new File(tempDir, "src");
-		File instrumentDir = new File(tempDir, "instrument");
 
 		File mainSourceFile = new File(srcDir, "mypackage/ParentChildStaticField.java");
-		File datafile = new File(srcDir, "cobertura.ser");
 		mainSourceFile.getParentFile().mkdirs();
 
-		byte[] encoded =  Files.readAllBytes(Paths.get("src/test/resources/examples/basic/src/com/example/simple/ParentChildStaticFieldExample.java"));
+		byte[] encoded =  IOUtils.toByteArray(getClass().getClassLoader().getResourceAsStream(TEST_FILE));
 
 		FileUtils.write(mainSourceFile, new String(encoded, "utf8"));
 
@@ -108,11 +100,11 @@ public class ParentChildStaticFieldTest extends AbstractCoberturaTestCase {
 		java.setFailonerror(true);
 		java.setClasspath(TestUtils.getCoberturaDefaultClasspath());
 		java.execute();
-		
-
 	}
-@Test
+	
+	@Test
 	public void parentChildStaticFieldShouldWorkAfterInstrumentalizationTest() throws Exception {
+	    
 		/*
 		 * Use a temporary directory and create a few sources files.
 		 */
@@ -124,7 +116,7 @@ public class ParentChildStaticFieldTest extends AbstractCoberturaTestCase {
 		File datafile = new File(srcDir, "cobertura.ser");
 		mainSourceFile.getParentFile().mkdirs();
 
-		byte[] encoded =  Files.readAllBytes(Paths.get("src/test/resources/examples/basic/src/com/example/simple/ParentChildStaticFieldExample.java"));
+		byte[] encoded =  IOUtils.toByteArray(getClass().getClassLoader().getResourceAsStream(TEST_FILE));
 
 		FileUtils.write(mainSourceFile, new String(encoded, "utf8"));
 
@@ -146,6 +138,5 @@ public class ParentChildStaticFieldTest extends AbstractCoberturaTestCase {
 		java.setFailonerror(true);
 		java.setClasspath(TestUtils.getCoberturaDefaultClasspath());
 		java.execute();
-		
-
-	}}
+	}
+}
