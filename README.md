@@ -1,6 +1,6 @@
 # COBERTURA
 
-[![Build Status](https://travis-ci.org/cobertura/cobertura.svg?branch=master)](https://travis-ci.org/cobertura/cobertura)
+[![Build Status](https://travis-ci.org/msiemczyk/cobertura.svg?branch=master)](https://travis-ci.org/msiemczyk/cobertura)
 
 ## ABOUT
 Cobertura is a free Java code coverage reporting tool.  It is
