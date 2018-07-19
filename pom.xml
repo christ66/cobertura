@@ -22,10 +22,6 @@
     <packaging>pom</packaging>
     <inceptionYear>2013</inceptionYear>
 
-    <prerequisites>
-        <maven>3.0.5</maven>
-    </prerequisites>
-
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
