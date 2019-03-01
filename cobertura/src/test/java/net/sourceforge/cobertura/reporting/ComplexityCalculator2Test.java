@@ -393,4 +393,37 @@ public class ComplexityCalculator2Test extends TestCase {
                 2.0, ccn1, 0.01);
     }
 
+
+    /**
+     * This test highlights an issue with Javancss not supporting java8 default method for interfaces.
+     * <p>
+     * @throws Exception
+     *                   <p>
+     */
+    public void testJava8LambdaConvertion() throws Exception {
+        File tempDir = TestUtils.getTempDir();
+        String filename = "LambdaConv.java";
+        File sourceFile = new File(tempDir, filename);
+        FileUtils
+                .write(
+                        sourceFile,
+                        "\n class LambdaConv {"
+                        + "\n void test(String str) {"
+                        + "\n Runnable runnable = (Runnable)() -> System.out.println(\"Test\");"
+                        + "\n }"
+                        + "}\n"
+                        );
+
+        //create a ComplexityCalculator that will use the archive
+        FileFinder fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+
+        double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
+                filename));
+        assertNotNull(ccn1);
+        assertEquals(
+                "Testing lambda convertion",
+                1.0, ccn1, 0.01);
+    }
 }
