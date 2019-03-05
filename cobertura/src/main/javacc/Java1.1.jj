@@ -2516,7 +2516,7 @@ void CastExpression() :
   LOOKAHEAD("(" PrimitiveType())
   "(" Type() ")" UnaryExpression()
 |
-  LOOKAHEAD(4) "(" Type() ")" LambdaExpression()
+  LOOKAHEAD("(" Type() ")" LambdaExpression()) "(" Type() ")" LambdaExpression()
 |
   "(" Type() ")" UnaryExpressionNotPlusMinus()
 }
