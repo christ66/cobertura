@@ -216,7 +216,10 @@ public class CoberturaInstrumenter {
 					cw2, ignoreRegexes, threadsafeRigorous, cv.getClassMap(),
 					cv0.getDuplicatesLinesCollector(), detectIgnoredCv
 							.getIgnoredMethodNamesAndSignatures());
-			cr2.accept(new CheckClassAdapter(cv2), ClassReader.SKIP_FRAMES);
+			cr2.accept(new CheckClassAdapter(cv2), ClassReader.EXPAND_FRAMES);// if it is ClassReader.SKIP_FRAMES,
+                                                                                          // the InstrumentationBug1Test will fail as
+                                                                                          // the first pass has more counters than this pass
+                                                                                          // and there will be a mismatch when trying to find the counters
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			CheckClassAdapter.verify(new ClassReader(cw2.toByteArray()), InstrumentMain.urlClassLoader, false,

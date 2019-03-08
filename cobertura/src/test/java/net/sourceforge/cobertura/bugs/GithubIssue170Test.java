@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author schristou88
  */
-public class GithubIssue170 extends AbstractCoberturaTestCase {
+public class GithubIssue170Test extends AbstractCoberturaTestCase {
     Node dom;
 
     @Override
@@ -58,7 +58,7 @@ public class GithubIssue170 extends AbstractCoberturaTestCase {
         assertEquals(2, TestUtils.getTotalHitCount(dom, "mypackage.GithubIssue170Test",
                 "<init>"));
         assertThat(TestUtils.getMethodBranchCoverage(dom, "mypackage.GithubIssue170Test",
-                "test170"), is(0.5));
+                "test170"), is(1.0));
     }
 
     static final String packageName = "mypackage";

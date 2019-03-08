@@ -13,7 +13,7 @@ import org.junit.Test;
  * 
  * @author jad007
  */
-public class GithubIssue109 extends AbstractCoberturaTestCase
+public class GithubIssue109Test extends AbstractCoberturaTestCase
 {
 	@Test
 	public void testIssue109() throws IOException
