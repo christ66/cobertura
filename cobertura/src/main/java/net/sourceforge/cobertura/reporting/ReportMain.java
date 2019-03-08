@@ -39,15 +39,14 @@ import org.slf4j.LoggerFactory;
 
 public class ReportMain {
 
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(ReportMain.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReportMain.class);
 
 	private static void parseArgumentsAndReport(String[] args) throws Exception {
 		ArgumentsBuilder builder = new ArgumentsBuilder();
 
 		String baseDir = null;
 		String format = null;
-		boolean sourcesParam = false;
+		
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("--basedir")) {
 				baseDir = args[++i];
@@ -84,16 +83,12 @@ public class ReportMain {
 		}
 
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug(String.format("format is %s encoding is %s", format,
-					arguments.getEncoding()));
-			LOGGER.debug("dataFile is "
-					+ arguments.getDataFile().getAbsolutePath());
-			LOGGER.debug("destinationDir is "
-					+ arguments.getDestinationDirectory().getAbsolutePath());
+			LOGGER.debug("Format is {} and encoding is {}.", format, arguments.getEncoding());
+			LOGGER.debug("Data file is '{}'.", arguments.getDataFile().getAbsolutePath());
+			LOGGER.debug("Destination directory is '{}'.", arguments.getDestinationDirectory().getAbsolutePath());
 		}
 
-		new Cobertura(arguments).report().export(
-				ReportFormat.getFromString(format));
+		new Cobertura(arguments).report().export(ReportFormat.getFromString(format));
 	}
 
 	private static void validateFormat(String format) {

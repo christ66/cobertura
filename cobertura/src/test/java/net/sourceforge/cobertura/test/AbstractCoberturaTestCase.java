@@ -3,22 +3,25 @@
  */
 package net.sourceforge.cobertura.test;
 
-import groovy.util.Node;
-import net.sourceforge.cobertura.ant.ReportTask;
-import net.sourceforge.cobertura.reporting.ReportMain;
-import net.sourceforge.cobertura.test.util.TestUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.types.Path;
-import org.junit.After;
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import org.apache.commons.io.FileUtils;
+import org.apache.tools.ant.taskdefs.Java;
+import org.junit.After;
+import org.junit.Before;
+
+import groovy.util.Node;
+import net.sourceforge.cobertura.ant.ReportTask;
+import net.sourceforge.cobertura.reporting.ReportMain;
+import net.sourceforge.cobertura.test.util.TestUtils;
 
 /**
  * @author schristou88
@@ -35,9 +38,7 @@ public class AbstractCoberturaTestCase {
 	@Before
 	public void setUp() throws Exception {
 		tempDir = TestUtils.getTempDir();
-
                 FileUtils.deleteDirectory(tempDir);
-
 		srcDir = new File(tempDir, "src");
 		reportDir = new File(tempDir, "report");
 		instrumentDir = new File(tempDir, "instrument");
