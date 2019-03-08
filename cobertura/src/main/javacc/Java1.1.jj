@@ -2516,6 +2516,8 @@ void CastExpression() :
   LOOKAHEAD("(" PrimitiveType())
   "(" Type() ")" UnaryExpression()
 |
+  LOOKAHEAD("(" Type() ")" LambdaExpression()) "(" Type() ")" LambdaExpression()
+|
   "(" Type() ")" UnaryExpressionNotPlusMinus()
 }
 
@@ -2574,7 +2576,7 @@ void PrimarySuffix() :
 //  { System.out.println( "PrimarySuffix . Identifier()" ); }
   "." Identifier()
 |
-  Arguments()
+  Arguments() [ "{" MethodDeclaration() "}"]
 }
 
 void Literal() :
@@ -3002,7 +3004,7 @@ void TryWithResources() :
 {}
 {
 //  LocalVariableDeclaration() [ ";" ]
-  LocalVariableDeclaration() ( ";" LocalVariableDeclaration() )*
+  LocalVariableDeclaration() ( LOOKAHEAD(2) ";" LocalVariableDeclaration() )* [ ";" ]
 }
 
 void Identifier() :

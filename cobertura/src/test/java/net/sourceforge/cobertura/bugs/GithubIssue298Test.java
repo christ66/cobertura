@@ -10,7 +10,7 @@ import java.io.IOException;
  *         Date: 3/10/16
  *         Time: 12:24 AM
  */
-public class GithubIssue298 extends AbstractCoberturaTestCase {
+public class GithubIssue298Test extends AbstractCoberturaTestCase {
     @Test
     public void testIssue298() throws IOException {
         String imports = "import java.io.*;" +

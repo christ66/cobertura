@@ -64,100 +64,102 @@ import org.junit.Test;
 import java.io.File;
 
 public class ComplexityCalculator2Test extends TestCase {
-	@Test
-	public void testSearchJarsForSourceInJar() throws Exception {
-		File tempDir = TestUtils.getTempDir();
-		File zipFile = TestUtils.createSourceArchive(tempDir);
 
-		//create a ComplexityCalculator that will use the archive
-		FileFinder fileFinder = new FileFinder();
-		fileFinder
-				.addSourceDirectory(zipFile.getParentFile().getAbsolutePath());
-		ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+    @Test
+    public void testSearchJarsForSourceInJar() throws Exception {
+        File tempDir = TestUtils.getTempDir();
+        File zipFile = TestUtils.createSourceArchive(tempDir);
 
-		double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
-				TestUtils.SIMPLE_SOURCE_PATHNAME));
-		assertTrue(ccn1 == 1.0);
-	}
+        //create a ComplexityCalculator that will use the archive
+        FileFinder fileFinder = new FileFinder();
+        fileFinder
+                .addSourceDirectory(zipFile.getParentFile().getAbsolutePath());
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
 
-	public void testAnnotatedSource() throws Exception {
-		/*
-		 * Test for bug #2818738.
-		 */
-		File tempDir = TestUtils.getTempDir();
-		String filename = "TBSException.java";
-		File sourceFile = new File(tempDir, filename);
-		FileUtils
-				.write(
-						sourceFile,
-						"\n public class TBSException extends Exception {"
-								+ "\n public TBSException (ErrorHandler handler, Exception wrap) {"
-								+ "\n super(wrap);"
-								+ "\n @SuppressWarnings(\"unchecked\")"
-								+ "\n final Iterator<Exception> iter = handler.getExceptions().iterator();  // LINE 27"
-								+ "\n for (; iter.hasNext();) " + "\n {"
-								+ "\n Exception exception = iter.next();"
-								+ "\n this.errors.add(exception.getMessage());"
-								+ "\n }" + "\n 	}" + "\n }");
+        double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
+                TestUtils.SIMPLE_SOURCE_PATHNAME));
+        assertTrue(ccn1 == 1.0);
+    }
 
-		//create a ComplexityCalculator that will use the archive
-		FileFinder fileFinder = new FileFinder();
-		fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
-		ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+    public void testAnnotatedSource() throws Exception {
+        /*
+         * Test for bug #2818738.
+         */
+        File tempDir = TestUtils.getTempDir();
+        String filename = "TBSException.java";
+        File sourceFile = new File(tempDir, filename);
+        FileUtils
+                .write(
+                        sourceFile,
+                        "\n public class TBSException extends Exception {"
+                        + "\n public TBSException (ErrorHandler handler, Exception wrap) {"
+                        + "\n super(wrap);"
+                        + "\n @SuppressWarnings(\"unchecked\")"
+                        + "\n final Iterator<Exception> iter = handler.getExceptions().iterator();  // LINE 27"
+                        + "\n for (; iter.hasNext();) " + "\n {"
+                        + "\n Exception exception = iter.next();"
+                        + "\n this.errors.add(exception.getMessage());"
+                        + "\n }" + "\n 	}" + "\n }");
 
-		double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
-				filename));
-		assertNotNull(ccn1);
-		assertEquals(2.0, ccn1, 0.01);
-	}
+        //create a ComplexityCalculator that will use the archive
+        FileFinder fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
 
-	/**
-	 * This test highlights an issue with Javancss.
-	 * 
-	 * http://jira.codehaus.org/browse/JAVANCSS-37
-	 * @throws Exception 
-	 * 
-	 */
-	public void testGenericsProblem() throws Exception {
-		File tempDir = TestUtils.getTempDir();
-		String filename = "UserAudit.java";
-		File sourceFile = new File(tempDir, filename);
-		FileUtils
-				.write(
-						sourceFile,
-						"\n import java.util.ArrayList;"
-								+ "\n import java.util.List;"
-								+ "\n "
-								+ "\n "
-								+ "\n public class UserAudit extends UserAuditParent {"
-								+ "\n void postCopyOnDestination(String str) throws InstantiationException, IllegalAccessException {"
-								+ "\n List<AllowedMMProduct> listToReset = new ArrayList<AllowedMMProduct>();"
-								+ "\n"
-								+ "\n List<AllowedMMProductAudit> auditProducts;"
-								+ "\n auditProducts = this.<AllowedMMProduct,AllowedMMProductAudit>copyListFromParent(AllowedMMProductAudit.class, getMmAuthorisedProducts_());"
-								+ "\n }"
-								+ "\n"
-								+ "\n List<AllowedMMProduct> getMmAuthorisedProducts_() {"
-								+ "\n return null;" + "\n 	}" + "\n }");
+        double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
+                filename));
+        assertNotNull(ccn1);
+        assertEquals(2.0, ccn1, 0.01);
+    }
 
-		//create a ComplexityCalculator that will use the archive
-		FileFinder fileFinder = new FileFinder();
-		fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
-		ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+    /**
+     * This test highlights an issue with Javancss.
+     * <p>
+     * http://jira.codehaus.org/browse/JAVANCSS-37
+     * <p>
+     * @throws Exception
+     * <p>
+     */
+    public void testGenericsProblem() throws Exception {
+        File tempDir = TestUtils.getTempDir();
+        String filename = "UserAudit.java";
+        File sourceFile = new File(tempDir, filename);
+        FileUtils
+                .write(
+                        sourceFile,
+                        "\n import java.util.ArrayList;"
+                        + "\n import java.util.List;"
+                        + "\n "
+                        + "\n "
+                        + "\n public class UserAudit extends UserAuditParent {"
+                        + "\n void postCopyOnDestination(String str) throws InstantiationException, IllegalAccessException {"
+                        + "\n List<AllowedMMProduct> listToReset = new ArrayList<AllowedMMProduct>();"
+                        + "\n"
+                        + "\n List<AllowedMMProductAudit> auditProducts;"
+                        + "\n auditProducts = this.<AllowedMMProduct,AllowedMMProductAudit>copyListFromParent(AllowedMMProductAudit.class, getMmAuthorisedProducts_());"
+                        + "\n }"
+                        + "\n"
+                        + "\n List<AllowedMMProduct> getMmAuthorisedProducts_() {"
+                        + "\n return null;" + "\n 	}" + "\n }");
 
-		double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
-				filename));
-		assertNotNull(ccn1);
-		assertEquals(
-				"Javancss issue has been fixed: http://jira.codehaus.org/browse/JAVANCSS-37.   Now fix this test.",
-                    1.0, ccn1, 0.01);
+        //create a ComplexityCalculator that will use the archive
+        FileFinder fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+
+        double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
+                filename));
+        assertNotNull(ccn1);
+        assertEquals(
+                "Javancss issue has been fixed: http://jira.codehaus.org/browse/JAVANCSS-37.   Now fix this test.",
+                1.0, ccn1, 0.01);
     }
 
     /**
      * This test highlights an issue with Javancss not supporting java8 default method for interfaces.
      * <p>
      * @throws Exception
-     * <p>
+     *                   <p>
      */
     public void testJava8defaultAndStaticInterface() throws Exception {
         File tempDir = TestUtils.getTempDir();
@@ -353,4 +355,75 @@ public class ComplexityCalculator2Test extends TestCase {
                 1.875, ccn1, 0.01);
     }
 
+    public void testJava7TryWithResourceEndingSemiColon() throws Exception {
+        File tempDir = TestUtils.getTempDir();
+        String filename = "DummyClass.java";
+        File sourceFile = new File(tempDir, filename);
+        FileUtils
+                .write(
+                        sourceFile,
+                        "\n public class DummyClass {"
+                        + "  public void baz2() {\n"
+                        + "	String zipFileName = \"\";\n"
+                        + "	String outputFileName = \"\";\n"
+                        + "	java.nio.charset.Charset charset = java.nio.charset.Charset.forName(\"US-ASCII\");\n"
+                        + "    java.nio.file.Path outputFilePath = java.nio.file.Paths.get(outputFileName);\n"
+                        + "	\n"
+                        + "	try (\n"
+                        + "      java.util.zip.ZipFile zf = new java.util.zip.ZipFile(zipFileName);\n"
+                        + "      java.io.BufferedWriter writer = java.nio.file.Files.newBufferedWriter(outputFilePath, charset);\n"
+                        + "    ) {\n"
+                        + "		// do nothing\n"
+                        + "	}\n"
+                        + "	catch (java.beans.PropertyVetoException e) {\n"
+                        + "		// do nothing\n"
+                        + "	}\n"
+                        + "  }}");
+
+        //create a ComplexityCalculator that will use the archive
+        FileFinder fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+
+        double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
+                filename));
+        assertNotNull(ccn1);
+        assertEquals(
+                "Testing try with resource",
+                2.0, ccn1, 0.01);
+    }
+
+
+    /**
+     * This test highlights an issue with Javancss not supporting java8 default method for interfaces.
+     * <p>
+     * @throws Exception
+     *                   <p>
+     */
+    public void testJava8LambdaConvertion() throws Exception {
+        File tempDir = TestUtils.getTempDir();
+        String filename = "LambdaConv.java";
+        File sourceFile = new File(tempDir, filename);
+        FileUtils
+                .write(
+                        sourceFile,
+                        "\n class LambdaConv {"
+                        + "\n void test(String str) {"
+                        + "\n Runnable runnable = (Runnable)() -> System.out.println(\"Test\");"
+                        + "\n }"
+                        + "}\n"
+                        );
+
+        //create a ComplexityCalculator that will use the archive
+        FileFinder fileFinder = new FileFinder();
+        fileFinder.addSourceDirectory(tempDir.getAbsolutePath());
+        ComplexityCalculator complexity = new ComplexityCalculator(fileFinder);
+
+        double ccn1 = complexity.getCCNForSourceFile(new SourceFileData(
+                filename));
+        assertNotNull(ccn1);
+        assertEquals(
+                "Testing lambda convertion",
+                1.0, ccn1, 0.01);
+    }
 }

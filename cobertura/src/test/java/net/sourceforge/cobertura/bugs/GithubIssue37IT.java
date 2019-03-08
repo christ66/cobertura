@@ -12,6 +12,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+// Shouldn't become a test. It checks the manifest of the cobertura.jar. Not a unit test.
 public class GithubIssue37IT {
 	@Test
 	public void testVersionCorrect() throws IOException {

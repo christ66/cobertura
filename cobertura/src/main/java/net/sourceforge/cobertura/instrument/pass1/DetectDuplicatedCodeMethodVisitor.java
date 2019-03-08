@@ -168,12 +168,12 @@ public class DetectDuplicatedCodeMethodVisitor
 
 	@Override
 	public void visitMethodInsn(int opCode, String className,
-			String methodName, String description) {
+			String methodName, String description, boolean bool) {
 		if (currentLineFootstamp != null) {
 			currentLineFootstamp.visitMethodInsn(opCode, className, methodName,
 					description);
 		}
-		super.visitMethodInsn(opCode, className, methodName, description);
+		super.visitMethodInsn(opCode, className, methodName, description, bool);
 	}
 
 	@Override
