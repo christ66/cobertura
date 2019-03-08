@@ -219,7 +219,7 @@ public class CoberturaInstrumenter {
 			cr2.accept(new CheckClassAdapter(cv2), ClassReader.SKIP_FRAMES);
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
-			CheckClassAdapter.verify(new ClassReader(cw2.toByteArray()), false,
+			CheckClassAdapter.verify(new ClassReader(cw2.toByteArray()), InstrumentMain.urlClassLoader, false,
 					pw);
 			logger.debug(sw.toString());
 

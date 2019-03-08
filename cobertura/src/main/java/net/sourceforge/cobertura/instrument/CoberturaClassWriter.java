@@ -3,18 +3,17 @@
  */
 package net.sourceforge.cobertura.instrument;
 
-import org.objectweb.asm.ClassWriter;
 
 /**
  * @author schristou88
  *
  */
-public class CoberturaClassWriter extends ClassWriter {
+public class CoberturaClassWriter extends ComputeClassWriter {
 	public CoberturaClassWriter(final int flags) {
 		super(flags);
 	}
 
-	@Override
+/*	@Override
 	protected String getCommonSuperClass(final String type1, final String type2) {
 		try {
 			return super.getCommonSuperClass(type1, type2);
@@ -63,5 +62,5 @@ public class CoberturaClassWriter extends ClassWriter {
 			} while (!c.isAssignableFrom(d));
 			return c.getName().replace('.', '/');
 		}
-	}
+	}*/
 }
