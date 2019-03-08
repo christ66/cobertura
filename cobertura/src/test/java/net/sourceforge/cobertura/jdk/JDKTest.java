@@ -1,19 +1,17 @@
 package net.sourceforge.cobertura.jdk;
 
-import static org.junit.Assert.*;
-
-import groovy.util.AntBuilder;
-import groovy.util.Node;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import net.sourceforge.cobertura.ant.ReportTask;
-import net.sourceforge.cobertura.test.util.TestUtils;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.taskdefs.Java;
-import org.junit.Ignore;
 import org.junit.Test;
+
+import groovy.util.AntBuilder;
+import groovy.util.Node;
+import net.sourceforge.cobertura.ant.ReportTask;
+import net.sourceforge.cobertura.test.util.TestUtils;
 
 /**
  * This test is in here because there are a lot of issues with backward compatibility.
@@ -28,7 +26,7 @@ public class JDKTest {
 	static Node dom;
 
 	public static void setupAndExecuteTest(String jdkVersion) throws Exception {
-		FileUtils.deleteDirectory(TestUtils.getTempDir());
+		FileUtils.deleteQuietly(TestUtils.getTempDir());
 
 		/*
 		 * First create the junit test structure.
@@ -85,41 +83,17 @@ public class JDKTest {
 				+ "/coverage.xml");
 	}
 
-	// Note: Tests for Java 1.1 and 1.2 has been removed, because using those
-	// values for the javac option -source is not supported in Java 1.5 or newer
+	// Note: Tests for Java 1.1 to 1.5 has been removed because if someone is
+	// still using those versions then they can stay old Cobertura.
 
 	@Test
-	public void testJDK3() throws Exception {
-		setupAndExecuteTest("1.3");
-		int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
-				"main");
-		assertEquals(2, hitCount);
-	}
-
-	@Test
-	public void testJDK4() throws Exception {
-		setupAndExecuteTest("1.4");
-		int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
-				"main");
-		assertEquals(2, hitCount);
-	}
-
-	@Test
-	public void testJDK5() throws Exception {
-		setupAndExecuteTest("1.5");
-		int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
-				"main");
-		assertEquals(2, hitCount);
-	}
-
-	@Test
-	public void testJDK6() throws Exception {
-		setupAndExecuteTest("1.6");
-		int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
-				"main");
-		assertEquals(2, hitCount);
-	}
-
+    public void testJDK6() throws Exception {
+        setupAndExecuteTest("1.6");
+        int hitCount = TestUtils.getTotalHitCount(dom, "mypackage.JDKTEST",
+                "main");
+        assertEquals(2, hitCount);
+    }
+	
     @Test
     public void testJDK7() throws Exception {
         setupAndExecuteTest("1.7");

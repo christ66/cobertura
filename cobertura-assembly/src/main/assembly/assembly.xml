@@ -1,0 +1,67 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  
+    <id>package</id>
+  
+    <formats>
+        <format>tar.gz</format>
+        <format>tar.bz2</format>
+        <format>zip</format>
+    </formats>
+  
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.outputDirectory}/executables</directory>
+            <outputDirectory />
+            <includes>
+                <include>*.sh</include>
+                <include>*.bat</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.outputDirectory}</directory>
+            <outputDirectory />
+            <excludes>
+                <exclude>executables/**</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/..</directory>
+            <outputDirectory />
+            <includes>
+                <include>../README*</include>
+                <include>../LICENSE*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+    
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory />
+            <useProjectArtifact>false</useProjectArtifact>
+            <includes>
+                <include>net.sourceforge.cobertura:cobertura</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory />
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputFileNameMapping>coberturaFlush.war</outputFileNameMapping>
+            <includes>
+                <include>net.sourceforge.cobertura:cobertura-flush-war</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <excludes>
+                <exclude>org.apache.ant:ant-junit</exclude>
+                <exclude>org.apache.ant:ant</exclude>
+                <exclude>org.apache.ant:ant-launcher</exclude>
+                <exclude>net.sourceforge.cobertura:cobertura*</exclude>
+            </excludes>
+        </dependencySet>
+    </dependencySets>
+  
+</assembly>

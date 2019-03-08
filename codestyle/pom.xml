@@ -8,15 +8,13 @@
     ################################################
     -->
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
-        <relativePath />
+        <groupId>net.sourceforge.cobertura</groupId>
+        <artifactId>cobertura-reactor</artifactId>
+        <version>2.1.2-SNAPSHOT</version>
     </parent>
 
     <groupId>net.sourceforge.cobertura.codestyle</groupId>
     <artifactId>cobertura-codestyle</artifactId>
-    <version>2.1.2-SNAPSHOT</version>
     <name>${project.artifactId}</name>
     <packaging>jar</packaging>
     <url>${url.prefix}/${path.in.reactor}</url>

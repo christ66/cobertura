@@ -23,7 +23,7 @@ public class JDKUtils {
 
     public static Node setUpBeforeClass(String testFile, String jdkVersion, String className, String classFile) throws IOException,
             ParserConfigurationException, SAXException {
-        FileUtils.deleteDirectory(TestUtils.getTempDir());
+        FileUtils.deleteQuietly(TestUtils.getTempDir());
 
 		/*
 		 * First create the junit test structure.

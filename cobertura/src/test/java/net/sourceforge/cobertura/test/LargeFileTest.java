@@ -83,7 +83,7 @@ public class LargeFileTest {
 		 * has trivial methods such as .
 		 */
 		File tempDir = TestUtils.getTempDir();
-		FileUtils.deleteDirectory(tempDir);
+		FileUtils.deleteQuietly(tempDir);
 
 		File srcDir = new File(tempDir, "src");
 		File reportDir = new File(tempDir, "report");

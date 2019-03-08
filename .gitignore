@@ -109,3 +109,5 @@ $RECYCLE.BIN/
 /.hg/*
 */.hg/*
 .hgignore
+
+/cobertura/.settings

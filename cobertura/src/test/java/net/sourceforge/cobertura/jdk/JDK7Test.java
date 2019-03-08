@@ -1,20 +1,17 @@
 package net.sourceforge.cobertura.jdk;
 
-import groovy.util.AntBuilder;
-import groovy.util.Node;
-import net.sourceforge.cobertura.ant.ReportTask;
-import net.sourceforge.cobertura.test.util.TestUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.tools.ant.taskdefs.Java;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
+import groovy.util.Node;
+import net.sourceforge.cobertura.test.util.TestUtils;
 
 public class JDK7Test {
     static Node dom;
