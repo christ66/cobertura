@@ -47,6 +47,7 @@ public class Arguments {
 	private boolean failOnError;
 	private boolean ignoreTrivial;
 	private boolean threadsafeRigorous;
+	private boolean ignoreDeprecated;
 
 	private String encoding;
 
@@ -70,8 +71,8 @@ public class Arguments {
 			Collection<Pattern> classPatternExcludeClassesRegexes,
 			boolean calculateMethodComplexity,
 			boolean failOnError, boolean ignoreTrivial,
-			boolean threadsafeRigorous, String encoding,
-			Set<CoverageThreshold> minimumCoverageThresholds,
+			boolean ignoreDeprecated, boolean threadsafeRigorous,
+			String encoding, Set<CoverageThreshold> minimumCoverageThresholds,
 			double classLineThreshold, double classBranchThreshold,
 			double packageLineThreshold, double packageBranchThreshold,
 			double totalLineThreshold, double totalBranchThreshold,
@@ -93,6 +94,7 @@ public class Arguments {
 		this.calculateMethodComplexity = calculateMethodComplexity;
 		this.failOnError = failOnError;
 		this.ignoreTrivial = ignoreTrivial;
+		this.ignoreDeprecated = ignoreDeprecated;
 		this.threadsafeRigorous = threadsafeRigorous;
 		this.encoding = encoding;
 		this.minimumCoverageThresholds = Collections
@@ -157,6 +159,10 @@ public class Arguments {
 
 	public boolean isThreadsafeRigorous() {
 		return threadsafeRigorous;
+	}
+
+	public boolean isIgnoreDeprecated() {
+		return ignoreDeprecated;
 	}
 
 	public String getEncoding() {

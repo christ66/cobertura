@@ -67,6 +67,8 @@ public class BuildClassMapClassVisitor
 	 */
 	private boolean toInstrument = true;
 
+	private final boolean ignoreDeprecated;
+
 	private final Set<String> ignoredMethods;
 	private final Set<String> ignoredClassAnnotations;
 
@@ -77,18 +79,21 @@ public class BuildClassMapClassVisitor
      * @param duplicatedLinesMap - map of found duplicates in the class. You should use {@link DetectDuplicatedCodeClassVisitor} to find the duplicated lines.
 	 */
 	public BuildClassMapClassVisitor(ClassVisitor cv,
-			Collection<Pattern> ignoreRegexes,
+			Collection<Pattern> ignoreRegexes, boolean ignoreDeprecated,
 			Set<String> ignoreClassAnnotations,
 			Map<Integer, Map<Integer, Integer>> duplicatedLinesMap,
 			Set<String> ignoredMethods) {
 		super(cv, ignoreRegexes, duplicatedLinesMap);
 		this.ignoredMethods = ignoredMethods;
 		this.ignoredClassAnnotations = ignoreClassAnnotations;
+		this.ignoreDeprecated = ignoreDeprecated;
 	}
 
 	@Override
 	public AnnotationVisitor visitAnnotation(String name, boolean arg1) {
-		if (Type.getDescriptor(CoverageIgnore.class).equals(name)) {
+		if (Type.getDescriptor(CoverageIgnore.class).equals(name)
+				|| (Type.getDescriptor(java.lang.Deprecated.class).equals(name))
+				&& ignoreDeprecated) {
 			toInstrument = false;
 		} else if (ignoredClassAnnotations != null) {
 			String className = Type.getObjectType(name).getClassName();

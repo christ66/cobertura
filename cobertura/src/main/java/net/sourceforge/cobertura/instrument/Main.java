@@ -45,5 +45,4 @@ public class Main {
 		System.err.println("Please use net.sourceforge.cobertura.instrument.InstrumentMain instead");
 		InstrumentMain.main(args);
 	}
-
 }

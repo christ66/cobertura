@@ -64,13 +64,16 @@ public class DetectIgnoredCodeClassVisitor extends ClassVisitor {
 	private final AtomicInteger lineIdGenerator = new AtomicInteger(0);
 
 	private final boolean ignoreTrivial;
+	private final boolean ignoreDeprecated;
 	private final Set<String> ignoreAnnotations;
 
 	public DetectIgnoredCodeClassVisitor(ClassVisitor cv,
-			boolean ignoreTrivial, Set<String> ignoreAnnotations) {
+			boolean ignoreTrivial, Set<String> ignoreAnnotations, 
+                        boolean ignoreDeprecated) {
 		super(Opcodes.ASM5, new CheckClassAdapter(cv, false));
 		this.ignoreTrivial = ignoreTrivial;
 		this.ignoreAnnotations = ignoreAnnotations;
+		this.ignoreDeprecated = ignoreDeprecated;
 	}
 
 	@Override
@@ -89,7 +92,7 @@ public class DetectIgnoredCodeClassVisitor extends ClassVisitor {
 		return new DetectIgnoredCodeMethodVisitor(nestedVisitor,
 				ignoredLineIds, ignoredMethodNamesAndSignatures, ignoreTrivial,
 				ignoreAnnotations, className, superName, methodName,
-				description, lineIdGenerator);
+				description, lineIdGenerator, ignoreDeprecated);
 	}
 
 	public Set<Integer> getIgnoredLineIds() {

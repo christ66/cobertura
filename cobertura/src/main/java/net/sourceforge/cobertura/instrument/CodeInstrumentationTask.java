@@ -74,6 +74,8 @@ public class CodeInstrumentationTask {
 				.isThreadsafeRigorous());
 		coberturaInstrumenter.setFailOnError(arguments.isFailOnError());
 		coberturaInstrumenter.setProjectData(projectData);
+		coberturaInstrumenter.setIgnoreDeprecataed(arguments
+				.isIgnoreDeprecated());
 
 		// Instrument classes
 		logger.info(String.format("Instrumenting %s %s %s", filePaths.size(),
