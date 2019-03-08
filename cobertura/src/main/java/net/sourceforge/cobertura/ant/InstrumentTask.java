@@ -107,6 +107,8 @@ public class InstrumentTask extends CommonMatchingTask {
 
 	boolean threadsafeRigorous = false;
 
+	boolean ignoreDeprecated = false;
+
 	final private HashMap<String, FileSet> fileSetMap = new HashMap<String, FileSet>();
 
 	public InstrumentTask() {
@@ -223,6 +225,10 @@ public class InstrumentTask extends CommonMatchingTask {
 
 			if (threadsafeRigorous) {
 				builder.addArg("--threadsafeRigorous");
+			}
+
+			if (ignoreDeprecated) {
+				builder.addArg("--ignoreDeprecated");
 			}
 
 			if (failOnError) {
@@ -348,6 +354,10 @@ public class InstrumentTask extends CommonMatchingTask {
 
 	public void setForkedJVMDebugPort(Integer forkedJVMDebugPort) {
 		this.forkedJVMDebugPort = forkedJVMDebugPort;
+	}
+
+	public void setIgnoreDeprecated(boolean ignoreDeprecated) {
+		this.ignoreDeprecated = ignoreDeprecated;
 	}
 
 	public void setAuxClasspath(Path path) {

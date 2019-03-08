@@ -261,6 +261,10 @@ public class TestUtils {
 		instrumentTask.setIgnoreTrivial(arguments != null
 				&& arguments.containsKey("ignoretrivial") ? (Boolean) arguments
 				.get("ignoretrivial") : false);
+		instrumentTask.setIgnoreDeprecated(arguments != null
+				&& arguments.containsKey("ignoreDeprecated")
+				? (Boolean) arguments.get("ignoreDeprecated")
+				: false);
 
 		if (arguments != null && arguments.containsKey("ignoreAnnotationNames")) {
 			List<String> ignoreAnnotations = (List<String>) arguments

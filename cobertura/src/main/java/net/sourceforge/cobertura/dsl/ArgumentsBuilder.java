@@ -43,6 +43,7 @@ public class ArgumentsBuilder {
 	static final boolean DEFAULT_FAIL_ON_ERROR = false;
 	static final boolean DEFAULT_IGNORE_TRIVIAL = false;
 	static final boolean DEFAULT_THREADSAFE_RIGOROUS = false;
+	static final boolean DEFAULT_IGNORE_DEPRECATED = false;
 
 	private Arguments arguments;
 
@@ -59,6 +60,7 @@ public class ArgumentsBuilder {
 	private boolean calculateMethodComplexity;
 	private boolean failOnError;
 	private boolean ignoreTrivial;
+	private boolean ignoreDeprecated;
 	private boolean threadsafeRigorous;
 
 	private String encoding;
@@ -144,6 +146,11 @@ public class ArgumentsBuilder {
 
 	public ArgumentsBuilder ignoreTrivial(boolean ignoreTrivial) {
 		this.ignoreTrivial = ignoreTrivial;
+		return this;
+	}
+
+	public ArgumentsBuilder ignoreDeprecated(boolean ignoreDeprecated) {
+		this.ignoreDeprecated = ignoreDeprecated;
 		return this;
 	}
 
@@ -260,7 +267,7 @@ public class ArgumentsBuilder {
 				commandsFile, ignoreRegexes, ignoreBranchesRegexes,
 				classPatternIncludeClassesRegexes,
 				classPatternExcludeClassesRegexes, calculateMethodComplexity,
-				failOnError, ignoreTrivial,
+				failOnError, ignoreTrivial, ignoreDeprecated,
 				threadsafeRigorous, encoding, minimumCoverageThresholds,
 				classLineThreshold, classBranchThreshold, packageLineThreshold,
 				packageBranchThreshold, totalLineThreshold,
@@ -302,6 +309,7 @@ public class ArgumentsBuilder {
 		calculateMethodComplexity = DEFAULT_CALCULATE_METHOD_COMPLEXITY;
 		failOnError = DEFAULT_FAIL_ON_ERROR;
 		ignoreTrivial = DEFAULT_IGNORE_TRIVIAL;
+		ignoreDeprecated = DEFAULT_IGNORE_DEPRECATED;
 		threadsafeRigorous = DEFAULT_THREADSAFE_RIGOROUS;
 		encoding = DEFAULT_ENCODING;
 	}

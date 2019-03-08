@@ -122,6 +122,8 @@ public class InstrumentMain {
 				builder.addIgnoreClassAnnotation(args[++i]);
 			} else if (args[i].equals("--ignoreTrivial")) {
 				builder.ignoreTrivial(true);
+                        } else if (args[i].equals("--ignoreDeprecated")) {
+                                builder.ignoreDeprecated(true);
 			} else if (args[i].equals("--includeClasses")) {
 				builder.addIncludeClassesRegex(args[++i]);
 			} else if (args[i].equals("--excludeClasses")) {
