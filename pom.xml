@@ -464,13 +464,27 @@
         This leaves the site URL mechanics in the POM to cater for staging
         and deploying sites.
     -->
-    <distributionManagement>
+    <!--distributionManagement>
         <site>
             <id>coberturaSite</id>
             <name>coberturaSite</name>
             <url>${distro.url.prefix}/${path.in.reactor}</url>
         </site>
+    </distributionManagement-->
+
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <name>Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <name>Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
+
     
     <pluginRepositories>
         <pluginRepository>
