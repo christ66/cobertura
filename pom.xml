@@ -103,12 +103,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
-        <jdk.version>1.7</jdk.version>
+        <jdk.version>1.8</jdk.version>
 
         <plugin.java.formatter.version>0.4</plugin.java.formatter.version>
         <plugin.pmd.version>3.6</plugin.pmd.version>
         <plugin.jdoc.version>3.1.1</plugin.jdoc.version>
-        <plugin.findbugs.version>3.0.3</plugin.findbugs.version>
+        <plugin.findbugs.version>3.0.4</plugin.findbugs.version>
         
         <!-- Code style properties -->
         <wtp.version>2.0</wtp.version>
