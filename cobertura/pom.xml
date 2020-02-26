@@ -32,7 +32,7 @@
   </pluginRepositories>
 
   <properties>
-    <asmVersion>5.0.3</asmVersion>
+    <asmVersion>7.3.1</asmVersion>
     <xercesVersion>2.11.0</xercesVersion>
     <xalanVersion>2.7.1</xalanVersion>
     <oroVersion>2.0.8</oroVersion>
@@ -62,6 +62,13 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>com.sun</groupId>
+      <artifactId>tools</artifactId>
+      <version>0</version>
+      <scope>system</scope>
+      <systemPath>${toolsjar}</systemPath>
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
