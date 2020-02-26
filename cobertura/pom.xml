@@ -58,7 +58,7 @@
     <plugin.mvn.jar.version>2.3.2</plugin.mvn.jar.version>
     <plugin.pmd.version>3.6</plugin.pmd.version>
     <plugin.jdoc.version>2.9.1</plugin.jdoc.version>
-    <plugin.findbugs.version>3.0.4</plugin.findbugs.version>
+    <plugin.findbugs.version>3.0.5</plugin.findbugs.version>
   </properties>
 
   <dependencies>
@@ -179,6 +179,9 @@
                               <exclude>net/sourceforge/cobertura/test/SwitchFunctionalTest.java</exclude>
                               <exclude>net/sourceforge/cobertura/thread/test/MultipleClassloaderFunctionalTest.java</exclude>
                           </excludes>
+                          <skipTests>false</skipTests>
+                          <testFailureIgnore>true</testFailureIgnore>
+                          <forkMode>once</forkMode>
                       </configuration>
                   </plugin>
               </plugins>
@@ -311,7 +314,11 @@
             <exclude>net/sourceforge/cobertura/thread/test/MultipleClassloaderFunctionalTest.java</exclude>
             <!-- This test fails on Windows, see https://github.com/cobertura/cobertura/pull/209 -->
             <exclude>net/sourceforge/cobertura/dsl/ArgumentsBuilderTest.java</exclude>
+
           </excludes>
+          <skipTests>false</skipTests>
+          <testFailureIgnore>true</testFailureIgnore>
+          <forkMode>once</forkMode>
         </configuration>
       </plugin>
       
