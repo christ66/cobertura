@@ -23,7 +23,7 @@ package net.sourceforge.cobertura.javancss;
 /**
  * Basic data class to store all metrics attached to a function.
  *
- * @author  Herve Boutemy
+ * @author  Herv� Boutemy
  * @version $Id$
  */
 public class FunctionMetric

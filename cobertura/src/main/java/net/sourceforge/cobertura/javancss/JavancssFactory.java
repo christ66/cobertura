@@ -37,8 +37,8 @@ public class JavancssFactory {
      * @param encoding the encoding for parsing
      * @return a new instance of {@link Javancss}
      */
-    public Javancss newInstance(InputStream javaSource, String encoding) {
-        return new Javancss(new InputStreamReader(javaSource), encoding);
+    public javancss.Javancss newInstance(InputStream javaSource, String encoding) {
+        return new javancss.Javancss(new InputStreamReader(javaSource), encoding);
     }
 
 }

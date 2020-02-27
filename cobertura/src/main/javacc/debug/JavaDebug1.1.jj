@@ -35,16 +35,15 @@ options {
 
 PARSER_BEGIN(JavaParserDebug)
 
-package net.sourceforge.cobertura.javancss.parser.debug; 
-import net.sourceforge.cobertura.javancss.parser.JavaParserInterface;
+package javancss.parser.debug; import javancss.parser.JavaParserInterface;
 
 import java.util.*;
 
-import net.sourceforge.cobertura.javancss.ccl.Util;
+import ccl.util.Util;
 
-import net.sourceforge.cobertura.javancss.FunctionMetric;
-import net.sourceforge.cobertura.javancss.ObjectMetric;
-import net.sourceforge.cobertura.javancss.PackageMetric;
+import javancss.FunctionMetric;
+import javancss.ObjectMetric;
+import javancss.PackageMetric;
 
 /**
  * Java source code parser based on a grammar compiled by

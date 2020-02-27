@@ -2,7 +2,7 @@
 Copyright (C) 2014 Chr. Clemens Lee <clemens@kclee.com>.
 
 This file is part of JavaNCSS
-(http://javancss.codehaus.org/).
+(http://codehaus.org/).
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -20,30 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 
 package net.sourceforge.cobertura.javancss;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import net.sourceforge.cobertura.javancss.ccl.Exitable;
+import net.sourceforge.cobertura.javancss.ccl.FileUtil;
 import net.sourceforge.cobertura.javancss.ccl.Init;
 import net.sourceforge.cobertura.javancss.ccl.Util;
-
 import net.sourceforge.cobertura.javancss.parser.JavaParser;
 import net.sourceforge.cobertura.javancss.parser.JavaParserInterface;
-import net.sourceforge.cobertura.javancss.parser.JavaParserTokenManager;
 import net.sourceforge.cobertura.javancss.parser.TokenMgrError;
 import net.sourceforge.cobertura.javancss.parser.debug.JavaParserDebug;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
+import java.util.*;
 
 /**
  * While the Java parser class might be the heart of JavaNCSS,
@@ -51,7 +40,7 @@ import net.sourceforge.cobertura.javancss.parser.debug.JavaParserDebug;
  * invokes the Java parser.
  *
  * @author    Chr. Clemens Lee <clemens@kclee.com>
- *            , recursive feature by Pxxkx Hannu
+ *            , recursive feature by Pääkö Hannu
  *            , additional javadoc metrics by Emilio Gongora <emilio@sms.nl>
  *            , and Guillermo Rodriguez <guille@sms.nl>.
  * @version   $Id$
@@ -81,6 +70,11 @@ public class Javancss
         "[Colors]\n" +
         "UseSystemColors=true\n";
 
+    private static final String IMPL_VERSION = Javancss.class.getPackage().getImplementationVersion();
+
+    public static final String S_RCS_HEADER = "$Header: /javancss/Main.java,v "
+            + ( ( IMPL_VERSION == null ) ? "0.0 2001/01/01 00:00:00" : IMPL_VERSION ) + " clemens Exp clemens $";
+
     private static final String DEFAULT_ENCODING = null;
     
     private boolean _bExit = false;
@@ -94,11 +88,11 @@ public class Javancss
     private JavaParserInterface _pJavaParser = null;
     private int _ncss = 0;
     private int _loc = 0;
-    private List<FunctionMetric> _vFunctionMetrics = new ArrayList<FunctionMetric>();
-    private List<ObjectMetric> _vObjectMetrics = new ArrayList<ObjectMetric>();
+    private List<FunctionMetric> _vFunctionMetrics = new ArrayList<>();
+    private List<ObjectMetric> _vObjectMetrics = new ArrayList<>();
     private List<PackageMetric> _vPackageMetrics = null;
     private List<Object[]> _vImports = null;
-    private Map<String,PackageMetric> _htPackages = null;
+    private Map<String, PackageMetric> _htPackages = null;
     private Object[] _aoPackage = null;
 
     /**
@@ -214,7 +208,7 @@ public class Javancss
 
             // execute the parser
             _pJavaParser.parse();
-            Util.debug( "Javancss._measureSource(DataInputStream).SUCCESSFULLY_PARSED" );
+            Util.debug( "_measureSource(DataInputStream).SUCCESSFULLY_PARSED" );
 
             _ncss += _pJavaParser.getNcss(); // increment the ncss
             _loc += _pJavaParser.getLOC(); // and loc
@@ -224,7 +218,7 @@ public class Javancss
             Map<String, PackageMetric> htNewPackages = _pJavaParser.getPackage();
 
             /* List vNewPackages = new Vector(); */
-            for ( Iterator<Map.Entry<String, PackageMetric>> ePackages = htNewPackages.entrySet().iterator(); ePackages.hasNext(); )
+            for (Iterator<Map.Entry<String, PackageMetric>> ePackages = htNewPackages.entrySet().iterator(); ePackages.hasNext(); )
             {
                 String sPackage = ePackages.next().getKey();
 
@@ -356,7 +350,7 @@ public class Javancss
         }
         catch ( Throwable pThrowable )
         {
-            Util.debug( "Javancss._measureRoot().e: " + pThrowable );
+            Util.debug( "_measureRoot().e: " + pThrowable );
             pThrowable.printStackTrace(System.err);
         }
     }
@@ -368,7 +362,7 @@ public class Javancss
 
     public Javancss( File sJavaSourceFile_, String encoding_ )
     {
-        Util.debug( "Javancss.<init>(String).sJavaSourceFile_: " + sJavaSourceFile_ );
+        Util.debug( "<init>(String).sJavaSourceFile_: " + sJavaSourceFile_ );
         setEncoding( encoding_ );
         _sErrorMessage = null;
         _vJavaSourceFiles = new ArrayList<File>();
@@ -392,21 +386,21 @@ public class Javancss
     {
         if ( _sJavaSourceFile == null )
         {
-            Util.debug( "Javancss.parseImports().NO_FILE" );
+            Util.debug( "parseImports().NO_FILE" );
 
             return true;
         }
         Reader reader = createSourceReader( _sJavaSourceFile );
         if ( reader == null )
         {
-            Util.debug( "Javancss.parseImports().NO_DIS" );
+            Util.debug( "parseImports().NO_DIS" );
 
             return true;
         }
 
         try
         {
-            Util.debug( "Javancss.parseImports().START_PARSING" );
+            Util.debug( "parseImports().START_PARSING" );
             if ( Util.isDebug() == false )
             {
                 _pJavaParser = new JavaParser( reader );
@@ -418,11 +412,11 @@ public class Javancss
             _pJavaParser.parseImportUnit();
             _vImports = _pJavaParser.getImports();
             _aoPackage = _pJavaParser.getPackageObjects();
-            Util.debug( "Javancss.parseImports().END_PARSING" );
+            Util.debug( "parseImports().END_PARSING" );
         }
         catch ( Exception pParseException )
         {
-            Util.debug( "Javancss.parseImports().PARSE_EXCEPTION" );
+            Util.debug( "parseImports().PARSE_EXCEPTION" );
             if ( _sErrorMessage == null )
             {
                 _sErrorMessage = "";
@@ -439,7 +433,7 @@ public class Javancss
         }
         catch ( Error pTokenMgrError )
         {
-            Util.debug( "Javancss.parseImports().TOKEN_ERROR" );
+            Util.debug( "parseImports().TOKEN_ERROR" );
             if ( _sErrorMessage == null )
             {
                 _sErrorMessage = "";
@@ -475,12 +469,242 @@ public class Javancss
         }
         catch ( Throwable pThrowable )
         {
-            Util.debug( "Javancss.<init>(Reader).e: " + pThrowable );
+            Util.debug( "<init>(Reader).e: " + pThrowable );
             pThrowable.printStackTrace(System.err);
         }
     }
 
+    /**
+     * recursively adds *.java files
+     * @param dir the base directory to search
+     * @param v the list of file to add found files to
+     */
+    private static void _addJavaFiles( File dir, List<File> v )
+    {
+        File[] files = dir.listFiles();
+        if ( files == null || files.length == 0 )
+        {
+            return;
+        }
+
+        for ( int i = 0; i < files.length; i++ )
+        {
+            File newFile = files[i];
+            if ( newFile.isDirectory() )
+            {
+                // Recurse!!!
+                _addJavaFiles( newFile, v );
+            }
+            else
+            {
+                if ( newFile.getName().endsWith( ".java" ) )
+                {
+                    v.add( newFile );
+                }
+            }
+        }
+    }
+
+    private List<File> findFiles( List<String> filenames, boolean recursive )
+        throws IOException
+    {
+        if ( Util.isDebug() )
+        {
+            Util.debug( "filenames: " + Util.toString( filenames ) );
+        }
+        if ( filenames.size() == 0 )
+        {
+            if ( recursive )
+            {
+                // If no files then add current directory!
+                filenames.add( "." );
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        Set<String> _processedAtFiles = new HashSet<String>();
+        List<File> newFiles = new ArrayList<File>();
+        for ( String filename : filenames )
+        {
+            // if the file specifies other files...
+            if ( filename.startsWith( "@" ) )
+            {
+                filename = filename.substring( 1 );
+                if ( filename.length() > 1 )
+                {
+                    filename = FileUtil.normalizeFileName( filename );
+                    if ( _processedAtFiles.add( filename ) )
+                    {
+                        String sJavaSourceFileNames = null;
+                        try
+                        {
+                            sJavaSourceFileNames = FileUtil.readFile( filename );
+                        }
+                        catch( IOException pIOException )
+                        {
+                            _sErrorMessage = "File Read Error: " + filename;
+                            _thrwError = pIOException;
+                            throw pIOException;
+                        }
+                        List<String> vTheseJavaSourceFiles = Util.stringToLines( sJavaSourceFileNames );
+                        for ( String name : vTheseJavaSourceFiles )
+                        {
+                            newFiles.add( new File( name ) );
+                        }
+                    }
+                }
+            }
+            else
+            {
+                filename = FileUtil.normalizeFileName( filename );
+                File file = new File( filename );
+                if ( file.isDirectory() )
+                {
+                    _addJavaFiles( file, newFiles );
+                }
+                else
+                {
+                    newFiles.add( file );
+                }
+            }
+        }
+
+        if ( Util.isDebug() )
+        {
+            Util.debug( "resolved filenames: " + Util.toString( newFiles ) );
+        }
+
+        return newFiles;
+    }
+
     private Init _pInit = null;
+
+    /**
+     * @deprecated use Javancss(String[]) instead, since the sRcsHeader_ parameter is not useful
+     */
+    @Deprecated
+    public Javancss( String[] asArgs_, String sRcsHeader_ )
+        throws IOException
+    {
+        this( asArgs_ );
+    }
+
+    /**
+     * This is the constructor used in the main routine in
+     * Main.
+     * Other constructors might be helpful to use Javancss out
+     * of other programs.
+     */
+    public Javancss( String[] asArgs_ )
+        throws IOException
+    {
+        _pInit = new Init( this, asArgs_, S_RCS_HEADER, S_INIT__FILE_CONTENT );
+        if ( _bExit )
+        {
+            return;
+        }
+        Map<String, String> htOptions = _pInit.getOptions();
+
+        setEncoding( htOptions.get( "encoding" ) );
+        setXML( htOptions.get( "xml" ) != null );
+
+        // the arguments (the files) to be processed
+        _vJavaSourceFiles = findFiles( _pInit.getArguments(), htOptions.get( "recursive" ) != null );
+
+        // this initiates the measurement
+        try
+        {
+            _measureRoot( newReader( System.in ) );
+        }
+        catch ( Throwable pThrowable )
+        {
+            Util.debug( "<init>(String[]).e: " + pThrowable );
+            pThrowable.printStackTrace(System.err);
+        }
+        if ( getLastErrorMessage() != null )
+        {
+            Util.printlnErr( getLastErrorMessage() + "\n" );
+            if ( getNcss() <= 0 )
+            {
+                return;
+            }
+        }
+
+        String sOutputFile = htOptions.get( "out" );
+        OutputStream out = System.out;
+        if ( sOutputFile != null )
+        {
+            try
+            {
+                out = new FileOutputStream( FileUtil.normalizeFileName( sOutputFile ) );
+            }
+            catch ( Exception exception )
+            {
+                Util.printlnErr( "Error opening output file '"
+                                 + sOutputFile
+                                 + "': " + exception.getMessage() );
+
+                sOutputFile = null;
+            }
+        }
+        // TODO: encoding configuration support for result output
+        final PrintWriter pw = useXML() ? new PrintWriter( new OutputStreamWriter( out, "UTF-8" ) ) : new PrintWriter( out );
+        try {
+
+            format( pw, htOptions );
+
+        } finally {
+            if ( sOutputFile != null )
+            {
+                pw.close();
+            }
+            else
+            {
+                // stdout is used: don't close but ensure everything is flushed
+                pw.flush();
+            }
+        }
+    }
+
+    private void format( PrintWriter pw, Map<String, String> htOptions )
+        throws IOException
+    {
+        printStart( pw );
+   
+        boolean bNoNCSS = false;
+        if ( htOptions.get( "package" ) != null || htOptions.get( "all" ) != null )
+        {
+            printPackageNcss( pw );
+            bNoNCSS = true;
+        }
+        if ( htOptions.get( "object" ) != null || htOptions.get( "all" ) != null )
+        {
+            if ( bNoNCSS )
+            {
+                pw.println();
+            }
+            printObjectNcss( pw );
+            bNoNCSS = true;
+        }
+        if ( htOptions.get( "function" ) != null || htOptions.get( "all" ) != null )
+        {
+            if ( bNoNCSS )
+            {
+                pw.println();
+            }
+            printFunctionNcss( pw );
+            bNoNCSS = true;
+        }
+        if ( !bNoNCSS )
+        {
+            printJavaNcss( pw );
+        }
+   
+        printEnd( pw );
+    }
 
     public int getNcss()
     {

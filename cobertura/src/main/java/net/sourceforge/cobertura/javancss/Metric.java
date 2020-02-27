@@ -23,7 +23,7 @@ package net.sourceforge.cobertura.javancss;
 /**
  * Base data class to store all metrics common to packages, objects and functions.
  *
- * @author  Herve Boutemy
+ * @author  Herv� Boutemy
  * @version $Id$
  */
 public abstract class Metric

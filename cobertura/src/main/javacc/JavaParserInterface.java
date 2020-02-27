@@ -1,10 +1,10 @@
-package net.sourceforge.cobertura.javancss.parser;
+package javancss.parser;
 
 import java.util.*;
 
-import net.sourceforge.cobertura.javancss.FunctionMetric;
-import net.sourceforge.cobertura.javancss.ObjectMetric;
-import net.sourceforge.cobertura.javancss.PackageMetric;
+import javancss.FunctionMetric;
+import javancss.ObjectMetric;
+import javancss.PackageMetric;
 
 public interface JavaParserInterface
 {
