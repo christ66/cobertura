@@ -40,7 +40,7 @@
     <oroVersion>2.0.8</oroVersion>
     <jaxenVersion>1.1-beta-8</jaxenVersion>
     <commonsioVersion>2.4</commonsioVersion>
-    <antVersion>1.8.3</antVersion>
+    <antVersion>1.10.8</antVersion>
     <jettyVersion>6.1.14</jettyVersion>
     <simplexmlVersion>2.6.2</simplexmlVersion>
     <guavaVersion>13.0.1</guavaVersion>
