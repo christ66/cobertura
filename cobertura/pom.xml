@@ -39,7 +39,7 @@
     <jaxenVersion>1.1.4</jaxenVersion>
     <commonsioVersion>2.2</commonsioVersion>
     <commonslangVersion>3.3.2</commonslangVersion>
-    <antVersion>1.9.3</antVersion>
+    <antVersion>1.10.9</antVersion>
     <jettyVersion>6.1.14</jettyVersion>
     <simplexmlVersion>2.6.2</simplexmlVersion>
     <guavaVersion>13.0.1</guavaVersion>
