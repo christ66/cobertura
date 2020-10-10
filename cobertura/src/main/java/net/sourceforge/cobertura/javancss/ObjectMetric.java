@@ -18,30 +18,30 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA*/
 
+
 package net.sourceforge.cobertura.javancss;
 
 /**
  * Basic data class to store all metrics attached to an object.
  *
- * @author  Herve Boutemy
+ * @author Herv� Boutemy
  * @version $Id$
  */
 public class ObjectMetric
-    extends Metric
-{
-    /** Cyclomatic Complexity Number (McCabe metric) */
+        extends Metric {
+    /**
+     * Cyclomatic Complexity Number (McCabe metric)
+     */
     public int ccn = 0;
     public int functions = 0;
     public int classes = 0;
 
-    public ObjectMetric()
-    {
+    public ObjectMetric() {
         super();
     }
 
     @Override
-    public void clear()
-    {
+    public void clear() {
         super.clear();
         ccn = 0;
         functions = 0;

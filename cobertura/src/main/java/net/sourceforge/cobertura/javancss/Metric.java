@@ -23,15 +23,16 @@ package net.sourceforge.cobertura.javancss;
 /**
  * Base data class to store all metrics common to packages, objects and functions.
  *
- * @author  Herve Boutemy
+ * @author Herv� Boutemy
  * @version $Id$
  */
 public abstract class Metric
-    implements Comparable<Metric>
-{
+        implements Comparable<Metric> {
     public String name = ".";
 
-    /** Non Commenting Source Statements (NCSS). */
+    /**
+     * Non Commenting Source Statements (NCSS).
+     */
     public int ncss = 0;
     public int firstLine = 0;
     public int javadocs = 0;
@@ -39,13 +40,11 @@ public abstract class Metric
     public int singleLn = 0;
     public int multiLn = 0;
 
-    public Metric()
-    {
+    public Metric() {
         super();
     }
 
-    public void clear()
-    {
+    public void clear() {
         name = ".";
         ncss = 0;
         javadocs = 0;
@@ -55,24 +54,20 @@ public abstract class Metric
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 
-    public int compareTo( Metric m )
-    {
-        return name.compareTo( m.name );
+    public int compareTo(Metric m) {
+        return name.compareTo(m.name);
     }
 
-    public boolean equals( Metric m )
-    {
-        return compareTo( m ) == 0;
+    public boolean equals(Metric m) {
+        return compareTo(m) == 0;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return name.hashCode();
     }
 }

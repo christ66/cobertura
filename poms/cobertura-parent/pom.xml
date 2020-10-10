@@ -104,7 +104,7 @@
         <pmd.ruleset>/codestyle/cobertura/pmd-rules.xml</pmd.ruleset>
 
         <!-- Findbugs configuration parameters. -->
-        <findbugs.plugin.version>3.0.3</findbugs.plugin.version>
+        <findbugs.plugin.version>3.0.5</findbugs.plugin.version>
         <findbugs.only.analyze>net.sourceforge.cobertura.*</findbugs.only.analyze>
         <findbugs.includeFilterFile>codestyle/cobertura/findbugs.xml</findbugs.includeFilterFile>
         <findbugs.excludeFilterFile>codestyle/cobertura/findbugs-excludes.xml</findbugs.excludeFilterFile>
@@ -975,6 +975,9 @@
                     <configuration>
                         <argLine>${surefire.argLine}</argLine>
                         <trimStackTrace>false</trimStackTrace>
+                        <skipTests>false</skipTests>
+                        <testFailureIgnore>true</testFailureIgnore>
+                        <forkMode>once</forkMode>
                     </configuration>
                 </plugin>
 
