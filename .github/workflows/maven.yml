@@ -1,0 +1,21 @@
+name: Java CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Test with Java ${{ matrix.jdk }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: ['1.7', '1.8', '9', '10', '11', '12', '13', '14']
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK ${{ matrix.jdk }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.jdk }}
+      - name: Build with Maven # ideally do mvn verify but changes are needed first
+        run: mvn -B package --file pom.xml
