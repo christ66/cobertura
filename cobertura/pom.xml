@@ -39,7 +39,7 @@
     <xalanVersion>2.6.0</xalanVersion>
     <oroVersion>2.0.8</oroVersion>
     <jaxenVersion>1.1-beta-8</jaxenVersion>
-    <commonsioVersion>2.4</commonsioVersion>
+    <commonsioVersion>2.7</commonsioVersion>
     <antVersion>1.8.3</antVersion>
     <jettyVersion>6.1.14</jettyVersion>
     <simplexmlVersion>2.6.2</simplexmlVersion>
