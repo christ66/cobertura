@@ -41,7 +41,7 @@
     <jaxenVersion>1.1-beta-8</jaxenVersion>
     <commonsioVersion>2.4</commonsioVersion>
     <antVersion>1.8.3</antVersion>
-    <jettyVersion>6.1.14</jettyVersion>
+    <jettyVersion>6.1.23</jettyVersion>
     <simplexmlVersion>2.6.2</simplexmlVersion>
     <guavaVersion>13.0.1</guavaVersion>
     <groovyVersion>1.6-RC-1</groovyVersion>
