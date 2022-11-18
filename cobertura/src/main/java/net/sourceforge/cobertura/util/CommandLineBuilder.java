@@ -26,6 +26,7 @@
 package net.sourceforge.cobertura.util;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class CommandLineBuilder {
 	 *                     line occur
 	 */
 	public CommandLineBuilder() throws IOException {
-		commandLineFile = File.createTempFile("cobertura.", ".cmdline");
+		commandLineFile = Files.createTempFile("cobertura.", ".cmdline").toFile();
 		commandLineFile.deleteOnExit();
 		commandLineWriter = new FileWriter(commandLineFile);
 	}

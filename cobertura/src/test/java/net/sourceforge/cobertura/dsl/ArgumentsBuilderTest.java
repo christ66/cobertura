@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.util.Iterator;
 
 import static org.junit.Assert.*;
@@ -280,7 +281,7 @@ public class ArgumentsBuilderTest {
 
 	@Test
 	public void testListOfFilesToInstrument() throws Exception {
-		File listOfFilesFile = File.createTempFile("list2instrument", ".txt");
+		File listOfFilesFile = Files.createTempFile("list2instrument", ".txt").toFile();
 		BufferedWriter outList = new BufferedWriter(new FileWriter(listOfFilesFile));
 		outList.write("foo\nbar\nbaz\n");
 		outList.close();

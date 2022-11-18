@@ -27,12 +27,13 @@
 package net.sourceforge.cobertura.ant;
 
 import java.io.*;
+import java.nio.file.Files;
 
 class Util {
 
 	static File createTemporaryTextFile(String prefix) throws IOException {
 		File outputFile;
-		outputFile = File.createTempFile(prefix, ".txt");
+		outputFile = Files.createTempFile(prefix, ".txt").toFile();
 		outputFile.deleteOnExit();
 		return outputFile;
 	}

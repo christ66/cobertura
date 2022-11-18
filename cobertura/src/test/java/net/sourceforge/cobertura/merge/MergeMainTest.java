@@ -27,6 +27,7 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class MergeMainTest extends TestCase {
 	private List filesToRemove = new ArrayList();
 
 	private File createTempSerFile() throws IOException {
-		File result = File.createTempFile("cobertura", ".ser");
+		File result = Files.createTempFile("cobertura", ".ser").toFile();
 		result.delete();
 		filesToRemove.add(result);
 		return result;

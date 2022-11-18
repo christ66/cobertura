@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 // Creates structre:
@@ -56,7 +57,7 @@ public class FileFixture {
 	public HashMap sourceDirectories;
 
 	public void setUp() throws IOException {
-		File tempFile = File.createTempFile("temp", ".tmp");
+		File tempFile = Files.createTempFile("temp", ".tmp").toFile();
 		tempFile.deleteOnExit();
 		sourceDirectories = new HashMap();
 
