@@ -23,6 +23,7 @@ package net.sourceforge.cobertura.util;
 import junit.framework.TestCase;
 
 import java.io.*;
+import java.nio.file.Files;
 
 /**
  * @author Grzegorz Lukasik
@@ -36,7 +37,7 @@ public class IOUtilTest extends TestCase {
 	private static final byte[] smallByteArray = new byte[]{1, 0, 2, -128, 127};
 
 	private File createFileWithData(byte[] data) throws IOException {
-		File file = File.createTempFile("IOUtilTest", ".txt");
+		File file = Files.createTempFile("IOUtilTest", ".txt").toFile();
 		file.deleteOnExit();
 		OutputStream src = new FileOutputStream(file);
 		src.write(data);

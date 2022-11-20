@@ -6,6 +6,7 @@ import net.sourceforge.cobertura.coveragedata.ProjectData;
 import net.sourceforge.cobertura.util.*;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -253,8 +254,7 @@ public class CodeInstrumentationTask {
 							.getPathname());
 				} else {
 					// otherwise create output file in temporary location
-					outputFile = File.createTempFile(
-							"CoberturaInstrumentedArchive", "jar");
+					outputFile = Files.createTempFile("CoberturaInstrumentedArchive", "jar").toFile();
 					outputFile.deleteOnExit();
 				}
 				output = new ZipOutputStream(new FileOutputStream(outputFile));
